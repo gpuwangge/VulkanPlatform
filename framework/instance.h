@@ -19,7 +19,7 @@
 #define OUT
 #define INOUT
 
-#include "physicalDevice.hpp"
+#include "physicalDevice.h"
 
 const std::vector<const char*> validationLayers = {
 	"VK_LAYER_KHRONOS_validation"
@@ -44,6 +44,8 @@ struct SwapChainSupportDetails {
 	std::vector<VkSurfaceFormatKHR> formats;
 	std::vector<VkPresentModeKHR> presentModes;
 };
+
+class CPhysicalDevice; //Because instance.h uses CPhysicalDevice. To notify instance.h that CPhysicalDevice is a class (defined in other files)
 
 class CInstance{
 public:
@@ -73,6 +75,8 @@ public:
     VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger);
 
     void Init02SetupDebugMessenger();
+
+    
 
     std::vector<std::unique_ptr<CPhysicalDevice>> physicalDevices;
 

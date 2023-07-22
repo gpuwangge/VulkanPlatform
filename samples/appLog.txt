@@ -85,5 +85,3 @@ vkCreatePipelineLayout: Successful
 vkCreateGraphicsPipelines: Successful
 
 ***** DrawFrame() will begin *****
-
-***** Clean up application *****

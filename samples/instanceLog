@@ -89,4 +89,3 @@ Found 2 Present Modes:
 Found 1 Queue Families:
 	0: Queue Family Count =  1  ;    Graphics Compute Transfer
 vkGetPhysicalDeviceSurfaceSupportKHR: Successful
-This Surface is supported by the Graphics Queue
