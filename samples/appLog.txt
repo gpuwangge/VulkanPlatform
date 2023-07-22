@@ -1,0 +1,89 @@
+Width = 800 ; Height = 600
+
+***** Init04LogicalDeviceAndQueue *****
+vkCreateLogicalDevice: Successful
+
+***** Init05CreateVertexBuffer *****
+vkCreateBuffer: Successful
+Buffer vmr.size = 128
+Buffer vmr.alignment = 64
+Buffer vmr.memoryTypeBits = 0x00000007
+Found given memory flag (0x00000002) and type (0x00000007): i = 1
+vkAllocateMemory: Successful
+vkBindBufferMemory: Successful
+InitVertexDataBuffer: Successful
+
+***** Init05CreateIndexBuffer *****
+vkCreateBuffer: Successful
+Buffer vmr.size = 64
+Buffer vmr.alignment = 64
+Buffer vmr.memoryTypeBits = 0x00000007
+Found given memory flag (0x00000002) and type (0x00000007): i = 1
+vkAllocateMemory: Successful
+vkBindBufferMemory: Successful
+InitIndexDataBuffer: Successful
+
+***** Init05CreateUniformBuffers *****
+vkCreateBuffer: Successful
+Buffer vmr.size = 192
+Buffer vmr.alignment = 64
+Buffer vmr.memoryTypeBits = 0x00000007
+Found given memory flag (0x00000002) and type (0x00000007): i = 1
+vkAllocateMemory: Successful
+vkBindBufferMemory: Successful
+Init05CreateUniformBuffers: Successful
+vkCreateBuffer: Successful
+Buffer vmr.size = 192
+Buffer vmr.alignment = 64
+Buffer vmr.memoryTypeBits = 0x00000007
+Found given memory flag (0x00000002) and type (0x00000007): i = 1
+vkAllocateMemory: Successful
+vkBindBufferMemory: Successful
+Init05CreateUniformBuffers: Successful
+
+***** Init06CommandPools *****
+vkCreateCommandPool -- Graphics: Successful
+
+***** Init06CommandBuffers *****
+vkAllocateCommandBuffers: Successful
+
+***** Init08Swapchain *****
+vkCreateSwapchainKHR: Successful
+vkGetSwapchainImagesKHR - 0 (Get imageCount): Successful
+vkGetSwapchainImagesKHR - 1: Successful
+vkCreateImageView: Successful
+vkCreateImageView: Successful
+vkCreateImageView: Successful
+
+***** Init10CreateRenderPass *****
+vkCreateRenderPass: Successful
+
+***** Init11CreateFramebuffers *****
+vkCreateFrameBuffer: Successful
+vkCreateFrameBuffer: Successful
+vkCreateFrameBuffer: Successful
+
+***** Init12SpirvShader *****
+vkCreateShaderModule: Successful
+Shader Module '../shaders/basic/vert.spv' successfully loaded
+
+***** Init12SpirvShader *****
+vkCreateShaderModule: Successful
+Shader Module '../shaders/basic/frag.spv' successfully loaded
+
+***** Init13DescriptorSetPool *****
+vkCreateDescriptorPool: Successful
+
+***** Init13CreateDescriptorSetLayout *****
+vkCreateDescriptorSetLayout: Successful
+
+***** Init13CreateDescriptorSets *****
+vkAllocateDescriptorSets: Successful
+
+***** Init14CreateGraphicsPipeline *****
+vkCreatePipelineLayout: Successful
+vkCreateGraphicsPipelines: Successful
+
+***** DrawFrame() will begin *****
+
+***** Clean up application *****
