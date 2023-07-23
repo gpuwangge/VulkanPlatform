@@ -54,7 +54,7 @@ void CApplication::Init04CreateLogicalDevice() {
     VkResult result = VK_SUCCESS;
 
     //QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
-    QueueFamilyIndices indices = instance->findQueueFamilies(physicalDevice, surface);
+    QueueFamilyIndices indices = physicalDevice->get()->findQueueFamilies(surface);
 
     std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
     std::set<uint32_t> uniqueQueueFamilies = { indices.graphicsFamily.value(), indices.presentFamily.value() };
@@ -91,7 +91,7 @@ void CApplication::Init04CreateLogicalDevice() {
     }
 
     //建立logicalDevice
-    result = vkCreateDevice(physicalDevice, &createInfo, nullptr, &logicalDevice);
+    result = vkCreateDevice(physicalDevice->get()->getHandle(), &createInfo, nullptr, &logicalDevice);
     if (result != VK_SUCCESS) throw std::runtime_error("failed to create logical device!");
     REPORT("vkCreateLogicalDevice");
 
@@ -104,7 +104,7 @@ void CApplication::Init04CreateLogicalDevice() {
 
 int CApplication::FindMemoryByFlagAndType(VkMemoryPropertyFlagBits memoryFlagBits, uint32_t  memoryTypeBits) {
     VkPhysicalDeviceMemoryProperties	vpdmp;
-    vkGetPhysicalDeviceMemoryProperties(physicalDevice, OUT &vpdmp);
+    vkGetPhysicalDeviceMemoryProperties(physicalDevice->get()->getHandle(), OUT &vpdmp);
     for (unsigned int i = 0; i < vpdmp.memoryTypeCount; i++) {
         VkMemoryType vmt = vpdmp.memoryTypes[i];
         VkMemoryPropertyFlags vmpf = vmt.propertyFlags;
@@ -241,7 +241,7 @@ void CApplication::Init06CreateCommandPool() {
 
     VkResult result = VK_SUCCESS;
 
-    QueueFamilyIndices queueFamilyIndices = instance->findQueueFamilies(physicalDevice, surface);
+    QueueFamilyIndices queueFamilyIndices = physicalDevice->get()->findQueueFamilies(surface);
 
     VkCommandPoolCreateInfo poolInfo{};
     poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
@@ -349,7 +349,7 @@ void CApplication::Init08CreateSwapChain() {
 
     VkResult result = VK_SUCCESS;
 
-    SwapChainSupportDetails swapChainSupport = instance->querySwapChainSupport(physicalDevice, surface);
+    SwapChainSupportDetails swapChainSupport = physicalDevice->get()->querySwapChainSupport(surface);
 
     VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(swapChainSupport.formats);
     VkPresentModeKHR presentMode = chooseSwapPresentMode(swapChainSupport.presentModes);
@@ -371,7 +371,7 @@ void CApplication::Init08CreateSwapChain() {
     createInfo.imageArrayLayers = 1;
     createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
-    QueueFamilyIndices indices = instance->findQueueFamilies(physicalDevice, surface);
+    QueueFamilyIndices indices = physicalDevice->get()->findQueueFamilies(surface);
     uint32_t queueFamilyIndices[] = { indices.graphicsFamily.value(), indices.presentFamily.value() };
 
     if (indices.graphicsFamily != indices.presentFamily) {
@@ -415,7 +415,7 @@ void CApplication::Init08CreateSwapChain() {
 VkFormat CApplication::findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) {
     for (VkFormat format : candidates) {
         VkFormatProperties props;
-        vkGetPhysicalDeviceFormatProperties(physicalDevice, format, &props);
+        vkGetPhysicalDeviceFormatProperties(physicalDevice->get()->getHandle(), format, &props);
 
         if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features) {
             return format;
@@ -506,7 +506,8 @@ void CApplication::initVulkan(){
 
     //Init03PickPhysicalDevice();
     instance->queryGPUs();
-    physicalDevice = (instance->pick_suitable_gpu(surface)).getHandle();
+    //physicalDevice = (instance->pick_suitable_gpu(surface)).getHandle();
+    physicalDevice = instance->pick_suitable_gpu(surface);
 
     Init04CreateLogicalDevice();
 

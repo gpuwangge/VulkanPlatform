@@ -1,11 +1,23 @@
-=========Platform结构=========
-application: 包含一个instance的智能指针
-instance: 包含一个physical devices的智能指针数组
-physical devices: 包含一个logical devices的智能指针数组。同时physical device需要访问呢父类instance,使用forward declaration定义instance，并在头文件中创建一个指针。同时，在physical device cpp文件中include instance.h。
+=========Platform Structure=========
+application: contian a instance unique smart pointer
+instance: containn a physical devices unique smart pointer
+physical devices: containn  a logical devices unique smart pointer array。同时physical device需要访问呢父类instance,使用forward declaration定义instance，并在头文件中创建一个指针。同时，在physical device cpp文件中include instance.h。
 logical devices
 
-
-
+Life of a Vulkan Sample:
+1.application creates instance
+2.instance enumerates extension properties (the number of supported extensions is related to the driver version?)
+3.instance gets required extension. (for example, GLFW need 2 extensions: VK_KHR_surface, VK_KHR_win32_surface)
+4.application creates GLFW window surface
+5.instance querys GPUs(physical devices）: vkEnumeratePhysicalDevices() will create all physical devices(a vector of VkPhysicalDevice). 
+instance also creates a array of unique smart pointer with CPhysicalClass, intialized with the VkPhysicalDevice objects from step5
+6.instance picks one suitable gpu among all the physical devices
+describe a physical device we need: 
+find queue family supported of a physical device: findQueueFamilies(surface)				-> ex: we need a queue family that has graphics and compute family, and graphics family, and present family
+find surface supported of a physical device: vkGetPhysicalDeviceSurfaceSupportKHR()			-> to see if the surface is supported by the graphics queue, if yes, then it means it supports present family
+find extension supported of a physical device: checkDeviceExtensionSupport()				-> ex: we need deviceExtension to be VK_KHR_SWAPCHAIN_EXTENSION_NAME
+find swapChain supported of a physical device: querySwapChainSupport(surface)				->swapChain must support format and presentMode
+return a physical device(a unique smart pointer) that support all this.
 
 
 ===========Vulkan多队列同步机制： Fences and Semaphores=============

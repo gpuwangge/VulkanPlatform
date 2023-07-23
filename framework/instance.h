@@ -18,23 +18,6 @@ const std::vector<const char*> deviceExtensions = {
 	VK_KHR_SWAPCHAIN_EXTENSION_NAME
 };
 
-struct QueueFamilyIndices {
-	std::optional<uint32_t> graphicsFamily;
-	std::optional<uint32_t> presentFamily;
-	std::optional<uint32_t> graphicsAndComputeFamily;
-
-	bool isComplete() {
-		return graphicsAndComputeFamily.has_value() && graphicsFamily.has_value() && presentFamily.has_value();
-	}
-};
-
-struct SwapChainSupportDetails {
-	VkSurfaceCapabilitiesKHR capabilities;
-	std::vector<VkSurfaceFormatKHR> formats;
-	std::vector<VkPresentModeKHR> presentModes;
-};
-
-//class CPhysicalDevice; //Forward Declaration. Because instance.h uses CPhysicalDevice. To notify instance.h that CPhysicalDevice is a class (defined in other files)
 
 class CInstance{
 public:
@@ -71,13 +54,9 @@ public:
 
     void queryGPUs();
 
-    CPhysicalDevice &pick_suitable_gpu(VkSurfaceKHR surface);
+    std::unique_ptr<CPhysicalDevice>* pick_suitable_gpu(VkSurfaceKHR surface);
 
-    QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device, VkSurfaceKHR surface);
 
-    bool checkDeviceExtensionSupport(VkPhysicalDevice device);
-
-    SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device, VkSurfaceKHR surface);
 };
 
 

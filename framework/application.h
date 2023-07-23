@@ -87,7 +87,9 @@ public:
 
 
     VkSurfaceKHR surface;//03
-    VkPhysicalDevice physicalDevice = VK_NULL_HANDLE; //03
+    //VkPhysicalDevice physicalDevice = VK_NULL_HANDLE; //03
+    std::unique_ptr<CPhysicalDevice>* physicalDevice;
+
     VkDevice logicalDevice;//04
 	VkQueue graphicsQueue;//04
 	VkQueue presentQueue;//04
