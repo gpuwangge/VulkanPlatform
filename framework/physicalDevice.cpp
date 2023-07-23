@@ -1,12 +1,13 @@
 #include "physicalDevice.h"
 
+#include "instance.h"
 
-
-CPhysicalDevice::CPhysicalDevice( VkPhysicalDevice physical_device) : handle{physical_device} {
+CPhysicalDevice::CPhysicalDevice(VkPhysicalDevice physical_device) {
+//CPhysicalDevice(CInstance *instance, VkPhysicalDevice physical_device){
     printf("physical\n");
-    debugger = new CDebugger("physicalDeviceLog");
+    debugger = new CDebugger("physicalDeviceLog.txt");
 
-    //CInstance ins;
+    handle = physical_device;
 
     HERE_I_AM("Init03PhysicalDeviceAndGetQueueFamilyProperties");
 
@@ -177,6 +178,10 @@ CPhysicalDevice::CPhysicalDevice( VkPhysicalDevice physical_device) : handle{phy
     }
     delete[] deviceLayers;*/
 }
+
+ void CPhysicalDevice::setInstance(CInstance *instance){
+    m_instance = instance;
+ }
 
 CPhysicalDevice::~CPhysicalDevice(){
     if (!debugger) delete debugger;
