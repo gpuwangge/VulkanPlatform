@@ -1,12 +1,8 @@
 #include "instance.h"
 
 
-const bool enableValidationLayers = false;
-//VkInstance getHandle(){return handle;}
-//VkInstance getHandle() const{ return handle;}
-
     CInstance::CInstance(){
-        debugger = new CDebugger("instanceLog");
+        debugger = new CDebugger("instanceLog.txt");
 
 		HERE_I_AM("Init01Instance");
 

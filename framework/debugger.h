@@ -5,7 +5,8 @@
 #define HERE_I_AM(s) { debugger->writeMSG("\n***** %s *****\n", s); debugger->flush(); }
 #define REPORT(s) { debugger->printVkError( result, s );  debugger->flush(); }
 
-#include <string>
+#include "common.h"
+
 #include <vulkan/vulkan.h>
 
 struct errorcode

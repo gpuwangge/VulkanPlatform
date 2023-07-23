@@ -1,14 +1,18 @@
 #ifndef H_PHYSICAL_DEVICE
 #define H_PHYSICAL_DEVICE
 
-#include "instance.h"
+//#include "instance.h"
 #include "logicalDevice.h"
+
+#include "common.h"
+
+class CInstance;//forward declaration
 
 class CPhysicalDevice{
 public:
-    //CInstance &instance;
-    //CPhysicalDevice(CInstance &instance, VkPhysicalDevice physical_device) : instance{instance}, handle{physical_device} {
-    CPhysicalDevice( VkPhysicalDevice physical_device);
+    CInstance *m_instance;
+    CPhysicalDevice(VkPhysicalDevice physical_device);
+    //CPhysicalDevice(CInstance *instance, VkPhysicalDevice physical_device);
 
     ~CPhysicalDevice();
 
@@ -16,6 +20,8 @@ public:
     VkPhysicalDevice getHandle() const{ return handle;}
 
     CDebugger * debugger;
+
+    void setInstance(CInstance *instance);
 
     std::vector<std::unique_ptr<CLogicalDevice>> logicalDevices;
 

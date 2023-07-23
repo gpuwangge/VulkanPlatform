@@ -1,7 +1,7 @@
 #include "application.h"
 
 CApplication::CApplication(){
-    debugger = new CDebugger("appLog.txt");
+    debugger = new CDebugger("applicationLog.txt");
 }
 
 void CApplication::run(){

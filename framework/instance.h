@@ -3,21 +3,10 @@
 
 
 #include "debugger.h"
-#include <vector>
-#include <optional>
-#include <iostream>
-#include <memory>
-#include <set>
-
-#include <string.h>
-#include <stdio.h>
+#include "common.h"
 
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
-
-#define IN
-#define OUT
-#define INOUT
 
 #include "physicalDevice.h"
 
@@ -45,7 +34,7 @@ struct SwapChainSupportDetails {
 	std::vector<VkPresentModeKHR> presentModes;
 };
 
-class CPhysicalDevice; //Because instance.h uses CPhysicalDevice. To notify instance.h that CPhysicalDevice is a class (defined in other files)
+//class CPhysicalDevice; //Forward Declaration. Because instance.h uses CPhysicalDevice. To notify instance.h that CPhysicalDevice is a class (defined in other files)
 
 class CInstance{
 public:

@@ -1,3 +1,13 @@
+=========Platform结构=========
+application: 包含一个instance的智能指针
+instance: 包含一个physical devices的智能指针数组
+physical devices: 包含一个logical devices的智能指针数组。同时physical device需要访问呢父类instance,使用forward declaration定义instance，并在头文件中创建一个指针。同时，在physical device cpp文件中include instance.h。
+logical devices
+
+
+
+
+
 ===========Vulkan多队列同步机制： Fences and Semaphores=============
 https://www.youtube.com/watch?v=GiKbGWI4M-Y
 动画演示Fence、Semaphore(12分钟开始)(24分钟是重点)

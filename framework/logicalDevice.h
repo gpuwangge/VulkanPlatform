@@ -2,7 +2,7 @@
 #define H_LOGICAL_DEVICE
 
 #include "debugger.h"
-#include <stdio.h>
+#include "common.h"
 
 class CLogicalDevice{
 public:
