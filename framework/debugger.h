@@ -52,7 +52,8 @@ public:
 
 	CDebugger(const std::string&  debugFilename);
 
-	void setVerbose(bool b);
+	void setVerbose(bool b) { Verbose = b; }
+	bool getVerbose() {return Verbose; }
 
 	void writeMSG(std::string s);
 

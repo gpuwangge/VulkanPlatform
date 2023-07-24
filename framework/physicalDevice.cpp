@@ -198,19 +198,25 @@ QueueFamilyIndices CPhysicalDevice::findQueueFamilies(VkSurfaceKHR surface) {
     vkGetPhysicalDeviceQueueFamilyProperties(handle, &queueFamilyCount, queueFamilyProperties.data());
 
     int i = 0;
-    for (const auto& queueFamilyProperty : queueFamilyProperties) {
-        fprintf(debugger->FpDebug, "\t%d: Queue Family Count = %2d  ;   ", i, queueFamilyProperty.queueCount);
-        if ((queueFamilyProperty.queueFlags & VK_QUEUE_GRAPHICS_BIT) != 0)	fprintf(debugger->FpDebug, " Graphics");
-        if ((queueFamilyProperty.queueFlags & VK_QUEUE_COMPUTE_BIT) != 0)	fprintf(debugger->FpDebug, " Compute");
-        if ((queueFamilyProperty.queueFlags & VK_QUEUE_TRANSFER_BIT) != 0)	fprintf(debugger->FpDebug, " Transfer");
-        fprintf(debugger->FpDebug, "\n");
-        i++;
+    if(debugger->getVerbose()){
+        for (const auto& queueFamilyProperty : queueFamilyProperties) {
+            fprintf(debugger->FpDebug, "\t%d: Queue Family Count = %2d  ;   ", i, queueFamilyProperty.queueCount);
+            if ((queueFamilyProperty.queueFlags & VK_QUEUE_GRAPHICS_BIT) != 0)	fprintf(debugger->FpDebug, " Graphics");
+            if ((queueFamilyProperty.queueFlags & VK_QUEUE_COMPUTE_BIT) != 0)	fprintf(debugger->FpDebug, " Compute");
+            if ((queueFamilyProperty.queueFlags & VK_QUEUE_TRANSFER_BIT) != 0)	fprintf(debugger->FpDebug, " Transfer");
+            fprintf(debugger->FpDebug, "\n");
+            i++;
+        }
     }
 
     i = 0;
     for (const auto& queueFamilyProperty : queueFamilyProperties) {
         if (queueFamilyProperty.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
             indices.graphicsFamily = i;
+        }
+
+        if (queueFamilyProperty.queueFlags & VK_QUEUE_COMPUTE_BIT) {
+            indices.computeFamily = i;
         }
 
         if ((queueFamilyProperty.queueFlags & VK_QUEUE_GRAPHICS_BIT) && (queueFamilyProperty.queueFlags & VK_QUEUE_COMPUTE_BIT)) {
@@ -223,9 +229,9 @@ QueueFamilyIndices CPhysicalDevice::findQueueFamilies(VkSurfaceKHR surface) {
 
         if (presentSupport) {
             indices.presentFamily = i;
-            fprintf(debugger->FpDebug, "This Surface is supported by the Graphics Queue\n");
+            debugger->writeMSG("This Surface is supported by the Graphics Queue\n");
         }
-        else fprintf(debugger->FpDebug, "This Surface is not supported by the Graphics Queue\n");
+        else debugger->writeMSG("This Surface is not supported by the Graphics Queue\n");
 
         if (indices.isComplete()) break; //select the first suitable indices (which has graphics and present family)
 

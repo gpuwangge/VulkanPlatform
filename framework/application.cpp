@@ -496,11 +496,12 @@ void CApplication::initVulkan(){
     const std::vector<const char*>  requireDeviceExtensions = {
 	    VK_KHR_SWAPCHAIN_EXTENSION_NAME
     };
+    VkQueueFlagBits requiredQueueFamilies = VK_QUEUE_GRAPHICS_BIT; //VK_QUEUE_COMPUTE_BIT
     
     instance = std::make_unique<CInstance>(requiredValidationLayers);
     createGLFWSurface();//need instance
     instance->findAllPhysicalDevices();
-    instance->pickSuitablePhysicalDevice(surface, requireDeviceExtensions);
+    instance->pickSuitablePhysicalDevice(surface, requireDeviceExtensions, requiredQueueFamilies);
 
     Init04CreateLogicalDevice(requiredValidationLayers, requireDeviceExtensions);
 

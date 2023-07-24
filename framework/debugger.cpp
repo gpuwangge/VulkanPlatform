@@ -22,8 +22,6 @@
 
 	}
 
-	void CDebugger::setVerbose(bool b) { Verbose = b; }
-
 	void CDebugger::writeMSG(std::string s) {
 		if(Verbose) fprintf(FpDebug, s.c_str());
 	}

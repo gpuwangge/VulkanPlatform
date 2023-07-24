@@ -196,7 +196,7 @@ void CInstance::findAllPhysicalDevices(){
 
 }
 
-bool CInstance::pickSuitablePhysicalDevice(VkSurfaceKHR surface, const std::vector<const char*>  requireDeviceExtensions){
+bool CInstance::pickSuitablePhysicalDevice(VkSurfaceKHR surface, const std::vector<const char*>  requireDeviceExtensions, VkQueueFlagBits requiredQueueFamilies){
     if(physicalDevices.empty()){
         debugger->writeMSG("Error: No physical devices!\n");
         return false;
@@ -216,6 +216,16 @@ bool CInstance::pickSuitablePhysicalDevice(VkSurfaceKHR surface, const std::vect
             swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
         }
         if (indices.isComplete() && extensionsSupported && swapChainAdequate) {
+            if(requiredQueueFamilies & VK_QUEUE_GRAPHICS_BIT) {
+                if(!indices.graphicsFamily.has_value()) return false;
+            }
+            if(requiredQueueFamilies & VK_QUEUE_COMPUTE_BIT) {
+                if(!indices.computeFamily.has_value()) return false;
+            }
+            if((requiredQueueFamilies & VK_QUEUE_COMPUTE_BIT) & VK_QUEUE_GRAPHICS_BIT){
+                if(!indices.graphicsAndComputeFamily.has_value()) return false;
+            }
+
             pickedPhysicalDevice = &phy_device;
             //return &phy_device;
             return true;

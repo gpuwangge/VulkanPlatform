@@ -50,7 +50,7 @@ public:
     void findAllPhysicalDevices();
 
     //std::unique_ptr<CPhysicalDevice>* pick_suitable_gpu(VkSurfaceKHR surface);
-    bool pickSuitablePhysicalDevice(VkSurfaceKHR surface, const std::vector<const char*>  requireDeviceExtensions);
+    bool pickSuitablePhysicalDevice(VkSurfaceKHR surface, const std::vector<const char*>  requireDeviceExtensions, VkQueueFlagBits requiredQueueFamilies);
 
 
 };
