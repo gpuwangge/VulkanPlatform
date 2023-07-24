@@ -198,9 +198,9 @@ void CApplication::prepareGLFW(){
 		glfwSetWindowUserPointer(window, this);
 		glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
 
-		//glfwSetKeyCallback(window, GLFWKeyboard);
-		//glfwSetCursorPosCallback(window, GLFWMouseMotion);
-		//glfwSetMouseButtonCallback(window, GLFWMouseButton);
+		glfwSetKeyCallback(window, GLFWKeyboard);
+		glfwSetCursorPosCallback(window, GLFWMouseMotion);
+		glfwSetMouseButtonCallback(window, GLFWMouseButton);
 }
 
 void CApplication::createGLFWSurface() {

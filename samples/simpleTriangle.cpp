@@ -1,28 +1,32 @@
-#include "..\\framework\\application.h"
+#include "..\\framework\\vulkanBase.h"
 
-class CSimpleTriangle: public CApplication{
+class CSimpleTriangle: public CVulkanBase{
 public:
     CSimpleTriangle(){
 		/************
-		Vertex是5个float*4字节=20
-		vertices.size()是4
-		buffer大小: 80（byte）
+		buffersize: 8(numbers each vertex)*4(float)*4(vertex size)=128（byte）
 		************/
 		vertices3D = {
-			{ { -0.5f, -0.5f, 0.0f },{ 1.0f, 0.0f, 0.0f },{ 1.0f, 0.0f } },
-			{ { 0.5f, -0.5f, 0.0f },{ 0.0f, 1.0f, 0.0f },{ 0.0f, 0.0f } },
-			{ { 0.5f, 0.5f, 0.0f },{ 0.0f, 0.0f, 1.0f },{ 0.0f, 1.0f } },
-			{ { -0.5f, 0.5f, 0.0f },{ 1.0f, 1.0f, 1.0f },{ 1.0f, 1.0f } }
-		};
+		 	{ { -0.5f, -0.5f, 0.0f },{ 1.0f, 0.0f, 0.0f },{ 1.0f, 0.0f } },
+		 	{ { 0.5f, -0.5f, 0.0f },{ 0.0f, 1.0f, 0.0f },{ 0.0f, 0.0f } },
+		 	{ { 0.5f, 0.5f, 0.0f },{ 0.0f, 0.0f, 1.0f },{ 0.0f, 1.0f } },
+		 	{ { -0.5f, 0.5f, 0.0f },{ 1.0f, 1.0f, 1.0f },{ 1.0f, 1.0f } }
+		 };
 
 		/************
-		buffer大小: 2*6=12（byte）
+		buffer size: 6*4=24（byte）
 		************/
 		indices3D = { 0, 1, 2, 2, 3, 0};
 
 		vertexShaderPath = "../shaders/basic/vert.spv";
     	fragmentShaderPath = "../shaders/basic/frag.spv";
-    	//computeShaderPath = "";
+
+		/*****
+		 * Other things to prepare for simple triangle
+		 * Renderpass: colorAttachment
+		 * Framebuffer: swapChainImageViews[i]
+		 * Descriptor: VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER (for MVP)
+		 * ****/
     }
 
     ~CSimpleTriangle(){
@@ -30,46 +34,29 @@ public:
     }
 
 	void updateUniformBuffer(uint32_t currentFrame, float durationTime) {
-		//printf("update uniform in triangle...\n");
 
-		UniformBufferObject ubo{};
-		//ubo.view = camera.matrices.view;
-		//ubo.proj = camera.matrices.perspective;
-		ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-		glm::mat4x4 m = glm::perspective(glm::radians(45.0f), WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 10.0f);
-		m[1][1] *= -1;
-		ubo.proj = m;
-		// if (pipelineType == PIPELINE_MIPMAP) {
-		//     ubo.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-		// }
-		// else {
-			ubo.model = glm::rotate(glm::mat4(1.0f), durationTime * glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-		//}
-
-		memcpy(uniformBuffersMapped[currentFrame], &ubo, sizeof(ubo));
-
-		CApplication::updateUniformBuffer(currentFrame, durationTime);
+		CVulkanBase::updateUniformBuffer(currentFrame, durationTime);
 	}
 
 	void update(){
 		//printf("triangle update...\n");
 
-		CApplication::update();
+		CVulkanBase::update();
 	}
 
 	void recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex) {
-		CApplication::recordCommandBuffer(commandBuffer, imageIndex);
+		CVulkanBase::recordCommandBuffer(commandBuffer, imageIndex);
 	}
 
 	void drawFrame(){
 		//printf("triangle drawFrame...\n");
 
-		CApplication::drawFrame();
+		CVulkanBase::drawFrame();
 	}
 
 	void initVulkan(){
-
-		CApplication::initVulkan();
+		printf("simpleTriangle init\n");
+		CVulkanBase::initVulkan();
 	}
 
 	void Init10CreateRenderPass() {
@@ -116,14 +103,14 @@ public:
 		colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
 		//added for model
-		VkAttachmentReference depthAttachmentRef{};
-		depthAttachmentRef.attachment = 1;
-		depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+		//VkAttachmentReference depthAttachmentRef{};
+		//depthAttachmentRef.attachment = 1;
+		//depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 
 		//added for MSAA
-		VkAttachmentReference colorAttachmentResolveRef{};
-		colorAttachmentResolveRef.attachment = 2;
-		colorAttachmentResolveRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+		//VkAttachmentReference colorAttachmentResolveRef{};
+		//colorAttachmentResolveRef.attachment = 2;
+		//colorAttachmentResolveRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
 		VkSubpassDescription subpass{};
 		subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
@@ -580,7 +567,6 @@ public:
 };
 
 int main(){
-    //CApplication app;
 	CSimpleTriangle app;
 
 	try {

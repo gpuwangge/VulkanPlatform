@@ -5,6 +5,7 @@
 #include <GLFW/glfw3.h>
 
 #include "common.h"
+#include "camera.hpp"
 #include "instance.h"
 
 #define LOGICAL_DEVICE *(instance->pickedPhysicalDevice->get()->getLogicalDevice()) 
@@ -163,6 +164,11 @@ public:
 
     void mainLoop();
     
+    static Camera mainCamera;
+    static bool NeedToExit;
+    static void GLFWKeyboard(GLFWwindow * window, int key, int scancode, int action, int mods);
+	static void GLFWMouseMotion(GLFWwindow *window, double xpos, double ypos);
+	static void GLFWMouseButton(GLFWwindow *window, int button, int action, int mods);
 
     /*Clean up Functions*/
     void cleanupSwapChain();

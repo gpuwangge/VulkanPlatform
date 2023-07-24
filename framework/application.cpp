@@ -11,6 +11,7 @@ void CApplication::run(){
 }
 
 void CApplication::initVulkan(){
+    printf("application init\n");
     const std::vector<const char*> requiredValidationLayers = {"VK_LAYER_KHRONOS_validation"};
     const std::vector<const char*>  requireDeviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
     VkQueueFlagBits requiredQueueFamilies = VK_QUEUE_GRAPHICS_BIT; //& VK_QUEUE_COMPUTE_BIT
@@ -72,7 +73,7 @@ void CApplication::Init05CreateUniformBuffers(std::vector<MyBuffer> &_uniformBuf
 
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
         VkResult result = InitDataBufferHelper(bufferSize, usage, &_uniformBuffers[i]);
-        REPORT("Init05CreateUniformBuffers");
+        REPORT("InitDataBufferHelper");
 
         vkMapMemory(LOGICAL_DEVICE, _uniformBuffers[i].deviceMemory, 0, bufferSize, 0, &_uniformBuffersMapped[i]);
     }
@@ -433,7 +434,7 @@ void CApplication::update(){
 
     auto currentTime = std::chrono::high_resolution_clock::now();
     float durationTime = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
-    float deltaTime = (lastTime - currentTime).count();
+    float deltaTime = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - lastTime).count();
     lastTime = currentTime;
 
     // We want to animate the particle system using the last frames time to get smooth, frame-rate independent animation
@@ -441,7 +442,7 @@ void CApplication::update(){
     //elapsedTime = (currentTime - lastTime) * 1000.0;//这个值会用来update deltaTime
     //lastTime = currentTime.count();
 
-    //camera.update(deltaTime);
+    mainCamera.update(deltaTime);
 
     updateUniformBuffer(currentFrame, durationTime);
 
@@ -453,7 +454,7 @@ void CApplication::mainLoop(){
 			glfwPollEvents();
             update();
             drawFrame();
-			//if (NeedToExit) break;
+			if (NeedToExit) break;
 		}
 
 		vkDeviceWaitIdle(LOGICAL_DEVICE);
