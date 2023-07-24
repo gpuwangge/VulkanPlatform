@@ -1,7 +1,7 @@
 #ifndef H_LOGICAL_DEVICE
 #define H_LOGICAL_DEVICE
 
-#include "debugger.h"
+
 #include "common.h"
 
 class CLogicalDevice{

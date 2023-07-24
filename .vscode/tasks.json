@@ -15,6 +15,7 @@
                 "-g",
                 //"${file}",
                 "${fileDirname}\\..\\framework\\application.cpp",
+                "${fileDirname}\\..\\framework\\applicationUtility.cpp",
                 "${fileDirname}\\..\\framework\\instance.cpp",
                 "${fileDirname}\\..\\framework\\debugger.cpp",
                 "${fileDirname}\\..\\framework\\physicalDevice.cpp",

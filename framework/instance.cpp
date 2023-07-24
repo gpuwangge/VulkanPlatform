@@ -1,10 +1,9 @@
 #include "instance.h"
 
-
 CInstance::CInstance(const std::vector<const char*> requiredValidationLayers){
     debugger = new CDebugger("instanceLog.txt");
 
-    HERE_I_AM("Init01Instance");
+    HERE_I_AM("CInstance Constructor");
 
     VkResult result = VK_SUCCESS;
 
@@ -16,7 +15,6 @@ CInstance::CInstance(const std::vector<const char*> requiredValidationLayers){
     appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
     appInfo.apiVersion = VK_API_VERSION_1_0;
 
-
     //First make sure required layer(s) are available
     if (enableValidationLayers) {
         uint32_t layerCount;
@@ -27,12 +25,15 @@ CInstance::CInstance(const std::vector<const char*> requiredValidationLayers){
         REPORT("vkEnumerateInstanceLayerProperties");
 
         debugger->writeMSG("Available layers:\n");
-        for (const auto& layerProperties : availableLayers) {
-            fprintf(debugger->FpDebug, "0x%08x  %5d  '%s'  '%s'\n",
-                layerProperties.specVersion,
-                layerProperties.implementationVersion,
-                layerProperties.layerName,
-                layerProperties.description);
+        if(debugger->getVerbose()){
+            for (const auto& layerProperties : availableLayers) {
+                fprintf(debugger->FpDebug, "0x%08x  %5d  '%s'  '%s'\n",
+                    layerProperties.specVersion,
+                    layerProperties.implementationVersion,
+                    layerProperties.layerName,
+                    layerProperties.description);
+            }
+            debugger->writeMSG("\n");
         }
 
         for (const char* layerName : requiredValidationLayers) {// to find out validation layer in available layers
@@ -41,7 +42,7 @@ CInstance::CInstance(const std::vector<const char*> requiredValidationLayers){
             for (const auto& layerProperties : availableLayers) {
                 if (strcmp(layerName, layerProperties.layerName) == 0) {
                     layerFound = true;
-                    debugger->writeMSG("validation layers available!(%s)\n", layerName);
+                    debugger->writeMSG("validation layers available!(%s)\n\n", layerName);
                     break;
                 }
             }
@@ -57,10 +58,13 @@ CInstance::CInstance(const std::vector<const char*> requiredValidationLayers){
     result = vkEnumerateInstanceExtensionProperties((char *)nullptr, &extensionCount, availableExtensions.data());
     REPORT("vkEnumerateInstanceExtensionProperties");
     debugger->writeMSG("Available extensions:\n");
-    for (const auto& extensionsProperties : availableExtensions) {
-        fprintf(debugger->FpDebug, "0x%08x  '%s'\n",
-            extensionsProperties.specVersion,
-            extensionsProperties.extensionName);
+    if(debugger->getVerbose()){
+        for (const auto& extensionsProperties : availableExtensions) {
+            fprintf(debugger->FpDebug, "0x%08x  '%s'\n",
+                extensionsProperties.specVersion,
+                extensionsProperties.extensionName);
+        }
+        debugger->writeMSG("\n");
     }
 
     VkInstanceCreateInfo createInfo{};
@@ -83,9 +87,12 @@ CInstance::CInstance(const std::vector<const char*> requiredValidationLayers){
     createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
     createInfo.ppEnabledExtensionNames = extensions.data();
     debugger->writeMSG("Required extensions:\n");
-    for (const auto& extensionsProperties : extensions) {
-        fprintf(debugger->FpDebug, "'%s'\n",
-            extensionsProperties);
+    if(debugger->getVerbose()){
+        for (const auto& extensionsProperties : extensions) {
+            fprintf(debugger->FpDebug, "'%s'\n",
+                extensionsProperties);
+        }
+        debugger->writeMSG("\n");
     }
 
     //Third create instance
@@ -152,6 +159,8 @@ void CInstance::Init02SetupDebugMessenger() {
 }
 
 void CInstance::findAllPhysicalDevices(){
+    HERE_I_AM("findAllPhysicalDevices");
+
     VkResult result = VK_SUCCESS;
 
     uint32_t deviceCount = 0;
@@ -161,33 +170,21 @@ void CInstance::findAllPhysicalDevices(){
         debugger->writeMSG("Could not count the physical devices\n");
         throw std::runtime_error("failed to find GPUs with Vulkan support!");
     }
-    debugger->writeMSG("%d physical devices found.\nn", deviceCount);
+    debugger->writeMSG("%d physical devices found.\n", deviceCount);
 
     std::vector<VkPhysicalDevice> devices(deviceCount);
     result = vkEnumeratePhysicalDevices(handle, OUT &deviceCount, OUT devices.data());
-    REPORT("vkEnumeratePhysicalDevices - 2");
+    REPORT("vkEnumeratePhysicalDevices");
 
     if (result != VK_SUCCESS) {
         debugger->writeMSG("Could not enumerate the %d physical devices\n", deviceCount);
         throw std::runtime_error("failed to find GPUs with Vulkan support!");
     }
 
-    for (unsigned int i = 0; i < deviceCount; i++) {
-        VkPhysicalDeviceProperties	PhysicalDeviceProperties;
-        vkGetPhysicalDeviceProperties(IN devices[i], OUT &PhysicalDeviceProperties);
-
-        fprintf(debugger->FpDebug, "\nDevice %2d:\n", i);
-        fprintf(debugger->FpDebug, "\tAPI version: %d\n", PhysicalDeviceProperties.apiVersion);
-        fprintf(debugger->FpDebug, "\tDriver version: %d\n", PhysicalDeviceProperties.apiVersion);
-        fprintf(debugger->FpDebug, "\tVendor ID: 0x%04x\n", PhysicalDeviceProperties.vendorID);
-        fprintf(debugger->FpDebug, "\tDevice ID: 0x%04x\n", PhysicalDeviceProperties.deviceID);
-        fprintf(debugger->FpDebug, "\tPhysical Device Type: %d =", PhysicalDeviceProperties.deviceType);
-        if (PhysicalDeviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)	fprintf(debugger->FpDebug, " (Discrete GPU)\n");
-        if (PhysicalDeviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU)	fprintf(debugger->FpDebug, " (Integrated GPU)\n");
-        if (PhysicalDeviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU)	fprintf(debugger->FpDebug, " (Virtual GPU)\n");
-        if (PhysicalDeviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_CPU)		fprintf(debugger->FpDebug, " (CPU)\n");
-        fprintf(debugger->FpDebug, "\tDevice Name: %s\n", PhysicalDeviceProperties.deviceName);
-        fprintf(debugger->FpDebug, "\tPipeline Cache Size: %d\n", PhysicalDeviceProperties.pipelineCacheUUID[0]);
+    if(debugger->getVerbose()){
+        for (unsigned int i = 0; i < deviceCount; i++) 
+            displayPhysicalDevices(devices[i], i);
+        debugger->writeMSG("\n");
     }
 
     for (auto &physical_device : devices)
@@ -196,7 +193,119 @@ void CInstance::findAllPhysicalDevices(){
 
 }
 
+void CInstance::displayPhysicalDevices(VkPhysicalDevice physicalDevice, int index){
+    VkPhysicalDeviceProperties	PhysicalDeviceProperties;
+    vkGetPhysicalDeviceProperties(IN physicalDevice, OUT &PhysicalDeviceProperties);
+
+    fprintf(debugger->FpDebug, "\nDevice %2d:\n", index);
+    fprintf(debugger->FpDebug, "\tAPI version: %d\n", PhysicalDeviceProperties.apiVersion);
+    fprintf(debugger->FpDebug, "\tDriver version: %d\n", PhysicalDeviceProperties.apiVersion);
+    fprintf(debugger->FpDebug, "\tVendor ID: 0x%04x\n", PhysicalDeviceProperties.vendorID);
+    fprintf(debugger->FpDebug, "\tDevice ID: 0x%04x\n", PhysicalDeviceProperties.deviceID);
+    fprintf(debugger->FpDebug, "\tPhysical Device Type: %d =", PhysicalDeviceProperties.deviceType);
+    if (PhysicalDeviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)	fprintf(debugger->FpDebug, " (Discrete GPU)\n");
+    if (PhysicalDeviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU)	fprintf(debugger->FpDebug, " (Integrated GPU)\n");
+    if (PhysicalDeviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU)	fprintf(debugger->FpDebug, " (Virtual GPU)\n");
+    if (PhysicalDeviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_CPU)		fprintf(debugger->FpDebug, " (CPU)\n");
+    fprintf(debugger->FpDebug, "\tDevice Name: %s\n", PhysicalDeviceProperties.deviceName);
+    fprintf(debugger->FpDebug, "\tPipeline Cache Size: %d\n", PhysicalDeviceProperties.pipelineCacheUUID[0]);
+
+
+    //显示选中的PhysicalDevice Features
+    VkPhysicalDeviceFeatures	PhysicalDeviceFeatures;
+    vkGetPhysicalDeviceFeatures(IN physicalDevice, OUT &PhysicalDeviceFeatures);
+
+    fprintf(debugger->FpDebug, "\n\tPhysical Device Features:\n");
+    fprintf(debugger->FpDebug, "\tgeometryShader = %2d\n", PhysicalDeviceFeatures.geometryShader);
+    fprintf(debugger->FpDebug, "\ttessellationShader = %2d\n", PhysicalDeviceFeatures.tessellationShader);
+    fprintf(debugger->FpDebug, "\tmultiDrawIndirect = %2d\n", PhysicalDeviceFeatures.multiDrawIndirect);
+    fprintf(debugger->FpDebug, "\twideLines = %2d\n", PhysicalDeviceFeatures.wideLines);
+    fprintf(debugger->FpDebug, "\tlargePoints = %2d\n", PhysicalDeviceFeatures.largePoints);
+    fprintf(debugger->FpDebug, "\tmultiViewport = %2d\n", PhysicalDeviceFeatures.multiViewport);
+    fprintf(debugger->FpDebug, "\tocclusionQueryPrecise = %2d\n", PhysicalDeviceFeatures.occlusionQueryPrecise);
+    fprintf(debugger->FpDebug, "\tpipelineStatisticsQuery = %2d\n", PhysicalDeviceFeatures.pipelineStatisticsQuery);
+    fprintf(debugger->FpDebug, "\tshaderFloat64 = %2d\n", PhysicalDeviceFeatures.shaderFloat64);
+    fprintf(debugger->FpDebug, "\tshaderInt64 = %2d\n", PhysicalDeviceFeatures.shaderInt64);
+    fprintf(debugger->FpDebug, "\tshaderInt16 = %2d\n", PhysicalDeviceFeatures.shaderInt16);
+
+    VkFormatProperties					vfp;
+    fprintf(debugger->FpDebug, "\n\tImage Formats Checked:\n");
+    vkGetPhysicalDeviceFormatProperties(physicalDevice, IN VK_FORMAT_R32G32B32A32_SFLOAT, &vfp);
+    fprintf(debugger->FpDebug, "\tFormat VK_FORMAT_R32G32B32A32_SFLOAT: 0x%08x 0x%08x  0x%08x\n",
+        vfp.linearTilingFeatures, vfp.optimalTilingFeatures, vfp.bufferFeatures);
+    vkGetPhysicalDeviceFormatProperties(physicalDevice, IN VK_FORMAT_R8G8B8A8_UNORM, &vfp);
+    fprintf(debugger->FpDebug, "\tFormat VK_FORMAT_R8G8B8A8_UNORM: 0x%08x 0x%08x  0x%08x\n",
+        vfp.linearTilingFeatures, vfp.optimalTilingFeatures, vfp.bufferFeatures);
+    vkGetPhysicalDeviceFormatProperties(physicalDevice, IN VK_FORMAT_B8G8R8A8_UNORM, &vfp);
+    fprintf(debugger->FpDebug, "\tFormat VK_FORMAT_B8G8R8A8_UNORM: 0x%08x 0x%08x  0x%08x\n",
+        vfp.linearTilingFeatures, vfp.optimalTilingFeatures, vfp.bufferFeatures);
+    vkGetPhysicalDeviceFormatProperties(physicalDevice, IN VK_FORMAT_B8G8R8A8_SRGB, &vfp);
+    fprintf(debugger->FpDebug, "\tFormat VK_FORMAT_B8G8R8A8_SRGB: 0x%08x 0x%08x  0x%08x\n",
+        vfp.linearTilingFeatures, vfp.optimalTilingFeatures, vfp.bufferFeatures);
+
+    VkPhysicalDeviceMemoryProperties			vpdmp;
+    vkGetPhysicalDeviceMemoryProperties(physicalDevice, OUT &vpdmp);
+    fprintf(debugger->FpDebug, "\n\t%d Memory Types:\n", vpdmp.memoryTypeCount);
+    for (unsigned int i = 0; i < vpdmp.memoryTypeCount; i++) {
+        VkMemoryType vmt = vpdmp.memoryTypes[i];
+        VkMemoryPropertyFlags vmpf = vmt.propertyFlags;
+        fprintf(debugger->FpDebug, "\tMemory %2d: ", i);
+        if ((vmpf & VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT) != 0)	fprintf(debugger->FpDebug, " DeviceLocal");
+        if ((vmpf & VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT) != 0)	fprintf(debugger->FpDebug, " HostVisible");
+        if ((vmpf & VK_MEMORY_PROPERTY_HOST_COHERENT_BIT) != 0)	fprintf(debugger->FpDebug, " HostCoherent");
+        if ((vmpf & VK_MEMORY_PROPERTY_HOST_CACHED_BIT) != 0)	fprintf(debugger->FpDebug, " HostCached");
+        if ((vmpf & VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT) != 0)	fprintf(debugger->FpDebug, " LazilyAllocated");
+        fprintf(debugger->FpDebug, "\n");
+    }
+
+    fprintf(debugger->FpDebug, "\n\t%d Memory Heaps:\n", vpdmp.memoryHeapCount);
+    for (unsigned int i = 0; i < vpdmp.memoryHeapCount; i++) {
+        fprintf(debugger->FpDebug, "\tHeap %d: ", i);
+        VkMemoryHeap vmh = vpdmp.memoryHeaps[i];
+        fprintf(debugger->FpDebug, " size = 0x%08lx", (unsigned long int)vmh.size);
+        if ((vmh.flags & VK_MEMORY_HEAP_DEVICE_LOCAL_BIT) != 0)	fprintf(debugger->FpDebug, " DeviceLocal");
+        if ((vmh.flags & VK_MEMORY_HEAP_MULTI_INSTANCE_BIT) != 0)	fprintf(debugger->FpDebug, " MultiInstance");
+        fprintf(debugger->FpDebug, "\n");
+    }
+    fprintf(debugger->FpDebug, "\n");
+
+    // see what device layers are available:
+    uint32_t layerCount;
+    vkEnumerateDeviceLayerProperties(physicalDevice, &layerCount, (VkLayerProperties *)nullptr);
+    VkLayerProperties * deviceLayers = new VkLayerProperties[layerCount];
+    VkResult result = vkEnumerateDeviceLayerProperties(physicalDevice, &layerCount, deviceLayers);
+    REPORT("\tvkEnumerateDeviceLayerProperties");
+    fprintf(debugger->FpDebug, "\t%d physical device layers enumerated:\n", layerCount);
+    for (unsigned int i = 0; i < layerCount; i++) {
+        fprintf(debugger->FpDebug, "\t0x%08x  %2d  '%s'  '%s'\n",
+            deviceLayers[i].specVersion,
+            deviceLayers[i].implementationVersion,
+            deviceLayers[i].layerName,
+            deviceLayers[i].description);
+
+        // see what device extensions are available:
+        //这里列举的是跟某个layer相关的extension
+        uint32_t extensionCount;
+        vkEnumerateDeviceExtensionProperties(physicalDevice, deviceLayers[i].layerName, &extensionCount, (VkExtensionProperties *)nullptr);
+        VkExtensionProperties * deviceExtensions = new VkExtensionProperties[extensionCount];
+        result = vkEnumerateDeviceExtensionProperties(physicalDevice, deviceLayers[i].layerName, &extensionCount, deviceExtensions);
+        REPORT("\n\tvkEnumerateDeviceExtensionProperties");
+
+        fprintf(debugger->FpDebug, "\t%d device extensions enumerated for '%s':\n", extensionCount, deviceLayers[i].layerName);
+        for (unsigned int ii = 0; ii < extensionCount; ii++) {
+            fprintf(debugger->FpDebug, "\t0x%08x  '%s'\n",
+                deviceExtensions[ii].specVersion,
+                deviceExtensions[ii].extensionName);
+        }
+        fprintf(debugger->FpDebug, "\n");
+    }
+    delete[] deviceLayers;
+    debugger->flush();
+}
+
 bool CInstance::pickSuitablePhysicalDevice(VkSurfaceKHR surface, const std::vector<const char*>  requireDeviceExtensions, VkQueueFlagBits requiredQueueFamilies){
+    HERE_I_AM("pickSuitablePhysicalDevice");
+
     if(physicalDevices.empty()){
         debugger->writeMSG("Error: No physical devices!\n");
         return false;
@@ -217,13 +326,20 @@ bool CInstance::pickSuitablePhysicalDevice(VkSurfaceKHR surface, const std::vect
         }
         if (indices.isComplete() && extensionsSupported && swapChainAdequate) {
             if(requiredQueueFamilies & VK_QUEUE_GRAPHICS_BIT) {
+                debugger->writeMSG("Require VK_QUEUE_GRAPHICS_BIT\n"); debugger->flush();
                 if(!indices.graphicsFamily.has_value()) return false;
+                debugger->writeMSG("Picked physical device index: %d\n", indices.graphicsFamily.value());debugger->flush();
             }
             if(requiredQueueFamilies & VK_QUEUE_COMPUTE_BIT) {
+                debugger->writeMSG("Require VK_QUEUE_COMPUTE_BIT\n");debugger->flush();
                 if(!indices.computeFamily.has_value()) return false;
+                debugger->writeMSG("Picked physical device index: %d\n", indices.computeFamily.value());debugger->flush();
+
             }
             if((requiredQueueFamilies & VK_QUEUE_COMPUTE_BIT) & VK_QUEUE_GRAPHICS_BIT){
+                debugger->writeMSG("Require VK_QUEUE_COMPUTE_BIT & VK_QUEUE_GRAPHICS_BIT\n");debugger->flush();
                 if(!indices.graphicsAndComputeFamily.has_value()) return false;
+                debugger->writeMSG("Picked physical device index: %d\n", indices.graphicsAndComputeFamily.value());debugger->flush();
             }
 
             pickedPhysicalDevice = &phy_device;

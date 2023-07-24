@@ -2,7 +2,7 @@
 
 
 CLogicalDevice::CLogicalDevice(){
-    printf("logicalDevice\n");
+    //printf("logicalDevice\n");
     debugger = new CDebugger("logicalDeviceLog.txt");
 }
 

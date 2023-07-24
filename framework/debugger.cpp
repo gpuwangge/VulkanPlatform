@@ -18,7 +18,7 @@
 			FpDebug = stderr;
 		}
 #endif
-		fprintf(FpDebug, "Width = %d ; Height = %d\n", WINDOW_WIDTH, WINDOW_HEIGHT);
+		//fprintf(FpDebug, "Width = %d ; Height = %d\n", WINDOW_WIDTH, WINDOW_HEIGHT);
 
 	}
 

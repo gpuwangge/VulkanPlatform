@@ -5,7 +5,6 @@
 #include <GLFW/glfw3.h>
 
 #include "common.h"
-#include "debugger.h"
 #include "instance.h"
 
 #define LOGICAL_DEVICE *(instance->pickedPhysicalDevice->get()->getLogicalDevice()) 
@@ -157,6 +156,7 @@ public:
     VkImageView createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels);
     void Init08CreateSwapChain();
 
+    std::vector<char> readFile(const std::string& filename);
     void Init12SpirvShader(std::string filename, VkShaderModule * pShaderModule);
 
     void createSyncObjects();
