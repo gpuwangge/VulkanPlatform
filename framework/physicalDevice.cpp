@@ -321,17 +321,16 @@ SwapChainSupportDetails CPhysicalDevice::querySwapChainSupport(VkSurfaceKHR surf
     return details;
 }
 
-void CPhysicalDevice::createLogicalDevices(){
+void CPhysicalDevice::createLogicalDevices(VkSurfaceKHR surface, const std::vector<const char*> requiredValidationLayers, const std::vector<const char*>  requireDeviceExtensions){
     //physicalDevices.push_back(std::make_unique<CPhysicalDevice>(physical_device));
-    logicalDevices.push_back(std::make_unique<CLogicalDevice>());
+    logicalDevices.push_back(std::make_unique<CLogicalDevice>());//create one logicalDevice for each invocation of this function
 
-    /*
     HERE_I_AM("Init04LogicalDeviceAndQueue");
 
     VkResult result = VK_SUCCESS;
 
     //QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
-    QueueFamilyIndices indices = instance->findQueueFamilies(physicalDevice, surface);
+    QueueFamilyIndices indices = findQueueFamilies(surface);
 
     std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
     std::set<uint32_t> uniqueQueueFamilies = { indices.graphicsFamily.value(), indices.presentFamily.value() };
@@ -356,28 +355,27 @@ void CPhysicalDevice::createLogicalDevices(){
 
     createInfo.pEnabledFeatures = &deviceFeatures;
 
-    createInfo.enabledExtensionCount = static_cast<uint32_t>(deviceExtensions.size());
-    createInfo.ppEnabledExtensionNames = deviceExtensions.data();
+    createInfo.enabledExtensionCount = static_cast<uint32_t>(requireDeviceExtensions.size());
+    createInfo.ppEnabledExtensionNames = requireDeviceExtensions.data();
 
     if (enableValidationLayers) {
-        createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
-        createInfo.ppEnabledLayerNames = validationLayers.data();
+        createInfo.enabledLayerCount = static_cast<uint32_t>(requiredValidationLayers.size());
+        createInfo.ppEnabledLayerNames = requiredValidationLayers.data();
     }
     else {
         createInfo.enabledLayerCount = 0;
     }
 
     //建立logicalDevice
-    result = vkCreateDevice(physicalDevice, &createInfo, nullptr, &logicalDevice);
+    result = vkCreateDevice(handle, &createInfo, nullptr, &(logicalDevices.back().get()->logicalDevice));
     if (result != VK_SUCCESS) throw std::runtime_error("failed to create logical device!");
     REPORT("vkCreateLogicalDevice");
 
     //把PhysicalDevice的Queue Familily属性指定到logicalDevice里对应的queue里
-    vkGetDeviceQueue(logicalDevice, indices.graphicsFamily.value(), 0, &graphicsQueue); //graphics queue use physical device's family 0 
-    vkGetDeviceQueue(logicalDevice, indices.presentFamily.value(), 0, &presentQueue); //present queue use the same family
-                                                                                        //A physical device has several family, queue is pointing to one of the families
-    vkGetDeviceQueue(logicalDevice, indices.graphicsAndComputeFamily.value(), 0, &computeQueue);
-    */
+    vkGetDeviceQueue(logicalDevices.back().get()->logicalDevice, indices.graphicsFamily.value(), 0, &(logicalDevices.back().get()->graphicsQueue)); //graphics queue use physical device's family 0 
+    vkGetDeviceQueue(logicalDevices.back().get()->logicalDevice, indices.presentFamily.value(), 0, &(logicalDevices.back().get()->presentQueue)); //present queue use the same family
+    vkGetDeviceQueue(logicalDevices.back().get()->logicalDevice, indices.graphicsAndComputeFamily.value(), 0, &(logicalDevices.back().get()->computeQueue));//A physical device has several family, queue is pointing to one of the families
+    
 }
 
 

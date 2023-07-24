@@ -10,8 +10,3 @@ CLogicalDevice::~CLogicalDevice(){
     if (!debugger) delete debugger;
 }
 
-
-// void createLogicalDevices(CPhysicalDevice &physicalDevice){
-
-// }
-

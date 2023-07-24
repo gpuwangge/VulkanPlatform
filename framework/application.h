@@ -8,7 +8,10 @@
 #include "debugger.h"
 #include "instance.h"
 
-
+#define LOGICAL_DEVICE *(instance->pickedPhysicalDevice->get()->getLogicalDevice()) 
+#define GRAPHICS_QUEUE *(instance->pickedPhysicalDevice->get()->getGraphicsQueue()) 
+#define PRESENT_QUEUE *(instance->pickedPhysicalDevice->get()->getPresentQueue()) 
+#define COMPUTE_QUEUE *(instance->pickedPhysicalDevice->get()->getComputeQueue()) 
 struct Vertex3D {
 	glm::vec3 pos;
 	glm::vec3 color;
@@ -50,9 +53,6 @@ struct Vertex3D {
 };
 
 
-
-
-
 typedef struct MyBuffer
 {
 	VkBuffer		buffer;
@@ -85,15 +85,7 @@ public:
     //VkInstance instance;//01
     std::unique_ptr<CInstance> instance{nullptr};
 
-
     VkSurfaceKHR surface;//03
-    //VkPhysicalDevice physicalDevice = VK_NULL_HANDLE; //03
-    //std::unique_ptr<CPhysicalDevice>* physicalDevice;
-
-    VkDevice logicalDevice;//04
-	VkQueue graphicsQueue;//04
-	VkQueue presentQueue;//04
-	VkQueue computeQueue;//04
     
     std::vector<Vertex3D> vertices3D;
     std::vector<uint32_t> indices3D;
@@ -146,23 +138,7 @@ public:
     void run();
 
     void prepareGLFW();
-
-    //void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);   
-    //std::vector<const char*> getRequiredExtensions();
-    //void Init01Instance();      
-
-    //VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger);
-    //void Init02SetupDebugMessenger();
-
     void createGLFWSurface();
-
-    // QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
-    // bool checkDeviceExtensionSupport(VkPhysicalDevice device);
-    // SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
-    // VkSampleCountFlagBits getMaxUsableSampleCount_msaa();
-    // void Init03PickPhysicalDevice();
-
-    void Init04CreateLogicalDevice(const std::vector<const char*> requiredValidationLayers, const std::vector<const char*>  requireDeviceExtensions);
 
     int FindMemoryByFlagAndType(VkMemoryPropertyFlagBits memoryFlagBits, uint32_t  memoryTypeBits);
 	int FindMemoryThatIsHostVisible(uint32_t memoryTypeBits);

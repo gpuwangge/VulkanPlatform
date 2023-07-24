@@ -46,11 +46,12 @@ public:
     bool checkDeviceExtensionSupport(const std::vector<const char*>  requireDeviceExtensions);
     SwapChainSupportDetails querySwapChainSupport(VkSurfaceKHR surface);
 
-
-
     std::vector<std::unique_ptr<CLogicalDevice>> logicalDevices;
-
-    void createLogicalDevices();
+    void createLogicalDevices(VkSurfaceKHR surface, const std::vector<const char*> requiredValidationLayers, const std::vector<const char*>  requireDeviceExtensions);
+    VkDevice* getLogicalDevice() {return &(logicalDevices.back().get()->logicalDevice);}
+    VkQueue* getGraphicsQueue(){return &(logicalDevices.back().get()->graphicsQueue);};
+    VkQueue* getPresentQueue(){return &(logicalDevices.back().get()->presentQueue);};
+    VkQueue* getComputeQueue(){return &(logicalDevices.back().get()->computeQueue);};
 
     /*Below are MSAA related functions TODO
     VkSampleCountFlagBits getMaxUsableSampleCount_msaa() {

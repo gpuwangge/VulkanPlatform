@@ -162,7 +162,7 @@ public:
 		renderPassInfo.dependencyCount = 1;
 		renderPassInfo.pDependencies = &dependency;//结构3
 
-		result = vkCreateRenderPass(logicalDevice, &renderPassInfo, nullptr, &renderPass);
+		result = vkCreateRenderPass(LOGICAL_DEVICE, &renderPassInfo, nullptr, &renderPass);
 		if (result != VK_SUCCESS) throw std::runtime_error("failed to create render pass!");
 		REPORT("vkCreateRenderPass");
 	}
@@ -195,7 +195,7 @@ public:
 			framebufferInfo.height = swapChainExtent.height;
 			framebufferInfo.layers = 1;
 
-			result = vkCreateFramebuffer(logicalDevice, &framebufferInfo, nullptr, &swapChainFramebuffers[i]);
+			result = vkCreateFramebuffer(LOGICAL_DEVICE, &framebufferInfo, nullptr, &swapChainFramebuffers[i]);
 			if (result != VK_SUCCESS) throw std::runtime_error("failed to create framebuffer!");
 			REPORT("vkCreateFrameBuffer");
 		}
@@ -240,7 +240,7 @@ public:
 		poolInfo.maxSets = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
 
 		//Step 1
-		result = vkCreateDescriptorPool(logicalDevice, &poolInfo, nullptr, &descriptorPool);
+		result = vkCreateDescriptorPool(LOGICAL_DEVICE, &poolInfo, nullptr, &descriptorPool);
 		if (result != VK_SUCCESS) throw std::runtime_error("failed to create descriptor pool!");
 		REPORT("vkCreateDescriptorPool")
 	}
@@ -285,7 +285,7 @@ public:
 		layoutInfo.pBindings = bindings.data();
 
 		//Step 2
-		result = vkCreateDescriptorSetLayout(logicalDevice, &layoutInfo, nullptr, OUT &descriptorSetLayout);
+		result = vkCreateDescriptorSetLayout(LOGICAL_DEVICE, &layoutInfo, nullptr, OUT &descriptorSetLayout);
 		if (result != VK_SUCCESS) throw std::runtime_error("failed to create descriptor set layout!");
 		REPORT("vkCreateDescriptorSetLayout");
 	}
@@ -304,7 +304,7 @@ public:
 
 		descriptorSets.resize(MAX_FRAMES_IN_FLIGHT);
 		//Step 3
-		result = vkAllocateDescriptorSets(logicalDevice, &allocInfo, descriptorSets.data());
+		result = vkAllocateDescriptorSets(LOGICAL_DEVICE, &allocInfo, descriptorSets.data());
 		if (result != VK_SUCCESS) throw std::runtime_error("failed to allocate descriptor sets!");
 		REPORT("vkAllocateDescriptorSets");
 
@@ -406,7 +406,7 @@ public:
 			}
 
 			//Step 4
-			vkUpdateDescriptorSets(logicalDevice, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
+			vkUpdateDescriptorSets(LOGICAL_DEVICE, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
 			//vkUpdateDescriptorSets(logicalDevice, 1, &descriptorWrites[0], 0, nullptr);
 
 		}
@@ -535,7 +535,7 @@ public:
 			pipelineLayoutInfo.pSetLayouts = &descriptorSetLayout;
 		//}
 
-		result = vkCreatePipelineLayout(logicalDevice, &pipelineLayoutInfo, nullptr, &pipelineLayout);
+		result = vkCreatePipelineLayout(LOGICAL_DEVICE, &pipelineLayoutInfo, nullptr, &pipelineLayout);
 		if (result != VK_SUCCESS) throw std::runtime_error("failed to create pipeline layout!");
 		REPORT("vkCreatePipelineLayout");
 
@@ -567,12 +567,12 @@ public:
 		pipelineInfo.subpass = 0;
 		pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 
-		result = vkCreateGraphicsPipelines(logicalDevice, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline);
+		result = vkCreateGraphicsPipelines(LOGICAL_DEVICE, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline);
 		if (result != VK_SUCCESS) throw std::runtime_error("failed to create graphics pipeline!");
 		REPORT("vkCreateGraphicsPipelines");
 
-		vkDestroyShaderModule(logicalDevice, fragShaderModule, nullptr);
-		vkDestroyShaderModule(logicalDevice, vertShaderModule, nullptr);
+		vkDestroyShaderModule(LOGICAL_DEVICE, fragShaderModule, nullptr);
+		vkDestroyShaderModule(LOGICAL_DEVICE, vertShaderModule, nullptr);
 
 		HERE_I_AM("DrawFrame() will begin");
 	}
