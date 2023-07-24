@@ -88,7 +88,7 @@ public:
 
     VkSurfaceKHR surface;//03
     //VkPhysicalDevice physicalDevice = VK_NULL_HANDLE; //03
-    std::unique_ptr<CPhysicalDevice>* physicalDevice;
+    //std::unique_ptr<CPhysicalDevice>* physicalDevice;
 
     VkDevice logicalDevice;//04
 	VkQueue graphicsQueue;//04
@@ -162,7 +162,7 @@ public:
     // VkSampleCountFlagBits getMaxUsableSampleCount_msaa();
     // void Init03PickPhysicalDevice();
 
-    void Init04CreateLogicalDevice();
+    void Init04CreateLogicalDevice(const std::vector<const char*> requiredValidationLayers, const std::vector<const char*>  requireDeviceExtensions);
 
     int FindMemoryByFlagAndType(VkMemoryPropertyFlagBits memoryFlagBits, uint32_t  memoryTypeBits);
 	int FindMemoryThatIsHostVisible(uint32_t memoryTypeBits);

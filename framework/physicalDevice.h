@@ -26,7 +26,7 @@ struct SwapChainSupportDetails {
 
 class CPhysicalDevice{
 public:
-    CInstance *m_instance;
+    //CInstance *m_instance;
     CPhysicalDevice(VkPhysicalDevice physical_device);
     //CPhysicalDevice(CInstance *instance, VkPhysicalDevice physical_device);
 
@@ -41,7 +41,7 @@ public:
 
 
     QueueFamilyIndices findQueueFamilies(VkSurfaceKHR surface);
-    bool checkDeviceExtensionSupport();
+    bool checkDeviceExtensionSupport(const std::vector<const char*>  requireDeviceExtensions);
     SwapChainSupportDetails querySwapChainSupport(VkSurfaceKHR surface);
 
 

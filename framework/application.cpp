@@ -37,24 +37,14 @@ void CApplication::createGLFWSurface() {
 }
 
 
-
-
-
-
-
-
-
-// void CApplication::Init03PickPhysicalDevice() {
-   
-// }
     
-void CApplication::Init04CreateLogicalDevice() {
+void CApplication::Init04CreateLogicalDevice(const std::vector<const char*> requiredValidationLayers, const std::vector<const char*>  requireDeviceExtensions) {
     HERE_I_AM("Init04LogicalDeviceAndQueue");
 
     VkResult result = VK_SUCCESS;
 
     //QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
-    QueueFamilyIndices indices = physicalDevice->get()->findQueueFamilies(surface);
+    QueueFamilyIndices indices = instance->pickedPhysicalDevice->get()->findQueueFamilies(surface);
 
     std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
     std::set<uint32_t> uniqueQueueFamilies = { indices.graphicsFamily.value(), indices.presentFamily.value() };
@@ -79,19 +69,19 @@ void CApplication::Init04CreateLogicalDevice() {
 
     createInfo.pEnabledFeatures = &deviceFeatures;
 
-    createInfo.enabledExtensionCount = static_cast<uint32_t>(deviceExtensions.size());
-    createInfo.ppEnabledExtensionNames = deviceExtensions.data();
+    createInfo.enabledExtensionCount = static_cast<uint32_t>(requireDeviceExtensions.size());
+    createInfo.ppEnabledExtensionNames = requireDeviceExtensions.data();
 
     if (enableValidationLayers) {
-        createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
-        createInfo.ppEnabledLayerNames = validationLayers.data();
+        createInfo.enabledLayerCount = static_cast<uint32_t>(requiredValidationLayers.size());
+        createInfo.ppEnabledLayerNames = requiredValidationLayers.data();
     }
     else {
         createInfo.enabledLayerCount = 0;
     }
 
     //建立logicalDevice
-    result = vkCreateDevice(physicalDevice->get()->getHandle(), &createInfo, nullptr, &logicalDevice);
+    result = vkCreateDevice(instance->pickedPhysicalDevice->get()->getHandle(), &createInfo, nullptr, &logicalDevice);
     if (result != VK_SUCCESS) throw std::runtime_error("failed to create logical device!");
     REPORT("vkCreateLogicalDevice");
 
@@ -104,7 +94,7 @@ void CApplication::Init04CreateLogicalDevice() {
 
 int CApplication::FindMemoryByFlagAndType(VkMemoryPropertyFlagBits memoryFlagBits, uint32_t  memoryTypeBits) {
     VkPhysicalDeviceMemoryProperties	vpdmp;
-    vkGetPhysicalDeviceMemoryProperties(physicalDevice->get()->getHandle(), OUT &vpdmp);
+    vkGetPhysicalDeviceMemoryProperties(instance->pickedPhysicalDevice->get()->getHandle(), OUT &vpdmp);
     for (unsigned int i = 0; i < vpdmp.memoryTypeCount; i++) {
         VkMemoryType vmt = vpdmp.memoryTypes[i];
         VkMemoryPropertyFlags vmpf = vmt.propertyFlags;
@@ -241,7 +231,7 @@ void CApplication::Init06CreateCommandPool() {
 
     VkResult result = VK_SUCCESS;
 
-    QueueFamilyIndices queueFamilyIndices = physicalDevice->get()->findQueueFamilies(surface);
+    QueueFamilyIndices queueFamilyIndices = instance->pickedPhysicalDevice->get()->findQueueFamilies(surface);
 
     VkCommandPoolCreateInfo poolInfo{};
     poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
@@ -349,7 +339,7 @@ void CApplication::Init08CreateSwapChain() {
 
     VkResult result = VK_SUCCESS;
 
-    SwapChainSupportDetails swapChainSupport = physicalDevice->get()->querySwapChainSupport(surface);
+    SwapChainSupportDetails swapChainSupport = instance->pickedPhysicalDevice->get()->querySwapChainSupport(surface);
 
     VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(swapChainSupport.formats);
     VkPresentModeKHR presentMode = chooseSwapPresentMode(swapChainSupport.presentModes);
@@ -371,7 +361,7 @@ void CApplication::Init08CreateSwapChain() {
     createInfo.imageArrayLayers = 1;
     createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
-    QueueFamilyIndices indices = physicalDevice->get()->findQueueFamilies(surface);
+    QueueFamilyIndices indices = instance->pickedPhysicalDevice->get()->findQueueFamilies(surface);
     uint32_t queueFamilyIndices[] = { indices.graphicsFamily.value(), indices.presentFamily.value() };
 
     if (indices.graphicsFamily != indices.presentFamily) {
@@ -415,7 +405,7 @@ void CApplication::Init08CreateSwapChain() {
 VkFormat CApplication::findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) {
     for (VkFormat format : candidates) {
         VkFormatProperties props;
-        vkGetPhysicalDeviceFormatProperties(physicalDevice->get()->getHandle(), format, &props);
+        vkGetPhysicalDeviceFormatProperties(instance->pickedPhysicalDevice->get()->getHandle(), format, &props);
 
         if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features) {
             return format;
@@ -500,16 +490,19 @@ void CApplication::createSyncObjects() {
 }
 
 void CApplication::initVulkan(){
-    instance = std::make_unique<CInstance>();
+    const std::vector<const char*> requiredValidationLayers = {
+	    "VK_LAYER_KHRONOS_validation"
+    };
+    const std::vector<const char*>  requireDeviceExtensions = {
+	    VK_KHR_SWAPCHAIN_EXTENSION_NAME
+    };
     
+    instance = std::make_unique<CInstance>(requiredValidationLayers);
     createGLFWSurface();//need instance
+    instance->findAllPhysicalDevices();
+    instance->pickSuitablePhysicalDevice(surface, requireDeviceExtensions);
 
-    //Init03PickPhysicalDevice();
-    instance->queryGPUs();
-    //physicalDevice = (instance->pick_suitable_gpu(surface)).getHandle();
-    physicalDevice = instance->pick_suitable_gpu(surface);
-
-    Init04CreateLogicalDevice();
+    Init04CreateLogicalDevice(requiredValidationLayers, requireDeviceExtensions);
 
     Init05CreateVertexBuffer();
     Init05CreateIndexBuffer();

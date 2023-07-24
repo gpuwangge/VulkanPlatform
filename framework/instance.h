@@ -10,18 +10,12 @@
 
 #include "physicalDevice.h"
 
-const std::vector<const char*> validationLayers = {
-	"VK_LAYER_KHRONOS_validation"
-};
 
-const std::vector<const char*> deviceExtensions = {
-	VK_KHR_SWAPCHAIN_EXTENSION_NAME
-};
 
 
 class CInstance{
 public:
-    CInstance();
+    CInstance(const std::vector<const char*> requiredValidationLayers);
 
     ~CInstance();
 
@@ -51,10 +45,12 @@ public:
     
 
     std::vector<std::unique_ptr<CPhysicalDevice>> physicalDevices;
+    std::unique_ptr<CPhysicalDevice>* pickedPhysicalDevice;
 
-    void queryGPUs();
+    void findAllPhysicalDevices();
 
-    std::unique_ptr<CPhysicalDevice>* pick_suitable_gpu(VkSurfaceKHR surface);
+    //std::unique_ptr<CPhysicalDevice>* pick_suitable_gpu(VkSurfaceKHR surface);
+    bool pickSuitablePhysicalDevice(VkSurfaceKHR surface, const std::vector<const char*>  requireDeviceExtensions);
 
 
 };

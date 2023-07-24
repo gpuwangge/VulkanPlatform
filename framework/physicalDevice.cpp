@@ -4,7 +4,7 @@
 
 CPhysicalDevice::CPhysicalDevice(VkPhysicalDevice physical_device) {
 //CPhysicalDevice(CInstance *instance, VkPhysicalDevice physical_device){
-    printf("physical\n");
+    //printf("physical\n");
     debugger = new CDebugger("physicalDeviceLog.txt");
 
     handle = physical_device;
@@ -180,7 +180,7 @@ CPhysicalDevice::CPhysicalDevice(VkPhysicalDevice physical_device) {
 }
 
  void CPhysicalDevice::setInstance(CInstance *instance){
-    m_instance = instance;
+    //m_instance = instance;
  }
 
 CPhysicalDevice::~CPhysicalDevice(){
@@ -235,14 +235,14 @@ QueueFamilyIndices CPhysicalDevice::findQueueFamilies(VkSurfaceKHR surface) {
     return indices;
 }
 
-bool CPhysicalDevice::checkDeviceExtensionSupport() {
+bool CPhysicalDevice::checkDeviceExtensionSupport(const std::vector<const char*>  requireDeviceExtensions) {
     uint32_t extensionCount;
     vkEnumerateDeviceExtensionProperties(handle, nullptr, &extensionCount, nullptr);
 
     std::vector<VkExtensionProperties> availableExtensions(extensionCount);
     vkEnumerateDeviceExtensionProperties(handle, nullptr, &extensionCount, availableExtensions.data());
 
-    std::set<std::string> requiredExtensions(deviceExtensions.begin(), deviceExtensions.end());
+    std::set<std::string> requiredExtensions(requireDeviceExtensions.begin(), requireDeviceExtensions.end());
 
     for (const auto& extension : availableExtensions) {
         requiredExtensions.erase(extension.extensionName);
