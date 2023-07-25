@@ -18,7 +18,6 @@
                 "${fileDirname}\\..\\framework\\applicationUtility.cpp",
                 "${fileDirname}\\..\\framework\\applicationController.cpp",
                 "${fileDirname}\\..\\framework\\vulkanBase.cpp",
-                "${fileDirname}\\..\\framework\\vulkanBaseTexture.cpp",
                 "${fileDirname}\\..\\framework\\instance.cpp",
                 "${fileDirname}\\..\\framework\\debugger.cpp",
                 "${fileDirname}\\..\\framework\\physicalDevice.cpp",

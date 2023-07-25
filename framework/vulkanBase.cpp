@@ -1,5 +1,8 @@
 #include "vulkanBase.h"
 
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
+
 CVulkanBase::CVulkanBase(){
     mainCamera.type = Camera::CameraType::firstperson;
     mainCamera.setPosition(glm::vec3(0.0f, -2.5f, -2.5f));
@@ -11,7 +14,6 @@ CVulkanBase::CVulkanBase(){
 
 CVulkanBase::~CVulkanBase(){  
 }
-
 
 void CVulkanBase::wxjCreateColorAttachment(){  
 	bUseColorAttachment = true;
@@ -201,7 +203,6 @@ void CVulkanBase::wxjCreateDescriptorPool(std::vector<VkDescriptorType> &descrip
 	if (result != VK_SUCCESS) throw std::runtime_error("failed to create descriptor pool!");
 	REPORT("vkCreateDescriptorPool");
 }
-
 void CVulkanBase::wxjCreateDescriptorSetLayout(std::vector<VkDescriptorType> &descriptorTypes, std::vector<VkShaderStageFlagBits>& shaderStageFlagBits){
 	HERE_I_AM("wxjCreateDescriptorSetLayout");
 
@@ -255,7 +256,6 @@ void CVulkanBase::wxjCreateDescriptorSetLayout(std::vector<VkDescriptorType> &de
 	if (result != VK_SUCCESS) throw std::runtime_error("failed to create descriptor set layout!");
 	REPORT("vkCreateDescriptorSetLayout");
 }
-
 void CVulkanBase::wxjCreateDescriptorSets(std::vector<VkDescriptorType> &descriptorTypes){
 	HERE_I_AM("wxjCreateDescriptorSets");
 
@@ -575,21 +575,9 @@ void CVulkanBase::wxjCreateGraphicsPipeline(VkPrimitiveTopology topology){
 	HERE_I_AM("DrawFrame() will begin");
 }
 
-void CVulkanBase::update(){
-    //printf("triangle update...\n");
-    CApplication::update();
-}
-
-void CVulkanBase::recordCommandBuffer(){
-    //printf("vulkan base recordCommandBuffer...\n");
-
-    CApplication::recordCommandBuffer();
-}
-
 void CVulkanBase::wxjCreateVertexShader(std::string shaderName){
     Init12SpirvShader(shaderName, &vertShaderModule);
 }
-
 void CVulkanBase::wxjCreateFragmentShader(std::string shaderName){
 	Init12SpirvShader(shaderName, &fragShaderModule);
 }
@@ -602,15 +590,12 @@ void CVulkanBase::wxjCreateCommandBuffer(){
 	Init06CreateCommandPool();
 	Init06CreateCommandBuffers();
 }
-
 void CVulkanBase::wxjCreateVertexBuffer(){
     Init05CreateVertexBuffer();
 }
-
 void CVulkanBase::wxjCreateIndexBuffer(){
     Init05CreateIndexBuffer();
 }
-
 void CVulkanBase::wxjCreateUniformBuffers(){
     Init05CreateUniformBuffers(uniformBuffers, uniformBuffersMapped, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, sizeof(UniformBufferObject));
 }
@@ -624,7 +609,6 @@ void CVulkanBase::wxjBeginCommandBuffer(){
         throw std::runtime_error("failed to begin recording command buffer!");
     }
 }
-
 void CVulkanBase::wxjBeginRenderPass(std::vector<VkClearValue> &clearValues){
     VkRenderPassBeginInfo renderPassInfo{};
     renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
@@ -649,56 +633,126 @@ void CVulkanBase::wxjBeginRenderPass(std::vector<VkClearValue> &clearValues){
     //Step2
     vkCmdBeginRenderPass(commandBuffers[currentFrame], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 }
-
 void CVulkanBase::wxjBindPipeline(){
 	vkCmdBindPipeline(commandBuffers[currentFrame], VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
 }
-
 void CVulkanBase::wxjSetViewport(){
 	VkViewport viewport{};
-    viewport.x = 0.0f;
-    viewport.y = 0.0f;
-    viewport.width = (float)swapChainExtent.width;
-    viewport.height = (float)swapChainExtent.height;
-    viewport.minDepth = 0.0f;
-    viewport.maxDepth = 1.0f;
-    //Step4
-    vkCmdSetViewport(commandBuffers[currentFrame], 0, 1, &viewport);
+	viewport.x = 0.0f;
+	viewport.y = 0.0f;
+	viewport.width = (float)swapChainExtent.width;
+	viewport.height = (float)swapChainExtent.height;
+	viewport.minDepth = 0.0f;
+	viewport.maxDepth = 1.0f;
+	//Step4
+	vkCmdSetViewport(commandBuffers[currentFrame], 0, 1, &viewport);
 }
-
 void CVulkanBase::wxjSetScissor(){
     VkRect2D scissor{};
     scissor.offset = { 0, 0 };
     scissor.extent = swapChainExtent;
     vkCmdSetScissor(commandBuffers[currentFrame], 0, 1, &scissor);
 }
-
 void CVulkanBase::wxjBindVertexBuffer(){
 	VkBuffer vertexBuffers[] = { vertexDataBuffer.buffer };
-    VkDeviceSize offsets[] = { 0 };
-    vkCmdBindVertexBuffers(commandBuffers[currentFrame], 0, 1, vertexBuffers, offsets);
+	VkDeviceSize offsets[] = { 0 };
+	vkCmdBindVertexBuffers(commandBuffers[currentFrame], 0, 1, vertexBuffers, offsets);
 }
-
 void CVulkanBase::wxjBindIndexBuffer(){
 	vkCmdBindIndexBuffer(commandBuffers[currentFrame], indexDataBuffer.buffer, 0, VK_INDEX_TYPE_UINT32);
 }
-
 void CVulkanBase::wxjBindDescriptorSets(){
 	vkCmdBindDescriptorSets(commandBuffers[currentFrame], VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[currentFrame], 0, nullptr);
 }
-
 void CVulkanBase::wxjDrawIndexed(){
 	vkCmdDrawIndexed(commandBuffers[currentFrame], static_cast<uint32_t>(indices3D.size()), 1, 0, 0, 0);
 }
-
 void CVulkanBase::wxjEndRenderPass(){
 	vkCmdEndRenderPass(commandBuffers[currentFrame]);
 }
-
 void CVulkanBase::wxjEndCOmmandBuffer(){
 	if (vkEndCommandBuffer(commandBuffers[currentFrame]) != VK_SUCCESS) {
         throw std::runtime_error("failed to record command buffer!");
     }
 }
 
+void CVulkanBase::wxjCreateImage_texture(const std::string texturePath, MyImageBuffer &textureImageBuffer, int32_t &texWidth, int32_t &texHeight) {
+	HERE_I_AM("Init07CreateTextureImage");
+
+	int texChannels;
+	stbi_uc* pixels = stbi_load(texturePath.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+	VkDeviceSize imageSize = texWidth * texHeight * 4;
+
+
+	//mipLevels = bEnableMipMap ? (static_cast<uint32_t>(std::floor(std::log2(std::max(texWidth, texHeight)))) + 1) : 1;
+    int mipLevels = 1;
+
+
+	if (!pixels) throw std::runtime_error("failed to load texture image!");
+
+
+	MyBuffer stagingBuffer;
+	VkResult result = InitDataBufferHelper(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, &stagingBuffer);
+	REPORT("InitTextureImageBuffer");
+	//FillDataBufferHelper(stagingBuffer, (void *)(vertices.data()));
+
+	//VkBuffer stagingBuffer;
+	//VkDeviceMemory stagingBufferMemory;
+	//createBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
+
+	FillDataBufferHelper(stagingBuffer, pixels);
+	//void* data;
+	//vkMapMemory(logicalDevice, stagingBuffer.deviceMemory, 0, imageSize, 0, &data);
+	//memcpy(data, pixels, static_cast<size_t>(imageSize));
+	//vkUnmapMemory(logicalDevice, stagingBuffer.deviceMemory);
+
+	stbi_image_free(pixels);
+
+	createImage(texWidth, texHeight, mipLevels, VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, textureImageBuffer);
+
+	transitionImageLayout(textureImageBuffer.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, mipLevels);
+	copyBufferToImage(stagingBuffer.buffer, textureImageBuffer.image, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
+	
+	//MIPMAP TODO: no need transition??
+	//transitionImageLayout(textureImageBuffer.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, mipLevels);
+
+	vkDestroyBuffer(LOGICAL_DEVICE, stagingBuffer.buffer, nullptr);
+	vkFreeMemory(LOGICAL_DEVICE, stagingBuffer.deviceMemory, nullptr);
+}
+void CVulkanBase::wxjCreateSampler_texture() {
+	HERE_I_AM("Init07CreateTextureSampler");
+
+	VkPhysicalDeviceProperties properties{};
+	vkGetPhysicalDeviceProperties(PHYSICAL_DEVICE, &properties);
+
+	VkSamplerCreateInfo samplerInfo{};
+	samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+	samplerInfo.magFilter = VK_FILTER_LINEAR;
+	samplerInfo.minFilter = VK_FILTER_LINEAR;
+	samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+	samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+	samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+	samplerInfo.anisotropyEnable = VK_TRUE;
+	samplerInfo.maxAnisotropy = properties.limits.maxSamplerAnisotropy;
+	samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
+	samplerInfo.unnormalizedCoordinates = VK_FALSE;
+	samplerInfo.compareEnable = VK_FALSE;
+	samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
+	
+	// if (bEnableMipMap) {
+	// 	samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;// VK_SAMPLER_MIPMAP_MODE_NEAREST;
+	// 	samplerInfo.minLod = 0.0f;
+	// 	samplerInfo.maxLod = static_cast<float>(mipLevels / 2);
+	// 	samplerInfo.mipLodBias = 0.0f;
+	// }
+
+	VkResult result = vkCreateSampler(LOGICAL_DEVICE, &samplerInfo, nullptr, &textureSampler);
+	REPORT("vkCreateSampler");
+}
+void CVulkanBase::wxjCreateImageView(VkImage image){
+    textureImageView = createImageView(image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, 1);
+}
+void CVulkanBase::wxjCreateSwapChain(){
+    Init08CreateSwapChain();
+}
 

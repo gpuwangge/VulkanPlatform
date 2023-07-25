@@ -12,6 +12,10 @@ void CApplication::run(){
     mainLoop();
 }
 
+void CApplication::initialize(){
+    
+}
+
 void CApplication::prepareVulkanDevices(){
     //printf("application init\n");
     const std::vector<const char*> requiredValidationLayers = {"VK_LAYER_KHRONOS_validation"};
@@ -517,11 +521,6 @@ CApplication::~CApplication(){
     glfwTerminate();
 
     delete debugger;
-}
-
-
-void CApplication::initialize(){
-    
 }
 
 void CApplication::updateUniformBuffer(uint32_t currentFrame, float durationTime) {

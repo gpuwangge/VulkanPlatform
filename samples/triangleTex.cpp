@@ -10,31 +10,31 @@ public:
     }
 
     void initialize(){
-        /************
+		/************
 		buffersize: 8(numbers each vertex)*4(float)*4(vertex size)=128（byte）
 		************/
 		vertices3D = {
-		 	{ { -0.5f, -0.5f, 0.0f },{ 1.0f, 0.0f, 0.0f },{ 1.0f, 0.0f } },
-		 	{ { 0.5f, -0.5f, 0.0f },{ 0.0f, 1.0f, 0.0f },{ 0.0f, 0.0f } },
-		 	{ { 0.5f, 0.5f, 0.0f },{ 0.0f, 0.0f, 1.0f },{ 0.0f, 1.0f } },
-		 	{ { -0.5f, 0.5f, 0.0f },{ 1.0f, 1.0f, 1.0f },{ 1.0f, 1.0f } }
-		 };
+			{ { -0.5f, -0.5f, 0.0f },{ 1.0f, 0.0f, 0.0f },{ 1.0f, 0.0f } },
+			{ { 0.5f, -0.5f, 0.0f },{ 0.0f, 1.0f, 0.0f },{ 0.0f, 0.0f } },
+			{ { 0.5f, 0.5f, 0.0f },{ 0.0f, 0.0f, 1.0f },{ 0.0f, 1.0f } },
+			{ { -0.5f, 0.5f, 0.0f },{ 1.0f, 1.0f, 1.0f },{ 1.0f, 1.0f } }
+			};
 
 		/************
 		buffer size: 6*4=24（byte）
 		************/
 		indices3D = { 0, 1, 2, 2, 3, 0};
 
-        wxjCreateVertexBuffer();
+		wxjCreateVertexBuffer();
 		wxjCreateIndexBuffer();
 		wxjCreateUniformBuffers();
-        wxjCreateCommandBuffer();
+		wxjCreateCommandBuffer();
 
-        wxjCreateImage_texture("../textures/texture.jpg", textureImageBuffer, texWidth, texHeight);
-        wxjCreateSampler_texture();
-        wxjCreateImageView(textureImageBuffer.image);
+		wxjCreateImage_texture("../textures/texture.jpg", textureImageBuffer, texWidth, texHeight);
+		wxjCreateSampler_texture();
+		wxjCreateImageView(textureImageBuffer.image);
 
-        wxjCreateSwapChain();
+		wxjCreateSwapChain();
 
 		wxjCreateColorAttachment();
 		//wxjCreatDepthAttachment();
@@ -45,45 +45,47 @@ public:
 
 		wxjCreateFramebuffers();
 
-        wxjCreateVertexShader("../shaders/texture/vert_texture.spv");
+		wxjCreateVertexShader("../shaders/texture/vert_texture.spv");
 		wxjCreateFragmentShader("../shaders/texture/frag_texture.spv");
 
-        std::vector<VkDescriptorType> descriptorTypes{VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER};
-	    std::vector<VkShaderStageFlagBits> shaderStageFlagBits{VK_SHADER_STAGE_VERTEX_BIT, VK_SHADER_STAGE_FRAGMENT_BIT};
+		std::vector<VkDescriptorType> descriptorTypes{VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER};
+		std::vector<VkShaderStageFlagBits> shaderStageFlagBits{VK_SHADER_STAGE_VERTEX_BIT, VK_SHADER_STAGE_FRAGMENT_BIT};
 		wxjCreateDescriptorPool(descriptorTypes);
 		wxjCreateDescriptorSetLayout(descriptorTypes, shaderStageFlagBits);
 		wxjCreateDescriptorSets(descriptorTypes);
 
 		wxjCreateGraphicsPipeline(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
 
-        wxjCreateSyncObjects();
+		wxjCreateSyncObjects();
+
+		CApplication::initialize();
 	}
 
 	void update(){
 		ubo.model = glm::rotate(glm::mat4(1.0f), durationTime * glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-		CVulkanBase::update();
+		CApplication::update();
 	}
 
 	void recordCommandBuffer(){
 		//printf("traingle tex recordCommandBuffer...\n");
 
-     	wxjBeginCommandBuffer();
+		wxjBeginCommandBuffer();
 
 		std::vector<VkClearValue> clearValues{ {  1.0f, 1.0f, 1.0f, 1.0f  } };
-     	wxjBeginRenderPass(clearValues);
+		wxjBeginRenderPass(clearValues);
 
-     	wxjBindPipeline();
-    	wxjSetViewport();
-     	wxjSetScissor();
-    	wxjBindVertexBuffer();
-     	wxjBindIndexBuffer();
-    	wxjBindDescriptorSets();
-    	wxjDrawIndexed();
+		wxjBindPipeline();
+		wxjSetViewport();
+		wxjSetScissor();
+		wxjBindVertexBuffer();
+		wxjBindIndexBuffer();
+		wxjBindDescriptorSets();
+		wxjDrawIndexed();
 
-    	wxjEndRenderPass();
-     	wxjEndCOmmandBuffer();
+		wxjEndRenderPass();
+		wxjEndCOmmandBuffer();
 
-		CVulkanBase::recordCommandBuffer();
+		CApplication::recordCommandBuffer();
 	}
 };
 

@@ -53,12 +53,6 @@ public:
 
     void wxjCreateSyncObjects();
 
-    VkCommandBuffer beginSingleTimeCommands();
-    void endSingleTimeCommands(VkCommandBuffer commandBuffer);
-    uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties);
-    void createImage(uint32_t width, uint32_t height, uint32_t mipLevels, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, MyImageBuffer &imageBuffer);
-	void transitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t mipLevels);
-	void copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
     void wxjCreateImage_texture(const std::string texturePath, MyImageBuffer &textureImageBuffer, int32_t &texWidth, int32_t &texHeight);
     void wxjCreateSampler_texture();
     void wxjCreateImageView(VkImage image);
@@ -78,8 +72,9 @@ public:
     /**************
     Application operation functions
     ************/
-    void update();
-    void recordCommandBuffer();
+    // void initialize();
+    // void update();
+    // void recordCommandBuffer();
 };
 
 #endif

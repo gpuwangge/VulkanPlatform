@@ -21,11 +21,11 @@ public:
 		buffersize: 8(numbers each vertex)*4(float)*4(vertex size)=128（byte）
 		************/
 		vertices3D = {
-		 	{ { -0.5f, -0.5f, 0.0f },{ 1.0f, 0.0f, 0.0f },{ 1.0f, 0.0f } },
-		 	{ { 0.5f, -0.5f, 0.0f },{ 0.0f, 1.0f, 0.0f },{ 0.0f, 0.0f } },
-		 	{ { 0.5f, 0.5f, 0.0f },{ 0.0f, 0.0f, 1.0f },{ 0.0f, 1.0f } },
-		 	{ { -0.5f, 0.5f, 0.0f },{ 1.0f, 1.0f, 1.0f },{ 1.0f, 1.0f } }
-		 };
+			{ { -0.5f, -0.5f, 0.0f },{ 1.0f, 0.0f, 0.0f },{ 1.0f, 0.0f } },
+			{ { 0.5f, -0.5f, 0.0f },{ 0.0f, 1.0f, 0.0f },{ 0.0f, 0.0f } },
+			{ { 0.5f, 0.5f, 0.0f },{ 0.0f, 0.0f, 1.0f },{ 0.0f, 1.0f } },
+			{ { -0.5f, 0.5f, 0.0f },{ 1.0f, 1.0f, 1.0f },{ 1.0f, 1.0f } }
+			};
 
 		/************
 		buffer size: 6*4=24（byte）
@@ -60,33 +60,35 @@ public:
 		wxjCreateGraphicsPipeline(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
 
 		wxjCreateSyncObjects();
+
+		CApplication::initialize();
 	}
 
 	void update(){
 		ubo.model = glm::rotate(glm::mat4(1.0f), durationTime * glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-		CVulkanBase::update();
+		CApplication::update();
 	}
 
 	void recordCommandBuffer(){
 		//printf("triangle recordCommandBuffer...\n");
 
-     	wxjBeginCommandBuffer();
+		wxjBeginCommandBuffer();
 
 		std::vector<VkClearValue> clearValues{ {  0.0f, 0.0f, 0.0f, 1.0f  } };
-     	wxjBeginRenderPass(clearValues);
+		wxjBeginRenderPass(clearValues);
 
-     	wxjBindPipeline();
-    	wxjSetViewport();
-     	wxjSetScissor();
-    	wxjBindVertexBuffer();
-     	wxjBindIndexBuffer();
-    	wxjBindDescriptorSets();
-    	wxjDrawIndexed();
+		wxjBindPipeline();
+		wxjSetViewport();
+		wxjSetScissor();
+		wxjBindVertexBuffer();
+		wxjBindIndexBuffer();
+		wxjBindDescriptorSets();
+		wxjDrawIndexed();
 
-    	wxjEndRenderPass();
-     	wxjEndCOmmandBuffer();
+		wxjEndRenderPass();
+		wxjEndCOmmandBuffer();
 
-		CVulkanBase::recordCommandBuffer();
+		CApplication::recordCommandBuffer();
 	}
 };
 
