@@ -1,10 +1,22 @@
 #include "..\\framework\\vulkanBase.h"
 
-class CSimpleTriangle: public CVulkanBase{
-	std::vector<VkDescriptorType> descriptorTypes{VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER};
-	std::vector<VkShaderStageFlagBits> shaderStageFlagBits{VK_SHADER_STAGE_VERTEX_BIT};
+#define TEST_CLASS_NAME CSimpleTriangle
+class TEST_CLASS_NAME: public CVulkanBase{
 public:
-    CSimpleTriangle(){
+    TEST_CLASS_NAME(){
+		/*****
+		 * Other things to prepare
+		 * Renderpass: colorAttachment, depthAttachment(for model), colorAttachmentResolve(for MSAA)
+		 * Framebuffer: swapChainImageViews[i], depthImageView(for model), colorImageView_msaa(for MSAA)
+		 * Descriptor: VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER (for MVP),VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER (for texture), VK_DESCRIPTOR_TYPE_STORAGE_BUFFER (for compute shader)
+		 * ****/
+    }
+
+    ~TEST_CLASS_NAME(){
+
+    }
+
+	void initialize(){
 		/************
 		buffersize: 8(numbers each vertex)*4(float)*4(vertex size)=128（byte）
 		************/
@@ -20,89 +32,64 @@ public:
 		************/
 		indices3D = { 0, 1, 2, 2, 3, 0};
 
-		vertexShaderPath = "../shaders/basic/vert.spv";
-    	fragmentShaderPath = "../shaders/basic/frag.spv";
+		wxjCreateVertexBuffer();
+		wxjCreateIndexBuffer();
+		wxjCreateUniformBuffers();
+		wxjCreateCommandBuffer();
 
-		/*****
-		 * Other things to prepare
-		 * Renderpass: colorAttachment, depthAttachment(for model), colorAttachmentResolve(for MSAA)
-		 * Framebuffer: swapChainImageViews[i], depthImageView(for model), colorImageView_msaa(for MSAA)
-		 * Descriptor: VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER (for MVP),VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER (for texture), VK_DESCRIPTOR_TYPE_STORAGE_BUFFER (for compute shader)
-		 * ****/
-    }
+		wxjCreateSwapChain();
 
-    ~CSimpleTriangle(){
-
-    }
-
-	void updateUniformBuffer(uint32_t currentFrame, float durationTime) {
-
-		CVulkanBase::updateUniformBuffer(currentFrame, durationTime);
-	}
-
-	void update(){
-		//printf("triangle update...\n");
-
-		CVulkanBase::update();
-	}
-
-	void recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex) {
-		CVulkanBase::recordCommandBuffer(commandBuffer, imageIndex);
-	}
-
-	void drawFrame(){
-		//printf("triangle drawFrame...\n");
-
-		CVulkanBase::drawFrame();
-	}
-
-	void initVulkan(){
-		printf("simpleTriangle init\n");
-		CVulkanBase::initVulkan();
-	}
-
-	void CreateRenderPass() {
 		wxjCreateColorAttachment();
 		//wxjCreatDepthAttachment();
 		//wxjCreatColorAttachmentResolve();
 		wxjCreateSubpass();
 		wxjCreateDependency();
 		wxjCreateRenderPass();
-	}
 
-	void CreateFramebuffers() {
 		wxjCreateFramebuffers();
-	}
 
-	void CreateDescriptorPool(){
+		wxjCreateVertexShader("../shaders/basic/vert.spv");
+		wxjCreateFragmentShader("../shaders/basic/frag.spv");
+
+		std::vector<VkDescriptorType> descriptorTypes{VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER};
+		std::vector<VkShaderStageFlagBits> shaderStageFlagBits{VK_SHADER_STAGE_VERTEX_BIT};
 		wxjCreateDescriptorPool(descriptorTypes);
-	}
-    void CreateDescriptorSetLayout(){
 		wxjCreateDescriptorSetLayout(descriptorTypes, shaderStageFlagBits);
-	}
-    void CreateDescriptorSets(){
 		wxjCreateDescriptorSets(descriptorTypes);
+
+		wxjCreateGraphicsPipeline(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
+
+		wxjCreateSyncObjects();
 	}
 
-	void CreateGraphicsPipeline(){
-		wxjCreateGraphicsPipeline(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
-	}	
+	void update(){
+		ubo.model = glm::rotate(glm::mat4(1.0f), durationTime * glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		CVulkanBase::update();
+	}
 
-	void CreateImageTexture(){
+	void recordCommandBuffer(){
+		//printf("triangle recordCommandBuffer...\n");
+
+     	wxjBeginCommandBuffer();
+
+		std::vector<VkClearValue> clearValues{ {  0.0f, 0.0f, 0.0f, 1.0f  } };
+     	wxjBeginRenderPass(clearValues);
+
+     	wxjBindPipeline();
+    	wxjSetViewport();
+     	wxjSetScissor();
+    	wxjBindVertexBuffer();
+     	wxjBindIndexBuffer();
+    	wxjBindDescriptorSets();
+    	wxjDrawIndexed();
+
+    	wxjEndRenderPass();
+     	wxjEndCOmmandBuffer();
+
+		CVulkanBase::recordCommandBuffer();
 	}
 };
 
-int main(){
-	CSimpleTriangle app;
+#include "main.hpp"
 
-	try {
-		app.run();
-	}
-	catch (const std::exception& e) {
-		std::cerr << e.what() << std::endl;
-		return EXIT_FAILURE;
-	}
 
-	return EXIT_SUCCESS;
-    return 0;
-}

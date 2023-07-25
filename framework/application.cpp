@@ -2,16 +2,18 @@
 
 CApplication::CApplication(){
     debugger = new CDebugger("applicationLog.txt");
+    ubo.model = glm::mat4(1.0f);
 }
 
 void CApplication::run(){
     prepareGLFW();
-    initVulkan();
+    prepareVulkanDevices();
+    initialize();
     mainLoop();
 }
 
-void CApplication::initVulkan(){
-    printf("application init\n");
+void CApplication::prepareVulkanDevices(){
+    //printf("application init\n");
     const std::vector<const char*> requiredValidationLayers = {"VK_LAYER_KHRONOS_validation"};
     const std::vector<const char*>  requireDeviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
     VkQueueFlagBits requiredQueueFamilies = VK_QUEUE_GRAPHICS_BIT; //& VK_QUEUE_COMPUTE_BIT
@@ -22,6 +24,7 @@ void CApplication::initVulkan(){
     instance->pickSuitablePhysicalDevice(surface, requireDeviceExtensions, requiredQueueFamilies);
     instance->pickedPhysicalDevice->get()->createLogicalDevices(surface, requiredValidationLayers, requireDeviceExtensions);
 
+    /*
     Init05CreateVertexBuffer();
     Init05CreateIndexBuffer();
     Init05CreateUniformBuffers(uniformBuffers, uniformBuffersMapped, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, sizeof(UniformBufferObject));
@@ -48,7 +51,7 @@ void CApplication::initVulkan(){
     CreateDescriptorSets();
     CreateGraphicsPipeline();
 
-    createSyncObjects();
+    createSyncObjects();*/
 }
 
 void CApplication::Init05CreateVertexBuffer() {
@@ -231,6 +234,15 @@ void CApplication::createSyncObjects() {
     }
 }
 
+
+void CApplication::recordCommandBuffer(){
+    //printf("application recordCommandBuffer...\n");
+    //std::cout<<"imageIndex: "<<imageIndex<<", ";
+    //std::cout<<"currentFrame: "<<currentFrame<<std::endl;
+
+    //recordCommandBuffer(commandBuffers[currentFrame], imageIndex);
+}
+/*
 void CApplication::recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex) {
     VkCommandBufferBeginInfo beginInfo{};
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -281,7 +293,7 @@ void CApplication::recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t i
     scissor.extent = swapChainExtent;
     vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
 
-    //compute piepline的结果在shaderStorageBuffers_compute里面，而其他pipeline使用vertexDataBuffer和indexDataBuffer
+    //compute pipeline的结果在shaderStorageBuffers_compute里面，而其他pipeline使用vertexDataBuffer和indexDataBuffer
     // if (pipelineType == PIPELINE_COMPUTE) {
     //     VkDeviceSize offsets[] = { 0 };
     //     vkCmdBindVertexBuffers(commandBuffer, 0, 1, &shaderStorageBuffers_compute[currentFrame].buffer, offsets);
@@ -311,96 +323,45 @@ void CApplication::recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t i
         throw std::runtime_error("failed to record command buffer!");
     }
 
-}
+}*/
 
 void CApplication::drawFrame() {
-    //printf("app drawFrame...\n");
-
     VkSubmitInfo submitInfo{};
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
-    //=======================Compute submission========================
-    // if (pipelineType == PIPELINE_COMPUTE) {
-    //     vkWaitForFences(logicalDevice, 1, &computeInFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
-
-    //     updateUniformBuffer_compute(currentFrame);
-
-    //     vkResetFences(logicalDevice, 1, &computeInFlightFences[currentFrame]);
-
-    //     vkResetCommandBuffer(commandBuffers_compute[currentFrame], /*VkCommandBufferResetFlagBits*/ 0);
-    //     recordComputeCommandBuffer(commandBuffers_compute[currentFrame]); //Dispatch in this function
-
-    //     submitInfo.commandBufferCount = 1;
-    //     submitInfo.pCommandBuffers = &commandBuffers_compute[currentFrame];
-    //     submitInfo.signalSemaphoreCount = 1;
-    //     submitInfo.pSignalSemaphores = &computeFinishedSemaphores[currentFrame];
-
-    //     if (vkQueueSubmit(computeQueue, 1, &submitInfo, computeInFlightFences[currentFrame]) != VK_SUCCESS) {
-    //         throw std::runtime_error("failed to submit compute command buffer!");
-    //     };
-    // }
-    //=======================Graphics submission========================
+    //CPU-GPU间同步需要使用fence
     vkWaitForFences(LOGICAL_DEVICE, 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
 
-    uint32_t imageIndex;
+    //CPU需要知道往那个framebuffer里面画。GPU需要通知CPU这个image是不是准备好了。
+    //GPU-GPU间同步需要使用semaphore
+    //这里semaphore是看这个image是不是能写了。准备好的就是imageIndex。
     VkResult result = vkAcquireNextImageKHR(LOGICAL_DEVICE, swapChain, UINT64_MAX, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &imageIndex);
-
-    if (result == VK_ERROR_OUT_OF_DATE_KHR) {
-        //recreateSwapChain();//TODO
-        return;
-    }
-    else if (result != VK_SUCCESS && result != VK_SUBOPTIMAL_KHR) {
-        throw std::runtime_error("failed to acquire swap chain image!");
-    }
-
-    //if (pipelineType != PIPELINE_COMPUTE) {
-        //updateUniformBuffer(currentFrame); //目前pariticle system不需要更新MVP,移动此函数到update()
-    //}
 
     vkResetFences(LOGICAL_DEVICE, 1, &inFlightFences[currentFrame]);
 
     vkResetCommandBuffer(commandBuffers[currentFrame], /*VkCommandBufferResetFlagBits*/ 0);
-    recordCommandBuffer(commandBuffers[currentFrame], imageIndex);
+    recordCommandBuffer();
 
-    
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
-    //NTODO: present and Semaphore
     VkPresentInfoKHR presentInfo{};
-    // if (pipelineType == PIPELINE_COMPUTE) {
-    //     VkSemaphore waitSemaphores[] = { computeFinishedSemaphores[currentFrame], imageAvailableSemaphores[currentFrame] };
-    //     VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_VERTEX_INPUT_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
-    //     submitInfo = {};
-    //     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
-    //     submitInfo.waitSemaphoreCount = 2;
-    //     submitInfo.pWaitSemaphores = waitSemaphores;
-    //     submitInfo.pWaitDstStageMask = waitStages;
-    //     submitInfo.commandBufferCount = 1;
-    //     submitInfo.pCommandBuffers = &commandBuffers[currentFrame];
-    //     submitInfo.signalSemaphoreCount = 1;
-    //     submitInfo.pSignalSemaphores = &renderFinishedSemaphores[currentFrame];
+    VkSemaphore waitSemaphores[] = {imageAvailableSemaphores[currentFrame] };
+    VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+    submitInfo.waitSemaphoreCount = 1;
+    submitInfo.pWaitSemaphores = waitSemaphores;
+    submitInfo.pWaitDstStageMask = waitStages;
 
-    //     presentInfo.pWaitSemaphores = &renderFinishedSemaphores[currentFrame];
-    // }
-    // else {
-        //VkSemaphore waitSemaphores[] = { computeFinishedSemaphores[currentFrame],  imageAvailableSemaphores[currentFrame] };
-        VkSemaphore waitSemaphores[] = {imageAvailableSemaphores[currentFrame] };
-        VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
-        submitInfo.waitSemaphoreCount = 1;
-        submitInfo.pWaitSemaphores = waitSemaphores;
-        submitInfo.pWaitDstStageMask = waitStages;
+    submitInfo.commandBufferCount = 1;
+    submitInfo.pCommandBuffers = &commandBuffers[currentFrame];
 
-        submitInfo.commandBufferCount = 1;
-        submitInfo.pCommandBuffers = &commandBuffers[currentFrame];
+    VkSemaphore signalSemaphores[] = { renderFinishedSemaphores[currentFrame] };
+    submitInfo.signalSemaphoreCount = 1;
+    submitInfo.pSignalSemaphores = signalSemaphores;
 
-        VkSemaphore signalSemaphores[] = { renderFinishedSemaphores[currentFrame] };
-        submitInfo.signalSemaphoreCount = 1;
-        submitInfo.pSignalSemaphores = signalSemaphores;
-
-        presentInfo.pWaitSemaphores = signalSemaphores;
-    //}
-
+    presentInfo.pWaitSemaphores = signalSemaphores;
+    
+    //让GPU读recorded command buffer并执行
     if (vkQueueSubmit(GRAPHICS_QUEUE, 1, &submitInfo, inFlightFences[currentFrame]) != VK_SUCCESS) {
         debugger->writeMSG("Failed to submit draw command buffer! CurrentFrame: %d\n", currentFrame);
         throw std::runtime_error("failed to submit draw command buffer!");
@@ -416,20 +377,10 @@ void CApplication::drawFrame() {
 
     presentInfo.pImageIndices = &imageIndex;
 
+    //present engine读取image之后显示(显示的是imageIndex)
     result = vkQueuePresentKHR(PRESENT_QUEUE, &presentInfo);
-
-    if (result == VK_ERROR_OUT_OF_DATE_KHR || result == VK_SUBOPTIMAL_KHR || framebufferResized) {
-        framebufferResized = false;
-        //recreateSwapChain();//TODO
-    }
-    else if (result != VK_SUCCESS) {
-        throw std::runtime_error("failed to present swap chain image!");
-    }
 }
 
-void CApplication::updateUniformBuffer(uint32_t currentFrame, float durationTime) {
-
-}
 
 void CApplication::update(){
     //printf("app update...\n");
@@ -437,8 +388,8 @@ void CApplication::update(){
     static auto startTime = std::chrono::high_resolution_clock::now();
 
     auto currentTime = std::chrono::high_resolution_clock::now();
-    float durationTime = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
-    float deltaTime = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - lastTime).count();
+    durationTime = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
+    deltaTime = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - lastTime).count();
     lastTime = currentTime;
 
     // We want to animate the particle system using the last frames time to get smooth, frame-rate independent animation
@@ -500,17 +451,17 @@ CApplication::~CApplication(){
         vkFreeMemory(LOGICAL_DEVICE, uniformBuffers[i].deviceMemory, nullptr);
     }
 
+    if(textureImageBuffer.size != (VkDeviceSize)0){
+        vkDestroyImage(LOGICAL_DEVICE, textureImageBuffer.image, nullptr);
+        vkFreeMemory(LOGICAL_DEVICE, textureImageBuffer.deviceMemory, nullptr);
+        vkDestroyImageView(LOGICAL_DEVICE, textureImageView, nullptr);
+    }
+
     vkDestroyDescriptorPool(LOGICAL_DEVICE, descriptorPool, nullptr);
     vkDestroyDescriptorSetLayout(LOGICAL_DEVICE, descriptorSetLayout, nullptr);
     vkDestroyPipeline(LOGICAL_DEVICE, graphicsPipeline, nullptr);
     vkDestroyPipelineLayout(LOGICAL_DEVICE, pipelineLayout, nullptr);
 
-    if(!texturePath.empty()){
-        vkDestroyImage(LOGICAL_DEVICE, textureImageBuffer.image, nullptr);
-        vkFreeMemory(LOGICAL_DEVICE, textureImageBuffer.deviceMemory, nullptr);
-        vkDestroyImageView(LOGICAL_DEVICE, textureImageView, nullptr);
-    }
-    
     //for (int i = 0; i < 1; i++) {
         //vkDestroyDescriptorPool(LOGICAL_DEVICE, descriptorPool[i], nullptr);
         //vkDestroyDescriptorSetLayout(LOGICAL_DEVICE, descriptorSetLayout[i], nullptr);
@@ -566,4 +517,32 @@ CApplication::~CApplication(){
     glfwTerminate();
 
     delete debugger;
+}
+
+
+void CApplication::initialize(){
+    
+}
+
+void CApplication::updateUniformBuffer(uint32_t currentFrame, float durationTime) {
+    // UniformBufferObject ubo{};
+    // ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+    // glm::mat4x4 m = glm::perspective(glm::radians(45.0f), WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 10.0f);
+    // m[1][1] *= -1;
+    // ubo.proj = m;
+    // ubo.model = glm::rotate(glm::mat4(1.0f), durationTime * glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+
+    //UniformBufferObject ubo{};
+    ubo.view = mainCamera.matrices.view;
+    ubo.proj = mainCamera.matrices.perspective;
+    // if (pipelineType == PIPELINE_MIPMAP) {
+            //ubo.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+    // }
+    // else {
+        //ubo.model = glm::rotate(glm::mat4(1.0f), durationTime * glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+    //}
+
+    memcpy(uniformBuffersMapped[currentFrame], &ubo, sizeof(ubo));
+
+    //CApplication::updateUniformBuffer(currentFrame, durationTime);
 }

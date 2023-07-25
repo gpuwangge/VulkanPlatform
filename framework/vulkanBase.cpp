@@ -119,29 +119,6 @@ void CVulkanBase::wxjCreateRenderPass(){
 		 
 }
 
-void CVulkanBase::updateUniformBuffer(uint32_t currentFrame, float durationTime) {
-    	// UniformBufferObject ubo{};
-		// ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-		// glm::mat4x4 m = glm::perspective(glm::radians(45.0f), WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 10.0f);
-		// m[1][1] *= -1;
-		// ubo.proj = m;
-		// ubo.model = glm::rotate(glm::mat4(1.0f), durationTime * glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-
-		UniformBufferObject ubo{};
-		ubo.view = mainCamera.matrices.view;
-		ubo.proj = mainCamera.matrices.perspective;
-		// if (pipelineType == PIPELINE_MIPMAP) {
-		     //ubo.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-		// }
-		// else {
-			ubo.model = glm::rotate(glm::mat4(1.0f), durationTime * glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-		//}
-
-		memcpy(uniformBuffersMapped[currentFrame], &ubo, sizeof(ubo));
-
-    CApplication::updateUniformBuffer(currentFrame, durationTime);
-}
-
 void CVulkanBase::wxjCreateFramebuffers(){
 	HERE_I_AM("wxjCreateFramebuffers");
 
@@ -603,16 +580,125 @@ void CVulkanBase::update(){
     CApplication::update();
 }
 
-void CVulkanBase::recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex) {
-    CApplication::recordCommandBuffer(commandBuffer, imageIndex);
+void CVulkanBase::recordCommandBuffer(){
+    //printf("vulkan base recordCommandBuffer...\n");
+
+    CApplication::recordCommandBuffer();
 }
 
-void CVulkanBase::drawFrame(){
-    //printf("triangle drawFrame...\n");
-    CApplication::drawFrame();
+void CVulkanBase::wxjCreateVertexShader(std::string shaderName){
+    Init12SpirvShader(shaderName, &vertShaderModule);
 }
 
-void CVulkanBase::initVulkan(){
-    printf("vulkanBase init\n");
-    CApplication::initVulkan();
+void CVulkanBase::wxjCreateFragmentShader(std::string shaderName){
+	Init12SpirvShader(shaderName, &fragShaderModule);
 }
+
+void CVulkanBase::wxjCreateSyncObjects(){
+    createSyncObjects();
+}
+
+void CVulkanBase::wxjCreateCommandBuffer(){
+	Init06CreateCommandPool();
+	Init06CreateCommandBuffers();
+}
+
+void CVulkanBase::wxjCreateVertexBuffer(){
+    Init05CreateVertexBuffer();
+}
+
+void CVulkanBase::wxjCreateIndexBuffer(){
+    Init05CreateIndexBuffer();
+}
+
+void CVulkanBase::wxjCreateUniformBuffers(){
+    Init05CreateUniformBuffers(uniformBuffers, uniformBuffersMapped, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, sizeof(UniformBufferObject));
+}
+
+void CVulkanBase::wxjBeginCommandBuffer(){
+    VkCommandBufferBeginInfo beginInfo{};
+    beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+
+    //Step1
+    if (vkBeginCommandBuffer(commandBuffers[currentFrame], &beginInfo) != VK_SUCCESS) {
+        throw std::runtime_error("failed to begin recording command buffer!");
+    }
+}
+
+void CVulkanBase::wxjBeginRenderPass(std::vector<VkClearValue> &clearValues){
+    VkRenderPassBeginInfo renderPassInfo{};
+    renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
+    renderPassInfo.renderPass = renderPass;
+    renderPassInfo.framebuffer = swapChainFramebuffers[imageIndex];
+    renderPassInfo.renderArea.offset = { 0, 0 };
+    renderPassInfo.renderArea.extent = swapChainExtent;
+
+    //std::array<VkClearValue, 2> clearValues{};
+    // if (bEnableDepthTest) {
+    //     clearValues[0].color = { { 0.0f, 0.0f, 0.0f, 1.0f } };
+    //     clearValues[1].depthStencil = { 1.0f, 0 };
+    //     renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
+    //     renderPassInfo.pClearValues = clearValues.data();
+    // }
+    // else {
+    //clearValues[0].color = { {  0.0f, 0.0f, 0.0f, 1.0f  } };
+    renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
+    renderPassInfo.pClearValues = clearValues.data();
+    //}
+
+    //Step2
+    vkCmdBeginRenderPass(commandBuffers[currentFrame], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
+}
+
+void CVulkanBase::wxjBindPipeline(){
+	vkCmdBindPipeline(commandBuffers[currentFrame], VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
+}
+
+void CVulkanBase::wxjSetViewport(){
+	VkViewport viewport{};
+    viewport.x = 0.0f;
+    viewport.y = 0.0f;
+    viewport.width = (float)swapChainExtent.width;
+    viewport.height = (float)swapChainExtent.height;
+    viewport.minDepth = 0.0f;
+    viewport.maxDepth = 1.0f;
+    //Step4
+    vkCmdSetViewport(commandBuffers[currentFrame], 0, 1, &viewport);
+}
+
+void CVulkanBase::wxjSetScissor(){
+    VkRect2D scissor{};
+    scissor.offset = { 0, 0 };
+    scissor.extent = swapChainExtent;
+    vkCmdSetScissor(commandBuffers[currentFrame], 0, 1, &scissor);
+}
+
+void CVulkanBase::wxjBindVertexBuffer(){
+	VkBuffer vertexBuffers[] = { vertexDataBuffer.buffer };
+    VkDeviceSize offsets[] = { 0 };
+    vkCmdBindVertexBuffers(commandBuffers[currentFrame], 0, 1, vertexBuffers, offsets);
+}
+
+void CVulkanBase::wxjBindIndexBuffer(){
+	vkCmdBindIndexBuffer(commandBuffers[currentFrame], indexDataBuffer.buffer, 0, VK_INDEX_TYPE_UINT32);
+}
+
+void CVulkanBase::wxjBindDescriptorSets(){
+	vkCmdBindDescriptorSets(commandBuffers[currentFrame], VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[currentFrame], 0, nullptr);
+}
+
+void CVulkanBase::wxjDrawIndexed(){
+	vkCmdDrawIndexed(commandBuffers[currentFrame], static_cast<uint32_t>(indices3D.size()), 1, 0, 0, 0);
+}
+
+void CVulkanBase::wxjEndRenderPass(){
+	vkCmdEndRenderPass(commandBuffers[currentFrame]);
+}
+
+void CVulkanBase::wxjEndCOmmandBuffer(){
+	if (vkEndCommandBuffer(commandBuffers[currentFrame]) != VK_SUCCESS) {
+        throw std::runtime_error("failed to record command buffer!");
+    }
+}
+
+

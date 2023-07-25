@@ -66,6 +66,8 @@ typedef struct MyImageBuffer
 	VkImage		image;
 	VkDeviceMemory		deviceMemory;
 	VkDeviceSize		size;
+public:
+    MyImageBuffer(): size(0){}
 } MyImage;
 
 struct UniformBufferObject {
@@ -140,13 +142,13 @@ public:
     uint32_t currentFrame = 0;
     std::chrono::_V2::system_clock::time_point lastTime;
 
-    std::string vertexShaderPath = "";
-    std::string fragmentShaderPath = "";
-    std::string computeShaderPath = "";
+    //std::string vertexShaderPath = "";
+    //std::string fragmentShaderPath = "";
+    //std::string computeShaderPath = "";
 
     //Texture/Model related variables
     int32_t texWidth, texHeight;
-    std::string texturePath = "";
+    //std::string texturePath = "";
 	VkSampler textureSampler;
 	MyImageBuffer textureImageBuffer; 
 	VkImageView textureImageView; 
@@ -155,6 +157,7 @@ public:
 
     void prepareGLFW();
     void createGLFWSurface();
+    void prepareVulkanDevices();
 
     int FindMemoryByFlagAndType(VkMemoryPropertyFlagBits memoryFlagBits, uint32_t  memoryTypeBits);
 	int FindMemoryThatIsHostVisible(uint32_t memoryTypeBits);
@@ -186,33 +189,27 @@ public:
 	static void GLFWMouseMotion(GLFWwindow *window, double xpos, double ypos);
 	static void GLFWMouseButton(GLFWwindow *window, int button, int action, int mods);
 
+
     /*Clean up Functions*/
     void cleanupSwapChain();
     void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator);
     
+    float durationTime = 0;
+    float deltaTime = 0;
+    UniformBufferObject ubo{};
+    void updateUniformBuffer(uint32_t currentFrame, float durationTime);
 
-    
+    uint32_t imageIndex = 0;
+    //void recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
+    void drawFrame();
 
     /*虚函数列表：基类和派生类都实现，默认调用派生类函数版本。如果派生函数没有实现，那么就调用基类版本。*/
-    virtual void initVulkan();
-
-    virtual void updateUniformBuffer(uint32_t currentFrame, float durationTime);
+    virtual void initialize();
     virtual void update();
-
-    virtual void recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
-    virtual void drawFrame();
-
-
-
-
+    virtual void recordCommandBuffer();
+    
     /*纯虚函数列表：基类不实现，必须由派生类实现*/
-    virtual void CreateRenderPass() = 0;
-    virtual void CreateFramebuffers() = 0;
-    virtual void CreateDescriptorPool()=0;
-    virtual void CreateDescriptorSetLayout()=0;
-    virtual void CreateDescriptorSets()=0;
-    virtual void CreateGraphicsPipeline()=0;
-    virtual void CreateImageTexture()=0;
+
 
 };
 
