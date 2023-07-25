@@ -320,6 +320,21 @@ void CVulkanBase::wxjCreateDescriptorSets(std::vector<VkDescriptorType> &descrip
 				wdset.pBufferInfo = &bufferInfo;
 				descriptorWrites.push_back(wdset);
 			}
+
+			if(descriptorTypes[j] == VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER){
+				VkWriteDescriptorSet wdset;
+				imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+				imageInfo.imageView = textureImageView;
+				imageInfo.sampler = textureSampler;
+				wdset.sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+				wdset.dstSet = descriptorSets[i];
+				wdset.dstBinding = j;
+				wdset.dstArrayElement = 0;
+				wdset.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+				wdset.descriptorCount = 1;
+				wdset.pImageInfo = &imageInfo;
+				descriptorWrites.push_back(wdset);
+			}
 		}
 
 		/*switch (pt) {

@@ -8,7 +8,8 @@
 #include "camera.hpp"
 #include "instance.h"
 
-#define LOGICAL_DEVICE *(instance->pickedPhysicalDevice->get()->getLogicalDevice()) 
+#define LOGICAL_DEVICE *(instance->pickedPhysicalDevice->get()->getLogicalDevice())
+#define PHYSICAL_DEVICE instance->pickedPhysicalDevice->get()->getHandle()
 #define GRAPHICS_QUEUE *(instance->pickedPhysicalDevice->get()->getGraphicsQueue()) 
 #define PRESENT_QUEUE *(instance->pickedPhysicalDevice->get()->getPresentQueue()) 
 #define COMPUTE_QUEUE *(instance->pickedPhysicalDevice->get()->getComputeQueue()) 
@@ -59,6 +60,13 @@ typedef struct MyBuffer
 	VkDeviceMemory		deviceMemory;
 	VkDeviceSize		size;
 } MyBuffer;
+
+typedef struct MyImageBuffer
+{
+	VkImage		image;
+	VkDeviceMemory		deviceMemory;
+	VkDeviceSize		size;
+} MyImage;
 
 struct UniformBufferObject {
 	alignas(16) glm::mat4 model;
@@ -125,12 +133,6 @@ public:
     VkPipelineLayout pipelineLayout;
 	VkPipeline graphicsPipeline;
 
-    //std::array<VkDescriptorPool, 1> descriptorPool;//13
-	//std::array<VkDescriptorSetLayout, 1> descriptorSetLayout;//13
-	//std::array<std::vector<VkDescriptorSet>, 1> descriptorSets;//13
-	//std::array<VkPipelineLayout, 1> pipelineLayout;//13
-	//std::array<VkPipeline, 1> graphicsPipeline;//13
-
     std::vector<VkSemaphore> imageAvailableSemaphores;
 	std::vector<VkSemaphore> renderFinishedSemaphores;
     std::vector<VkFence> inFlightFences;
@@ -141,6 +143,13 @@ public:
     std::string vertexShaderPath = "";
     std::string fragmentShaderPath = "";
     std::string computeShaderPath = "";
+
+    //Texture/Model related variables
+    int32_t texWidth, texHeight;
+    std::string texturePath = "";
+	VkSampler textureSampler;
+	MyImageBuffer textureImageBuffer; 
+	VkImageView textureImageView; 
 
     void run();
 
@@ -182,7 +191,7 @@ public:
     void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator);
     
 
-
+    
 
     /*虚函数列表：基类和派生类都实现，默认调用派生类函数版本。如果派生函数没有实现，那么就调用基类版本。*/
     virtual void initVulkan();
@@ -203,11 +212,7 @@ public:
     virtual void CreateDescriptorSetLayout()=0;
     virtual void CreateDescriptorSets()=0;
     virtual void CreateGraphicsPipeline()=0;
-    virtual void Init13CreateDescriptorPool(VkDescriptorPool &descriptorPool, PipelineType pt) = 0;
-    virtual void Init13CreateDescriptorSetLayout(VkDescriptorSetLayout &descriptorSetLayout, PipelineType pt) = 0;
-    virtual void Init13CreateDescriptorSets(VkDescriptorPool &descriptorPool, VkDescriptorSetLayout &descriptorSetLayout, std::vector<VkDescriptorSet> &descriptorSets, PipelineType pt) = 0;
-    virtual void Init14CreateGraphicsPipeline(VkPrimitiveTopology topology, VkShaderModule &vertShaderModule, VkShaderModule &fragShaderModule, VkDescriptorSetLayout &descriptorSetLayout, VkPipelineLayout &pipelineLayout, VkPipeline &graphicsPipeline, PipelineType pt) = 0;
-
+    virtual void CreateImageTexture()=0;
 
 };
 

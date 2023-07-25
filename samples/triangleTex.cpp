@@ -1,10 +1,10 @@
 #include "..\\framework\\vulkanBase.h"
 
-class CSimpleTriangle: public CVulkanBase{
-	std::vector<VkDescriptorType> descriptorTypes{VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER};
-	std::vector<VkShaderStageFlagBits> shaderStageFlagBits{VK_SHADER_STAGE_VERTEX_BIT};
+class CTriangleTex: public CVulkanBase{
+    std::vector<VkDescriptorType> descriptorTypes{VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER};
+	std::vector<VkShaderStageFlagBits> shaderStageFlagBits{VK_SHADER_STAGE_VERTEX_BIT, VK_SHADER_STAGE_FRAGMENT_BIT};
 public:
-    CSimpleTriangle(){
+    CTriangleTex(){
 		/************
 		buffersize: 8(numbers each vertex)*4(float)*4(vertex size)=128（byte）
 		************/
@@ -20,8 +20,10 @@ public:
 		************/
 		indices3D = { 0, 1, 2, 2, 3, 0};
 
-		vertexShaderPath = "../shaders/basic/vert.spv";
-    	fragmentShaderPath = "../shaders/basic/frag.spv";
+		vertexShaderPath = "../shaders/texture/vert_texture.spv";
+    	fragmentShaderPath = "../shaders/texture/frag_texture.spv";
+
+        texturePath = "../textures/texture.jpg";
 
 		/*****
 		 * Other things to prepare
@@ -31,7 +33,7 @@ public:
 		 * ****/
     }
 
-    ~CSimpleTriangle(){
+    ~CTriangleTex(){
 
     }
 
@@ -88,12 +90,14 @@ public:
 		wxjCreateGraphicsPipeline(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
 	}	
 
-	void CreateImageTexture(){
-	}
+    void CreateImageTexture(){
+        wxjCreateImage_texture(texturePath, textureImageBuffer, texWidth, texHeight);
+        wxjCreateSampler_texture();
+    }
 };
 
 int main(){
-	CSimpleTriangle app;
+	CTriangleTex app;
 
 	try {
 		app.run();

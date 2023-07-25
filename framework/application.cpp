@@ -29,6 +29,11 @@ void CApplication::initVulkan(){
 	Init06CreateCommandPool();
 	Init06CreateCommandBuffers();
 
+    if(!texturePath.empty()){
+        CreateImageTexture();
+	    textureImageView = createImageView(textureImageBuffer.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, 1);
+    }
+
     Init08CreateSwapChain();
 
     CreateRenderPass();
@@ -42,13 +47,6 @@ void CApplication::initVulkan(){
     CreateDescriptorSetLayout();
     CreateDescriptorSets();
     CreateGraphicsPipeline();
-
-    //Init13CreateDescriptorPool(descriptorPool[0], (PipelineType)0);
-    //Init13CreateDescriptorSetLayout(descriptorSetLayout[0], (PipelineType)0);
-    //Init13CreateDescriptorSets(descriptorPool[0], descriptorSetLayout[0], descriptorSets[0], (PipelineType)0);
-
-    //Init14CreateGraphicsPipeline(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, vertShaderModule, fragShaderModule, descriptorSetLayout, pipelineLayout[0], graphicsPipeline[0], (PipelineType)0);
-    //Init14CreateGraphicsPipeline(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, vertShaderModule[0], fragShaderModule[0], descriptorSetLayout[0], pipelineLayout[0], graphicsPipeline[0], (PipelineType)0);
 
     createSyncObjects();
 }
@@ -506,6 +504,13 @@ CApplication::~CApplication(){
     vkDestroyDescriptorSetLayout(LOGICAL_DEVICE, descriptorSetLayout, nullptr);
     vkDestroyPipeline(LOGICAL_DEVICE, graphicsPipeline, nullptr);
     vkDestroyPipelineLayout(LOGICAL_DEVICE, pipelineLayout, nullptr);
+
+    if(!texturePath.empty()){
+        vkDestroyImage(LOGICAL_DEVICE, textureImageBuffer.image, nullptr);
+        vkFreeMemory(LOGICAL_DEVICE, textureImageBuffer.deviceMemory, nullptr);
+        vkDestroyImageView(LOGICAL_DEVICE, textureImageView, nullptr);
+    }
+    
     //for (int i = 0; i < 1; i++) {
         //vkDestroyDescriptorPool(LOGICAL_DEVICE, descriptorPool[i], nullptr);
         //vkDestroyDescriptorSetLayout(LOGICAL_DEVICE, descriptorSetLayout[i], nullptr);

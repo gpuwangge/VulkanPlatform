@@ -3,3 +3,4 @@ samples/physicalDeviceLog.txt
 samples/instanceLog.txt
 samples/applicationLog.txt
 samples/logicalDeviceLog.txt
+samples/triangleTex.exe
