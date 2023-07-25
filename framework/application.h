@@ -115,14 +115,21 @@ public:
 
     std::vector<VkFramebuffer> swapChainFramebuffers;//11
 
-    std::array<VkShaderModule, 1> vertShaderModule;//12
-	std::array<VkShaderModule, 1> fragShaderModule;//12
+    VkShaderModule vertShaderModule;//12
+	VkShaderModule fragShaderModule;//12
 
-    std::array<VkDescriptorPool, 1> descriptorPool;//13
-	std::array<VkDescriptorSetLayout, 1> descriptorSetLayout;//13
-	std::array<std::vector<VkDescriptorSet>, 1> descriptorSets;//13
-	std::array<VkPipelineLayout, 1> pipelineLayout;//13
-	std::array<VkPipeline, 1> graphicsPipeline;//13
+    VkDescriptorPool descriptorPool;
+    VkDescriptorSetLayout descriptorSetLayout;
+    std::vector<VkDescriptorSet> descriptorSets;
+
+    VkPipelineLayout pipelineLayout;
+	VkPipeline graphicsPipeline;
+
+    //std::array<VkDescriptorPool, 1> descriptorPool;//13
+	//std::array<VkDescriptorSetLayout, 1> descriptorSetLayout;//13
+	//std::array<std::vector<VkDescriptorSet>, 1> descriptorSets;//13
+	//std::array<VkPipelineLayout, 1> pipelineLayout;//13
+	//std::array<VkPipeline, 1> graphicsPipeline;//13
 
     std::vector<VkSemaphore> imageAvailableSemaphores;
 	std::vector<VkSemaphore> renderFinishedSemaphores;
@@ -190,12 +197,15 @@ public:
 
 
     /*纯虚函数列表：基类不实现，必须由派生类实现*/
-    virtual void Init10CreateRenderPass() = 0;
-    virtual void Init11CreateFramebuffers() = 0;
+    virtual void CreateRenderPass() = 0;
+    virtual void CreateFramebuffers() = 0;
+    virtual void CreateDescriptorPool()=0;
+    virtual void CreateDescriptorSetLayout()=0;
+    virtual void CreateDescriptorSets()=0;
+    virtual void CreateGraphicsPipeline()=0;
     virtual void Init13CreateDescriptorPool(VkDescriptorPool &descriptorPool, PipelineType pt) = 0;
     virtual void Init13CreateDescriptorSetLayout(VkDescriptorSetLayout &descriptorSetLayout, PipelineType pt) = 0;
     virtual void Init13CreateDescriptorSets(VkDescriptorPool &descriptorPool, VkDescriptorSetLayout &descriptorSetLayout, std::vector<VkDescriptorSet> &descriptorSets, PipelineType pt) = 0;
-
     virtual void Init14CreateGraphicsPipeline(VkPrimitiveTopology topology, VkShaderModule &vertShaderModule, VkShaderModule &fragShaderModule, VkDescriptorSetLayout &descriptorSetLayout, VkPipelineLayout &pipelineLayout, VkPipeline &graphicsPipeline, PipelineType pt) = 0;
 
 

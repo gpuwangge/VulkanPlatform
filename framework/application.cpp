@@ -31,18 +31,24 @@ void CApplication::initVulkan(){
 
     Init08CreateSwapChain();
 
-    Init10CreateRenderPass();
+    CreateRenderPass();
 
-    Init11CreateFramebuffers();
+    CreateFramebuffers();
 
-    Init12SpirvShader(vertexShaderPath, &vertShaderModule[0]);
-	Init12SpirvShader(fragmentShaderPath, &fragShaderModule[0]);
+    Init12SpirvShader(vertexShaderPath, &vertShaderModule);
+	Init12SpirvShader(fragmentShaderPath, &fragShaderModule);
 
-    Init13CreateDescriptorPool(descriptorPool[0], (PipelineType)0);
-    Init13CreateDescriptorSetLayout(descriptorSetLayout[0], (PipelineType)0);
-    Init13CreateDescriptorSets(descriptorPool[0], descriptorSetLayout[0], descriptorSets[0], (PipelineType)0);
+    CreateDescriptorPool();
+    CreateDescriptorSetLayout();
+    CreateDescriptorSets();
+    CreateGraphicsPipeline();
 
-    Init14CreateGraphicsPipeline(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, vertShaderModule[0], fragShaderModule[0], descriptorSetLayout[0], pipelineLayout[0], graphicsPipeline[0], (PipelineType)0);
+    //Init13CreateDescriptorPool(descriptorPool[0], (PipelineType)0);
+    //Init13CreateDescriptorSetLayout(descriptorSetLayout[0], (PipelineType)0);
+    //Init13CreateDescriptorSets(descriptorPool[0], descriptorSetLayout[0], descriptorSets[0], (PipelineType)0);
+
+    //Init14CreateGraphicsPipeline(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, vertShaderModule, fragShaderModule, descriptorSetLayout, pipelineLayout[0], graphicsPipeline[0], (PipelineType)0);
+    //Init14CreateGraphicsPipeline(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, vertShaderModule[0], fragShaderModule[0], descriptorSetLayout[0], pipelineLayout[0], graphicsPipeline[0], (PipelineType)0);
 
     createSyncObjects();
 }
@@ -260,7 +266,7 @@ void CApplication::recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t i
     vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 
     //Step3
-    vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline[0]);
+    vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
 
     VkViewport viewport{};
     viewport.x = 0.0f;
@@ -293,7 +299,7 @@ void CApplication::recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t i
         vkCmdBindIndexBuffer(commandBuffer, indexDataBuffer.buffer, 0, VK_INDEX_TYPE_UINT32);
 
         //Descriptor Step 5
-        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout[0], 0, 1, &descriptorSets[0][currentFrame], 0, nullptr);
+        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[currentFrame], 0, nullptr);
 
         //Step5
         vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indices3D.size()), 1, 0, 0, 0);
@@ -496,16 +502,20 @@ CApplication::~CApplication(){
         vkFreeMemory(LOGICAL_DEVICE, uniformBuffers[i].deviceMemory, nullptr);
     }
 
-    for (int i = 0; i < 1; i++) {
-        vkDestroyDescriptorPool(LOGICAL_DEVICE, descriptorPool[i], nullptr);
-        vkDestroyDescriptorSetLayout(LOGICAL_DEVICE, descriptorSetLayout[i], nullptr);
-        vkDestroyPipeline(LOGICAL_DEVICE, graphicsPipeline[i], nullptr);
-        vkDestroyPipelineLayout(LOGICAL_DEVICE, pipelineLayout[i], nullptr);
+    vkDestroyDescriptorPool(LOGICAL_DEVICE, descriptorPool, nullptr);
+    vkDestroyDescriptorSetLayout(LOGICAL_DEVICE, descriptorSetLayout, nullptr);
+    vkDestroyPipeline(LOGICAL_DEVICE, graphicsPipeline, nullptr);
+    vkDestroyPipelineLayout(LOGICAL_DEVICE, pipelineLayout, nullptr);
+    //for (int i = 0; i < 1; i++) {
+        //vkDestroyDescriptorPool(LOGICAL_DEVICE, descriptorPool[i], nullptr);
+        //vkDestroyDescriptorSetLayout(LOGICAL_DEVICE, descriptorSetLayout[i], nullptr);
+        //vkDestroyPipeline(LOGICAL_DEVICE, graphicsPipeline[i], nullptr);
+        //vkDestroyPipelineLayout(LOGICAL_DEVICE, pipelineLayout[i], nullptr);
 
         //vkDestroyImage(logicalDevice, textureImageBuffer[i].image, nullptr);
         //vkFreeMemory(logicalDevice, textureImageBuffer[i].deviceMemory, nullptr);
         //vkDestroyImageView(logicalDevice, textureImageView[i], nullptr);
-    }
+    //}
     // for (int i = 0; i < MIPMAP_TEXTURE_COUNT; i++) {
     //     vkDestroyImage(logicalDevice, textureImageBuffers_mipmap[i].image, nullptr);
     //     vkFreeMemory(logicalDevice, textureImageBuffers_mipmap[i].deviceMemory, nullptr);
