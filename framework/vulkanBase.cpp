@@ -18,27 +18,28 @@ CVulkanBase::CVulkanBase(){
 CVulkanBase::~CVulkanBase(){  
 }
 
-void CVulkanBase::wxjCreateColorAttachment(){  
+void CVulkanBase::wxjCreateColorAttachment(VkImageLayout imageLayout){  
+	//Concept of attachment in Vulkan is like render target in OpenGL
+	//Subpass is a procedure to write/read attachments (a render process can has many subpasses, aka a render pass)
+	//Subpass is designed for mobile TBDR architecture
+	//At the beginning of subpass, attachment is loaded; at the end of attachment, attachment is stored
 	bUseColorAttachment = true;
 
 	colorAttachment.format = swapChainImageFormat;//VK_FORMAT_B8G8R8A8_SRGB
-	//colorAttachment.samples = bEnableMSAA ? msaaSamples : VK_SAMPLE_COUNT_1_BIT;
-	colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+	colorAttachment.samples = msaaSamples;
 	colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 	colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
 	colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
 	colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
 	colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	//colorAttachment.finalLayout = bEnableMSAA ? VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL : VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-	colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+	colorAttachment.finalLayout = imageLayout;
 }
 void CVulkanBase::wxjCreateDepthAttachment(){  
 	bUseDepthAttachment = true;
 
 	//added for model
 	depthAttachment.format = findDepthFormat();
-	//depthAttachment.samples = bEnableMSAA ? msaaSamples : VK_SAMPLE_COUNT_1_BIT;
-	colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+	depthAttachment.samples = msaaSamples;
 	depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 	depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
 	depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
@@ -51,14 +52,14 @@ void CVulkanBase::wxjCreateColorAttachmentResolve(){
 	bUseColorAttachmentResolve = true;
 
 	//added for MSAA
-	// colorAttachmentResolve.format = swapChainImageFormat;
-	// colorAttachmentResolve.samples = VK_SAMPLE_COUNT_1_BIT;
-	// colorAttachmentResolve.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-	// colorAttachmentResolve.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-	// colorAttachmentResolve.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-	// colorAttachmentResolve.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	// colorAttachmentResolve.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	// colorAttachmentResolve.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+	colorAttachmentResolve.format = swapChainImageFormat;
+	colorAttachmentResolve.samples = VK_SAMPLE_COUNT_1_BIT;
+	colorAttachmentResolve.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+	colorAttachmentResolve.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+	colorAttachmentResolve.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+	colorAttachmentResolve.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+	colorAttachmentResolve.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+	colorAttachmentResolve.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 }
 void CVulkanBase::wxjCreateSubpass(){ 
 	uint32_t attachmentCount = 0;
@@ -75,9 +76,9 @@ void CVulkanBase::wxjCreateSubpass(){
 	}
 	if(bUseColorAttachmentResolve){
 		//added for MSAA
-		//colorAttachmentResolveRef.attachment = attachmentCount++;
-		//colorAttachmentResolveRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-		//subpass.pResolveAttachments = &colorAttachmentResolveRef; //added for MSAA
+		colorAttachmentResolveRef.attachment = attachmentCount++;
+		colorAttachmentResolveRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+		subpass.pResolveAttachments = &colorAttachmentResolveRef; //added for MSAA
 	}
 	subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
 	subpass.colorAttachmentCount = 1;
@@ -105,11 +106,11 @@ void CVulkanBase::wxjCreateRenderPass(){
 	VkRenderPassCreateInfo renderPassInfo{};
 	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
 	renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
-	renderPassInfo.pAttachments = attachments.data(); //结构1
+	renderPassInfo.pAttachments = attachments.data(); //1
 	renderPassInfo.subpassCount = 1;
-	renderPassInfo.pSubpasses = &subpass;//结构2
+	renderPassInfo.pSubpasses = &subpass;//2
 	renderPassInfo.dependencyCount = 1;
-	renderPassInfo.pDependencies = &dependency;//结构3
+	renderPassInfo.pDependencies = &dependency;//3
 
 	result = vkCreateRenderPass(LOGICAL_DEVICE, &renderPassInfo, nullptr, &renderPass);
 	if (result != VK_SUCCESS) throw std::runtime_error("failed to create render pass!");
@@ -125,16 +126,17 @@ void CVulkanBase::wxjCreateFramebuffers(){
 	swapChainFramebuffers.resize(swapChainImageViews.size());
 
 	for (size_t i = 0; i < swapChainImageViews.size(); i++) {
-		std::vector<VkImageView> attachments;
-		// if (bEnableMSAA) {
-		//     attachments.push_back(colorImageView_msaa);//for MSAA
-		//     attachments.push_back(depthImageView);//for model
-		//     attachments.push_back(swapChainImageViews[i]);
-		// }
-		// else {
-		attachments.push_back(swapChainImageViews[i]);
-		if(bUseDepthAttachment) attachments.push_back(depthImageView); //for model
-		//}
+		std::vector<VkImageView> attachments; 
+		 if (bUseDepthAttachment && bUseColorAttachmentResolve) {//Renderpass attachment(render target) order: Color, Depth, ColorResolve
+		    attachments.push_back(msaaColorImageView);
+		    attachments.push_back(depthImageView);
+			attachments.push_back(swapChainImageViews[i]);
+		 }else if(bUseDepthAttachment){//Renderpass attachment(render target) order: Color, Depth
+			attachments.push_back(swapChainImageViews[i]);
+			attachments.push_back(depthImageView);
+		}else{ //Renderpass attachment(render target) order: Color
+			attachments.push_back(swapChainImageViews[i]);
+		}
 
 		VkFramebufferCreateInfo framebufferInfo{};
 		framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
@@ -474,8 +476,7 @@ void CVulkanBase::wxjCreateGraphicsPipeline(VkPrimitiveTopology topology){
 	VkPipelineMultisampleStateCreateInfo multisampling{};
 	multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
 	multisampling.sampleShadingEnable = VK_FALSE;
-	//multisampling.rasterizationSamples = bEnableMSAA ? msaaSamples : VK_SAMPLE_COUNT_1_BIT;
-	multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
+	multisampling.rasterizationSamples = msaaSamples;
 
 	//7
 	VkPipelineColorBlendAttachmentState colorBlendAttachment{};
@@ -742,12 +743,12 @@ void CVulkanBase::wxjCreateSampler_texture() {
 	VkResult result = vkCreateSampler(LOGICAL_DEVICE, &samplerInfo, nullptr, &textureSampler);
 	REPORT("vkCreateSampler");
 }
-void CVulkanBase::wxjCreateImageView(IN VkImage image, OUT VkImageView &imageView, VkFormat format, VkImageAspectFlags aspectFlags){
+void CVulkanBase::wxjCreateImageView(IN VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, OUT VkImageView &imageView){
     imageView = createImageView(image, format, aspectFlags, 1);
 }
-void CVulkanBase::wxjCreateImage(OUT MyImageBuffer &imageBuffer, VkFormat format){
+void CVulkanBase::wxjCreateImage(VkSampleCountFlagBits numSamples, VkFormat format, VkImageUsageFlags usage, OUT MyImageBuffer &imageBuffer){
 	int mipLevels = 1;//TODO
-	createImage(swapChainExtent.width, swapChainExtent.height, mipLevels, VK_SAMPLE_COUNT_1_BIT, format, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, imageBuffer);
+	createImage(swapChainExtent.width, swapChainExtent.height, mipLevels, numSamples, format, VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, imageBuffer);
 }
 void CVulkanBase::wxjCreateSwapChainImagesAndImageViews(){
     Init08CreateSwapChain();
@@ -793,6 +794,10 @@ void CVulkanBase::wxjLoadObjModel(const std::string modelName) {
 			indices3D.push_back(uniqueVertices[vertex]);
 		}
 	}
+}
+
+void CVulkanBase::wxjGetMaxUsableSampleCount(){
+	msaaSamples = instance->pickedPhysicalDevice->get()->getMaxUsableSampleCount();
 }
 
 

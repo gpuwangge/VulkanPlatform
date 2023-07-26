@@ -110,8 +110,6 @@ public:
 
     CDebugger * debugger;
 
-    VkSampleCountFlagBits msaaSamples = VK_SAMPLE_COUNT_1_BIT; //03 MSAA
-
 	MyBuffer vertexDataBuffer;  //05
 	MyBuffer indexDataBuffer; //05
     std::vector<MyBuffer> uniformBuffers; //05 用来创建MVP的uniform
@@ -149,20 +147,23 @@ public:
     uint32_t currentFrame = 1;
     std::chrono::_V2::system_clock::time_point lastTime;
 
-    //std::string vertexShaderPath = "";
-    //std::string fragmentShaderPath = "";
-    //std::string computeShaderPath = "";
-
-    //Texture/Model related variables
+    //Resource for Texture
     int32_t texWidth, texHeight;
     //std::string texturePath = "";
 	VkSampler textureSampler;
 	MyImageBuffer textureImageBuffer; 
 	VkImageView textureImageView; 
 
-    //Model related variables
+    //Resource for Depth Test
+    bool bEnableDepthTest;
 	MyImageBuffer depthImageBuffer;
 	VkImageView depthImageView;
+
+    //Resource for MSAA
+    bool bEnableMSAA;
+    MyImageBuffer msaaColorImageBuffer;
+	VkImageView msaaColorImageView;
+    VkSampleCountFlagBits msaaSamples;
 
     void run();
 

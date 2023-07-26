@@ -11,7 +11,6 @@ public:
     /**************
     Interface function to vulkan samples
     ************/
-
     void wxjLoadObjModel(const std::string modelName);
 
     void wxjCreateVertexBuffer();
@@ -32,7 +31,7 @@ public:
     bool bUseDepthAttachment = false;
     VkAttachmentDescription colorAttachmentResolve{};
     bool bUseColorAttachmentResolve = false;
-    void wxjCreateColorAttachment();
+    void wxjCreateColorAttachment(VkImageLayout imageLayout);
     void wxjCreateDepthAttachment();
     void wxjCreateColorAttachmentResolve();
     //RenderPass: Subpass
@@ -58,8 +57,8 @@ public:
 
     void wxjCreateImage_texture(const std::string texturePath, OUT MyImageBuffer &textureImageBuffer, OUT int32_t &texWidth, OUT int32_t &texHeight);
     void wxjCreateSampler_texture();
-    void wxjCreateImageView(IN VkImage image, OUT VkImageView &imageView, VkFormat format, VkImageAspectFlags aspectFlags);
-    void wxjCreateImage(OUT MyImageBuffer &imageBuffer, VkFormat format);
+    void wxjCreateImageView(IN VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, OUT VkImageView &imageView);
+    void wxjCreateImage(VkSampleCountFlagBits numSamples, VkFormat format, VkImageUsageFlags usage, OUT MyImageBuffer &imageBuffer);
 
     void wxjBeginCommandBuffer();
     void wxjBeginRenderPass(std::vector<VkClearValue> &clearValues);
@@ -72,6 +71,8 @@ public:
     void wxjDrawIndexed();
     void wxjEndRenderPass();
     void wxjEndCOmmandBuffer();
+
+    void wxjGetMaxUsableSampleCount();
     /**************
     Application operation functions
     ************/

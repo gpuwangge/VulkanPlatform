@@ -3,6 +3,12 @@
 CApplication::CApplication(){
     debugger = new CDebugger("../logs/applicationLog.txt");
     ubo.model = glm::mat4(1.0f);
+    bEnableMSAA = false;
+    msaaSamples = VK_SAMPLE_COUNT_1_BIT;
+
+    bEnableDepthTest = false;
+
+    textureSampler = NULL;
 }
 
 void CApplication::run(){
@@ -480,15 +486,19 @@ CApplication::~CApplication(){
     //     vkDestroyImage(logicalDevice, textureImageBuffers_mipmap[i].image, nullptr);
     //     vkFreeMemory(logicalDevice, textureImageBuffers_mipmap[i].deviceMemory, nullptr);
     // }
-    //vkDestroyImageView(logicalDevice, colorImageView_msaa, nullptr);
-    //vkDestroyImage(logicalDevice, colorImageBuffer_msaa.image, nullptr);
-    //vkFreeMemory(logicalDevice, colorImageBuffer_msaa.deviceMemory, nullptr);
+    if(bEnableMSAA){
+        vkDestroyImageView(LOGICAL_DEVICE, msaaColorImageView, nullptr);
+        vkDestroyImage(LOGICAL_DEVICE, msaaColorImageBuffer.image, nullptr);
+        vkFreeMemory(LOGICAL_DEVICE, msaaColorImageBuffer.deviceMemory, nullptr);
+    }
 
-    //vkDestroySampler(logicalDevice, textureSampler, nullptr);
+    if(textureSampler) vkDestroySampler(LOGICAL_DEVICE, textureSampler, nullptr);
 
-    vkDestroyImage(LOGICAL_DEVICE, depthImageBuffer.image, nullptr);
-    vkFreeMemory(LOGICAL_DEVICE, depthImageBuffer.deviceMemory, nullptr);
-    vkDestroyImageView(LOGICAL_DEVICE, depthImageView, nullptr);
+    if(bEnableDepthTest){
+        vkDestroyImage(LOGICAL_DEVICE, depthImageBuffer.image, nullptr);
+        vkFreeMemory(LOGICAL_DEVICE, depthImageBuffer.deviceMemory, nullptr);
+        vkDestroyImageView(LOGICAL_DEVICE, depthImageView, nullptr);
+    }
 
     vkDestroyBuffer(LOGICAL_DEVICE, indexDataBuffer.buffer, nullptr);
     vkFreeMemory(LOGICAL_DEVICE, indexDataBuffer.deviceMemory, nullptr);

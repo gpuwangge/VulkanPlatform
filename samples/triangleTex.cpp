@@ -33,12 +33,13 @@ public:
 		//Create texture resource
 		wxjCreateImage_texture("../textures/texture.jpg", textureImageBuffer, texWidth, texHeight);
 		wxjCreateSampler_texture();
-		wxjCreateImageView(textureImageBuffer.image, textureImageView, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT);
+		wxjCreateImageView(textureImageBuffer.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, OUT textureImageView);
 
 		wxjCreateSwapChainImagesAndImageViews();
 
 		//Create Renderpass
-		wxjCreateColorAttachment(); //add this function will enable color attachment (bUseColorAttachment = true)
+		VkImageLayout imageLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+		wxjCreateColorAttachment(imageLayout); //add this function will enable color attachment (bUseColorAttachment = true)
 		wxjCreateSubpass();
 		VkPipelineStageFlags srcPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 		VkPipelineStageFlags dstPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;

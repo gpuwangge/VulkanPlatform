@@ -5,3 +5,4 @@ logs/physicalDeviceLog.txt
 bins/objModel.exe
 bins/simpleTriangle.exe
 bins/triangleTex.exe
+bins/modelMSAA.exe

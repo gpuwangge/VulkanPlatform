@@ -343,14 +343,8 @@ bool CInstance::pickSuitablePhysicalDevice(VkSurfaceKHR surface, const std::vect
             }
 
             pickedPhysicalDevice = &phy_device;
-            //return &phy_device;
             return true;
-            //physicalDevice = device;
-            //whichDeviceSelected = index;
-            //msaaSamples = getMaxUsableSampleCount_msaa();//MSAA 1 VK_SAMPLE_COUNT_1_BIT
-            //break;
         }
-        //index++;
     }
 
     //if (physicalDevice == VK_NULL_HANDLE) {
