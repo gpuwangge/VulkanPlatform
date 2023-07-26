@@ -4,7 +4,7 @@ class TEST_CLASS_NAME: public CVulkanBase{
 public:
     void initialize(){
 		//!To enable MSAA, make sure it has depth test first
-		bEnableMSAA = false;
+		bEnableMSAA = true;
 
 		//Create vertex resource
 		wxjLoadObjModel("../models/viking_room.obj");

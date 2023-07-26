@@ -798,6 +798,7 @@ void CVulkanBase::wxjLoadObjModel(const std::string modelName) {
 
 void CVulkanBase::wxjGetMaxUsableSampleCount(){
 	msaaSamples = instance->pickedPhysicalDevice->get()->getMaxUsableSampleCount();
+	//msaaSamples = VK_SAMPLE_COUNT_1_BIT;
 }
 
 
