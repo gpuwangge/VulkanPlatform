@@ -338,7 +338,6 @@ void CApplication::endSingleTimeCommands(VkCommandBuffer commandBuffer) {
     vkFreeCommandBuffers(LOGICAL_DEVICE, commandPool, 1, &commandBuffer);
 }
 
-
 /**************
 GLFW Utility Functions
 ************/

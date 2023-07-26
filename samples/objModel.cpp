@@ -1,5 +1,5 @@
 #include "..\\framework\\vulkanBase.h"
-#define TEST_CLASS_NAME CTriangleTex
+#define TEST_CLASS_NAME CObjModel
 class TEST_CLASS_NAME: public CVulkanBase{
 public:
     TEST_CLASS_NAME(){
@@ -9,27 +9,14 @@ public:
     }
 
     void initialize(){
-		/************
-		buffersize: 8(numbers each vertex)*4(float)*4(vertex size)=128（byte）
-		************/
-		vertices3D = {
-			{ { -0.5f, -0.5f, 0.0f },{ 1.0f, 0.0f, 0.0f },{ 1.0f, 0.0f } },
-			{ { 0.5f, -0.5f, 0.0f },{ 0.0f, 1.0f, 0.0f },{ 0.0f, 0.0f } },
-			{ { 0.5f, 0.5f, 0.0f },{ 0.0f, 0.0f, 1.0f },{ 0.0f, 1.0f } },
-			{ { -0.5f, 0.5f, 0.0f },{ 1.0f, 1.0f, 1.0f },{ 1.0f, 1.0f } }
-			};
-
-		/************
-		buffer size: 6*4=24（byte）
-		************/
-		indices3D = { 0, 1, 2, 2, 3, 0};
+		wxjLoadObjModel("../models/viking_room.obj");
 
 		wxjCreateVertexBuffer();
 		wxjCreateIndexBuffer();
 		wxjCreateUniformBuffers();
 		wxjCreateCommandBuffer();
 
-		wxjCreateImage_texture("../textures/texture.jpg", textureImageBuffer, texWidth, texHeight);
+		wxjCreateImage_texture("../textures/viking_room.png", textureImageBuffer, texWidth, texHeight);
 		wxjCreateSampler_texture();
 		wxjCreateImageView(textureImageBuffer.image);
 
@@ -44,8 +31,8 @@ public:
 
 		wxjCreateFramebuffers();
 
-		wxjCreateVertexShader("../shaders/texture/vert_texture.spv");
-		wxjCreateFragmentShader("../shaders/texture/frag_texture.spv");
+		wxjCreateVertexShader("../shaders/model/vert_model.spv");
+		wxjCreateFragmentShader("../shaders/model/frag_model.spv");
 
 		std::vector<VkDescriptorType> descriptorTypes{VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER};
 		std::vector<VkShaderStageFlagBits> shaderStageFlagBits{VK_SHADER_STAGE_VERTEX_BIT, VK_SHADER_STAGE_FRAGMENT_BIT};

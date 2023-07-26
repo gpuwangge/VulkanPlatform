@@ -11,6 +11,9 @@ public:
     /**************
     Interface function to vulkan samples
     ************/
+
+    void wxjLoadObjModel(const std::string modelName);
+
     void wxjCreateVertexBuffer();
     void wxjCreateIndexBuffer();
     void wxjCreateUniformBuffers();

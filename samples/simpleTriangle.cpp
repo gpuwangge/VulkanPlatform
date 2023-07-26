@@ -13,7 +13,6 @@ public:
     }
 
     ~TEST_CLASS_NAME(){
-
     }
 
 	void initialize(){
@@ -70,8 +69,6 @@ public:
 	}
 
 	void recordCommandBuffer(){
-		//printf("triangle recordCommandBuffer...\n");
-
 		wxjBeginCommandBuffer();
 
 		std::vector<VkClearValue> clearValues{ {  0.0f, 0.0f, 0.0f, 1.0f  } };
