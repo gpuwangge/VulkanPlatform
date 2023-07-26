@@ -17,14 +17,10 @@ public:
 		wxjCreateCommandBuffer();
 
 		wxjCreateImage_texture("../textures/viking_room.png", textureImageBuffer, texWidth, texHeight);
-		wxjCreateSampler_texture();
 		wxjCreateImageView(textureImageBuffer.image, textureImageView, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT);
+		wxjCreateSampler_texture();
 
 		wxjCreateSwapChain();
-
-		VkFormat depthFormat = findDepthFormat();
-		wxjCreateImage(depthImageBuffer, depthFormat);
-		wxjCreateImageView(depthImageBuffer.image, depthImageView, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT);
 
 		wxjCreateColorAttachment();
 		wxjCreatDepthAttachment();
@@ -34,6 +30,10 @@ public:
 		VkPipelineStageFlags dstPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
 		wxjCreateDependency(srcPipelineStageFlag, dstPipelineStageFlag);
 		wxjCreateRenderPass();
+
+		VkFormat depthFormat = findDepthFormat();
+		wxjCreateImage(depthImageBuffer, depthFormat);
+		wxjCreateImageView(depthImageBuffer.image, depthImageView, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT);
 
 		wxjCreateFramebuffers();
 

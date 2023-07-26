@@ -146,7 +146,7 @@ public:
 	std::vector<VkSemaphore> renderFinishedSemaphores;
     std::vector<VkFence> inFlightFences;
 
-    uint32_t currentFrame = 0;
+    uint32_t currentFrame = 1;
     std::chrono::_V2::system_clock::time_point lastTime;
 
     //std::string vertexShaderPath = "";
