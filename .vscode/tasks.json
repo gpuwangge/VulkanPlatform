@@ -29,7 +29,7 @@
                 "-lvulkan-1",
                 "-lglfw3dll",  
                 "-o",
-                "${fileDirname}\\${fileBasenameNoExtension}.exe"
+                "${fileDirname}\\..\\bins\\${fileBasenameNoExtension}.exe"
             ],
             "options": {
                 "cwd": "${fileDirname}"

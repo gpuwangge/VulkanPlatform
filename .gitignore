@@ -1,7 +1,7 @@
-samples/simpleTriangle.exe
-samples/physicalDeviceLog.txt
-samples/instanceLog.txt
-samples/applicationLog.txt
-samples/logicalDeviceLog.txt
-samples/triangleTex.exe
-samples/objModel.exe
+logs/instanceLog.txt
+logs/logicalDeviceLog.txt
+logs/applicationLog.txt
+logs/physicalDeviceLog.txt
+bins/objModel.exe
+bins/simpleTriangle.exe
+bins/triangleTex.exe

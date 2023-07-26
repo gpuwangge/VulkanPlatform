@@ -1,7 +1,7 @@
 #include "application.h"
 
 CApplication::CApplication(){
-    debugger = new CDebugger("applicationLog.txt");
+    debugger = new CDebugger("../logs/applicationLog.txt");
     ubo.model = glm::mat4(1.0f);
 }
 

@@ -4,7 +4,7 @@
 
 CPhysicalDevice::CPhysicalDevice(VkPhysicalDevice physical_device) : handle(physical_device) {
 //CPhysicalDevice(CInstance *instance, VkPhysicalDevice physical_device){
-    debugger = new CDebugger("physicalDeviceLog.txt");
+    debugger = new CDebugger("../logs/physicalDeviceLog.txt");
 }
 
  void CPhysicalDevice::setInstance(CInstance *instance){
