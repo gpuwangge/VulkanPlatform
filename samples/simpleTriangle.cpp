@@ -3,18 +3,6 @@
 #define TEST_CLASS_NAME CSimpleTriangle
 class TEST_CLASS_NAME: public CVulkanBase{
 public:
-    TEST_CLASS_NAME(){
-		/*****
-		 * Other things to prepare
-		 * Renderpass: colorAttachment, depthAttachment(for model), colorAttachmentResolve(for MSAA)
-		 * Framebuffer: swapChainImageViews[i], depthImageView(for model), colorImageView_msaa(for MSAA)
-		 * Descriptor: VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER (for MVP),VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER (for texture), VK_DESCRIPTOR_TYPE_STORAGE_BUFFER (for compute shader)
-		 * ****/
-    }
-
-    ~TEST_CLASS_NAME(){
-    }
-
 	void initialize(){
 		/************
 		buffersize: 8(numbers each vertex)*4(float)*4(vertex size)=128（byte）
@@ -31,16 +19,16 @@ public:
 		************/
 		indices3D = { 0, 1, 2, 2, 3, 0};
 
+		//Create buffers
 		wxjCreateVertexBuffer();
 		wxjCreateIndexBuffer();
 		wxjCreateUniformBuffers();
 		wxjCreateCommandBuffer();
 
-		wxjCreateSwapChain();
+		wxjCreateSwapChainImagesAndImageViews();
 
-		wxjCreateColorAttachment();
-		//wxjCreatDepthAttachment();
-		//wxjCreatColorAttachmentResolve();
+		//Create Renderpass
+		wxjCreateColorAttachment(); //add this function will enable color attachment (bUseColorAttachment = true)
 		wxjCreateSubpass();
 		VkPipelineStageFlags srcPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 		VkPipelineStageFlags dstPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
@@ -49,9 +37,11 @@ public:
 
 		wxjCreateFramebuffers();
 
+		//Create shader resource
 		wxjCreateVertexShader("../shaders/basic/vert.spv");
 		wxjCreateFragmentShader("../shaders/basic/frag.spv");
 
+		//Create Descriptors
 		std::vector<VkDescriptorType> descriptorTypes{VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER};
 		std::vector<VkShaderStageFlagBits> shaderStageFlagBits{VK_SHADER_STAGE_VERTEX_BIT};
 		wxjCreateDescriptorPool(descriptorTypes);
@@ -59,8 +49,6 @@ public:
 		wxjCreateDescriptorSets(descriptorTypes);
 
 		wxjCreateGraphicsPipeline(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
-
-		wxjCreateSyncObjects();
 
 		CApplication::initialize();
 	}

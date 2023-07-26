@@ -32,11 +32,10 @@ void CVulkanBase::wxjCreateColorAttachment(){
 	//colorAttachment.finalLayout = bEnableMSAA ? VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL : VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 	colorAttachment.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 }
-void CVulkanBase::wxjCreatDepthAttachment(){  
+void CVulkanBase::wxjCreateDepthAttachment(){  
 	bUseDepthAttachment = true;
 
 	//added for model
-	VkAttachmentDescription depthAttachment{};
 	depthAttachment.format = findDepthFormat();
 	//depthAttachment.samples = bEnableMSAA ? msaaSamples : VK_SAMPLE_COUNT_1_BIT;
 	colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
@@ -48,11 +47,10 @@ void CVulkanBase::wxjCreatDepthAttachment(){
 	depthAttachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
     
 }
-void CVulkanBase::wxjCreatColorAttachmentResolve(){  
+void CVulkanBase::wxjCreateColorAttachmentResolve(){  
 	bUseColorAttachmentResolve = true;
 
 	//added for MSAA
-	// VkAttachmentDescription colorAttachmentResolve{};
 	// colorAttachmentResolve.format = swapChainImageFormat;
 	// colorAttachmentResolve.samples = VK_SAMPLE_COUNT_1_BIT;
 	// colorAttachmentResolve.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
@@ -88,7 +86,7 @@ void CVulkanBase::wxjCreateDependency(VkPipelineStageFlags srcPipelineStageFlag,
 	dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
 	dependency.dstSubpass = 0;
 	dependency.srcStageMask = srcPipelineStageFlag;
-	dependency.srcAccessMask = 0;
+	dependency.srcAccessMask = 0;//VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT
 	dependency.dstStageMask = dstPipelineStageFlag;
 	dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
 	if (bUseDepthAttachment) 
@@ -134,8 +132,8 @@ void CVulkanBase::wxjCreateFramebuffers(){
 		//     attachments.push_back(swapChainImageViews[i]);
 		// }
 		// else {
-			attachments.push_back(swapChainImageViews[i]);
-			attachments.push_back(depthImageView);//for model
+		attachments.push_back(swapChainImageViews[i]);
+		if(bUseDepthAttachment) attachments.push_back(depthImageView); //for model
 		//}
 
 		VkFramebufferCreateInfo framebufferInfo{};
@@ -425,7 +423,7 @@ void CVulkanBase::wxjCreateGraphicsPipeline(VkPrimitiveTopology topology){
 
 	VkPipelineShaderStageCreateInfo shaderStages[] = { vertShaderStageInfo, fragShaderStageInfo };
 
-	//2 组装Vertex Info
+	//2 Asemble Vertex Info
 	VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
 	vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 
@@ -449,19 +447,19 @@ void CVulkanBase::wxjCreateGraphicsPipeline(VkPrimitiveTopology topology){
 		vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
 	//}
 
-	//3 组装拓扑结构
+	//3
 	VkPipelineInputAssemblyStateCreateInfo inputAssembly{};
 	inputAssembly.sType = VK_STRUCTURE_TYPE_PIPELINE_INPUT_ASSEMBLY_STATE_CREATE_INFO;
 	inputAssembly.topology = topology;
 	inputAssembly.primitiveRestartEnable = VK_FALSE;
 
-	//4 组装Viewport
+	//4
 	VkPipelineViewportStateCreateInfo viewportState{};
 	viewportState.sType = VK_STRUCTURE_TYPE_PIPELINE_VIEWPORT_STATE_CREATE_INFO;
 	viewportState.viewportCount = 1;
 	viewportState.scissorCount = 1;
 
-	//5 组装光栅化信息
+	//5
 	VkPipelineRasterizationStateCreateInfo rasterizer{};
 	rasterizer.sType = VK_STRUCTURE_TYPE_PIPELINE_RASTERIZATION_STATE_CREATE_INFO;
 	rasterizer.depthClampEnable = VK_FALSE;
@@ -472,14 +470,14 @@ void CVulkanBase::wxjCreateGraphicsPipeline(VkPrimitiveTopology topology){
 	rasterizer.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
 	rasterizer.depthBiasEnable = VK_FALSE;
 
-	//6 组装MSAA组件
+	//6
 	VkPipelineMultisampleStateCreateInfo multisampling{};
 	multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
 	multisampling.sampleShadingEnable = VK_FALSE;
 	//multisampling.rasterizationSamples = bEnableMSAA ? msaaSamples : VK_SAMPLE_COUNT_1_BIT;
 	multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT;
 
-	//7 组装color blend组件
+	//7
 	VkPipelineColorBlendAttachmentState colorBlendAttachment{};
 	colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
 
@@ -507,7 +505,7 @@ void CVulkanBase::wxjCreateGraphicsPipeline(VkPrimitiveTopology topology){
 	colorBlending.blendConstants[2] = 0.0f;
 	colorBlending.blendConstants[3] = 0.0f;
 
-	//8 组装dynamicState
+	//8
 	std::vector<VkDynamicState> dynamicStates = {
 		VK_DYNAMIC_STATE_VIEWPORT,
 		VK_DYNAMIC_STATE_SCISSOR
@@ -517,7 +515,7 @@ void CVulkanBase::wxjCreateGraphicsPipeline(VkPrimitiveTopology topology){
 	dynamicState.dynamicStateCount = static_cast<uint32_t>(dynamicStates.size());
 	dynamicState.pDynamicStates = dynamicStates.data();
 
-	//9 组装Pipeline Layout
+	//9
 	VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
 	pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
 	// if (pt == PIPELINE_COMPUTE) {
@@ -535,12 +533,12 @@ void CVulkanBase::wxjCreateGraphicsPipeline(VkPrimitiveTopology topology){
 	VkGraphicsPipelineCreateInfo pipelineInfo{};
 	pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
 	pipelineInfo.stageCount = 2;
-	pipelineInfo.pStages = shaderStages;	//1 组装Shader
-	pipelineInfo.pVertexInputState = &vertexInputInfo;	//2 组装Vertex Info
-	pipelineInfo.pInputAssemblyState = &inputAssembly;	//3 组装拓扑结构
-	pipelineInfo.pViewportState = &viewportState;	//4 组装Viewport
-	pipelineInfo.pRasterizationState = &rasterizer;	//5 组装光栅化信息
-	pipelineInfo.pMultisampleState = &multisampling;	//6 组装MSAA组件
+	pipelineInfo.pStages = shaderStages;	//1
+	pipelineInfo.pVertexInputState = &vertexInputInfo;	//2
+	pipelineInfo.pInputAssemblyState = &inputAssembly;	//3
+	pipelineInfo.pViewportState = &viewportState;	//4
+	pipelineInfo.pRasterizationState = &rasterizer;	//5
+	pipelineInfo.pMultisampleState = &multisampling; //6
 
 	if (bUseDepthAttachment) {
 		VkPipelineDepthStencilStateCreateInfo depthStencil{};
@@ -553,10 +551,10 @@ void CVulkanBase::wxjCreateGraphicsPipeline(VkPrimitiveTopology topology){
 		pipelineInfo.pDepthStencilState = &depthStencil;
 	}
 
-	pipelineInfo.pColorBlendState = &colorBlending;	//7 组装color blend组件
-	pipelineInfo.pDynamicState = &dynamicState;	//8 组装dynamicState
-	pipelineInfo.layout = pipelineLayout;	//9 组装Pipeline Layout
-	pipelineInfo.renderPass = renderPass;	//10 组装RenderPass
+	pipelineInfo.pColorBlendState = &colorBlending;	//7 
+	pipelineInfo.pDynamicState = &dynamicState;	//8 
+	pipelineInfo.layout = pipelineLayout;	//9 
+	pipelineInfo.renderPass = renderPass;	//10 
 	pipelineInfo.subpass = 0;
 	pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 
@@ -577,9 +575,9 @@ void CVulkanBase::wxjCreateFragmentShader(std::string shaderName){
 	Init12SpirvShader(shaderName, &fragShaderModule);
 }
 
-void CVulkanBase::wxjCreateSyncObjects(){
-    createSyncObjects();
-}
+// void CVulkanBase::wxjCreateSyncObjects(){
+//     createSyncObjects();
+// }
 
 void CVulkanBase::wxjCreateCommandBuffer(){
 	Init06CreateCommandPool();
@@ -604,7 +602,7 @@ void CVulkanBase::wxjBeginCommandBuffer(){
         throw std::runtime_error("failed to begin recording command buffer!");
     }
 }
-void CVulkanBase::wxjBeginRenderPass(std::vector<VkClearValue> &clearValues0){
+void CVulkanBase::wxjBeginRenderPass(std::vector<VkClearValue> &clearValues){
     VkRenderPassBeginInfo renderPassInfo{};
     renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
     renderPassInfo.renderPass = renderPass;
@@ -612,17 +610,17 @@ void CVulkanBase::wxjBeginRenderPass(std::vector<VkClearValue> &clearValues0){
     renderPassInfo.renderArea.offset = { 0, 0 };
     renderPassInfo.renderArea.extent = swapChainExtent;
 
-    std::array<VkClearValue, 2> clearValues{};
+    //std::array<VkClearValue, 2> clearValues{};
     // if (bEnableDepthTest) {
-        clearValues[0].color = { { 0.0f, 0.0f, 0.0f, 1.0f } };
-        clearValues[1].depthStencil = { 1.0f, 0 };
-        renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
-        renderPassInfo.pClearValues = clearValues.data();
+        // clearValues[0].color = { { 0.0f, 0.0f, 0.0f, 1.0f } };
+        // clearValues[1].depthStencil = { 1.0f, 0 };
+        // renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
+        // renderPassInfo.pClearValues = clearValues.data();
     // }
     // else {
     	//clearValues[0].color = { {  0.0f, 0.0f, 0.0f, 1.0f  } };
-    	//renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
-    	//renderPassInfo.pClearValues = clearValues.data();
+    	renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
+    	renderPassInfo.pClearValues = clearValues.data();
     //}
 
     //Step2
@@ -751,7 +749,7 @@ void CVulkanBase::wxjCreateImage(OUT MyImageBuffer &imageBuffer, VkFormat format
 	int mipLevels = 1;//TODO
 	createImage(swapChainExtent.width, swapChainExtent.height, mipLevels, VK_SAMPLE_COUNT_1_BIT, format, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, imageBuffer);
 }
-void CVulkanBase::wxjCreateSwapChain(){
+void CVulkanBase::wxjCreateSwapChainImagesAndImageViews(){
     Init08CreateSwapChain();
 }
 

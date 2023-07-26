@@ -24,21 +24,21 @@ public:
 		************/
 		indices3D = { 0, 1, 2, 2, 3, 0};
 
+		//Create buffers
 		wxjCreateVertexBuffer();
 		wxjCreateIndexBuffer();
 		wxjCreateUniformBuffers();
 		wxjCreateCommandBuffer();
 
+		//Create texture resource
 		wxjCreateImage_texture("../textures/texture.jpg", textureImageBuffer, texWidth, texHeight);
 		wxjCreateSampler_texture();
 		wxjCreateImageView(textureImageBuffer.image, textureImageView, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT);
 
+		wxjCreateSwapChainImagesAndImageViews();
 
-		wxjCreateSwapChain();
-
-		wxjCreateColorAttachment();
-		//wxjCreatDepthAttachment();
-		//wxjCreatColorAttachmentResolve();
+		//Create Renderpass
+		wxjCreateColorAttachment(); //add this function will enable color attachment (bUseColorAttachment = true)
 		wxjCreateSubpass();
 		VkPipelineStageFlags srcPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 		VkPipelineStageFlags dstPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
@@ -47,9 +47,11 @@ public:
 
 		wxjCreateFramebuffers();
 
+		//Create shader resource
 		wxjCreateVertexShader("../shaders/texture/vert_texture.spv");
 		wxjCreateFragmentShader("../shaders/texture/frag_texture.spv");
 
+		//Create Descriptors
 		std::vector<VkDescriptorType> descriptorTypes{VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER};
 		std::vector<VkShaderStageFlagBits> shaderStageFlagBits{VK_SHADER_STAGE_VERTEX_BIT, VK_SHADER_STAGE_FRAGMENT_BIT};
 		wxjCreateDescriptorPool(descriptorTypes);
@@ -57,8 +59,6 @@ public:
 		wxjCreateDescriptorSets(descriptorTypes);
 
 		wxjCreateGraphicsPipeline(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
-
-		wxjCreateSyncObjects();
 
 		CApplication::initialize();
 	}

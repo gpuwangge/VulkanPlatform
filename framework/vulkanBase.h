@@ -20,7 +20,7 @@ public:
 
     void wxjCreateCommandBuffer();
 
-    void wxjCreateSwapChain();
+    void wxjCreateSwapChainImagesAndImageViews();
 
     void wxjCreateVertexShader(std::string shaderName);
     void wxjCreateFragmentShader(std::string shaderName);
@@ -33,8 +33,8 @@ public:
     VkAttachmentDescription colorAttachmentResolve{};
     bool bUseColorAttachmentResolve = false;
     void wxjCreateColorAttachment();
-    void wxjCreatDepthAttachment();
-    void wxjCreatColorAttachmentResolve();
+    void wxjCreateDepthAttachment();
+    void wxjCreateColorAttachmentResolve();
     //RenderPass: Subpass
     VkAttachmentReference colorAttachmentRef{};
     VkAttachmentReference depthAttachmentRef{};
@@ -54,7 +54,7 @@ public:
     void wxjCreateDescriptorSets(std::vector<VkDescriptorType> &descriptorTypes);
     void wxjCreateGraphicsPipeline(VkPrimitiveTopology topology);
 
-    void wxjCreateSyncObjects();
+    //void wxjCreateSyncObjects();
 
     void wxjCreateImage_texture(const std::string texturePath, OUT MyImageBuffer &textureImageBuffer, OUT int32_t &texWidth, OUT int32_t &texHeight);
     void wxjCreateSampler_texture();

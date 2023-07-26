@@ -13,7 +13,7 @@ void CApplication::run(){
 }
 
 void CApplication::initialize(){
-    
+    createSyncObjects();
 }
 
 void CApplication::prepareVulkanDevices(){
@@ -171,16 +171,16 @@ void CApplication::Init08CreateSwapChain() {
     createInfo.presentMode = presentMode;
     createInfo.clipped = VK_TRUE;
 
-    //生成swapChain
+    //generate swapChain images (swapChainImages)
     result = vkCreateSwapchainKHR(LOGICAL_DEVICE, &createInfo, nullptr, &swapChain);
     if (result != VK_SUCCESS) throw std::runtime_error("failed to create swap chain!");
     REPORT("vkCreateSwapchainKHR");
 
     result = vkGetSwapchainImagesKHR(LOGICAL_DEVICE, swapChain, &imageCount, nullptr);
-    REPORT("vkGetSwapchainImagesKHR - 0 (Get imageCount)");
+    REPORT("vkGetSwapchainImagesKHR(Get imageCount)");
     swapChainImages.resize(imageCount);
     result = vkGetSwapchainImagesKHR(LOGICAL_DEVICE, swapChain, &imageCount, swapChainImages.data());
-    REPORT("vkGetSwapchainImagesKHR - 1");
+    REPORT("vkGetSwapchainImagesKHR");
 
     swapChainImageFormat = surfaceFormat.format;
     swapChainExtent = extent;
@@ -188,7 +188,7 @@ void CApplication::Init08CreateSwapChain() {
     // present views for the double-buffering:
     swapChainImageViews.resize(swapChainImages.size());
 
-    //生成swapChainImageViews
+    //generate swapChainImageViews
     for (size_t i = 0; i < swapChainImages.size(); i++) {
         swapChainImageViews[i] = createImageView(swapChainImages[i], swapChainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
         REPORT("vkCreateImageView");
