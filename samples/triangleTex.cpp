@@ -31,7 +31,8 @@ public:
 
 		wxjCreateImage_texture("../textures/texture.jpg", textureImageBuffer, texWidth, texHeight);
 		wxjCreateSampler_texture();
-		wxjCreateImageView(textureImageBuffer.image);
+		wxjCreateImageView(textureImageBuffer.image, textureImageView, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT);
+
 
 		wxjCreateSwapChain();
 
@@ -39,7 +40,9 @@ public:
 		//wxjCreatDepthAttachment();
 		//wxjCreatColorAttachmentResolve();
 		wxjCreateSubpass();
-		wxjCreateDependency();
+		VkPipelineStageFlags srcPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+		VkPipelineStageFlags dstPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+		wxjCreateDependency(srcPipelineStageFlag, dstPipelineStageFlag);
 		wxjCreateRenderPass();
 
 		wxjCreateFramebuffers();

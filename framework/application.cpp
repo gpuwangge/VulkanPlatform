@@ -486,9 +486,9 @@ CApplication::~CApplication(){
 
     //vkDestroySampler(logicalDevice, textureSampler, nullptr);
 
-    //vkDestroyImage(logicalDevice, depthImageBuffer.image, nullptr);
-    //vkFreeMemory(logicalDevice, depthImageBuffer.deviceMemory, nullptr);
-    //vkDestroyImageView(logicalDevice, depthImageView, nullptr);
+    vkDestroyImage(LOGICAL_DEVICE, depthImageBuffer.image, nullptr);
+    vkFreeMemory(LOGICAL_DEVICE, depthImageBuffer.deviceMemory, nullptr);
+    vkDestroyImageView(LOGICAL_DEVICE, depthImageView, nullptr);
 
     vkDestroyBuffer(LOGICAL_DEVICE, indexDataBuffer.buffer, nullptr);
     vkFreeMemory(LOGICAL_DEVICE, indexDataBuffer.deviceMemory, nullptr);

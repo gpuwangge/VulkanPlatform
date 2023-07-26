@@ -18,15 +18,21 @@ public:
 
 		wxjCreateImage_texture("../textures/viking_room.png", textureImageBuffer, texWidth, texHeight);
 		wxjCreateSampler_texture();
-		wxjCreateImageView(textureImageBuffer.image);
+		wxjCreateImageView(textureImageBuffer.image, textureImageView, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT);
 
 		wxjCreateSwapChain();
 
+		VkFormat depthFormat = findDepthFormat();
+		wxjCreateImage(depthImageBuffer, depthFormat);
+		wxjCreateImageView(depthImageBuffer.image, depthImageView, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT);
+
 		wxjCreateColorAttachment();
-		//wxjCreatDepthAttachment();
+		wxjCreatDepthAttachment();
 		//wxjCreatColorAttachmentResolve();
 		wxjCreateSubpass();
-		wxjCreateDependency();
+		VkPipelineStageFlags srcPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+		VkPipelineStageFlags dstPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+		wxjCreateDependency(srcPipelineStageFlag, dstPipelineStageFlag);
 		wxjCreateRenderPass();
 
 		wxjCreateFramebuffers();
@@ -55,7 +61,7 @@ public:
 	void recordCommandBuffer(){
 		wxjBeginCommandBuffer();
 
-		std::vector<VkClearValue> clearValues{ {  1.0f, 1.0f, 1.0f, 1.0f  } };
+		std::vector<VkClearValue> clearValues{ {  1.0f, 1.0f, 1.0f, 1.0f  },  { 1.0f, 0 } };
 		wxjBeginRenderPass(clearValues);
 
 		wxjBindPipeline();

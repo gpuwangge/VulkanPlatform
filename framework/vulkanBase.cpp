@@ -36,15 +36,16 @@ void CVulkanBase::wxjCreatDepthAttachment(){
 	bUseDepthAttachment = true;
 
 	//added for model
-	// VkAttachmentDescription depthAttachment{};
-	// depthAttachment.format = findDepthFormat();
-	// depthAttachment.samples = bEnableMSAA ? msaaSamples : VK_SAMPLE_COUNT_1_BIT;
-	// depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-	// depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	// depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-	// depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	// depthAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	// depthAttachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+	VkAttachmentDescription depthAttachment{};
+	depthAttachment.format = findDepthFormat();
+	//depthAttachment.samples = bEnableMSAA ? msaaSamples : VK_SAMPLE_COUNT_1_BIT;
+	colorAttachment.samples = VK_SAMPLE_COUNT_1_BIT;
+	depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+	depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+	depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+	depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+	depthAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+	depthAttachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
     
 }
 void CVulkanBase::wxjCreatColorAttachmentResolve(){  
@@ -61,43 +62,37 @@ void CVulkanBase::wxjCreatColorAttachmentResolve(){
 	// colorAttachmentResolve.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 	// colorAttachmentResolve.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 }
-void CVulkanBase::wxjCreateSubpass(){  
+void CVulkanBase::wxjCreateSubpass(){ 
+	uint32_t attachmentCount = 0;
 	if(bUseColorAttachment){
-		colorAttachmentRef.attachment = 0;
+		colorAttachmentRef.attachment = attachmentCount++;
 		colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-
 		subpass.pColorAttachments = &colorAttachmentRef;
 	}
 	if(bUseDepthAttachment){
 		//added for model
-		//depthAttachmentRef.attachment = 1;
-		//depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-		//subpass.pDepthStencilAttachment = &depthAttachmentRef; //added for model
+		depthAttachmentRef.attachment = attachmentCount++;
+		depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+		subpass.pDepthStencilAttachment = &depthAttachmentRef; //added for model
 	}
 	if(bUseColorAttachmentResolve){
 		//added for MSAA
-		//colorAttachmentResolveRef.attachment = 2;
+		//colorAttachmentResolveRef.attachment = attachmentCount++;
 		//colorAttachmentResolveRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 		//subpass.pResolveAttachments = &colorAttachmentResolveRef; //added for MSAA
 	}
 	subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
 	subpass.colorAttachmentCount = 1;
 }
-void CVulkanBase::wxjCreateDependency(){  
+void CVulkanBase::wxjCreateDependency(VkPipelineStageFlags srcPipelineStageFlag, VkPipelineStageFlags dstPipelineStageFlag){  
 	dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
 	dependency.dstSubpass = 0;
-	// if (bEnableDepthTest) {
-	//     dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-	//     dependency.srcAccessMask = 0;
-	//     dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-	//     dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT | VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
-	// }
-	// else {
-		dependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-		dependency.srcAccessMask = 0;
-		dependency.dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-		dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-	//}
+	dependency.srcStageMask = srcPipelineStageFlag;
+	dependency.srcAccessMask = 0;
+	dependency.dstStageMask = dstPipelineStageFlag;
+	dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+	if (bUseDepthAttachment) 
+		dependency.dstAccessMask |= VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
 }
 void CVulkanBase::wxjCreateRenderPass(){ 
 	HERE_I_AM("wxjCreateRenderPass");
@@ -140,7 +135,7 @@ void CVulkanBase::wxjCreateFramebuffers(){
 		// }
 		// else {
 			attachments.push_back(swapChainImageViews[i]);
-			//attachments.push_back(depthImageView);//for model
+			attachments.push_back(depthImageView);//for model
 		//}
 
 		VkFramebufferCreateInfo framebufferInfo{};
@@ -550,16 +545,16 @@ void CVulkanBase::wxjCreateGraphicsPipeline(VkPrimitiveTopology topology){
 	pipelineInfo.pRasterizationState = &rasterizer;	//5 组装光栅化信息
 	pipelineInfo.pMultisampleState = &multisampling;	//6 组装MSAA组件
 
-	// if (bEnableDepthTest) {
-	// 	VkPipelineDepthStencilStateCreateInfo depthStencil{};
-	// 	depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
-	// 	depthStencil.depthTestEnable = VK_TRUE;
-	// 	depthStencil.depthWriteEnable = VK_TRUE;
-	// 	depthStencil.depthCompareOp = VK_COMPARE_OP_LESS;
-	// 	depthStencil.depthBoundsTestEnable = VK_FALSE;
-	// 	depthStencil.stencilTestEnable = VK_FALSE;
-	// 	pipelineInfo.pDepthStencilState = &depthStencil;
-	// }
+	if (bUseDepthAttachment) {
+		VkPipelineDepthStencilStateCreateInfo depthStencil{};
+		depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
+		depthStencil.depthTestEnable = VK_TRUE;
+		depthStencil.depthWriteEnable = VK_TRUE;
+		depthStencil.depthCompareOp = VK_COMPARE_OP_LESS;
+		depthStencil.depthBoundsTestEnable = VK_FALSE;
+		depthStencil.stencilTestEnable = VK_FALSE;
+		pipelineInfo.pDepthStencilState = &depthStencil;
+	}
 
 	pipelineInfo.pColorBlendState = &colorBlending;	//7 组装color blend组件
 	pipelineInfo.pDynamicState = &dynamicState;	//8 组装dynamicState
@@ -612,7 +607,7 @@ void CVulkanBase::wxjBeginCommandBuffer(){
         throw std::runtime_error("failed to begin recording command buffer!");
     }
 }
-void CVulkanBase::wxjBeginRenderPass(std::vector<VkClearValue> &clearValues){
+void CVulkanBase::wxjBeginRenderPass(std::vector<VkClearValue> &clearValues0){
     VkRenderPassBeginInfo renderPassInfo{};
     renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
     renderPassInfo.renderPass = renderPass;
@@ -620,17 +615,17 @@ void CVulkanBase::wxjBeginRenderPass(std::vector<VkClearValue> &clearValues){
     renderPassInfo.renderArea.offset = { 0, 0 };
     renderPassInfo.renderArea.extent = swapChainExtent;
 
-    //std::array<VkClearValue, 2> clearValues{};
+    std::array<VkClearValue, 2> clearValues{};
     // if (bEnableDepthTest) {
-    //     clearValues[0].color = { { 0.0f, 0.0f, 0.0f, 1.0f } };
-    //     clearValues[1].depthStencil = { 1.0f, 0 };
-    //     renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
-    //     renderPassInfo.pClearValues = clearValues.data();
+        clearValues[0].color = { { 0.0f, 0.0f, 0.0f, 1.0f } };
+        clearValues[1].depthStencil = { 1.0f, 0 };
+        renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
+        renderPassInfo.pClearValues = clearValues.data();
     // }
     // else {
-    //clearValues[0].color = { {  0.0f, 0.0f, 0.0f, 1.0f  } };
-    renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
-    renderPassInfo.pClearValues = clearValues.data();
+    	//clearValues[0].color = { {  0.0f, 0.0f, 0.0f, 1.0f  } };
+    	//renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
+    	//renderPassInfo.pClearValues = clearValues.data();
     //}
 
     //Step2
@@ -679,7 +674,7 @@ void CVulkanBase::wxjEndCOmmandBuffer(){
     }
 }
 
-void CVulkanBase::wxjCreateImage_texture(const std::string texturePath, MyImageBuffer &textureImageBuffer, int32_t &texWidth, int32_t &texHeight) {
+void CVulkanBase::wxjCreateImage_texture(const std::string texturePath, OUT MyImageBuffer &textureImageBuffer, OUT int32_t &texWidth, OUT int32_t &texHeight) {
 	HERE_I_AM("Init07CreateTextureImage");
 
 	int texChannels;
@@ -752,8 +747,12 @@ void CVulkanBase::wxjCreateSampler_texture() {
 	VkResult result = vkCreateSampler(LOGICAL_DEVICE, &samplerInfo, nullptr, &textureSampler);
 	REPORT("vkCreateSampler");
 }
-void CVulkanBase::wxjCreateImageView(VkImage image){
-    textureImageView = createImageView(image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, 1);
+void CVulkanBase::wxjCreateImageView(IN VkImage image, OUT VkImageView &imageView, VkFormat format, VkImageAspectFlags aspectFlags){
+    imageView = createImageView(image, format, aspectFlags, 1);
+}
+void CVulkanBase::wxjCreateImage(OUT MyImageBuffer &imageBuffer, VkFormat format){
+	int mipLevels = 1;//TODO
+	createImage(swapChainExtent.width, swapChainExtent.height, mipLevels, VK_SAMPLE_COUNT_1_BIT, format, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, imageBuffer);
 }
 void CVulkanBase::wxjCreateSwapChain(){
     Init08CreateSwapChain();

@@ -43,7 +43,7 @@ public:
     void wxjCreateSubpass();
     //RenderPass:Dependency
     VkSubpassDependency dependency{};
-    void wxjCreateDependency();
+    void wxjCreateDependency(VkPipelineStageFlags srcPipelineStageFlag, VkPipelineStageFlags dstPipelineStageFlag);
     //RenderPass
     void wxjCreateRenderPass();
 
@@ -56,10 +56,10 @@ public:
 
     void wxjCreateSyncObjects();
 
-    void wxjCreateImage_texture(const std::string texturePath, MyImageBuffer &textureImageBuffer, int32_t &texWidth, int32_t &texHeight);
+    void wxjCreateImage_texture(const std::string texturePath, OUT MyImageBuffer &textureImageBuffer, OUT int32_t &texWidth, OUT int32_t &texHeight);
     void wxjCreateSampler_texture();
-    void wxjCreateImageView(VkImage image);
-
+    void wxjCreateImageView(IN VkImage image, OUT VkImageView &imageView, VkFormat format, VkImageAspectFlags aspectFlags);
+    void wxjCreateImage(OUT MyImageBuffer &imageBuffer, VkFormat format);
 
     void wxjBeginCommandBuffer();
     void wxjBeginRenderPass(std::vector<VkClearValue> &clearValues);

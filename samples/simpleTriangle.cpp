@@ -42,7 +42,9 @@ public:
 		//wxjCreatDepthAttachment();
 		//wxjCreatColorAttachmentResolve();
 		wxjCreateSubpass();
-		wxjCreateDependency();
+		VkPipelineStageFlags srcPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+		VkPipelineStageFlags dstPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+		wxjCreateDependency(srcPipelineStageFlag, dstPipelineStageFlag);
 		wxjCreateRenderPass();
 
 		wxjCreateFramebuffers();

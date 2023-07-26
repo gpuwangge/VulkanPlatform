@@ -160,6 +160,10 @@ public:
 	MyImageBuffer textureImageBuffer; 
 	VkImageView textureImageView; 
 
+    //Model related variables
+	MyImageBuffer depthImageBuffer;
+	VkImageView depthImageView;
+
     void run();
 
     void prepareGLFW();
