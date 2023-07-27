@@ -33,7 +33,7 @@ public:
 		//Create texture resource
 		wxjCreateImage_texture("../textures/texture.jpg", textureImageBuffer, texWidth, texHeight);
 		wxjCreateSampler_texture();
-		wxjCreateImageView(textureImageBuffer.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, OUT textureImageView);
+		wxjCreateImageView(textureImageBuffer.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, mipLevels, OUT textureImageView);
 
 		wxjCreateSwapChainImagesAndImageViews();
 
@@ -90,4 +90,4 @@ public:
 	}
 };
 
-#include "main.hpp"
+#include "..\\framework\\main.hpp"

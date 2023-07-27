@@ -222,13 +222,17 @@ public:
     void createImage(uint32_t width, uint32_t height, uint32_t mipLevels, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, MyImageBuffer &imageBuffer);
     void transitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t mipLevels);
     void copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
-
-    /*虚函数列表：基类和派生类都实现，默认调用派生类函数版本。如果派生函数没有实现，那么就调用基类版本。*/
+    
+    uint32_t mipLevels = 1; //1 means no mipmap
+	bool bEnableMipMap = false;
+    void generateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels, std::array<MyImageBuffer, MIPMAP_TEXTURE_COUNT> *tmpTextureBufferForRainbowMipmaps, bool bEnableRainbowMipmaps);
+ 
+    /*Virtual function: base and derived class will implement. If drived class not implement, call base's verson*/
     virtual void initialize();
     virtual void update();
     virtual void recordCommandBuffer();
     
-    /*纯虚函数列表：基类不实现，必须由派生类实现*/
+    /*Pure virtual function(=0): base class not implment, derived class must implement*/
 
 
 };

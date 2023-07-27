@@ -5,8 +5,8 @@
 
 class CVulkanBase : public CApplication{
 public:
-    CVulkanBase();
-    ~CVulkanBase();
+    CVulkanBase(){}
+    ~CVulkanBase(){}
 
     /**************
     Interface function to vulkan samples
@@ -57,7 +57,7 @@ public:
 
     void wxjCreateImage_texture(const std::string texturePath, OUT MyImageBuffer &textureImageBuffer, OUT int32_t &texWidth, OUT int32_t &texHeight);
     void wxjCreateSampler_texture();
-    void wxjCreateImageView(IN VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, OUT VkImageView &imageView);
+    void wxjCreateImageView(IN VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, int mipLevel, OUT VkImageView &imageView);
     void wxjCreateImage(VkSampleCountFlagBits numSamples, VkFormat format, VkImageUsageFlags usage, OUT MyImageBuffer &imageBuffer);
 
     void wxjBeginCommandBuffer();
@@ -73,6 +73,8 @@ public:
     void wxjEndCOmmandBuffer();
 
     void wxjGetMaxUsableSampleCount();
+    void wxjCreateMipmaps(IN OUT VkImage image);
+    void wxjCreateMipmaps(IN OUT VkImage image, std::string rainbowCheckerboardTexturePath);
     /**************
     Application operation functions
     ************/

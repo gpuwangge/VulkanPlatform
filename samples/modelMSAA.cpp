@@ -3,8 +3,7 @@
 class TEST_CLASS_NAME: public CVulkanBase{
 public:
     void initialize(){
-		//!To enable MSAA, make sure it has depth test first
-		bEnableMSAA = true;
+		bEnableMSAA = true;//!To enable MSAA, make sure it has depth test first (call wxjCreateDepthAttachment())
 
 		//Create vertex resource
 		wxjLoadObjModel("../models/viking_room.obj");
@@ -17,7 +16,7 @@ public:
 
 		//Create texture resource
 		wxjCreateImage_texture("../textures/viking_room.png", textureImageBuffer, texWidth, texHeight);
-		wxjCreateImageView(textureImageBuffer.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, OUT textureImageView);
+		wxjCreateImageView(textureImageBuffer.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, mipLevels, OUT textureImageView);
 		wxjCreateSampler_texture();
 
 		wxjCreateSwapChainImagesAndImageViews();
@@ -27,14 +26,14 @@ public:
 			wxjGetMaxUsableSampleCount();
 			VkImageUsageFlags usage = VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 			wxjCreateImage(msaaSamples, swapChainImageFormat, usage, OUT msaaColorImageBuffer);//need swapChainExtent. call this after swapchain creation
-			wxjCreateImageView(msaaColorImageBuffer.image, swapChainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, OUT msaaColorImageView);
+			wxjCreateImageView(msaaColorImageBuffer.image, swapChainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1, OUT msaaColorImageView);
 		}
 
 		//Create depth resource
 		VkFormat depthFormat = findDepthFormat();
 		VkImageUsageFlags usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
 		wxjCreateImage(msaaSamples, depthFormat, usage, OUT depthImageBuffer);//need swapChainExtent. call this after swapchain creation
-		wxjCreateImageView(depthImageBuffer.image, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT, OUT depthImageView);
+		wxjCreateImageView(depthImageBuffer.image, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT, 1, OUT depthImageView);
 
 		//Create Renderpass
 		VkImageLayout imageLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
@@ -92,4 +91,4 @@ public:
 	}
 };
 
-#include "main.hpp"
+#include "..\\framework\\main.hpp"

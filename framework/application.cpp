@@ -9,6 +9,13 @@ CApplication::CApplication(){
     bEnableDepthTest = false;
 
     textureSampler = NULL;
+
+    mainCamera.type = Camera::CameraType::firstperson;
+    mainCamera.setPosition(glm::vec3(0.0f, -2.5f, -2.5f));
+    mainCamera.setRotation(glm::vec3(45.0f, 0.0f, 0.0f));
+    mainCamera.setPerspective(60.0f, (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 256.0f);
+    mainCamera.movementSpeed = 1.0f;
+    mainCamera.rotationSpeed = 200.0f;
 }
 
 void CApplication::run(){
@@ -23,7 +30,6 @@ void CApplication::initialize(){
 }
 
 void CApplication::prepareVulkanDevices(){
-    //printf("application init\n");
     const std::vector<const char*> requiredValidationLayers = {"VK_LAYER_KHRONOS_validation"};
     const std::vector<const char*>  requireDeviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
     VkQueueFlagBits requiredQueueFamilies = VK_QUEUE_GRAPHICS_BIT; //& VK_QUEUE_COMPUTE_BIT
@@ -33,35 +39,6 @@ void CApplication::prepareVulkanDevices(){
     instance->findAllPhysicalDevices();
     instance->pickSuitablePhysicalDevice(surface, requireDeviceExtensions, requiredQueueFamilies);
     instance->pickedPhysicalDevice->get()->createLogicalDevices(surface, requiredValidationLayers, requireDeviceExtensions);
-
-    /*
-    Init05CreateVertexBuffer();
-    Init05CreateIndexBuffer();
-    Init05CreateUniformBuffers(uniformBuffers, uniformBuffersMapped, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, sizeof(UniformBufferObject));
-
-	Init06CreateCommandPool();
-	Init06CreateCommandBuffers();
-
-    if(!texturePath.empty()){
-        CreateImageTexture();
-	    textureImageView = createImageView(textureImageBuffer.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, 1);
-    }
-
-    Init08CreateSwapChain();
-
-    CreateRenderPass();
-
-    CreateFramebuffers();
-
-    Init12SpirvShader(vertexShaderPath, &vertShaderModule);
-	Init12SpirvShader(fragmentShaderPath, &fragShaderModule);
-
-    CreateDescriptorPool();
-    CreateDescriptorSetLayout();
-    CreateDescriptorSets();
-    CreateGraphicsPipeline();
-
-    createSyncObjects();*/
 }
 
 void CApplication::Init05CreateVertexBuffer() {

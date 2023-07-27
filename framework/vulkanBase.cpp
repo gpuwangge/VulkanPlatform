@@ -6,18 +6,6 @@
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
 
-CVulkanBase::CVulkanBase(){
-    mainCamera.type = Camera::CameraType::firstperson;
-    mainCamera.setPosition(glm::vec3(0.0f, -2.5f, -2.5f));
-    mainCamera.setRotation(glm::vec3(45.0f, 0.0f, 0.0f));
-    mainCamera.setPerspective(60.0f, (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 256.0f);
-    mainCamera.movementSpeed = 1.0f;
-    mainCamera.rotationSpeed = 20.0f;
-}
-
-CVulkanBase::~CVulkanBase(){  
-}
-
 void CVulkanBase::wxjCreateColorAttachment(VkImageLayout imageLayout){  
 	//Concept of attachment in Vulkan is like render target in OpenGL
 	//Subpass is a procedure to write/read attachments (a render process can has many subpasses, aka a render pass)
@@ -677,10 +665,7 @@ void CVulkanBase::wxjCreateImage_texture(const std::string texturePath, OUT MyIm
 	stbi_uc* pixels = stbi_load(texturePath.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
 	VkDeviceSize imageSize = texWidth * texHeight * 4;
 
-
-	//mipLevels = bEnableMipMap ? (static_cast<uint32_t>(std::floor(std::log2(std::max(texWidth, texHeight)))) + 1) : 1;
-    int mipLevels = 1;
-
+	mipLevels = bEnableMipMap ? (static_cast<uint32_t>(std::floor(std::log2(std::max(texWidth, texHeight)))) + 1) : 1;
 
 	if (!pixels) throw std::runtime_error("failed to load texture image!");
 
@@ -733,21 +718,20 @@ void CVulkanBase::wxjCreateSampler_texture() {
 	samplerInfo.compareEnable = VK_FALSE;
 	samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
 	
-	// if (bEnableMipMap) {
-	// 	samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;// VK_SAMPLER_MIPMAP_MODE_NEAREST;
-	// 	samplerInfo.minLod = 0.0f;
-	// 	samplerInfo.maxLod = static_cast<float>(mipLevels / 2);
-	// 	samplerInfo.mipLodBias = 0.0f;
-	// }
+	if (mipLevels > 1) {
+		samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;// VK_SAMPLER_MIPMAP_MODE_NEAREST;
+	 	samplerInfo.minLod = 0.0f;
+	 	samplerInfo.maxLod = static_cast<float>(mipLevels / 2);
+	 	samplerInfo.mipLodBias = 0.0f;
+	}
 
 	VkResult result = vkCreateSampler(LOGICAL_DEVICE, &samplerInfo, nullptr, &textureSampler);
 	REPORT("vkCreateSampler");
 }
-void CVulkanBase::wxjCreateImageView(IN VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, OUT VkImageView &imageView){
-    imageView = createImageView(image, format, aspectFlags, 1);
+void CVulkanBase::wxjCreateImageView(IN VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, int mipLevel, OUT VkImageView &imageView){
+    imageView = createImageView(image, format, aspectFlags, mipLevel);
 }
 void CVulkanBase::wxjCreateImage(VkSampleCountFlagBits numSamples, VkFormat format, VkImageUsageFlags usage, OUT MyImageBuffer &imageBuffer){
-	int mipLevels = 1;//TODO
 	createImage(swapChainExtent.width, swapChainExtent.height, mipLevels, numSamples, format, VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, imageBuffer);
 }
 void CVulkanBase::wxjCreateSwapChainImagesAndImageViews(){
@@ -800,6 +784,28 @@ void CVulkanBase::wxjGetMaxUsableSampleCount(){
 	msaaSamples = instance->pickedPhysicalDevice->get()->getMaxUsableSampleCount();
 	//msaaSamples = VK_SAMPLE_COUNT_1_BIT;
 }
+
+void CVulkanBase::wxjCreateMipmaps(IN OUT VkImage image){ //normal mipmap case
+	generateMipmaps(image, VK_FORMAT_R8G8B8A8_SRGB, texWidth, texHeight, mipLevels, NULL, false);
+}
+
+void CVulkanBase::wxjCreateMipmaps(IN OUT VkImage image, std::string rainbowCheckerboardTexturePath){ //rainbow mipmaps case
+	std::array<MyImageBuffer, MIPMAP_TEXTURE_COUNT> tmpTextureBufferForRainbowMipmaps;//create temp mipmaps
+	for (int i = 0; i < MIPMAP_TEXTURE_COUNT; i++) {//fill temp mipmaps
+		wxjCreateImage_texture(rainbowCheckerboardTexturePath + std::to_string(i) + ".png", tmpTextureBufferForRainbowMipmaps[i], texWidth, texHeight);
+		generateMipmaps(tmpTextureBufferForRainbowMipmaps[i].image, VK_FORMAT_R8G8B8A8_SRGB, texWidth, texHeight, mipLevels, &tmpTextureBufferForRainbowMipmaps, false);
+	}
+	//use tmp mipmaps texture to update main texture
+	generateMipmaps(image, VK_FORMAT_R8G8B8A8_SRGB, texWidth, texHeight, mipLevels, &tmpTextureBufferForRainbowMipmaps, true);
+	//Clean up
+	for (int i = 0; i < MIPMAP_TEXTURE_COUNT; i++) {
+		vkDestroyImage(LOGICAL_DEVICE, tmpTextureBufferForRainbowMipmaps[i].image, nullptr);
+		vkFreeMemory(LOGICAL_DEVICE, tmpTextureBufferForRainbowMipmaps[i].deviceMemory, nullptr);
+	}
+}
+
+
+
 
 
 

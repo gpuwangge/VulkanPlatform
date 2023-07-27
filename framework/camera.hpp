@@ -166,9 +166,9 @@ public:
 				float moveSpeed = deltaTime * movementSpeed;
 				float rotSpeed = deltaTime * rotationSpeed;
 
-				if (keys.up)
+				if (keys.up)//TODO: debug
 					position += glm::normalize(glm::cross(camFront, glm::vec3(0.0f, 0.0f, 1.0f))) * moveSpeed;
-				if (keys.down)
+				if (keys.down)//TODO: debug
 					position -= glm::normalize(glm::cross(camFront, glm::vec3(0.0f, 0.0f, 1.0f))) * moveSpeed;
 				if (keys.left)
 					position -= glm::normalize(glm::cross(camFront, glm::vec3(0.0f, 1.0f, 0.0f))) * moveSpeed;
@@ -207,8 +207,8 @@ public:
 			camFront.z = cos(glm::radians(rotation.x)) * cos(glm::radians(rotation.y));
 			camFront = glm::normalize(camFront);
 
-			float moveSpeed = deltaTime * movementSpeed * 2.0f;
-			float rotSpeed = deltaTime * rotationSpeed * 50.0f;
+			float moveSpeed = deltaTime * movementSpeed;
+			float rotSpeed = deltaTime * rotationSpeed;
 
 			// Move
 			if (fabsf(axisLeft.y) > deadZone)
