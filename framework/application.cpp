@@ -45,9 +45,9 @@ void CApplication::Init05CreateVertexBuffer() {
     HERE_I_AM("Init05CreateVertexBuffer");
     VkDeviceSize bufferSize = sizeof(vertices3D[0]) * vertices3D.size();
 
-    VkResult result = InitDataBufferHelper(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, &vertexDataBuffer);//为vertexDataBuffer申请bufferSize(由vertices3D确定)大小的memory
+    VkResult result = InitDataBufferHelper(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, &vertexDataBuffer);//allocate vertexDataBuffer bufferSize(decided by vertices3D) memory
     REPORT("InitVertexDataBuffer");
-    FillDataBufferHelper(vertexDataBuffer, (void *)(vertices3D.data()));//把vertices3D的内容拷贝到vertexDataBuffer里
+    FillDataBufferHelper(vertexDataBuffer, (void *)(vertices3D.data()));//copy vertices3D to vertexDataBuffer
 }
 
 void CApplication::Init05CreateIndexBuffer() {
@@ -316,12 +316,12 @@ void CApplication::drawFrame() {
     VkSubmitInfo submitInfo{};
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
-    //CPU-GPU间同步需要使用fence
+    //CPU-GPU sync use fence
     vkWaitForFences(LOGICAL_DEVICE, 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
 
-    //CPU需要知道往那个framebuffer里面画。GPU需要通知CPU这个image是不是准备好了。
-    //GPU-GPU间同步需要使用semaphore
-    //这里semaphore是看这个image是不是能写了。准备好的就是imageIndex。
+    //CPU need to know which framebuffer to draw。GPU notify CPU the image is ready or not
+    //GPU-GPU sync use semaphore
+    //semaphore check if image is ready or not。imageIndex is the ready image。
     VkResult result = vkAcquireNextImageKHR(LOGICAL_DEVICE, swapChain, UINT64_MAX, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &imageIndex);
 
     vkResetFences(LOGICAL_DEVICE, 1, &inFlightFences[currentFrame]);
@@ -348,7 +348,7 @@ void CApplication::drawFrame() {
 
     presentInfo.pWaitSemaphores = signalSemaphores;
     
-    //让GPU读recorded command buffer并执行
+    //GPU read recorded command buffer and execute
     if (vkQueueSubmit(GRAPHICS_QUEUE, 1, &submitInfo, inFlightFences[currentFrame]) != VK_SUCCESS) {
         debugger->writeMSG("Failed to submit draw command buffer! CurrentFrame: %d\n", currentFrame);
         throw std::runtime_error("failed to submit draw command buffer!");
@@ -364,7 +364,7 @@ void CApplication::drawFrame() {
 
     presentInfo.pImageIndices = &imageIndex;
 
-    //present engine读取image之后显示(显示的是imageIndex)
+    //present engine read image the present(present imageIndex)
     result = vkQueuePresentKHR(PRESENT_QUEUE, &presentInfo);
 }
 
@@ -378,11 +378,6 @@ void CApplication::update(){
     durationTime = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
     deltaTime = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - lastTime).count();
     lastTime = currentTime;
-
-    // We want to animate the particle system using the last frames time to get smooth, frame-rate independent animation
-    //double currentTime = glfwGetTime();
-    //elapsedTime = (currentTime - lastTime) * 1000.0;//这个值会用来update deltaTime
-    //lastTime = currentTime.count();
 
     mainCamera.update(deltaTime);
 

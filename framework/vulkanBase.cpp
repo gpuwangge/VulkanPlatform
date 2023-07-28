@@ -398,7 +398,7 @@ void CVulkanBase::wxjCreateGraphicsPipeline(VkPrimitiveTopology topology){
 
 	VkResult result = VK_SUCCESS;
 
-	//1 组装Shader
+	//1 Asemble Shader
 	VkPipelineShaderStageCreateInfo vertShaderStageInfo{};
 	vertShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
 	vertShaderStageInfo.stage = VK_SHADER_STAGE_VERTEX_BIT;

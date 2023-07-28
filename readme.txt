@@ -1,3 +1,11 @@
+
+
+=========Concetp of Compute Shader========
+Workgroup: it is a 3d array matrix. one element in this matrix is called workitem
+Ex: 6x4x3=72 workitem parallel
+You can have many workgroups, but workgroups can not run parallel
+
+
 =========Platform Structure=========
 application: contian a instance unique smart pointer
 instance: containn a physical devices unique smart pointer
