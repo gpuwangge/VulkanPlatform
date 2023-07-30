@@ -43,7 +43,7 @@ const int MIPMAP_TEXTURE_COUNT = 7;
 #define INOUT
 
 
-#define NDEBUG
+//#define NDEBUG
 #ifdef NDEBUG
 const bool enableValidationLayers = false;
 #else

@@ -38,6 +38,10 @@ void CApplication::prepareVulkanDevices(){
     createGLFWSurface();//need instance
     instance->findAllPhysicalDevices();
     instance->pickSuitablePhysicalDevice(surface, requireDeviceExtensions, requiredQueueFamilies);
+
+    //App dev can only query properties from physical device, but can not directly operate it
+    //App dev operates logical device, can logical device communicate with physical device by command queues
+    //App dev will fill command buffer with commands later
     instance->pickedPhysicalDevice->get()->createLogicalDevices(surface, requiredValidationLayers, requireDeviceExtensions);
 }
 
@@ -45,7 +49,8 @@ void CApplication::Init05CreateVertexBuffer() {
     HERE_I_AM("Init05CreateVertexBuffer");
     VkDeviceSize bufferSize = sizeof(vertices3D[0]) * vertices3D.size();
 
-    VkResult result = InitDataBufferHelper(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, &vertexDataBuffer);//allocate vertexDataBuffer bufferSize(decided by vertices3D) memory
+    //VK_BUFFER_USAGE_TRANSFER_SRC_BIT
+    VkResult result = InitDataBufferHelper(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, &vertexDataBuffer);//allocate vertexDataBuffer bufferSize(decided by vertices3D) memory
     REPORT("InitVertexDataBuffer");
     FillDataBufferHelper(vertexDataBuffer, (void *)(vertices3D.data()));//copy vertices3D to vertexDataBuffer
 }
@@ -54,7 +59,8 @@ void CApplication::Init05CreateIndexBuffer() {
     HERE_I_AM("Init05CreateIndexBuffer");
     VkDeviceSize bufferSize = sizeof(indices3D[0]) * indices3D.size();
 
-    VkResult result = InitDataBufferHelper(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, &indexDataBuffer);
+    //VK_BUFFER_USAGE_TRANSFER_SRC_BIT
+    VkResult result = InitDataBufferHelper(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, &indexDataBuffer);
     REPORT("InitIndexDataBuffer");
     FillDataBufferHelper(indexDataBuffer, (void *)(indices3D.data()));
 }
@@ -112,6 +118,10 @@ void CApplication::Init06CreateCommandBuffers() {
 
 void CApplication::Init08CreateSwapChain() {
     HERE_I_AM("Init08Swapchain");
+    //vulkan draws on the vkImage(s)
+    //SwapChain will set vkImage to present on the screen
+    //Surface will tell the format of the vkImage
+    //PresentQueue is a queue to present
 
     VkResult result = VK_SUCCESS;
 
@@ -490,13 +500,12 @@ CApplication::~CApplication(){
 
     vkDestroyDevice(LOGICAL_DEVICE, nullptr);
 
-/*TODO
     if (enableValidationLayers) {
-        DestroyDebugUtilsMessengerEXT(instance, debugMessenger, nullptr);
+        DestroyDebugUtilsMessengerEXT(instance->getHandle(), instance->debugMessenger, nullptr);
     }
 
-    vkDestroySurfaceKHR(instance, surface, nullptr);
-    vkDestroyInstance(instance, nullptr);*/
+    vkDestroySurfaceKHR(instance->getHandle(), surface, nullptr);
+    vkDestroyInstance(instance->getHandle(), nullptr);
 
     glfwDestroyWindow(window);
 

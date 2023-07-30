@@ -7,9 +7,9 @@ CPhysicalDevice::CPhysicalDevice(VkPhysicalDevice physical_device) : handle(phys
     debugger = new CDebugger("../logs/physicalDeviceLog.txt");
 }
 
- void CPhysicalDevice::setInstance(CInstance *instance){
+ //void CPhysicalDevice::setInstance(CInstance *instance){
     //m_instance = instance;
- }
+ //}
 
 CPhysicalDevice::~CPhysicalDevice(){
     if (!debugger) delete debugger;
@@ -198,12 +198,12 @@ void CPhysicalDevice::createLogicalDevices(VkSurfaceKHR surface, const std::vect
         createInfo.enabledLayerCount = 0;
     }
 
-    //建立logicalDevice
+    //create logicalDevice
     result = vkCreateDevice(handle, &createInfo, nullptr, &(logicalDevices.back().get()->logicalDevice));
     if (result != VK_SUCCESS) throw std::runtime_error("failed to create logical device!");
     REPORT("vkCreateLogicalDevice");
 
-    //把PhysicalDevice的Queue Familily属性指定到logicalDevice里对应的queue里
+    //set PhysicalDevice's Queue Familily property to logicalDevice's queue
     vkGetDeviceQueue(logicalDevices.back().get()->logicalDevice, indices.graphicsFamily.value(), 0, &(logicalDevices.back().get()->graphicsQueue)); //graphics queue use physical device's family 0 
     vkGetDeviceQueue(logicalDevices.back().get()->logicalDevice, indices.presentFamily.value(), 0, &(logicalDevices.back().get()->presentQueue)); //present queue use the same family
     vkGetDeviceQueue(logicalDevices.back().get()->logicalDevice, indices.graphicsAndComputeFamily.value(), 0, &(logicalDevices.back().get()->computeQueue));//A physical device has several family, queue is pointing to one of the families

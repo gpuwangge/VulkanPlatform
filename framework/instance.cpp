@@ -106,7 +106,7 @@ CInstance::CInstance(const std::vector<const char*> requiredValidationLayers){
 
 CInstance::~CInstance(){
     if (!debugger) delete debugger;
-    if (handle != VK_NULL_HANDLE) vkDestroyInstance(handle, nullptr);
+    //if (handle != VK_NULL_HANDLE) vkDestroyInstance(handle, nullptr);
 }
 
 
@@ -211,7 +211,7 @@ void CInstance::displayPhysicalDevices(VkPhysicalDevice physicalDevice, int inde
     fprintf(debugger->FpDebug, "\tPipeline Cache Size: %d\n", PhysicalDeviceProperties.pipelineCacheUUID[0]);
 
 
-    //显示选中的PhysicalDevice Features
+    //Display PhysicalDevice Features
     VkPhysicalDeviceFeatures	PhysicalDeviceFeatures;
     vkGetPhysicalDeviceFeatures(IN physicalDevice, OUT &PhysicalDeviceFeatures);
 
@@ -284,7 +284,7 @@ void CInstance::displayPhysicalDevices(VkPhysicalDevice physicalDevice, int inde
             deviceLayers[i].description);
 
         // see what device extensions are available:
-        //这里列举的是跟某个layer相关的extension
+        //show layer related extension
         uint32_t extensionCount;
         vkEnumerateDeviceExtensionProperties(physicalDevice, deviceLayers[i].layerName, &extensionCount, (VkExtensionProperties *)nullptr);
         VkExtensionProperties * deviceExtensions = new VkExtensionProperties[extensionCount];

@@ -7,7 +7,7 @@ public:
 
 		//Create vertex resource
 		wxjLoadObjModel("../models/viking_room.obj");
-
+		
 		//Create buffers
 		wxjCreateVertexBuffer();
 		wxjCreateIndexBuffer();

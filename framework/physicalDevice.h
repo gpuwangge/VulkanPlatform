@@ -39,7 +39,7 @@ public:
 
     CDebugger * debugger;
 
-    void setInstance(CInstance *instance);
+    //void setInstance(CInstance *instance);
 
 
     QueueFamilyIndices findQueueFamilies(VkSurfaceKHR surface);
