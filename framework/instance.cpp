@@ -227,6 +227,8 @@ void CInstance::displayPhysicalDevices(VkPhysicalDevice physicalDevice, int inde
     fprintf(debugger->FpDebug, "\tshaderFloat64 = %2d\n", PhysicalDeviceFeatures.shaderFloat64);
     fprintf(debugger->FpDebug, "\tshaderInt64 = %2d\n", PhysicalDeviceFeatures.shaderInt64);
     fprintf(debugger->FpDebug, "\tshaderInt16 = %2d\n", PhysicalDeviceFeatures.shaderInt16);
+    fprintf(debugger->FpDebug, "\tsamplerAnisotropy = %2d\n", PhysicalDeviceFeatures.samplerAnisotropy);
+    
 
     VkFormatProperties					vfp;
     fprintf(debugger->FpDebug, "\n\tImage Formats Checked:\n");

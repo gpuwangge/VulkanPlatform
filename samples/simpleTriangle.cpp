@@ -7,20 +7,32 @@ public:
 		/************
 		buffersize: 8(numbers each vertex)*4(float)*4(vertex size)=128（byte）
 		************/
-		vertices3D = {
-			{ { -0.5f, -0.5f, 0.0f },{ 1.0f, 0.0f, 0.0f },{ 1.0f, 0.0f } },
-			{ { 0.5f, -0.5f, 0.0f },{ 0.0f, 1.0f, 0.0f },{ 0.0f, 0.0f } },
-			{ { 0.5f, 0.5f, 0.0f },{ 0.0f, 0.0f, 1.0f },{ 0.0f, 1.0f } },
-			{ { -0.5f, 0.5f, 0.0f },{ 1.0f, 1.0f, 1.0f },{ 1.0f, 1.0f } }
-			};
+		// vertices3D = {
+		// 	{ { -0.5f, -0.5f, 0.0f },{ 1.0f, 0.0f, 0.0f },{ 1.0f, 0.0f } },
+		// 	{ { 0.5f, -0.5f, 0.0f },{ 0.0f, 1.0f, 0.0f },{ 0.0f, 0.0f } },
+		// 	{ { 0.5f, 0.5f, 0.0f },{ 0.0f, 0.0f, 1.0f },{ 0.0f, 1.0f } },
+		// 	{ { -0.5f, 0.5f, 0.0f },{ 1.0f, 1.0f, 1.0f },{ 1.0f, 1.0f } }
+		// 	};
+		std::vector<Vertex> vertices= {
+			{ { -0.5f, -0.5f},{ 1.0f, 0.0f, 0.0f }},
+			{ { 0.5f, -0.5f},{ 0.0f, 1.0f, 0.0f }},
+			{ { 0.5f, 0.5f},{ 0.0f, 0.0f, 1.0f }},
+			{ { -0.5f, 0.5f},{ 1.0f, 1.0f, 1.0f } }			
+		};
+		// std::vector<Vertex> vertices = {
+		// 	{ { -0.5f, -0.5f, 0.0f },{ 1.0f, 0.0f, 0.0f },{ 1.0f, 0.0f } },
+		// 	{ { 0.5f, -0.5f, 0.0f },{ 0.0f, 1.0f, 0.0f },{ 0.0f, 0.0f } },
+		// 	{ { 0.5f, 0.5f, 0.0f },{ 0.0f, 0.0f, 1.0f },{ 0.0f, 1.0f } },
+		// 	{ { -0.5f, 0.5f, 0.0f },{ 1.0f, 1.0f, 1.0f },{ 1.0f, 1.0f } }
+		// 	};
 
 		/************
 		buffer size: 6*4=24（byte）
 		************/
 		indices3D = { 0, 1, 2, 2, 3, 0};
 
-		//Create buffers
-		wxjCreateVertexBuffer();
+		//Create bufferss
+		wxjCreateVertexBuffer<Vertex>(vertices);
 		wxjCreateIndexBuffer();
 		wxjCreateUniformBuffers();
 		wxjCreateCommandBuffer();
@@ -49,14 +61,13 @@ public:
 		wxjCreateDescriptorSetLayout(descriptorTypes, shaderStageFlagBits);
 		wxjCreateDescriptorSets(descriptorTypes);
 
-		wxjCreateGraphicsPipeline(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
+		wxjCreateGraphicsPipeline<Vertex>(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
 
 		CApplication::initialize();
 	}
 
 	void update(){
 		ubo.model = glm::rotate(glm::mat4(1.0f), durationTime * glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-		NeedToExit = true;
 		CApplication::update();
 	}
 

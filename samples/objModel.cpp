@@ -7,7 +7,7 @@ public:
 		wxjLoadObjModel("../models/viking_room.obj");
 
 		//Create buffers
-		wxjCreateVertexBuffer();
+		wxjCreateVertexBuffer<Vertex3D>(vertices3D);
 		wxjCreateIndexBuffer();
 		wxjCreateUniformBuffers();
 		wxjCreateCommandBuffer();
@@ -48,7 +48,7 @@ public:
 		wxjCreateDescriptorSetLayout(descriptorTypes, shaderStageFlagBits);
 		wxjCreateDescriptorSets(descriptorTypes);
 
-		wxjCreateGraphicsPipeline(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST); //need all above completed first
+		wxjCreateGraphicsPipeline<Vertex3D>(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST); //need all above completed first
 
 		CApplication::initialize();
 	}

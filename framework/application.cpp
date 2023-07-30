@@ -45,15 +45,15 @@ void CApplication::prepareVulkanDevices(){
     instance->pickedPhysicalDevice->get()->createLogicalDevices(surface, requiredValidationLayers, requireDeviceExtensions);
 }
 
-void CApplication::Init05CreateVertexBuffer() {
-    HERE_I_AM("Init05CreateVertexBuffer");
-    VkDeviceSize bufferSize = sizeof(vertices3D[0]) * vertices3D.size();
+// void CApplication::Init05CreateVertexBuffer() {
+//     HERE_I_AM("Init05CreateVertexBuffer");
+//     VkDeviceSize bufferSize = sizeof(vertices3D[0]) * vertices3D.size();
 
-    //VK_BUFFER_USAGE_TRANSFER_SRC_BIT
-    VkResult result = InitDataBufferHelper(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, &vertexDataBuffer);//allocate vertexDataBuffer bufferSize(decided by vertices3D) memory
-    REPORT("InitVertexDataBuffer");
-    FillDataBufferHelper(vertexDataBuffer, (void *)(vertices3D.data()));//copy vertices3D to vertexDataBuffer
-}
+//     //VK_BUFFER_USAGE_TRANSFER_SRC_BIT
+//     VkResult result = InitDataBufferHelper(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, &vertexDataBuffer);//allocate vertexDataBuffer bufferSize(decided by vertices3D) memory
+//     REPORT("InitVertexDataBuffer");
+//     FillDataBufferHelper(vertexDataBuffer, (void *)(vertices3D.data()));//copy vertices3D to vertexDataBuffer
+// }
 
 void CApplication::Init05CreateIndexBuffer() {
     HERE_I_AM("Init05CreateIndexBuffer");

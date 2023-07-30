@@ -52,6 +52,46 @@ struct Vertex3D {
 		return pos == other.pos && color == other.color && texCoord == other.texCoord;
 	}
 };
+
+struct Vertex {
+		glm::vec2 pos;
+		glm::vec3 color;
+		//glm::vec2 texCoord;
+
+		static VkVertexInputBindingDescription getBindingDescription() {
+			VkVertexInputBindingDescription bindingDescription{};
+			bindingDescription.binding = 0;
+			bindingDescription.stride = sizeof(Vertex);
+			bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+
+			return bindingDescription;
+		}
+
+		static std::array<VkVertexInputAttributeDescription, 2> getAttributeDescriptions() {
+			std::array<VkVertexInputAttributeDescription, 2> attributeDescriptions{};
+
+			attributeDescriptions[0].binding = 0;
+			attributeDescriptions[0].location = 0;
+			attributeDescriptions[0].format = VK_FORMAT_R32G32B32_SFLOAT;
+			attributeDescriptions[0].offset = offsetof(Vertex, pos);
+
+			attributeDescriptions[1].binding = 0;
+			attributeDescriptions[1].location = 1;
+			attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
+			attributeDescriptions[1].offset = offsetof(Vertex, color);
+
+			// attributeDescriptions[2].binding = 0;
+			// attributeDescriptions[2].location = 2;
+			// attributeDescriptions[2].format = VK_FORMAT_R32G32_SFLOAT;
+			// attributeDescriptions[2].offset = offsetof(Vertex, texCoord);
+
+			return attributeDescriptions;
+		}
+
+		bool operator==(const Vertex& other) const {
+			return pos == other.pos && color == other.color;
+		}
+	};
 namespace std {
 	template<> struct hash<Vertex3D> {
 		size_t operator()(Vertex3D const& vertex) const {
@@ -175,7 +215,7 @@ public:
 	int FindMemoryThatIsHostVisible(uint32_t memoryTypeBits);
     VkResult InitDataBufferHelper(VkDeviceSize size, VkBufferUsageFlags usage, OUT MyBuffer * pMyBuffer);
     VkResult FillDataBufferHelper(IN MyBuffer myBuffer, IN void * data);
-    void Init05CreateVertexBuffer();
+    //void Init05CreateVertexBuffer();
     void Init05CreateIndexBuffer();
     void Init05CreateUniformBuffers(std::vector<MyBuffer> &_uniformBuffers, std::vector<void*> &_uniformBuffersMapped, VkBufferUsageFlags usage, VkDeviceSize bufferSize);
 

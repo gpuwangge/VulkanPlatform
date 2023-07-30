@@ -393,7 +393,8 @@ void CVulkanBase::wxjCreateDescriptorSets(std::vector<VkDescriptorType> &descrip
 	}
 }
 
-void CVulkanBase::wxjCreateGraphicsPipeline(VkPrimitiveTopology topology){
+/*
+void CVulkanBase::wxjCreateGraphicsPipeline(VkPrimitiveTopology topology, IN VkPipelineVertexInputStateCreateInfo &vertexInputInfo){
 	HERE_I_AM("wxjCreateGraphicsPipeline");
 
 	VkResult result = VK_SUCCESS;
@@ -414,8 +415,14 @@ void CVulkanBase::wxjCreateGraphicsPipeline(VkPrimitiveTopology topology){
 	VkPipelineShaderStageCreateInfo shaderStages[] = { vertShaderStageInfo, fragShaderStageInfo };
 
 	//2 Asemble Vertex Info
-	VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
-	vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+	VkPipelineVertexInputStateCreateInfo vertexInputInfo0{};
+	vertexInputInfo0.sType = vertexInputInfo.sType;
+	vertexInputInfo0.vertexBindingDescriptionCount = 1;
+	vertexInputInfo0.vertexAttributeDescriptionCount = vertexInputInfo.vertexAttributeDescriptionCount;
+	vertexInputInfo0.pVertexBindingDescriptions = vertexInputInfo.pVertexBindingDescriptions;
+	vertexInputInfo0.pVertexAttributeDescriptions = vertexInputInfo.pVertexAttributeDescriptions;
+
+	////vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
 
 	//NTODO: particle and vertex3d
 	// if (pt == PIPELINE_COMPUTE) {
@@ -428,13 +435,16 @@ void CVulkanBase::wxjCreateGraphicsPipeline(VkPrimitiveTopology topology){
 	// 	vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
 	// }
 	// else {
-		auto bindingDescription = Vertex3D::getBindingDescription();
-		auto attributeDescriptions = Vertex3D::getAttributeDescriptions();
+		//auto bindingDescription = Vertex3D::getBindingDescription();
+		//auto attributeDescriptions = Vertex3D::getAttributeDescriptions();
 
-		vertexInputInfo.vertexBindingDescriptionCount = 1;
-		vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
-		vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
-		vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
+		////auto bindingDescription = Vertex::getBindingDescription();
+		////auto attributeDescriptions = Vertex::getAttributeDescriptions();
+
+		////vertexInputInfo.vertexBindingDescriptionCount = 1;
+		////vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
+		////vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
+		////vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
 	//}
 
 	//3
@@ -523,7 +533,7 @@ void CVulkanBase::wxjCreateGraphicsPipeline(VkPrimitiveTopology topology){
 	pipelineInfo.sType = VK_STRUCTURE_TYPE_GRAPHICS_PIPELINE_CREATE_INFO;
 	pipelineInfo.stageCount = 2;
 	pipelineInfo.pStages = shaderStages;	//1
-	pipelineInfo.pVertexInputState = &vertexInputInfo;	//2
+	pipelineInfo.pVertexInputState = &vertexInputInfo0;	//2
 	pipelineInfo.pInputAssemblyState = &inputAssembly;	//3
 	pipelineInfo.pViewportState = &viewportState;	//4
 	pipelineInfo.pRasterizationState = &rasterizer;	//5
@@ -555,7 +565,7 @@ void CVulkanBase::wxjCreateGraphicsPipeline(VkPrimitiveTopology topology){
 	vkDestroyShaderModule(LOGICAL_DEVICE, vertShaderModule, nullptr);
 
 	HERE_I_AM("DrawFrame() will begin");
-}
+}*/
 
 void CVulkanBase::wxjCreateVertexShader(std::string shaderName){
     Init12SpirvShader(shaderName, &vertShaderModule);
@@ -572,9 +582,24 @@ void CVulkanBase::wxjCreateCommandBuffer(){
 	Init06CreateCommandPool();
 	Init06CreateCommandBuffers();
 }
-void CVulkanBase::wxjCreateVertexBuffer(){
-    Init05CreateVertexBuffer();
-}
+
+// template <typename T>
+// void CVulkanBase::wxjCreateVertexBuffer(T input){
+//     Init05CreateVertexBuffer();
+// }
+
+// template <typename T>
+// void CVulkanBase::wxjCreateVertexBuffer(T input){
+// 	//Init05CreateVertexBuffer();
+// 	HERE_I_AM("Init05CreateVertexBuffer");
+// 	VkDeviceSize bufferSize = sizeof(input[0]) * input.size();
+
+// 	//VK_BUFFER_USAGE_TRANSFER_SRC_BIT
+// 	VkResult result = InitDataBufferHelper(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, &vertexDataBuffer);//allocate vertexDataBuffer bufferSize(decided by vertices3D) memory
+// 	REPORT("InitVertexDataBuffer");
+// 	FillDataBufferHelper(vertexDataBuffer, (void *)(input.data()));//copy vertices3D to vertexDataBuffer
+// }
+
 void CVulkanBase::wxjCreateIndexBuffer(){
     Init05CreateIndexBuffer();
 }
@@ -692,8 +717,8 @@ void CVulkanBase::wxjCreateImage_texture(const std::string texturePath, OUT MyIm
 	transitionImageLayout(textureImageBuffer.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, mipLevels);
 	copyBufferToImage(stagingBuffer.buffer, textureImageBuffer.image, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
 	
-	//MIPMAP TODO: no need transition??
-	//transitionImageLayout(textureImageBuffer.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, mipLevels);
+	//MIPMAP TODO: no need transition?? If comment out this, validation layer get error
+	transitionImageLayout(textureImageBuffer.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, mipLevels);
 
 	vkDestroyBuffer(LOGICAL_DEVICE, stagingBuffer.buffer, nullptr);
 	vkFreeMemory(LOGICAL_DEVICE, stagingBuffer.deviceMemory, nullptr);

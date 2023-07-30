@@ -25,7 +25,7 @@ public:
 		indices3D = { 0, 1, 2, 2, 3, 0};
 
 		//Create buffers
-		wxjCreateVertexBuffer();
+		wxjCreateVertexBuffer<Vertex3D>(vertices3D);
 		wxjCreateIndexBuffer();
 		wxjCreateUniformBuffers();
 		wxjCreateCommandBuffer();
@@ -59,13 +59,16 @@ public:
 		wxjCreateDescriptorSetLayout(descriptorTypes, shaderStageFlagBits);
 		wxjCreateDescriptorSets(descriptorTypes);
 
-		wxjCreateGraphicsPipeline(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
+		wxjCreateGraphicsPipeline<Vertex3D>(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
 
 		CApplication::initialize();
 	}
 
 	void update(){
 		ubo.model = glm::rotate(glm::mat4(1.0f), durationTime * glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		// static int counter = 0;
+		// if(counter==0)NeedToExit = true;
+		// counter++;
 		CApplication::update();
 	}
 
