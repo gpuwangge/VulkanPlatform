@@ -32,7 +32,7 @@ public:
     std::unique_ptr<CPhysicalDevice>* pickedPhysicalDevice;
     void findAllPhysicalDevices();
     bool pickSuitablePhysicalDevice(VkSurfaceKHR surface, const std::vector<const char*>  requireDeviceExtensions, VkQueueFlagBits requiredQueueFamilies);
-    void displayPhysicalDevices(VkPhysicalDevice physicalDevice, int index);
+    //void displayPhysicalDevices(VkPhysicalDevice physicalDevice, int index);
 };
 
 

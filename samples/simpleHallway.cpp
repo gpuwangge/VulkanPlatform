@@ -21,15 +21,16 @@ public:
 		wxjCreateCommandBuffer();
 
 		//Create texture resource
-		VkImageUsageFlags usage = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
-		wxjCreateImage_texture("../textures/checkerboard_marble.jpg", usage, textureImageBuffer, texWidth, texHeight); //if bEnableMipmap == true, update mipLevels here
+		VkImageUsageFlags usage_texture = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+		wxjCreateImage_texture("../textures/checkerboard_marble.jpg", usage_texture, textureImageBuffer, texWidth, texHeight); //if bEnableMipmap == true, update mipLevels here
 		wxjCreateImageView(textureImageBuffer.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, mipLevels, OUT textureImageView);
 		wxjCreateSampler_texture();
 
-		if(mipLevels > 1) wxjCreateMipmaps(textureImageBuffer.image); //,"../textures/checkerboard"
+		if(mipLevels > 1) wxjCreateMipmaps(textureImageBuffer.image); //, usage_texture,"../textures/checkerboard"
 
 		wxjCreateSwapChainImagesAndImageViews();
 
+		VkImageUsageFlags usage;
 		//Create msaa resource
 		if(bEnableMSAA){
 			wxjGetMaxUsableSampleCount();

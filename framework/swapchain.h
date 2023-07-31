@@ -28,6 +28,8 @@ public:
 	VkExtent2D swapChainExtent;//08
 	std::vector<VkImageView> swapChainImageViews;//08
 
+    void displaySwapchainInfo(SwapChainSupportDetails swapChainSupport);
+    CDebugger * debugger;
 };
 
 #endif

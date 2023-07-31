@@ -181,128 +181,18 @@ void CInstance::findAllPhysicalDevices(){
         throw std::runtime_error("failed to find GPUs with Vulkan support!");
     }
 
-    if(debugger->getVerbose()){
-        for (unsigned int i = 0; i < deviceCount; i++) 
-            displayPhysicalDevices(devices[i], i);
-        debugger->writeMSG("\n");
-    }
+    // if(debugger->getVerbose()){
+    //     for (unsigned int i = 0; i < deviceCount; i++) 
+    //         displayPhysicalDevices(devices[i], i);
+    //     debugger->writeMSG("\n");
+    // }
 
-    for (auto &physical_device : devices)
+    for (auto &physical_device : devices){
         //gpus.push_back(std::make_unique<CPhysicalDevice>(*this, physical_device));
         physicalDevices.push_back(std::make_unique<CPhysicalDevice>(physical_device));
-
-}
-
-void CInstance::displayPhysicalDevices(VkPhysicalDevice physicalDevice, int index){
-    VkPhysicalDeviceProperties	PhysicalDeviceProperties;
-    vkGetPhysicalDeviceProperties(IN physicalDevice, OUT &PhysicalDeviceProperties);
-
-    fprintf(debugger->FpDebug, "\nDevice %2d:\n", index);
-    fprintf(debugger->FpDebug, "\tAPI version: %d\n", PhysicalDeviceProperties.apiVersion);
-    fprintf(debugger->FpDebug, "\tDriver version: %d\n", PhysicalDeviceProperties.apiVersion);
-    fprintf(debugger->FpDebug, "\tVendor ID: 0x%04x\n", PhysicalDeviceProperties.vendorID);
-    fprintf(debugger->FpDebug, "\tDevice ID: 0x%04x\n", PhysicalDeviceProperties.deviceID);
-    fprintf(debugger->FpDebug, "\tPhysical Device Type: %d =", PhysicalDeviceProperties.deviceType);
-    if (PhysicalDeviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)	fprintf(debugger->FpDebug, " (Discrete GPU)\n");
-    if (PhysicalDeviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU)	fprintf(debugger->FpDebug, " (Integrated GPU)\n");
-    if (PhysicalDeviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU)	fprintf(debugger->FpDebug, " (Virtual GPU)\n");
-    if (PhysicalDeviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_CPU)		fprintf(debugger->FpDebug, " (CPU)\n");
-    fprintf(debugger->FpDebug, "\tDevice Name: %s\n", PhysicalDeviceProperties.deviceName);
-    fprintf(debugger->FpDebug, "\tPipeline Cache Size: %d\n", PhysicalDeviceProperties.pipelineCacheUUID[0]);
-
-
-    //Display PhysicalDevice Features
-    VkPhysicalDeviceFeatures	PhysicalDeviceFeatures;
-    vkGetPhysicalDeviceFeatures(IN physicalDevice, OUT &PhysicalDeviceFeatures);
-
-    fprintf(debugger->FpDebug, "\n\tPhysical Device Features:\n");
-    fprintf(debugger->FpDebug, "\tgeometryShader = %2d\n", PhysicalDeviceFeatures.geometryShader);
-    fprintf(debugger->FpDebug, "\ttessellationShader = %2d\n", PhysicalDeviceFeatures.tessellationShader);
-    fprintf(debugger->FpDebug, "\tmultiDrawIndirect = %2d\n", PhysicalDeviceFeatures.multiDrawIndirect);
-    fprintf(debugger->FpDebug, "\twideLines = %2d\n", PhysicalDeviceFeatures.wideLines);
-    fprintf(debugger->FpDebug, "\tlargePoints = %2d\n", PhysicalDeviceFeatures.largePoints);
-    fprintf(debugger->FpDebug, "\tmultiViewport = %2d\n", PhysicalDeviceFeatures.multiViewport);
-    fprintf(debugger->FpDebug, "\tocclusionQueryPrecise = %2d\n", PhysicalDeviceFeatures.occlusionQueryPrecise);
-    fprintf(debugger->FpDebug, "\tpipelineStatisticsQuery = %2d\n", PhysicalDeviceFeatures.pipelineStatisticsQuery);
-    fprintf(debugger->FpDebug, "\tshaderFloat64 = %2d\n", PhysicalDeviceFeatures.shaderFloat64);
-    fprintf(debugger->FpDebug, "\tshaderInt64 = %2d\n", PhysicalDeviceFeatures.shaderInt64);
-    fprintf(debugger->FpDebug, "\tshaderInt16 = %2d\n", PhysicalDeviceFeatures.shaderInt16);
-    fprintf(debugger->FpDebug, "\tsamplerAnisotropy = %2d\n", PhysicalDeviceFeatures.samplerAnisotropy);
-    
-
-    VkFormatProperties					vfp;
-    fprintf(debugger->FpDebug, "\n\tImage Formats Checked:\n");
-    vkGetPhysicalDeviceFormatProperties(physicalDevice, IN VK_FORMAT_R32G32B32A32_SFLOAT, &vfp);
-    fprintf(debugger->FpDebug, "\tFormat VK_FORMAT_R32G32B32A32_SFLOAT: 0x%08x 0x%08x  0x%08x\n",
-        vfp.linearTilingFeatures, vfp.optimalTilingFeatures, vfp.bufferFeatures);
-    vkGetPhysicalDeviceFormatProperties(physicalDevice, IN VK_FORMAT_R8G8B8A8_UNORM, &vfp);
-    fprintf(debugger->FpDebug, "\tFormat VK_FORMAT_R8G8B8A8_UNORM: 0x%08x 0x%08x  0x%08x\n",
-        vfp.linearTilingFeatures, vfp.optimalTilingFeatures, vfp.bufferFeatures);
-    vkGetPhysicalDeviceFormatProperties(physicalDevice, IN VK_FORMAT_B8G8R8A8_UNORM, &vfp);
-    fprintf(debugger->FpDebug, "\tFormat VK_FORMAT_B8G8R8A8_UNORM: 0x%08x 0x%08x  0x%08x\n",
-        vfp.linearTilingFeatures, vfp.optimalTilingFeatures, vfp.bufferFeatures);
-    vkGetPhysicalDeviceFormatProperties(physicalDevice, IN VK_FORMAT_B8G8R8A8_SRGB, &vfp);
-    fprintf(debugger->FpDebug, "\tFormat VK_FORMAT_B8G8R8A8_SRGB: 0x%08x 0x%08x  0x%08x\n",
-        vfp.linearTilingFeatures, vfp.optimalTilingFeatures, vfp.bufferFeatures);
-
-    VkPhysicalDeviceMemoryProperties			vpdmp;
-    vkGetPhysicalDeviceMemoryProperties(physicalDevice, OUT &vpdmp);
-    fprintf(debugger->FpDebug, "\n\t%d Memory Types:\n", vpdmp.memoryTypeCount);
-    for (unsigned int i = 0; i < vpdmp.memoryTypeCount; i++) {
-        VkMemoryType vmt = vpdmp.memoryTypes[i];
-        VkMemoryPropertyFlags vmpf = vmt.propertyFlags;
-        fprintf(debugger->FpDebug, "\tMemory %2d: ", i);
-        if ((vmpf & VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT) != 0)	fprintf(debugger->FpDebug, " DeviceLocal");
-        if ((vmpf & VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT) != 0)	fprintf(debugger->FpDebug, " HostVisible");
-        if ((vmpf & VK_MEMORY_PROPERTY_HOST_COHERENT_BIT) != 0)	fprintf(debugger->FpDebug, " HostCoherent");
-        if ((vmpf & VK_MEMORY_PROPERTY_HOST_CACHED_BIT) != 0)	fprintf(debugger->FpDebug, " HostCached");
-        if ((vmpf & VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT) != 0)	fprintf(debugger->FpDebug, " LazilyAllocated");
-        fprintf(debugger->FpDebug, "\n");
+        physicalDevices.back().get()->displayPhysicalDevices();
     }
 
-    fprintf(debugger->FpDebug, "\n\t%d Memory Heaps:\n", vpdmp.memoryHeapCount);
-    for (unsigned int i = 0; i < vpdmp.memoryHeapCount; i++) {
-        fprintf(debugger->FpDebug, "\tHeap %d: ", i);
-        VkMemoryHeap vmh = vpdmp.memoryHeaps[i];
-        fprintf(debugger->FpDebug, " size = 0x%08lx", (unsigned long int)vmh.size);
-        if ((vmh.flags & VK_MEMORY_HEAP_DEVICE_LOCAL_BIT) != 0)	fprintf(debugger->FpDebug, " DeviceLocal");
-        if ((vmh.flags & VK_MEMORY_HEAP_MULTI_INSTANCE_BIT) != 0)	fprintf(debugger->FpDebug, " MultiInstance");
-        fprintf(debugger->FpDebug, "\n");
-    }
-    fprintf(debugger->FpDebug, "\n");
-
-    // see what device layers are available:
-    uint32_t layerCount;
-    vkEnumerateDeviceLayerProperties(physicalDevice, &layerCount, (VkLayerProperties *)nullptr);
-    VkLayerProperties * deviceLayers = new VkLayerProperties[layerCount];
-    VkResult result = vkEnumerateDeviceLayerProperties(physicalDevice, &layerCount, deviceLayers);
-    REPORT("\tvkEnumerateDeviceLayerProperties");
-    fprintf(debugger->FpDebug, "\t%d physical device layers enumerated:\n", layerCount);
-    for (unsigned int i = 0; i < layerCount; i++) {
-        fprintf(debugger->FpDebug, "\t0x%08x  %2d  '%s'  '%s'\n",
-            deviceLayers[i].specVersion,
-            deviceLayers[i].implementationVersion,
-            deviceLayers[i].layerName,
-            deviceLayers[i].description);
-
-        // see what device extensions are available:
-        //show layer related extension
-        uint32_t extensionCount;
-        vkEnumerateDeviceExtensionProperties(physicalDevice, deviceLayers[i].layerName, &extensionCount, (VkExtensionProperties *)nullptr);
-        VkExtensionProperties * deviceExtensions = new VkExtensionProperties[extensionCount];
-        result = vkEnumerateDeviceExtensionProperties(physicalDevice, deviceLayers[i].layerName, &extensionCount, deviceExtensions);
-        REPORT("\n\tvkEnumerateDeviceExtensionProperties");
-
-        fprintf(debugger->FpDebug, "\t%d device extensions enumerated for '%s':\n", extensionCount, deviceLayers[i].layerName);
-        for (unsigned int ii = 0; ii < extensionCount; ii++) {
-            fprintf(debugger->FpDebug, "\t0x%08x  '%s'\n",
-                deviceExtensions[ii].specVersion,
-                deviceExtensions[ii].extensionName);
-        }
-        fprintf(debugger->FpDebug, "\n");
-    }
-    delete[] deviceLayers;
-    debugger->flush();
 }
 
 bool CInstance::pickSuitablePhysicalDevice(VkSurfaceKHR surface, const std::vector<const char*>  requireDeviceExtensions, VkQueueFlagBits requiredQueueFamilies){

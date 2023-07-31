@@ -55,6 +55,7 @@ public:
 
     VkSampleCountFlagBits getMaxUsableSampleCount();
 
+    void displayPhysicalDevices();
 };
 
 #endif
