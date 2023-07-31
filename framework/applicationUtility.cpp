@@ -109,47 +109,10 @@ VkResult CApplication::FillDataBufferHelper(IN MyBuffer myBuffer, IN void * data
 /**************
 Swap Chain Utility Functions
 ************/
-VkSurfaceFormatKHR CApplication::chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) {
-    for (const auto& availableFormat : availableFormats) {
-        if (availableFormat.format == VK_FORMAT_B8G8R8A8_SRGB && availableFormat.colorSpace == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR) {
-            return availableFormat;
-        }
-    }
-
-    return availableFormats[0];
-}
-
-VkPresentModeKHR CApplication::chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes) {
-    for (const auto& availablePresentMode : availablePresentModes) {
-        if (availablePresentMode == VK_PRESENT_MODE_MAILBOX_KHR) {
-            return availablePresentMode;
-        }
-    }
-
-    return VK_PRESENT_MODE_FIFO_KHR;
-}
-
-VkExtent2D CApplication::chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities) {
-    if (capabilities.currentExtent.width != std::numeric_limits<uint32_t>::max()) {
-        return capabilities.currentExtent;
-    }
-    else {
-        int width, height;
-        glfwGetFramebufferSize(window, &width, &height);
-
-        VkExtent2D actualExtent = {
-            static_cast<uint32_t>(width),
-            static_cast<uint32_t>(height)
-        };
-
-        actualExtent.width = std::clamp(actualExtent.width, capabilities.minImageExtent.width, capabilities.maxImageExtent.width);
-        actualExtent.height = std::clamp(actualExtent.height, capabilities.minImageExtent.height, capabilities.maxImageExtent.height);
-
-        return actualExtent;
-    }
-}
-
 VkImageView CApplication::createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels) {
+    //Concept of imageView that something can change how we present the image, but no need to change the image itself
+    //Imageviews are commonly used in Vulkan, all images should have their imageviews.
+
     VkImageViewCreateInfo viewInfo{};
     viewInfo.sType = VK_STRUCTURE_TYPE_IMAGE_VIEW_CREATE_INFO;
     viewInfo.image = image;
@@ -157,11 +120,11 @@ VkImageView CApplication::createImageView(VkImage image, VkFormat format, VkImag
     viewInfo.format = format;
     viewInfo.subresourceRange.aspectMask = aspectFlags;
 
-    //Components可以调配texture上各个channel的颜色
+    //Components change texture color for any channel
     //VK_COMPONENT_SWIZZLE_IDENTITY is default value
-    //VK_COMPONENT_SWIZZLE_ZERO会使该channel的分量归零
-    //VK_COMPONENT_SWIZZLE_R把该channel赋值为r channel的值
-    //VK_COMPONENT_SWIZZLE_ONE把该channel的值赋为最大
+    //VK_COMPONENT_SWIZZLE_ZERO will set channel value to 0
+    //VK_COMPONENT_SWIZZLE_R will set the channel value to r channel's value
+    //VK_COMPONENT_SWIZZLE_ONE will set the channel value to maximum
     viewInfo.components.r = VK_COMPONENT_SWIZZLE_IDENTITY;
     viewInfo.components.g = VK_COMPONENT_SWIZZLE_IDENTITY;
     viewInfo.components.b = VK_COMPONENT_SWIZZLE_IDENTITY;

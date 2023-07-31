@@ -35,7 +35,11 @@ void CApplication::prepareVulkanDevices(){
     VkQueueFlagBits requiredQueueFamilies = VK_QUEUE_GRAPHICS_BIT; //& VK_QUEUE_COMPUTE_BIT
     
     instance = std::make_unique<CInstance>(requiredValidationLayers);
-    createGLFWSurface();//need instance
+
+    //need instance. Surface is to store view format information for creating swapchain. 
+    //Only GLFW knows what kind of surface can be attached to its window.
+    createGLFWSurface();
+
     instance->findAllPhysicalDevices();
     instance->pickSuitablePhysicalDevice(surface, requireDeviceExtensions, requiredQueueFamilies);
 
@@ -116,77 +120,6 @@ void CApplication::Init06CreateCommandBuffers() {
     REPORT("vkAllocateCommandBuffers");
 }
 
-void CApplication::Init08CreateSwapChain() {
-    HERE_I_AM("Init08Swapchain");
-    //vulkan draws on the vkImage(s)
-    //SwapChain will set vkImage to present on the screen
-    //Surface will tell the format of the vkImage
-    //PresentQueue is a queue to present
-
-    VkResult result = VK_SUCCESS;
-
-    SwapChainSupportDetails swapChainSupport = instance->pickedPhysicalDevice->get()->querySwapChainSupport(surface);
-
-    VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(swapChainSupport.formats);
-    VkPresentModeKHR presentMode = chooseSwapPresentMode(swapChainSupport.presentModes);
-    VkExtent2D extent = chooseSwapExtent(swapChainSupport.capabilities);
-
-    uint32_t imageCount = swapChainSupport.capabilities.minImageCount + 1;
-    if (swapChainSupport.capabilities.maxImageCount > 0 && imageCount > swapChainSupport.capabilities.maxImageCount) {
-        imageCount = swapChainSupport.capabilities.maxImageCount;
-    }
-
-    VkSwapchainCreateInfoKHR createInfo{};
-    createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
-    createInfo.surface = surface;
-
-    createInfo.minImageCount = imageCount;
-    createInfo.imageFormat = surfaceFormat.format;
-    createInfo.imageColorSpace = surfaceFormat.colorSpace;
-    createInfo.imageExtent = extent;
-    createInfo.imageArrayLayers = 1;
-    createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-
-    QueueFamilyIndices indices = instance->pickedPhysicalDevice->get()->findQueueFamilies(surface);
-    uint32_t queueFamilyIndices[] = { indices.graphicsFamily.value(), indices.presentFamily.value() };
-
-    if (indices.graphicsFamily != indices.presentFamily) {
-        createInfo.imageSharingMode = VK_SHARING_MODE_CONCURRENT;
-        createInfo.queueFamilyIndexCount = 2;
-        createInfo.pQueueFamilyIndices = queueFamilyIndices;
-    }
-    else {
-        createInfo.imageSharingMode = VK_SHARING_MODE_EXCLUSIVE;
-    }
-
-    createInfo.preTransform = swapChainSupport.capabilities.currentTransform;
-    createInfo.compositeAlpha = VK_COMPOSITE_ALPHA_OPAQUE_BIT_KHR;
-    createInfo.presentMode = presentMode;
-    createInfo.clipped = VK_TRUE;
-
-    //generate swapChain images (swapChainImages)
-    result = vkCreateSwapchainKHR(LOGICAL_DEVICE, &createInfo, nullptr, &swapChain);
-    if (result != VK_SUCCESS) throw std::runtime_error("failed to create swap chain!");
-    REPORT("vkCreateSwapchainKHR");
-
-    result = vkGetSwapchainImagesKHR(LOGICAL_DEVICE, swapChain, &imageCount, nullptr);
-    REPORT("vkGetSwapchainImagesKHR(Get imageCount)");
-    swapChainImages.resize(imageCount);
-    result = vkGetSwapchainImagesKHR(LOGICAL_DEVICE, swapChain, &imageCount, swapChainImages.data());
-    REPORT("vkGetSwapchainImagesKHR");
-
-    swapChainImageFormat = surfaceFormat.format;
-    swapChainExtent = extent;
-
-    // present views for the double-buffering:
-    swapChainImageViews.resize(swapChainImages.size());
-
-    //generate swapChainImageViews
-    for (size_t i = 0; i < swapChainImages.size(); i++) {
-        swapChainImageViews[i] = createImageView(swapChainImages[i], swapChainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
-        REPORT("vkCreateImageView");
-    }
-}
 
 void CApplication::Init12SpirvShader(std::string filename, VkShaderModule * pShaderModule){
     HERE_I_AM("Init12SpirvShader");
@@ -332,7 +265,7 @@ void CApplication::drawFrame() {
     //CPU need to know which framebuffer to draw。GPU notify CPU the image is ready or not
     //GPU-GPU sync use semaphore
     //semaphore check if image is ready or not。imageIndex is the ready image。
-    VkResult result = vkAcquireNextImageKHR(LOGICAL_DEVICE, swapChain, UINT64_MAX, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &imageIndex);
+    VkResult result = vkAcquireNextImageKHR(LOGICAL_DEVICE, swapchain.getHandle(), UINT64_MAX, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &imageIndex);
 
     vkResetFences(LOGICAL_DEVICE, 1, &inFlightFences[currentFrame]);
 
@@ -368,7 +301,7 @@ void CApplication::drawFrame() {
     presentInfo.waitSemaphoreCount = 1;
 
 
-    VkSwapchainKHR swapChains[] = { swapChain };
+    VkSwapchainKHR swapChains[] = { swapchain.getHandle() };
     presentInfo.swapchainCount = 1;
     presentInfo.pSwapchains = swapChains;
 
@@ -412,11 +345,11 @@ void CApplication::cleanupSwapChain() {
         vkDestroyFramebuffer(LOGICAL_DEVICE, framebuffer, nullptr);
     }
 
-    for (auto imageView : swapChainImageViews) {
+    for (auto imageView : swapchain.swapChainImageViews) {
         vkDestroyImageView(LOGICAL_DEVICE, imageView, nullptr);
     }
 
-    vkDestroySwapchainKHR(LOGICAL_DEVICE, swapChain, nullptr);
+    vkDestroySwapchainKHR(LOGICAL_DEVICE, swapchain.getHandle(), nullptr);
 }
 
 void CApplication::DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator) {

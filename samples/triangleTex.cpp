@@ -31,7 +31,8 @@ public:
 		wxjCreateCommandBuffer();
 
 		//Create texture resource
-		wxjCreateImage_texture("../textures/texture.jpg", textureImageBuffer, texWidth, texHeight);
+		VkImageUsageFlags usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+		wxjCreateImage_texture("../textures/texture.jpg", usage, textureImageBuffer, texWidth, texHeight);
 		wxjCreateSampler_texture();
 		wxjCreateImageView(textureImageBuffer.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, mipLevels, OUT textureImageView);
 
@@ -66,9 +67,6 @@ public:
 
 	void update(){
 		ubo.model = glm::rotate(glm::mat4(1.0f), durationTime * glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-		// static int counter = 0;
-		// if(counter==0)NeedToExit = true;
-		// counter++;
 		CApplication::update();
 	}
 

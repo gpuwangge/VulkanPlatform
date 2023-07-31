@@ -22,6 +22,7 @@
                 "${fileDirname}\\..\\framework\\debugger.cpp",
                 "${fileDirname}\\..\\framework\\physicalDevice.cpp",
                 "${fileDirname}\\..\\framework\\logicalDevice.cpp",
+                "${fileDirname}\\..\\framework\\swapchain.cpp",
                 //"${fileDirname}\\..\\samples\\simpleTriangle.cpp",
                 //"${fileDirname}\\..\\samples\\triangleTex.cpp",
                 "-L%VULKAN_SDK%/Lib",

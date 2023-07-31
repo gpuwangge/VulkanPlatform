@@ -7,6 +7,7 @@
 #include "common.h"
 #include "camera.hpp"
 #include "instance.h"
+#include "swapchain.h"
 
 #define LOGICAL_DEVICE *(instance->pickedPhysicalDevice->get()->getLogicalDevice())
 #define PHYSICAL_DEVICE instance->pickedPhysicalDevice->get()->getHandle()
@@ -158,11 +159,12 @@ public:
     std::vector<VkCommandBuffer> commandBuffers;//06
     VkCommandPool commandPool;//06
 
-    VkSwapchainKHR swapChain;//08
-	std::vector<VkImage> swapChainImages;//08
-	VkFormat swapChainImageFormat;//08
-	VkExtent2D swapChainExtent;//08
-	std::vector<VkImageView> swapChainImageViews;//08
+	CSwapchain swapchain;
+    // VkSwapchainKHR swapChain;//08
+	// std::vector<VkImage> swapChainImages;//08
+	// VkFormat swapChainImageFormat;//08
+	// VkExtent2D swapChainExtent;//08
+	// std::vector<VkImageView> swapChainImageViews;//08
 
     VkFormat findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
     VkFormat findDepthFormat();
@@ -222,11 +224,11 @@ public:
     void Init06CreateCommandPool();
     void Init06CreateCommandBuffers();
 
-    VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
-    VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
-    VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
+    // VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
+    // VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
+    // VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
     VkImageView createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels);
-    void Init08CreateSwapChain();
+
 
     std::vector<char> readFile(const std::string& filename);
     void Init12SpirvShader(std::string filename, VkShaderModule * pShaderModule);

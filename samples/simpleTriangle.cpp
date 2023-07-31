@@ -4,27 +4,12 @@
 class TEST_CLASS_NAME: public CVulkanBase{
 public:
 	void initialize(){
-		/************
-		buffersize: 8(numbers each vertex)*4(float)*4(vertex size)=128（byte）
-		************/
-		// vertices3D = {
-		// 	{ { -0.5f, -0.5f, 0.0f },{ 1.0f, 0.0f, 0.0f },{ 1.0f, 0.0f } },
-		// 	{ { 0.5f, -0.5f, 0.0f },{ 0.0f, 1.0f, 0.0f },{ 0.0f, 0.0f } },
-		// 	{ { 0.5f, 0.5f, 0.0f },{ 0.0f, 0.0f, 1.0f },{ 0.0f, 1.0f } },
-		// 	{ { -0.5f, 0.5f, 0.0f },{ 1.0f, 1.0f, 1.0f },{ 1.0f, 1.0f } }
-		// 	};
 		std::vector<Vertex> vertices= {
 			{ { -0.5f, -0.5f},{ 1.0f, 0.0f, 0.0f }},
 			{ { 0.5f, -0.5f},{ 0.0f, 1.0f, 0.0f }},
 			{ { 0.5f, 0.5f},{ 0.0f, 0.0f, 1.0f }},
 			{ { -0.5f, 0.5f},{ 1.0f, 1.0f, 1.0f } }			
 		};
-		// std::vector<Vertex> vertices = {
-		// 	{ { -0.5f, -0.5f, 0.0f },{ 1.0f, 0.0f, 0.0f },{ 1.0f, 0.0f } },
-		// 	{ { 0.5f, -0.5f, 0.0f },{ 0.0f, 1.0f, 0.0f },{ 0.0f, 0.0f } },
-		// 	{ { 0.5f, 0.5f, 0.0f },{ 0.0f, 0.0f, 1.0f },{ 0.0f, 1.0f } },
-		// 	{ { -0.5f, 0.5f, 0.0f },{ 1.0f, 1.0f, 1.0f },{ 1.0f, 1.0f } }
-		// 	};
 
 		/************
 		buffer size: 6*4=24（byte）

@@ -13,7 +13,7 @@ void CVulkanBase::wxjCreateColorAttachment(VkImageLayout imageLayout){
 	//At the beginning of subpass, attachment is loaded; at the end of attachment, attachment is stored
 	bUseColorAttachment = true;
 
-	colorAttachment.format = swapChainImageFormat;//VK_FORMAT_B8G8R8A8_SRGB
+	colorAttachment.format = swapchain.swapChainImageFormat;//VK_FORMAT_B8G8R8A8_SRGB
 	colorAttachment.samples = msaaSamples;
 	colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 	colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -40,7 +40,7 @@ void CVulkanBase::wxjCreateColorAttachmentResolve(){
 	bUseColorAttachmentResolve = true;
 
 	//added for MSAA
-	colorAttachmentResolve.format = swapChainImageFormat;
+	colorAttachmentResolve.format = swapchain.swapChainImageFormat;
 	colorAttachmentResolve.samples = VK_SAMPLE_COUNT_1_BIT;
 	colorAttachmentResolve.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
 	colorAttachmentResolve.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -111,19 +111,19 @@ void CVulkanBase::wxjCreateFramebuffers(){
 
 	VkResult result = VK_SUCCESS;
 
-	swapChainFramebuffers.resize(swapChainImageViews.size());
+	swapChainFramebuffers.resize(swapchain.swapChainImageViews.size());
 
-	for (size_t i = 0; i < swapChainImageViews.size(); i++) {
+	for (size_t i = 0; i < swapchain.swapChainImageViews.size(); i++) {
 		std::vector<VkImageView> attachments; 
 		 if (bUseDepthAttachment && bUseColorAttachmentResolve) {//Renderpass attachment(render target) order: Color, Depth, ColorResolve
 		    attachments.push_back(msaaColorImageView);
 		    attachments.push_back(depthImageView);
-			attachments.push_back(swapChainImageViews[i]);
+			attachments.push_back(swapchain.swapChainImageViews[i]);
 		 }else if(bUseDepthAttachment){//Renderpass attachment(render target) order: Color, Depth
-			attachments.push_back(swapChainImageViews[i]);
+			attachments.push_back(swapchain.swapChainImageViews[i]);
 			attachments.push_back(depthImageView);
 		}else{ //Renderpass attachment(render target) order: Color
-			attachments.push_back(swapChainImageViews[i]);
+			attachments.push_back(swapchain.swapChainImageViews[i]);
 		}
 
 		VkFramebufferCreateInfo framebufferInfo{};
@@ -131,8 +131,8 @@ void CVulkanBase::wxjCreateFramebuffers(){
 		framebufferInfo.renderPass = renderPass;
 		framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
 		framebufferInfo.pAttachments = attachments.data();//swapChainImageViews, 类型是VkImageView
-		framebufferInfo.width = swapChainExtent.width;
-		framebufferInfo.height = swapChainExtent.height;
+		framebufferInfo.width = swapchain.swapChainExtent.width;
+		framebufferInfo.height = swapchain.swapChainExtent.height;
 		framebufferInfo.layers = 1;
 
 		result = vkCreateFramebuffer(LOGICAL_DEVICE, &framebufferInfo, nullptr, &swapChainFramebuffers[i]);
@@ -622,7 +622,7 @@ void CVulkanBase::wxjBeginRenderPass(std::vector<VkClearValue> &clearValues){
     renderPassInfo.renderPass = renderPass;
     renderPassInfo.framebuffer = swapChainFramebuffers[imageIndex];
     renderPassInfo.renderArea.offset = { 0, 0 };
-    renderPassInfo.renderArea.extent = swapChainExtent;
+    renderPassInfo.renderArea.extent = swapchain.swapChainExtent;
 
     //std::array<VkClearValue, 2> clearValues{};
     // if (bEnableDepthTest) {
@@ -647,8 +647,8 @@ void CVulkanBase::wxjSetViewport(){
 	VkViewport viewport{};
 	viewport.x = 0.0f;
 	viewport.y = 0.0f;
-	viewport.width = (float)swapChainExtent.width;
-	viewport.height = (float)swapChainExtent.height;
+	viewport.width = (float)swapchain.swapChainExtent.width;
+	viewport.height = (float)swapchain.swapChainExtent.height;
 	viewport.minDepth = 0.0f;
 	viewport.maxDepth = 1.0f;
 	//Step4
@@ -657,7 +657,7 @@ void CVulkanBase::wxjSetViewport(){
 void CVulkanBase::wxjSetScissor(){
     VkRect2D scissor{};
     scissor.offset = { 0, 0 };
-    scissor.extent = swapChainExtent;
+    scissor.extent = swapchain.swapChainExtent;
     vkCmdSetScissor(commandBuffers[currentFrame], 0, 1, &scissor);
 }
 void CVulkanBase::wxjBindVertexBuffer(){
@@ -683,7 +683,7 @@ void CVulkanBase::wxjEndCOmmandBuffer(){
     }
 }
 
-void CVulkanBase::wxjCreateImage_texture(const std::string texturePath, OUT MyImageBuffer &textureImageBuffer, OUT int32_t &texWidth, OUT int32_t &texHeight) {
+void CVulkanBase::wxjCreateImage_texture(const std::string texturePath, VkImageUsageFlags usage, OUT MyImageBuffer &textureImageBuffer, OUT int32_t &texWidth, OUT int32_t &texHeight) {
 	HERE_I_AM("Init07CreateTextureImage");
 
 	int texChannels;
@@ -712,13 +712,23 @@ void CVulkanBase::wxjCreateImage_texture(const std::string texturePath, OUT MyIm
 
 	stbi_image_free(pixels);
 
-	createImage(texWidth, texHeight, mipLevels, VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL, VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, textureImageBuffer);
+	createImage(texWidth, texHeight, mipLevels, VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, textureImageBuffer);
 
-	transitionImageLayout(textureImageBuffer.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, mipLevels);
-	copyBufferToImage(stagingBuffer.buffer, textureImageBuffer.image, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
-	
+	//hallway mipmap use this:
+	//transitionImageLayout(textureImageBuffer.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, mipLevels);
+	//other use this:
+	//TODO:
+	if(mipLevels == 1){
+		transitionImageLayout(textureImageBuffer.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, mipLevels);
+ 		copyBufferToImage(stagingBuffer.buffer, textureImageBuffer.image, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
+      	transitionImageLayout(textureImageBuffer.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, mipLevels);
+	}else{
+		transitionImageLayout(textureImageBuffer.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, mipLevels);
+		copyBufferToImage(stagingBuffer.buffer, textureImageBuffer.image, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
+
+	}
 	//MIPMAP TODO: no need transition?? If comment out this, validation layer get error
-	transitionImageLayout(textureImageBuffer.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, mipLevels);
+	//transitionImageLayout(textureImageBuffer.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, mipLevels);
 
 	vkDestroyBuffer(LOGICAL_DEVICE, stagingBuffer.buffer, nullptr);
 	vkFreeMemory(LOGICAL_DEVICE, stagingBuffer.deviceMemory, nullptr);
@@ -757,10 +767,29 @@ void CVulkanBase::wxjCreateImageView(IN VkImage image, VkFormat format, VkImageA
     imageView = createImageView(image, format, aspectFlags, mipLevel);
 }
 void CVulkanBase::wxjCreateImage(VkSampleCountFlagBits numSamples, VkFormat format, VkImageUsageFlags usage, OUT MyImageBuffer &imageBuffer){
-	createImage(swapChainExtent.width, swapChainExtent.height, mipLevels, numSamples, format, VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, imageBuffer);
+	//do not use mipLevels here, because only depth and msaa(colorResolve) buffer calls this, they dont need mipmap
+	//texture (w/o mipmap) has another function to create image
+	createImage(swapchain.swapChainExtent.width, swapchain.swapChainExtent.height, 1, numSamples, format, VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, imageBuffer);
 }
 void CVulkanBase::wxjCreateSwapChainImagesAndImageViews(){
-    Init08CreateSwapChain();
+	HERE_I_AM("Init08Swapchain");
+    //vulkan draws on the vkImage(s)
+    //SwapChain will set vkImage to present on the screen
+    //Surface will tell the format of the vkImage
+    //PresentQueue is a queue to present
+
+    //Need preare surface and presentQueue first.
+    swapchain.GetPhysicalDevice(instance->pickedPhysicalDevice->get());
+
+    int width, height;
+    glfwGetFramebufferSize(window, &width, &height);
+    swapchain.queryInfo(surface, width, height);
+
+    //generate swapChainImageViews
+    for (size_t i = 0; i < swapchain.swapChainImages.size(); i++) {
+        swapchain.swapChainImageViews[i] = createImageView(swapchain.swapChainImages[i], swapchain.swapChainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
+        //REPORT("vkCreateImageView");
+    }
 }
 
 void CVulkanBase::wxjLoadObjModel(const std::string modelName) {
@@ -814,10 +843,10 @@ void CVulkanBase::wxjCreateMipmaps(IN OUT VkImage image){ //normal mipmap case
 	generateMipmaps(image, VK_FORMAT_R8G8B8A8_SRGB, texWidth, texHeight, mipLevels, NULL, false);
 }
 
-void CVulkanBase::wxjCreateMipmaps(IN OUT VkImage image, std::string rainbowCheckerboardTexturePath){ //rainbow mipmaps case
+void CVulkanBase::wxjCreateMipmaps(IN OUT VkImage image, VkImageUsageFlags usage, std::string rainbowCheckerboardTexturePath){ //rainbow mipmaps case
 	std::array<MyImageBuffer, MIPMAP_TEXTURE_COUNT> tmpTextureBufferForRainbowMipmaps;//create temp mipmaps
 	for (int i = 0; i < MIPMAP_TEXTURE_COUNT; i++) {//fill temp mipmaps
-		wxjCreateImage_texture(rainbowCheckerboardTexturePath + std::to_string(i) + ".png", tmpTextureBufferForRainbowMipmaps[i], texWidth, texHeight);
+		wxjCreateImage_texture(rainbowCheckerboardTexturePath + std::to_string(i) + ".png", usage, tmpTextureBufferForRainbowMipmaps[i], texWidth, texHeight);
 		generateMipmaps(tmpTextureBufferForRainbowMipmaps[i].image, VK_FORMAT_R8G8B8A8_SRGB, texWidth, texHeight, mipLevels, &tmpTextureBufferForRainbowMipmaps, false);
 	}
 	//use tmp mipmaps texture to update main texture

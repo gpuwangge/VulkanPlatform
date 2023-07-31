@@ -232,7 +232,7 @@ public:
 
     //void wxjCreateSyncObjects();
 
-    void wxjCreateImage_texture(const std::string texturePath, OUT MyImageBuffer &textureImageBuffer, OUT int32_t &texWidth, OUT int32_t &texHeight);
+    void wxjCreateImage_texture(const std::string texturePath, VkImageUsageFlags usage, OUT MyImageBuffer &textureImageBuffer, OUT int32_t &texWidth, OUT int32_t &texHeight);
     void wxjCreateSampler_texture();
     void wxjCreateImageView(IN VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, int mipLevel, OUT VkImageView &imageView);
     void wxjCreateImage(VkSampleCountFlagBits numSamples, VkFormat format, VkImageUsageFlags usage, OUT MyImageBuffer &imageBuffer);
@@ -251,7 +251,7 @@ public:
 
     void wxjGetMaxUsableSampleCount();
     void wxjCreateMipmaps(IN OUT VkImage image);
-    void wxjCreateMipmaps(IN OUT VkImage image, std::string rainbowCheckerboardTexturePath);
+    void wxjCreateMipmaps(IN OUT VkImage image, VkImageUsageFlags usage, std::string rainbowCheckerboardTexturePath);
     /**************
     Application operation functions
     ************/
