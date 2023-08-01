@@ -1,3 +1,7 @@
+=========Concet of InFlight========
+InFlight: means fast
+
+
 
 
 =========Concetp of Compute Shader========

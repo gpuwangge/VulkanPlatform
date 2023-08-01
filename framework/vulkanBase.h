@@ -62,8 +62,12 @@ public:
     void wxjCreateDescriptorSetLayout(std::vector<VkDescriptorType> &descriptorTypes, std::vector<VkShaderStageFlagBits>& shaderStageFlagBits);
     void wxjCreateDescriptorSets(std::vector<VkDescriptorType> &descriptorTypes);
 
+    void wxjCreateGraphicsPipeline(VkPrimitiveTopology topology){
+        wxjCreateGraphicsPipeline<Vertex2D>(topology, false); //Vertex2D doesn't really matter here, because no vertex attributes used
+    }
+
     template <typename T>
-    void wxjCreateGraphicsPipeline(VkPrimitiveTopology topology, bool useVertexAttribute){
+    void wxjCreateGraphicsPipeline(VkPrimitiveTopology topology, bool useVertexAttribute = true){
         HERE_I_AM("wxjCreateGraphicsPipeline");
 
         VkResult result = VK_SUCCESS;

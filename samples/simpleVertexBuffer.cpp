@@ -3,7 +3,7 @@
 #define TEST_CLASS_NAME CSimpleVertexBuffer
 class TEST_CLASS_NAME: public CVulkanBase{
 public:
-	std::vector<Vertex> vertices = {
+	std::vector<Vertex2D> vertices = {
 		{ { 0.0f, -0.5f},{ 1.0f, 0.0f, 0.0f }},
 		{ { 0.5f, 0.5f},{ 0.0f, 1.0f, 0.0f }},
 		{ { -0.5f, 0.5f},{ 0.0f, 0.0f, 1.0f }}		
@@ -11,7 +11,7 @@ public:
 
 	void initialize(){
 		//Create bufferss
-		wxjCreateVertexBuffer<Vertex>(vertices);
+		wxjCreateVertexBuffer<Vertex2D>(vertices);
 		wxjCreateCommandBuffer();
 
 		wxjCreateSwapChainImagesAndImageViews();
@@ -38,7 +38,7 @@ public:
 		wxjCreateDescriptorSetLayout(descriptorTypes, shaderStageFlagBits);
 		wxjCreateDescriptorSets(descriptorTypes);
 
-		wxjCreateGraphicsPipeline<Vertex>(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, true);
+		wxjCreateGraphicsPipeline<Vertex2D>(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
 
 		CApplication::initialize();
 	}

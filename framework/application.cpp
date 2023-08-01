@@ -51,16 +51,6 @@ void CApplication::prepareVulkanDevices(){
     instance->pickedPhysicalDevice->get()->createLogicalDevices(surface, requiredValidationLayers, requireDeviceExtensions);
 }
 
-// void CApplication::Init05CreateVertexBuffer() {
-//     HERE_I_AM("Init05CreateVertexBuffer");
-//     VkDeviceSize bufferSize = sizeof(vertices3D[0]) * vertices3D.size();
-
-//     //VK_BUFFER_USAGE_TRANSFER_SRC_BIT
-//     VkResult result = InitDataBufferHelper(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, &vertexDataBuffer);//allocate vertexDataBuffer bufferSize(decided by vertices3D) memory
-//     REPORT("InitVertexDataBuffer");
-//     FillDataBufferHelper(vertexDataBuffer, (void *)(vertices3D.data()));//copy vertices3D to vertexDataBuffer
-// }
-
 void CApplication::Init05CreateUniformBuffers(std::vector<MyBuffer> &_uniformBuffers, std::vector<void*> &_uniformBuffersMapped, VkBufferUsageFlags usage, VkDeviceSize bufferSize) {
     HERE_I_AM("Init05CreateUniformBuffers");
 
@@ -166,16 +156,22 @@ void CApplication::recordCommandBuffer(){
 }
 
 void CApplication::drawFrame() {
+    //printf("currentFrame: %d, ", currentFrame);
+
     VkSubmitInfo submitInfo{};
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
     //CPU-GPU sync use fence
-    vkWaitForFences(LOGICAL_DEVICE, 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
+    VkResult result = vkWaitForFences(LOGICAL_DEVICE, 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
+    //if(result == VK_SUCCESS) printf("frame is ready. ");
+    //else printf("waiting for frame ready. ");
 
     //CPU need to know which framebuffer to draw。GPU notify CPU the image is ready or not
     //GPU-GPU sync use semaphore
-    //semaphore check if image is ready or not。imageIndex is the ready image。
-    VkResult result = vkAcquireNextImageKHR(LOGICAL_DEVICE, swapchain.getHandle(), UINT64_MAX, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &imageIndex);
+    //semaphore check if image is ready or not. imageIndex is the ready image.
+    result = vkAcquireNextImageKHR(LOGICAL_DEVICE, swapchain.getHandle(), UINT64_MAX, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &imageIndex);
+    //if(result == VK_SUCCESS) printf("acquired next image %d. \n", imageIndex);
+    //else printf("Unable to aquire next image. \n");
 
     vkResetFences(LOGICAL_DEVICE, 1, &inFlightFences[currentFrame]);
 

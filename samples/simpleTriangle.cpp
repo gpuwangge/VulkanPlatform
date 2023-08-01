@@ -31,7 +31,7 @@ public:
 		wxjCreateDescriptorSetLayout(descriptorTypes, shaderStageFlagBits);
 		wxjCreateDescriptorSets(descriptorTypes);
 
-		wxjCreateGraphicsPipeline<Vertex>(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, false);
+		wxjCreateGraphicsPipeline(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
 
 		CApplication::initialize();
 	}

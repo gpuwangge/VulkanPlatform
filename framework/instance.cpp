@@ -181,12 +181,6 @@ void CInstance::findAllPhysicalDevices(){
         throw std::runtime_error("failed to find GPUs with Vulkan support!");
     }
 
-    // if(debugger->getVerbose()){
-    //     for (unsigned int i = 0; i < deviceCount; i++) 
-    //         displayPhysicalDevices(devices[i], i);
-    //     debugger->writeMSG("\n");
-    // }
-
     for (auto &physical_device : devices){
         //gpus.push_back(std::make_unique<CPhysicalDevice>(*this, physical_device));
         physicalDevices.push_back(std::make_unique<CPhysicalDevice>(physical_device));
@@ -204,15 +198,15 @@ bool CInstance::pickSuitablePhysicalDevice(VkSurfaceKHR surface, const std::vect
     }
 
     for ( auto& phy_device : physicalDevices) {
-        //测试Queue Families
+        //Test Queue Families
         QueueFamilyIndices indices = phy_device->findQueueFamilies(surface);
 
-        //测试Extension
+        //Test Extension
         bool extensionsSupported = phy_device->checkDeviceExtensionSupport(requireDeviceExtensions);
 
         bool swapChainAdequate = false;
         if (extensionsSupported) {
-            //测试SwapChain
+            //Test SwapChain
             SwapChainSupportDetails swapChainSupport = phy_device->querySwapChainSupport(surface);
             swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
         }
