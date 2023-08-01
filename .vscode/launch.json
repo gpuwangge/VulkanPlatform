@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "c:/Users/mtk32132/Documents/GitRepo/VulkanPlatform",
-      "program": "c:/Users/mtk32132/Documents/GitRepo/VulkanPlatform/build/Debug/outDebug",
+      "cwd": "c:/Users/mtk32132/Documents/GitRepo/VulkanPlatform/framework",
+      "program": "c:/Users/mtk32132/Documents/GitRepo/VulkanPlatform/framework/build/Debug/outDebug",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [

@@ -600,10 +600,19 @@ void CVulkanBase::wxjCreateCommandBuffer(){
 // 	FillDataBufferHelper(vertexDataBuffer, (void *)(input.data()));//copy vertices3D to vertexDataBuffer
 // }
 
-void CVulkanBase::wxjCreateIndexBuffer(){
-    Init05CreateIndexBuffer();
+void CVulkanBase::wxjCreateIndexBuffer(std::vector<uint32_t> &indices3D){
+    //Init05CreateIndexBuffer();
+
+	HERE_I_AM("wxjCreateIndexBuffer");
+    VkDeviceSize bufferSize = sizeof(indices3D[0]) * indices3D.size();
+
+    //VK_BUFFER_USAGE_TRANSFER_SRC_BIT
+    VkResult result = InitDataBufferHelper(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, &indexDataBuffer);
+    REPORT("InitIndexDataBuffer");
+    FillDataBufferHelper(indexDataBuffer, (void *)(indices3D.data()));
 }
 void CVulkanBase::wxjCreateUniformBuffers(){
+	bEnableUniform = true;
     Init05CreateUniformBuffers(uniformBuffers, uniformBuffersMapped, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, sizeof(UniformBufferObject));
 }
 
@@ -671,8 +680,11 @@ void CVulkanBase::wxjBindIndexBuffer(){
 void CVulkanBase::wxjBindDescriptorSets(){
 	vkCmdBindDescriptorSets(commandBuffers[currentFrame], VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[currentFrame], 0, nullptr);
 }
-void CVulkanBase::wxjDrawIndexed(){
+void CVulkanBase::wxjDrawIndexed(std::vector<uint32_t> &indices3D){
 	vkCmdDrawIndexed(commandBuffers[currentFrame], static_cast<uint32_t>(indices3D.size()), 1, 0, 0, 0);
+}
+void CVulkanBase::wxjDraw(uint32_t n){
+	vkCmdDraw(commandBuffers[currentFrame], n, 1, 0, 0);
 }
 void CVulkanBase::wxjEndRenderPass(){
 	vkCmdEndRenderPass(commandBuffers[currentFrame]);
@@ -792,7 +804,7 @@ void CVulkanBase::wxjCreateSwapChainImagesAndImageViews(){
     }
 }
 
-void CVulkanBase::wxjLoadObjModel(const std::string modelName) {
+void CVulkanBase::wxjLoadObjModel(IN const std::string modelName, OUT std::vector<Vertex3D> &vertices3D, OUT std::vector<uint32_t> &indices3D) {
 	tinyobj::attrib_t attrib;
 	std::vector<tinyobj::shape_t> shapes;
 	std::vector<tinyobj::material_t> materials;
@@ -804,8 +816,8 @@ void CVulkanBase::wxjLoadObjModel(const std::string modelName) {
 
 	std::unordered_map<Vertex3D, uint32_t> uniqueVertices{};
 
-	vertices3D.clear();
-	indices3D.clear();
+	//vertices3D.clear();
+	//indices3D.clear();
 
 	for (const auto& shape : shapes) {
 		for (const auto& index : shape.mesh.indices) {

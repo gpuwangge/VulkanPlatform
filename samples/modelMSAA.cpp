@@ -2,15 +2,18 @@
 #define TEST_CLASS_NAME CModelMSAA
 class TEST_CLASS_NAME: public CVulkanBase{
 public:
+	std::vector<Vertex3D> vertices3D;
+	std::vector<uint32_t> indices3D;
+
     void initialize(){
 		bEnableMSAA = true;//!To enable MSAA, make sure it has depth test first (call wxjCreateDepthAttachment())
 
 		//Create vertex resource
-		wxjLoadObjModel("../models/viking_room.obj");
+		wxjLoadObjModel("../models/viking_room.obj", vertices3D, indices3D);
 		
 		//Create buffers
 		wxjCreateVertexBuffer<Vertex3D>(vertices3D);
-		wxjCreateIndexBuffer();
+		wxjCreateIndexBuffer(indices3D);
 		wxjCreateUniformBuffers();
 		wxjCreateCommandBuffer();
 
@@ -61,7 +64,7 @@ public:
 		wxjCreateDescriptorSetLayout(descriptorTypes, shaderStageFlagBits);
 		wxjCreateDescriptorSets(descriptorTypes);
 
-		wxjCreateGraphicsPipeline<Vertex3D>(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST); //need all above completed first
+		wxjCreateGraphicsPipeline<Vertex3D>(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, true); //need all above completed first
 
 		CApplication::initialize();
 	}
@@ -83,7 +86,7 @@ public:
 		wxjBindVertexBuffer();
 		wxjBindIndexBuffer();
 		wxjBindDescriptorSets();
-		wxjDrawIndexed();
+		wxjDrawIndexed(indices3D);
 
 		wxjEndRenderPass();
 		wxjEndCOmmandBuffer();

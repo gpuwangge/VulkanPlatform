@@ -11,10 +11,10 @@ public:
     /**************
     Interface function to vulkan samples
     ************/
-    void wxjLoadObjModel(const std::string modelName);
+    void wxjLoadObjModel(IN const std::string modelName, OUT std::vector<Vertex3D> &vertices3D, OUT std::vector<uint32_t> &indices3D);
 
     template <typename T>
-    void wxjCreateVertexBuffer(IN std::vector<T> input){
+    void wxjCreateVertexBuffer(IN std::vector<T> &input){
         HERE_I_AM("Init05CreateVertexBuffer");
         VkDeviceSize bufferSize = sizeof(input[0]) * input.size();
 
@@ -24,7 +24,7 @@ public:
         FillDataBufferHelper(vertexDataBuffer, (void *)(input.data()));//copy vertices3D to vertexDataBuffer
     }
 
-    void wxjCreateIndexBuffer();
+    void wxjCreateIndexBuffer(std::vector<uint32_t> &indices3D);
     void wxjCreateUniformBuffers();
 
     void wxjCreateCommandBuffer();
@@ -63,7 +63,7 @@ public:
     void wxjCreateDescriptorSets(std::vector<VkDescriptorType> &descriptorTypes);
 
     template <typename T>
-    void wxjCreateGraphicsPipeline(VkPrimitiveTopology topology){
+    void wxjCreateGraphicsPipeline(VkPrimitiveTopology topology, bool useVertexAttribute){
         HERE_I_AM("wxjCreateGraphicsPipeline");
 
         VkResult result = VK_SUCCESS;
@@ -92,28 +92,28 @@ public:
         /*********2 Asemble Vertex Info**********/
         VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
         vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
-
-        //NTODO: particle and vertex3d
-        // if (pt == PIPELINE_COMPUTE) {
-        // 	auto bindingDescription = Particle::getBindingDescription();
-        // 	auto attributeDescriptions = Particle::getAttributeDescriptions();
-
-        // 	vertexInputInfo.vertexBindingDescriptionCount = 1;
-        // 	vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
-        // 	vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
-        // 	vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
-        // }
-        // else {
-            //auto bindingDescription = Vertex3D::getBindingDescription();
-            //auto attributeDescriptions = Vertex3D::getAttributeDescriptions();
         auto bindingDescription = T::getBindingDescription();
         auto attributeDescriptions = T::getAttributeDescriptions();
+        if(useVertexAttribute){     
+            //NTODO: particle and vertex3d
+            // if (pt == PIPELINE_COMPUTE) {
+            // 	auto bindingDescription = Particle::getBindingDescription();
+            // 	auto attributeDescriptions = Particle::getAttributeDescriptions();
 
-        vertexInputInfo.vertexBindingDescriptionCount = 1;
-        vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
-        vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
-        vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
-        //}
+            // 	vertexInputInfo.vertexBindingDescriptionCount = 1;
+            // 	vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
+            // 	vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
+            // 	vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
+            // }
+            // else {
+                //auto bindingDescription = Vertex3D::getBindingDescription();
+                //auto attributeDescriptions = Vertex3D::getAttributeDescriptions();
+            vertexInputInfo.vertexBindingDescriptionCount = 1;
+            vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
+            vertexInputInfo.pVertexBindingDescriptions = &bindingDescription;
+            vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
+            //}
+        }   
         pipelineInfo.pVertexInputState = &vertexInputInfo;
 
         /*********3 Assemble**********/
@@ -256,7 +256,8 @@ public:
     void wxjBindVertexBuffer();
     void wxjBindIndexBuffer();
     void wxjBindDescriptorSets();
-    void wxjDrawIndexed();
+    void wxjDrawIndexed(std::vector<uint32_t> &indices3D);
+    void wxjDraw(uint32_t n);
     void wxjEndRenderPass();
     void wxjEndCOmmandBuffer();
 

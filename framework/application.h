@@ -106,7 +106,7 @@ typedef struct MyBuffer
 {
 	VkBuffer		buffer;
 	VkDeviceMemory		deviceMemory;
-	VkDeviceSize		size;
+	VkDeviceSize		size = 0;
 } MyBuffer;
 
 typedef struct MyImageBuffer
@@ -124,13 +124,13 @@ struct UniformBufferObject {
 	alignas(16) glm::mat4 proj;
 };
 
-typedef enum e_PipelineType {
-	PIPELINE_BASIC,
+//typedef enum e_PipelineType {
+//	PIPELINE_BASIC,
 	// PIPELINE_TEXTURE,
 	// PIPELINE_MODEL,
 	// PIPELINE_COMPUTE,
 	// PIPELINE_MIPMAP
-}PipelineType;
+//}PipelineType;
 
 
 class CApplication{
@@ -145,16 +145,16 @@ public:
 
     VkSurfaceKHR surface;//03
     
-    std::vector<Vertex3D> vertices3D;
-    std::vector<uint32_t> indices3D;
+    //std::vector<Vertex3D> vertices3D;
+    //std::vector<uint32_t> indices3D;
     bool framebufferResized = false;
 
     CDebugger * debugger;
 
 	MyBuffer vertexDataBuffer;  //05
 	MyBuffer indexDataBuffer; //05
-    std::vector<MyBuffer> uniformBuffers; //05 用来创建MVP的uniform
-	std::vector<void*> uniformBuffersMapped; //05 用来更新MVP的uniform
+    std::vector<MyBuffer> uniformBuffers; //05 MVP uniform
+	std::vector<void*> uniformBuffersMapped; //05 MVP uniform
 
     std::vector<VkCommandBuffer> commandBuffers;//06
     VkCommandPool commandPool;//06
@@ -207,6 +207,8 @@ public:
 	VkImageView msaaColorImageView;
     VkSampleCountFlagBits msaaSamples;
 
+	bool bEnableUniform;
+
     void run();
 
     void prepareGLFW();
@@ -218,7 +220,7 @@ public:
     VkResult InitDataBufferHelper(VkDeviceSize size, VkBufferUsageFlags usage, OUT MyBuffer * pMyBuffer);
     VkResult FillDataBufferHelper(IN MyBuffer myBuffer, IN void * data);
     //void Init05CreateVertexBuffer();
-    void Init05CreateIndexBuffer();
+    //void Init05CreateIndexBuffer();
     void Init05CreateUniformBuffers(std::vector<MyBuffer> &_uniformBuffers, std::vector<void*> &_uniformBuffersMapped, VkBufferUsageFlags usage, VkDeviceSize bufferSize);
 
     void Init06CreateCommandPool();

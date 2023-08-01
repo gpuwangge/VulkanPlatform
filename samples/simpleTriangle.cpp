@@ -1,25 +1,10 @@
 #include "..\\framework\\vulkanBase.h"
 
-#define TEST_CLASS_NAME CBasicTriangles
+#define TEST_CLASS_NAME CSimpleTriangle
 class TEST_CLASS_NAME: public CVulkanBase{
 public:
-	std::vector<Vertex> vertices = {
-		{ { -0.5f, -0.5f},{ 1.0f, 0.0f, 0.0f }},
-		{ { 0.5f, -0.5f},{ 0.0f, 1.0f, 0.0f }},
-		{ { 0.5f, 0.5f},{ 0.0f, 0.0f, 1.0f }},
-		{ { -0.5f, 0.5f},{ 1.0f, 1.0f, 1.0f } }			
-	};
-
-	/************
-	buffer size: 6*4=24（byte）
-	************/
-	std::vector<uint32_t> indices3D = { 0, 1, 2, 2, 3, 0};
-
 	void initialize(){
 		//Create bufferss
-		wxjCreateVertexBuffer<Vertex>(vertices);
-		wxjCreateIndexBuffer(indices3D);
-		wxjCreateUniformBuffers();
 		wxjCreateCommandBuffer();
 
 		wxjCreateSwapChainImagesAndImageViews();
@@ -36,23 +21,22 @@ public:
 		wxjCreateFramebuffers();
 
 		//Create shader resource
-		wxjCreateVertexShader("../shaders/basicTriangles/vert.spv");
-		wxjCreateFragmentShader("../shaders/basicTriangles/frag.spv");
+		wxjCreateVertexShader("../shaders/simpleTriangle/vert.spv");
+		wxjCreateFragmentShader("../shaders/simpleTriangle/frag.spv");
 
 		//Create Descriptors
-		std::vector<VkDescriptorType> descriptorTypes{VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER};
-		std::vector<VkShaderStageFlagBits> shaderStageFlagBits{VK_SHADER_STAGE_VERTEX_BIT};
+		std::vector<VkDescriptorType> descriptorTypes{};
+		std::vector<VkShaderStageFlagBits> shaderStageFlagBits{};
 		wxjCreateDescriptorPool(descriptorTypes);
 		wxjCreateDescriptorSetLayout(descriptorTypes, shaderStageFlagBits);
 		wxjCreateDescriptorSets(descriptorTypes);
 
-		wxjCreateGraphicsPipeline<Vertex>(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, true);
+		wxjCreateGraphicsPipeline<Vertex>(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, false);
 
 		CApplication::initialize();
 	}
 
 	void update(){
-		ubo.model = glm::rotate(glm::mat4(1.0f), durationTime * glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 		CApplication::update();
 	}
 
@@ -65,10 +49,8 @@ public:
 		wxjBindPipeline();
 		wxjSetViewport();
 		wxjSetScissor();
-		wxjBindVertexBuffer();
-		wxjBindIndexBuffer();
 		wxjBindDescriptorSets();
-		wxjDrawIndexed(indices3D);
+		wxjDraw(3);
 
 		wxjEndRenderPass();
 		wxjEndCOmmandBuffer();

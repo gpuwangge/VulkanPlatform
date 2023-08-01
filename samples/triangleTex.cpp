@@ -2,31 +2,22 @@
 #define TEST_CLASS_NAME CTriangleTex
 class TEST_CLASS_NAME: public CVulkanBase{
 public:
-    TEST_CLASS_NAME(){
-    }
+	std::vector<Vertex3D> vertices3D = {
+	{ { -0.5f, -0.5f, 0.0f },{ 1.0f, 0.0f, 0.0f },{ 1.0f, 0.0f } },
+	{ { 0.5f, -0.5f, 0.0f },{ 0.0f, 1.0f, 0.0f },{ 0.0f, 0.0f } },
+	{ { 0.5f, 0.5f, 0.0f },{ 0.0f, 0.0f, 1.0f },{ 0.0f, 1.0f } },
+	{ { -0.5f, 0.5f, 0.0f },{ 1.0f, 1.0f, 1.0f },{ 1.0f, 1.0f } }
+	};
 
-    ~TEST_CLASS_NAME(){
-    }
+	/************
+	buffer size: 6*4=24（byte）
+	************/
+	std::vector<uint32_t> indices3D = { 0, 1, 2, 2, 3, 0};
 
     void initialize(){
-		/************
-		buffersize: 8(numbers each vertex)*4(float)*4(vertex size)=128（byte）
-		************/
-		vertices3D = {
-			{ { -0.5f, -0.5f, 0.0f },{ 1.0f, 0.0f, 0.0f },{ 1.0f, 0.0f } },
-			{ { 0.5f, -0.5f, 0.0f },{ 0.0f, 1.0f, 0.0f },{ 0.0f, 0.0f } },
-			{ { 0.5f, 0.5f, 0.0f },{ 0.0f, 0.0f, 1.0f },{ 0.0f, 1.0f } },
-			{ { -0.5f, 0.5f, 0.0f },{ 1.0f, 1.0f, 1.0f },{ 1.0f, 1.0f } }
-			};
-
-		/************
-		buffer size: 6*4=24（byte）
-		************/
-		indices3D = { 0, 1, 2, 2, 3, 0};
-
 		//Create buffers
 		wxjCreateVertexBuffer<Vertex3D>(vertices3D);
-		wxjCreateIndexBuffer();
+		wxjCreateIndexBuffer(indices3D);
 		wxjCreateUniformBuffers();
 		wxjCreateCommandBuffer();
 
@@ -60,7 +51,7 @@ public:
 		wxjCreateDescriptorSetLayout(descriptorTypes, shaderStageFlagBits);
 		wxjCreateDescriptorSets(descriptorTypes);
 
-		wxjCreateGraphicsPipeline<Vertex3D>(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
+		wxjCreateGraphicsPipeline<Vertex3D>(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, true);
 
 		CApplication::initialize();
 	}
@@ -82,7 +73,7 @@ public:
 		wxjBindVertexBuffer();
 		wxjBindIndexBuffer();
 		wxjBindDescriptorSets();
-		wxjDrawIndexed();
+		wxjDrawIndexed(indices3D);
 
 		wxjEndRenderPass();
 		wxjEndCOmmandBuffer();

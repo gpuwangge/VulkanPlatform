@@ -8,6 +8,8 @@ CApplication::CApplication(){
 
     bEnableDepthTest = false;
 
+    bEnableUniform = false;
+
     textureSampler = NULL;
 
     mainCamera.type = Camera::CameraType::firstperson;
@@ -59,16 +61,6 @@ void CApplication::prepareVulkanDevices(){
 //     FillDataBufferHelper(vertexDataBuffer, (void *)(vertices3D.data()));//copy vertices3D to vertexDataBuffer
 // }
 
-void CApplication::Init05CreateIndexBuffer() {
-    HERE_I_AM("Init05CreateIndexBuffer");
-    VkDeviceSize bufferSize = sizeof(indices3D[0]) * indices3D.size();
-
-    //VK_BUFFER_USAGE_TRANSFER_SRC_BIT
-    VkResult result = InitDataBufferHelper(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, &indexDataBuffer);
-    REPORT("InitIndexDataBuffer");
-    FillDataBufferHelper(indexDataBuffer, (void *)(indices3D.data()));
-}
-
 void CApplication::Init05CreateUniformBuffers(std::vector<MyBuffer> &_uniformBuffers, std::vector<void*> &_uniformBuffersMapped, VkBufferUsageFlags usage, VkDeviceSize bufferSize) {
     HERE_I_AM("Init05CreateUniformBuffers");
 
@@ -94,7 +86,7 @@ void CApplication::Init06CreateCommandPool() {
     poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
     poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
     //poolInfo.queueFamilyIndex = queueFamilyIndices.graphicsFamily.value();//find a queue family that does graphics
-    poolInfo.queueFamilyIndex = queueFamilyIndices.graphicsAndComputeFamily.value();//graphics command buffer和compute command buffer都需要这个command pool，所以需要graphics and compute family
+    poolInfo.queueFamilyIndex = queueFamilyIndices.graphicsAndComputeFamily.value();
 
     result = vkCreateCommandPool(LOGICAL_DEVICE, &poolInfo, nullptr, &commandPool);
     if (result != VK_SUCCESS) throw std::runtime_error("failed to create graphics command pool!");
@@ -114,7 +106,7 @@ void CApplication::Init06CreateCommandBuffers() {
     allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
     allocInfo.commandBufferCount = (uint32_t)commandBuffers.size();
 
-    result = vkAllocateCommandBuffers(LOGICAL_DEVICE, &allocInfo, commandBuffers.data());//graphcis recordCommandBuffer需要用这个buffer： recordCommandBuffer(commandBuffers[currentFrame], imageIndex);
+    result = vkAllocateCommandBuffers(LOGICAL_DEVICE, &allocInfo, commandBuffers.data());
 
     if (result != VK_SUCCESS) throw std::runtime_error("failed to allocate command buffers!");
     REPORT("vkAllocateCommandBuffers");
@@ -172,88 +164,6 @@ void CApplication::recordCommandBuffer(){
 
     //recordCommandBuffer(commandBuffers[currentFrame], imageIndex);
 }
-/*
-void CApplication::recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex) {
-    VkCommandBufferBeginInfo beginInfo{};
-    beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
-
-    //Step1
-    if (vkBeginCommandBuffer(commandBuffer, &beginInfo) != VK_SUCCESS) {
-        throw std::runtime_error("failed to begin recording command buffer!");
-    }
-
-    VkRenderPassBeginInfo renderPassInfo{};
-    renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-    renderPassInfo.renderPass = renderPass;
-    renderPassInfo.framebuffer = swapChainFramebuffers[imageIndex];
-    renderPassInfo.renderArea.offset = { 0, 0 };
-    renderPassInfo.renderArea.extent = swapChainExtent;
-
-    std::array<VkClearValue, 2> clearValues{};
-    // if (bEnableDepthTest) {
-    //     clearValues[0].color = { { 0.0f, 0.0f, 0.0f, 1.0f } };
-    //     clearValues[1].depthStencil = { 1.0f, 0 };
-    //     renderPassInfo.clearValueCount = static_cast<uint32_t>(clearValues.size());
-    //     renderPassInfo.pClearValues = clearValues.data();
-    // }
-    // else {
-        clearValues[0].color = { {  0.0f, 0.0f, 0.0f, 1.0f  } };
-        renderPassInfo.clearValueCount = 1;
-        renderPassInfo.pClearValues = clearValues.data();
-    //}
-
-    //Step2
-    vkCmdBeginRenderPass(commandBuffer, &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
-
-    //Step3
-    vkCmdBindPipeline(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
-
-    VkViewport viewport{};
-    viewport.x = 0.0f;
-    viewport.y = 0.0f;
-    viewport.width = (float)swapChainExtent.width;
-    viewport.height = (float)swapChainExtent.height;
-    viewport.minDepth = 0.0f;
-    viewport.maxDepth = 1.0f;
-    //Step4
-    vkCmdSetViewport(commandBuffer, 0, 1, &viewport);
-
-    VkRect2D scissor{};
-    scissor.offset = { 0, 0 };
-    scissor.extent = swapChainExtent;
-    vkCmdSetScissor(commandBuffer, 0, 1, &scissor);
-
-    //compute pipeline的结果在shaderStorageBuffers_compute里面，而其他pipeline使用vertexDataBuffer和indexDataBuffer
-    // if (pipelineType == PIPELINE_COMPUTE) {
-    //     VkDeviceSize offsets[] = { 0 };
-    //     vkCmdBindVertexBuffers(commandBuffer, 0, 1, &shaderStorageBuffers_compute[currentFrame].buffer, offsets);
-
-    //     //Step5
-    //     vkCmdDraw(commandBuffer, PARTICLE_COUNT, 1, 0, 0);
-    // }
-    // else {
-        VkBuffer vertexBuffers[] = { vertexDataBuffer.buffer };
-        VkDeviceSize offsets[] = { 0 };
-        vkCmdBindVertexBuffers(commandBuffer, 0, 1, vertexBuffers, offsets);
-
-        vkCmdBindIndexBuffer(commandBuffer, indexDataBuffer.buffer, 0, VK_INDEX_TYPE_UINT32);
-
-        //Descriptor Step 5
-        vkCmdBindDescriptorSets(commandBuffer, VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[currentFrame], 0, nullptr);
-
-        //Step5
-        vkCmdDrawIndexed(commandBuffer, static_cast<uint32_t>(indices3D.size()), 1, 0, 0, 0);
-    //}
-
-    //Step6
-    vkCmdEndRenderPass(commandBuffer);
-
-    //Step7
-    if (vkEndCommandBuffer(commandBuffer) != VK_SUCCESS) {
-        throw std::runtime_error("failed to record command buffer!");
-    }
-
-}*/
 
 void CApplication::drawFrame() {
     VkSubmitInfo submitInfo{};
@@ -324,7 +234,7 @@ void CApplication::update(){
 
     mainCamera.update(deltaTime);
 
-    updateUniformBuffer(currentFrame, durationTime);
+    if(bEnableUniform) updateUniformBuffer(currentFrame, durationTime);
 
     currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 }
@@ -337,7 +247,7 @@ void CApplication::mainLoop(){
 			if (NeedToExit) break;
 		}
 
-		vkDeviceWaitIdle(LOGICAL_DEVICE);
+		vkDeviceWaitIdle(LOGICAL_DEVICE);//Wait GPU to complete all jobs before CPU destroy resources
 }
 
 void CApplication::cleanupSwapChain() {
@@ -371,9 +281,11 @@ CApplication::~CApplication(){
     //vkDestroyPipeline(logicalDevice, pipeline_compute, nullptr);
     //vkDestroyPipelineLayout(logicalDevice, pipelineLayout_compute, nullptr);
 
-    for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-        vkDestroyBuffer(LOGICAL_DEVICE, uniformBuffers[i].buffer, nullptr);
-        vkFreeMemory(LOGICAL_DEVICE, uniformBuffers[i].deviceMemory, nullptr);
+    if(bEnableUniform){
+        for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+            vkDestroyBuffer(LOGICAL_DEVICE, uniformBuffers[i].buffer, nullptr);
+            vkFreeMemory(LOGICAL_DEVICE, uniformBuffers[i].deviceMemory, nullptr);
+        }
     }
 
     if(textureImageBuffer.size != (VkDeviceSize)0){
@@ -415,11 +327,14 @@ CApplication::~CApplication(){
         vkDestroyImageView(LOGICAL_DEVICE, depthImageView, nullptr);
     }
 
-    vkDestroyBuffer(LOGICAL_DEVICE, indexDataBuffer.buffer, nullptr);
-    vkFreeMemory(LOGICAL_DEVICE, indexDataBuffer.deviceMemory, nullptr);
-
-    vkDestroyBuffer(LOGICAL_DEVICE, vertexDataBuffer.buffer, nullptr);
-    vkFreeMemory(LOGICAL_DEVICE, vertexDataBuffer.deviceMemory, nullptr);
+    if(indexDataBuffer.size != 0){
+        vkDestroyBuffer(LOGICAL_DEVICE, indexDataBuffer.buffer, nullptr);
+        vkFreeMemory(LOGICAL_DEVICE, indexDataBuffer.deviceMemory, nullptr);
+    }
+    if(vertexDataBuffer.size != 0){
+        vkDestroyBuffer(LOGICAL_DEVICE, vertexDataBuffer.buffer, nullptr);
+        vkFreeMemory(LOGICAL_DEVICE, vertexDataBuffer.deviceMemory, nullptr);
+    }
 
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
         vkDestroySemaphore(LOGICAL_DEVICE, renderFinishedSemaphores[i], nullptr);

@@ -8,3 +8,5 @@ bins/modelMSAA.exe
 bins/simpleHallway.exe
 logs/swapchainLog.txt
 bins/basicTriangles.exe
+bins/simpleTriangle.exe
+bins/simpleVertexBuffer.exe
