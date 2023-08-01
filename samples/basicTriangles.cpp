@@ -1,6 +1,6 @@
 #include "..\\framework\\vulkanBase.h"
 
-#define TEST_CLASS_NAME CSimpleTriangle
+#define TEST_CLASS_NAME CBasicTriangles
 class TEST_CLASS_NAME: public CVulkanBase{
 public:
 	void initialize(){
@@ -36,8 +36,8 @@ public:
 		wxjCreateFramebuffers();
 
 		//Create shader resource
-		wxjCreateVertexShader("../shaders/basic/vert.spv");
-		wxjCreateFragmentShader("../shaders/basic/frag.spv");
+		wxjCreateVertexShader("../shaders/basicTriangles/vert.spv");
+		wxjCreateFragmentShader("../shaders/basicTriangles/frag.spv");
 
 		//Create Descriptors
 		std::vector<VkDescriptorType> descriptorTypes{VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER};

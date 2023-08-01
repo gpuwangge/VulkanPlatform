@@ -3,8 +3,8 @@ logs/logicalDeviceLog.txt
 logs/applicationLog.txt
 logs/physicalDeviceLog.txt
 bins/objModel.exe
-bins/simpleTriangle.exe
 bins/triangleTex.exe
 bins/modelMSAA.exe
 bins/simpleHallway.exe
 logs/swapchainLog.txt
+bins/basicTriangles.exe
