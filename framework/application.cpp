@@ -267,11 +267,11 @@ CApplication::~CApplication(){
     //vkDestroyPipeline(logicalDevice, pipeline_compute, nullptr);
     //vkDestroyPipelineLayout(logicalDevice, pipelineLayout_compute, nullptr);
 
-    // if(bEnableUniform){
-    // }
-    for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+    //if(bEnableUniform){
+    for (size_t i = 0; i < uniformBuffers.size(); i++) {
         uniformBuffers[i].DestroyAndFree();
     }
+    //}
     indexDataBuffer.DestroyAndFree();
     vertexDataBuffer.DestroyAndFree();
 

@@ -88,7 +88,7 @@ struct Vertex2D {
 
 class CWxjBuffer final{
 public:
-    CWxjBuffer(){}
+    CWxjBuffer(): m_size(0){}
     ~CWxjBuffer(){}
 
     VkResult init(IN VkDeviceSize requiredSize, VkBufferUsageFlags usage) {
@@ -147,7 +147,7 @@ public:
     }
 
     void DestroyAndFree(){
-        if(m_size > 0){
+        if(m_size != 0){
             vkDestroyBuffer(CContext::GetHandle().GetLogicalDevice(), buffer, nullptr);
             vkFreeMemory(CContext::GetHandle().GetLogicalDevice(), deviceMemory, nullptr);
         }
@@ -157,7 +157,7 @@ public:
     VkDeviceMemory		deviceMemory;
 
 private:
-	VkDeviceSize		m_size = 0;
+	VkDeviceSize		m_size;
 
     int FindMemoryByFlagAndType(VkMemoryPropertyFlagBits memoryFlagBits, uint32_t  memoryTypeBits) {
         VkPhysicalDeviceMemoryProperties	vpdmp;
