@@ -137,7 +137,7 @@ VkImageView CApplication::createImageView(VkImage image, VkFormat format, VkImag
     viewInfo.subresourceRange.layerCount = 1;
 
     VkImageView imageView;
-    if (vkCreateImageView(LOGICAL_DEVICE, &viewInfo, nullptr, &imageView) != VK_SUCCESS) {
+    if (vkCreateImageView(CContext::GetHandle().GetLogicalDevice(), &viewInfo, nullptr, &imageView) != VK_SUCCESS) {
         throw std::runtime_error("failed to create texture image view!");
     }
 
@@ -163,25 +163,25 @@ void CApplication::createImage(uint32_t width, uint32_t height, uint32_t mipLeve
     imageInfo.samples = numSamples;
     imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
-    if (vkCreateImage(LOGICAL_DEVICE, &imageInfo, nullptr, &imageBuffer.image) != VK_SUCCESS) {
+    if (vkCreateImage(CContext::GetHandle().GetLogicalDevice(), &imageInfo, nullptr, &imageBuffer.image) != VK_SUCCESS) {
         throw std::runtime_error("failed to create image!");
     }
 
     VkMemoryRequirements memRequirements;
-    vkGetImageMemoryRequirements(LOGICAL_DEVICE, imageBuffer.image, &memRequirements);
+    vkGetImageMemoryRequirements(CContext::GetHandle().GetLogicalDevice(), imageBuffer.image, &memRequirements);
 
     VkMemoryAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
     allocInfo.allocationSize = memRequirements.size;
     allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, properties);
 
-    if (vkAllocateMemory(LOGICAL_DEVICE, &allocInfo, nullptr, &imageBuffer.deviceMemory) != VK_SUCCESS) {
+    if (vkAllocateMemory(CContext::GetHandle().GetLogicalDevice(), &allocInfo, nullptr, &imageBuffer.deviceMemory) != VK_SUCCESS) {
         throw std::runtime_error("failed to allocate image memory!");
     }
 
     imageBuffer.size = allocInfo.allocationSize;
 
-    vkBindImageMemory(LOGICAL_DEVICE, imageBuffer.image, imageBuffer.deviceMemory, 0);
+    vkBindImageMemory(CContext::GetHandle().GetLogicalDevice(), imageBuffer.image, imageBuffer.deviceMemory, 0);
 }
 
 void CApplication::transitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t mipLevels) {
@@ -264,7 +264,7 @@ VkCommandBuffer CApplication::beginSingleTimeCommands() {
     allocInfo.commandBufferCount = 1;
 
     VkCommandBuffer commandBuffer;
-    vkAllocateCommandBuffers(LOGICAL_DEVICE, &allocInfo, &commandBuffer);
+    vkAllocateCommandBuffers(CContext::GetHandle().GetLogicalDevice(), &allocInfo, &commandBuffer);
 
     VkCommandBufferBeginInfo beginInfo{};
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -277,7 +277,7 @@ VkCommandBuffer CApplication::beginSingleTimeCommands() {
 
 uint32_t CApplication::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) {
     VkPhysicalDeviceMemoryProperties memProperties;
-    vkGetPhysicalDeviceMemoryProperties(PHYSICAL_DEVICE, &memProperties);
+    vkGetPhysicalDeviceMemoryProperties(CContext::GetHandle().GetPhysicalDevice(), &memProperties);
 
     for (uint32_t i = 0; i < memProperties.memoryTypeCount; i++) {
         if ((typeFilter & (1 << i)) && (memProperties.memoryTypes[i].propertyFlags & properties) == properties) {
@@ -296,16 +296,16 @@ void CApplication::endSingleTimeCommands(VkCommandBuffer commandBuffer) {
     submitInfo.commandBufferCount = 1;
     submitInfo.pCommandBuffers = &commandBuffer;
 
-    vkQueueSubmit(GRAPHICS_QUEUE, 1, &submitInfo, VK_NULL_HANDLE);
-    vkQueueWaitIdle(GRAPHICS_QUEUE);
+    vkQueueSubmit(CContext::GetHandle().GetGraphicsQueue(), 1, &submitInfo, VK_NULL_HANDLE);
+    vkQueueWaitIdle(CContext::GetHandle().GetGraphicsQueue());
 
-    vkFreeCommandBuffers(LOGICAL_DEVICE, commandPool, 1, &commandBuffer);
+    vkFreeCommandBuffers(CContext::GetHandle().GetLogicalDevice(), commandPool, 1, &commandBuffer);
 }
 
 void CApplication::generateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels, std::array<MyImageBuffer, MIPMAP_TEXTURE_COUNT> *textureImageBuffers_mipmaps, bool bMix) {
 	// Check if image format supports linear blitting
 	VkFormatProperties formatProperties;
-	vkGetPhysicalDeviceFormatProperties(PHYSICAL_DEVICE, imageFormat, &formatProperties);
+	vkGetPhysicalDeviceFormatProperties(CContext::GetHandle().GetPhysicalDevice(), imageFormat, &formatProperties);
 
 	if (!(formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT)) {
 		throw std::runtime_error("texture image format does not support linear blitting!");
@@ -439,7 +439,7 @@ MISC Utility Functions
 VkFormat CApplication::findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) {
     for (VkFormat format : candidates) {
         VkFormatProperties props;
-        vkGetPhysicalDeviceFormatProperties(instance->pickedPhysicalDevice->get()->getHandle(), format, &props);
+        vkGetPhysicalDeviceFormatProperties(CContext::GetHandle().GetPhysicalDevice(), format, &props);
 
         if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features) {
             return format;

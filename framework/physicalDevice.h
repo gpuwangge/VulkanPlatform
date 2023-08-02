@@ -6,7 +6,7 @@
 
 #include "common.h"
 
-class CInstance;//forward declaration
+//class CInstance;//forward declaration
 
 struct QueueFamilyIndices {
 	std::optional<uint32_t> graphicsFamily;
@@ -48,10 +48,10 @@ public:
 
     std::vector<std::unique_ptr<CLogicalDevice>> logicalDevices;
     void createLogicalDevices(VkSurfaceKHR surface, const std::vector<const char*> requiredValidationLayers, const std::vector<const char*>  requireDeviceExtensions);
-    VkDevice* getLogicalDevice() {return &(logicalDevices.back().get()->logicalDevice);}
-    VkQueue* getGraphicsQueue(){return &(logicalDevices.back().get()->graphicsQueue);};
-    VkQueue* getPresentQueue(){return &(logicalDevices.back().get()->presentQueue);};
-    VkQueue* getComputeQueue(){return &(logicalDevices.back().get()->computeQueue);};
+    VkDevice getLogicalDevice() {return logicalDevices.back().get()->logicalDevice; }
+    VkQueue getGraphicsQueue()  {return logicalDevices.back().get()->graphicsQueue; }
+    VkQueue getPresentQueue()   {return logicalDevices.back().get()->presentQueue;  }
+    VkQueue getComputeQueue()   {return logicalDevices.back().get()->computeQueue;  }
 
     VkSampleCountFlagBits getMaxUsableSampleCount();
 

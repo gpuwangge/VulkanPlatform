@@ -15,9 +15,15 @@ public:
 
     VkInstance handle{VK_NULL_HANDLE};
     VkInstance getHandle() const{ return handle;}
-    VkDebugUtilsMessengerEXT debugMessenger;//02
+
     CDebugger * debugger;
 
+    void DisplayLayers(std::vector<VkLayerProperties> &availableLayers);
+    void DisplayExtensions(std::vector<VkExtensionProperties> &availableExtensions);
+    void DisplayExtensions(std::vector<const char*> &availableExtensions);
+    //void DisplayRequiredExtensions();
+
+    VkDebugUtilsMessengerEXT debugMessenger;//02
     static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData) {
         std::cerr << "validation layer: " << pCallbackData->pMessage << std::endl;
 
@@ -29,9 +35,9 @@ public:
     void Init02SetupDebugMessenger();
 
     std::vector<std::unique_ptr<CPhysicalDevice>> physicalDevices;
-    std::unique_ptr<CPhysicalDevice>* pickedPhysicalDevice;
+    //std::unique_ptr<CPhysicalDevice>* pickedPhysicalDevice;
     void findAllPhysicalDevices();
-    bool pickSuitablePhysicalDevice(VkSurfaceKHR surface, const std::vector<const char*>  requireDeviceExtensions, VkQueueFlagBits requiredQueueFamilies);
+    std::unique_ptr<CPhysicalDevice>* pickSuitablePhysicalDevice(VkSurfaceKHR surface, const std::vector<const char*>  requireDeviceExtensions, VkQueueFlagBits requiredQueueFamilies);
 };
 
 

@@ -23,6 +23,7 @@
                 "${fileDirname}\\..\\framework\\physicalDevice.cpp",
                 "${fileDirname}\\..\\framework\\logicalDevice.cpp",
                 "${fileDirname}\\..\\framework\\swapchain.cpp",
+                "${fileDirname}\\..\\framework\\context.cpp",
                 //"${fileDirname}\\..\\samples\\simpleTriangle.cpp",
                 "-L%VULKAN_SDK%/Lib",
                 "-LC:/VulkanSDK/GLFW/lib-mingw-w64",

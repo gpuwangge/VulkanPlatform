@@ -7,15 +7,15 @@ CSwapchain::~CSwapchain(){
     if (!debugger) delete debugger;
 }
 
-void CSwapchain::GetPhysicalDevice(CPhysicalDevice *physical_device){
-    m_physical_device = physical_device;
-}
+// void CSwapchain::GetPhysicalDevice(CPhysicalDevice *physical_device){
+//     m_physical_device = physical_device;
+// }
 
 void CSwapchain::queryInfo(VkSurfaceKHR surface, int width, int height){
     VkResult result = VK_SUCCESS;
 
     //SwapChainSupportDetails swapChainSupport = instance->pickedPhysicalDevice->get()->querySwapChainSupport(surface);
-    SwapChainSupportDetails swapChainSupport = m_physical_device->querySwapChainSupport(surface);
+    SwapChainSupportDetails swapChainSupport = CContext::GetHandle().physicalDevice->get()->querySwapChainSupport(surface);
     displaySwapchainInfo(swapChainSupport);
 
     VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(swapChainSupport.formats);
@@ -39,7 +39,7 @@ void CSwapchain::queryInfo(VkSurfaceKHR surface, int width, int height){
     createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 
     //QueueFamilyIndices indices = instance->pickedPhysicalDevice->get()->findQueueFamilies(surface);
-    QueueFamilyIndices indices = m_physical_device->findQueueFamilies(surface);
+    QueueFamilyIndices indices = CContext::GetHandle().physicalDevice->get()->findQueueFamilies(surface);
     uint32_t queueFamilyIndices[] = { indices.graphicsFamily.value(), indices.presentFamily.value() };
 
     if (indices.graphicsFamily != indices.presentFamily) {
@@ -58,14 +58,14 @@ void CSwapchain::queryInfo(VkSurfaceKHR surface, int width, int height){
 
     //generate swapChain images (swapChainImages)
     //result = vkCreateSwapchainKHR(LOGICAL_DEVICE, &createInfo, nullptr, &swapChain);
-    result = vkCreateSwapchainKHR(*(m_physical_device->getLogicalDevice()), &createInfo, nullptr, &handle);
+    result = vkCreateSwapchainKHR(CContext::GetHandle().GetLogicalDevice(), &createInfo, nullptr, &handle);
     if (result != VK_SUCCESS) throw std::runtime_error("failed to create swap chain!");
     REPORT("vkCreateSwapchainKHR");
 
-    result = vkGetSwapchainImagesKHR(*(m_physical_device->getLogicalDevice()), handle, &imageCount, nullptr);
+    result = vkGetSwapchainImagesKHR(CContext::GetHandle().GetLogicalDevice(), handle, &imageCount, nullptr);
     REPORT("vkGetSwapchainImagesKHR(Get imageCount)");
     swapChainImages.resize(imageCount);
-    result = vkGetSwapchainImagesKHR(*(m_physical_device->getLogicalDevice()), handle, &imageCount, swapChainImages.data());
+    result = vkGetSwapchainImagesKHR(CContext::GetHandle().GetLogicalDevice(), handle, &imageCount, swapChainImages.data());
     REPORT("vkGetSwapchainImagesKHR");
 
     swapChainImageFormat = surfaceFormat.format;

@@ -20,11 +20,11 @@ public:
 
         //VK_BUFFER_USAGE_TRANSFER_SRC_BIT
         //VkResult result = InitDataBufferHelper(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, &vertexDataBuffer);//allocate vertexDataBuffer bufferSize(decided by vertices3D) memory
-        VkResult result = vertexDataBuffer.init(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, PHYSICAL_DEVICE, LOGICAL_DEVICE);
+        VkResult result = vertexDataBuffer.init(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
 
         REPORT("InitVertexDataBuffer");
         //FillDataBufferHelper(vertexDataBuffer, (void *)(input.data()));//copy vertices3D to vertexDataBuffer
-        vertexDataBuffer.fill((void *)(input.data()), LOGICAL_DEVICE);
+        vertexDataBuffer.fill((void *)(input.data()));
     }
 
     void wxjCreateIndexBuffer(std::vector<uint32_t> &indices3D);
@@ -211,7 +211,7 @@ public:
         pipelineLayoutInfo.pSetLayouts = &descriptorSetLayout;
         //}
         //Create Graphics Pipeline Layout
-        result = vkCreatePipelineLayout(LOGICAL_DEVICE, &pipelineLayoutInfo, nullptr, &pipelineLayout);
+        result = vkCreatePipelineLayout(CContext::GetHandle().GetLogicalDevice(), &pipelineLayoutInfo, nullptr, &pipelineLayout);
         if (result != VK_SUCCESS) throw std::runtime_error("failed to create pipeline layout!");
         REPORT("vkCreatePipelineLayout");
         pipelineInfo.layout = pipelineLayout;	//9
@@ -236,14 +236,14 @@ public:
 
 
         /*********Create Graphics Pipeline**********/
-        result = vkCreateGraphicsPipelines(LOGICAL_DEVICE, VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline);
+        result = vkCreateGraphicsPipelines(CContext::GetHandle().GetLogicalDevice(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline);
         if (result != VK_SUCCESS) throw std::runtime_error("failed to create graphics pipeline!");
         REPORT("vkCreateGraphicsPipelines");
 
 
         /*********Clean up**********/
-        vkDestroyShaderModule(LOGICAL_DEVICE, fragShaderModule, nullptr);
-        vkDestroyShaderModule(LOGICAL_DEVICE, vertShaderModule, nullptr);
+        vkDestroyShaderModule(CContext::GetHandle().GetLogicalDevice(), fragShaderModule, nullptr);
+        vkDestroyShaderModule(CContext::GetHandle().GetLogicalDevice(), vertShaderModule, nullptr);
 
         HERE_I_AM("DrawFrame() will begin");
     }

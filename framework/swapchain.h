@@ -3,6 +3,7 @@
 
 #include "vulkan\vulkan.h"
 #include "physicalDevice.h"
+#include "context.h"
 //#include "application.h"
 
 class CSwapchain final{
@@ -13,8 +14,8 @@ public:
     ~CSwapchain();
 
     //SwapchainInfo info;
-    CPhysicalDevice *m_physical_device;
-    void GetPhysicalDevice(CPhysicalDevice *physical_device);
+    //CPhysicalDevice *m_physical_device;
+    //void GetPhysicalDevice(CPhysicalDevice *physical_device);
 
     VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
     VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);

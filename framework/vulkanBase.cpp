@@ -100,7 +100,7 @@ void CVulkanBase::wxjCreateRenderPass(){
 	renderPassInfo.dependencyCount = 1;
 	renderPassInfo.pDependencies = &dependency;//3
 
-	result = vkCreateRenderPass(LOGICAL_DEVICE, &renderPassInfo, nullptr, &renderPass);
+	result = vkCreateRenderPass(CContext::GetHandle().GetLogicalDevice(), &renderPassInfo, nullptr, &renderPass);
 	if (result != VK_SUCCESS) throw std::runtime_error("failed to create render pass!");
 	REPORT("vkCreateRenderPass");
 		 
@@ -135,7 +135,7 @@ void CVulkanBase::wxjCreateFramebuffers(){
 		framebufferInfo.height = swapchain.swapChainExtent.height;
 		framebufferInfo.layers = 1;
 
-		result = vkCreateFramebuffer(LOGICAL_DEVICE, &framebufferInfo, nullptr, &swapChainFramebuffers[i]);
+		result = vkCreateFramebuffer(CContext::GetHandle().GetLogicalDevice(), &framebufferInfo, nullptr, &swapChainFramebuffers[i]);
 		if (result != VK_SUCCESS) throw std::runtime_error("failed to create framebuffer!");
 		REPORT("vkCreateFrameBuffer");
 	}	
@@ -185,7 +185,7 @@ void CVulkanBase::wxjCreateDescriptorPool(std::vector<VkDescriptorType> &descrip
 	poolInfo.maxSets = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
 
 	//Step 1
-	VkResult result = vkCreateDescriptorPool(LOGICAL_DEVICE, &poolInfo, nullptr, &descriptorPool);
+	VkResult result = vkCreateDescriptorPool(CContext::GetHandle().GetLogicalDevice(), &poolInfo, nullptr, &descriptorPool);
 	if (result != VK_SUCCESS) throw std::runtime_error("failed to create descriptor pool!");
 	REPORT("vkCreateDescriptorPool");
 }
@@ -238,7 +238,7 @@ void CVulkanBase::wxjCreateDescriptorSetLayout(std::vector<VkDescriptorType> &de
 	layoutInfo.pBindings = bindings.data();
 
 	//Step 2
-	VkResult result = vkCreateDescriptorSetLayout(LOGICAL_DEVICE, &layoutInfo, nullptr, OUT &descriptorSetLayout);
+	VkResult result = vkCreateDescriptorSetLayout(CContext::GetHandle().GetLogicalDevice(), &layoutInfo, nullptr, OUT &descriptorSetLayout);
 	if (result != VK_SUCCESS) throw std::runtime_error("failed to create descriptor set layout!");
 	REPORT("vkCreateDescriptorSetLayout");
 }
@@ -256,7 +256,7 @@ void CVulkanBase::wxjCreateDescriptorSets(std::vector<VkDescriptorType> &descrip
 
 	descriptorSets.resize(MAX_FRAMES_IN_FLIGHT);
 	//Step 3
-	result = vkAllocateDescriptorSets(LOGICAL_DEVICE, &allocInfo, descriptorSets.data());
+	result = vkAllocateDescriptorSets(CContext::GetHandle().GetLogicalDevice(), &allocInfo, descriptorSets.data());
 	if (result != VK_SUCCESS) throw std::runtime_error("failed to allocate descriptor sets!");
 	REPORT("vkAllocateDescriptorSets");
 
@@ -387,7 +387,7 @@ void CVulkanBase::wxjCreateDescriptorSets(std::vector<VkDescriptorType> &descrip
 		}*/
 
 		//Step 4
-		vkUpdateDescriptorSets(LOGICAL_DEVICE, static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
+		vkUpdateDescriptorSets(CContext::GetHandle().GetLogicalDevice(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
 		//vkUpdateDescriptorSets(logicalDevice, 1, &descriptorWrites[0], 0, nullptr);
 
 	}
@@ -591,11 +591,11 @@ void CVulkanBase::wxjCreateIndexBuffer(std::vector<uint32_t> &indices3D){
 
     //VK_BUFFER_USAGE_TRANSFER_SRC_BIT
     //VkResult result = InitDataBufferHelper(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, &indexDataBuffer);
-    VkResult result = indexDataBuffer.init(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, PHYSICAL_DEVICE, LOGICAL_DEVICE);
+    VkResult result = indexDataBuffer.init(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
  
 	REPORT("InitIndexDataBuffer");
     //FillDataBufferHelper(indexDataBuffer, (void *)(indices3D.data()));
-	indexDataBuffer.fill((void *)(indices3D.data()), LOGICAL_DEVICE);
+	indexDataBuffer.fill((void *)(indices3D.data()));
 }
 void CVulkanBase::wxjCreateUniformBuffers(){
 	HERE_I_AM("wxjCreateUniformBuffers");
@@ -607,10 +607,10 @@ void CVulkanBase::wxjCreateUniformBuffers(){
 
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
         //VkResult result = InitDataBufferHelper(bufferSize, usage, &_uniformBuffers[i]);
-        VkResult result = uniformBuffers[i].init(sizeof(UniformBufferObject), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, PHYSICAL_DEVICE, LOGICAL_DEVICE);
+        VkResult result = uniformBuffers[i].init(sizeof(UniformBufferObject), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
         REPORT("InitDataBufferHelper");
 
-        vkMapMemory(LOGICAL_DEVICE, uniformBuffers[i].deviceMemory, 0, sizeof(UniformBufferObject), 0, &uniformBuffersMapped[i]);
+        vkMapMemory(CContext::GetHandle().GetLogicalDevice(), uniformBuffers[i].deviceMemory, 0, sizeof(UniformBufferObject), 0, &uniformBuffersMapped[i]);
     }
 
     //Init05CreateUniformBuffers(uniformBuffers, uniformBuffersMapped, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, sizeof(UniformBufferObject));
@@ -709,7 +709,7 @@ void CVulkanBase::wxjCreateImage_texture(const std::string texturePath, VkImageU
 
 	CWxjBuffer stagingBuffer;
 	//VkResult result = InitDataBufferHelper(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, &stagingBuffer);
-	VkResult result = stagingBuffer.init(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, PHYSICAL_DEVICE, LOGICAL_DEVICE);
+	VkResult result = stagingBuffer.init(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
 
 	REPORT("InitTextureImageBuffer");
 	//FillDataBufferHelper(stagingBuffer, (void *)(vertices.data()));
@@ -719,7 +719,7 @@ void CVulkanBase::wxjCreateImage_texture(const std::string texturePath, VkImageU
 	//createBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
 
 	//FillDataBufferHelper(stagingBuffer, pixels);
-	stagingBuffer.fill(pixels, LOGICAL_DEVICE);
+	stagingBuffer.fill(pixels);
 	//void* data;
 	//vkMapMemory(logicalDevice, stagingBuffer.deviceMemory, 0, imageSize, 0, &data);
 	//memcpy(data, pixels, static_cast<size_t>(imageSize));
@@ -745,14 +745,14 @@ void CVulkanBase::wxjCreateImage_texture(const std::string texturePath, VkImageU
 	//MIPMAP TODO: no need transition?? If comment out this, validation layer get error
 	//transitionImageLayout(textureImageBuffer.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, mipLevels);
 
-	vkDestroyBuffer(LOGICAL_DEVICE, stagingBuffer.buffer, nullptr);
-	vkFreeMemory(LOGICAL_DEVICE, stagingBuffer.deviceMemory, nullptr);
+	vkDestroyBuffer(CContext::GetHandle().GetLogicalDevice(), stagingBuffer.buffer, nullptr);
+	vkFreeMemory(CContext::GetHandle().GetLogicalDevice(), stagingBuffer.deviceMemory, nullptr);
 }
 void CVulkanBase::wxjCreateSampler_texture() {
 	HERE_I_AM("Init07CreateTextureSampler");
 
 	VkPhysicalDeviceProperties properties{};
-	vkGetPhysicalDeviceProperties(PHYSICAL_DEVICE, &properties);
+	vkGetPhysicalDeviceProperties(CContext::GetHandle().GetPhysicalDevice(), &properties);
 
 	VkSamplerCreateInfo samplerInfo{};
 	samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
@@ -775,7 +775,7 @@ void CVulkanBase::wxjCreateSampler_texture() {
 	 	samplerInfo.mipLodBias = 0.0f;
 	}
 
-	VkResult result = vkCreateSampler(LOGICAL_DEVICE, &samplerInfo, nullptr, &textureSampler);
+	VkResult result = vkCreateSampler(CContext::GetHandle().GetLogicalDevice(), &samplerInfo, nullptr, &textureSampler);
 	REPORT("vkCreateSampler");
 }
 void CVulkanBase::wxjCreateImageView(IN VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, int mipLevel, OUT VkImageView &imageView){
@@ -794,7 +794,7 @@ void CVulkanBase::wxjCreateSwapChainImagesAndImageViews(){
     //PresentQueue is a queue to present
 
     //Need preare surface and presentQueue first.
-    swapchain.GetPhysicalDevice(instance->pickedPhysicalDevice->get());
+    //swapchain.GetPhysicalDevice(CContext::GetHandle().physicalDevice->get());
 
     int width, height;
     glfwGetFramebufferSize(window, &width, &height);
@@ -850,7 +850,7 @@ void CVulkanBase::wxjLoadObjModel(IN const std::string modelName, OUT std::vecto
 }
 
 void CVulkanBase::wxjGetMaxUsableSampleCount(){
-	msaaSamples = instance->pickedPhysicalDevice->get()->getMaxUsableSampleCount();
+	msaaSamples = CContext::GetHandle().physicalDevice->get()->getMaxUsableSampleCount();
 	//msaaSamples = VK_SAMPLE_COUNT_1_BIT;
 }
 
@@ -868,8 +868,8 @@ void CVulkanBase::wxjCreateMipmaps(IN OUT VkImage image, VkImageUsageFlags usage
 	generateMipmaps(image, VK_FORMAT_R8G8B8A8_SRGB, texWidth, texHeight, mipLevels, &tmpTextureBufferForRainbowMipmaps, true);
 	//Clean up
 	for (int i = 0; i < MIPMAP_TEXTURE_COUNT; i++) {
-		vkDestroyImage(LOGICAL_DEVICE, tmpTextureBufferForRainbowMipmaps[i].image, nullptr);
-		vkFreeMemory(LOGICAL_DEVICE, tmpTextureBufferForRainbowMipmaps[i].deviceMemory, nullptr);
+		vkDestroyImage(CContext::GetHandle().GetLogicalDevice(), tmpTextureBufferForRainbowMipmaps[i].image, nullptr);
+		vkFreeMemory(CContext::GetHandle().GetLogicalDevice(), tmpTextureBufferForRainbowMipmaps[i].deviceMemory, nullptr);
 	}
 }
 

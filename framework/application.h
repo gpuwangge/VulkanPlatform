@@ -9,12 +9,13 @@
 #include "instance.h"
 #include "swapchain.h"
 #include "dataStructure.hpp"
+#include "context.h"
 
-#define LOGICAL_DEVICE *(instance->pickedPhysicalDevice->get()->getLogicalDevice())
-#define PHYSICAL_DEVICE instance->pickedPhysicalDevice->get()->getHandle()
-#define GRAPHICS_QUEUE *(instance->pickedPhysicalDevice->get()->getGraphicsQueue()) 
-#define PRESENT_QUEUE *(instance->pickedPhysicalDevice->get()->getPresentQueue()) 
-#define COMPUTE_QUEUE *(instance->pickedPhysicalDevice->get()->getComputeQueue()) 
+// #define LOGICAL_DEVICE *(instance->pickedPhysicalDevice->get()->getLogicalDevice())
+// #define PHYSICAL_DEVICE instance->pickedPhysicalDevice->get()->getHandle()
+// #define GRAPHICS_QUEUE *(instance->pickedPhysicalDevice->get()->getGraphicsQueue()) 
+// #define PRESENT_QUEUE *(instance->pickedPhysicalDevice->get()->getPresentQueue()) 
+// #define COMPUTE_QUEUE *(instance->pickedPhysicalDevice->get()->getComputeQueue()) 
 
 class CApplication{
 public:

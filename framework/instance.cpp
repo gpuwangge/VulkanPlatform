@@ -9,7 +9,7 @@ CInstance::CInstance(const std::vector<const char*> requiredValidationLayers){
 
     VkApplicationInfo appInfo{};
     appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-    appInfo.pApplicationName = "Hello Triangle";
+    appInfo.pApplicationName = "VULKAN PLATFORM";
     appInfo.applicationVersion = VK_MAKE_VERSION(1, 0, 0);
     appInfo.pEngineName = "No Engine";
     appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
@@ -23,22 +23,10 @@ CInstance::CInstance(const std::vector<const char*> requiredValidationLayers){
         std::vector<VkLayerProperties> availableLayers(layerCount);
         result = vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
         REPORT("vkEnumerateInstanceLayerProperties");
-
-        debugger->writeMSG("Available layers:\n");
-        if(debugger->getVerbose()){
-            for (const auto& layerProperties : availableLayers) {
-                fprintf(debugger->FpDebug, "0x%08x  %5d  '%s'  '%s'\n",
-                    layerProperties.specVersion,
-                    layerProperties.implementationVersion,
-                    layerProperties.layerName,
-                    layerProperties.description);
-            }
-            debugger->writeMSG("\n");
-        }
+        DisplayLayers(availableLayers);
 
         for (const char* layerName : requiredValidationLayers) {// to find out validation layer in available layers
             bool layerFound = false;
-
             for (const auto& layerProperties : availableLayers) {
                 if (strcmp(layerName, layerProperties.layerName) == 0) {
                     layerFound = true;
@@ -57,15 +45,7 @@ CInstance::CInstance(const std::vector<const char*> requiredValidationLayers){
     std::vector<VkExtensionProperties> availableExtensions(extensionCount);
     result = vkEnumerateInstanceExtensionProperties((char *)nullptr, &extensionCount, availableExtensions.data());
     REPORT("vkEnumerateInstanceExtensionProperties");
-    debugger->writeMSG("Available extensions:\n");
-    if(debugger->getVerbose()){
-        for (const auto& extensionsProperties : availableExtensions) {
-            fprintf(debugger->FpDebug, "0x%08x  '%s'\n",
-                extensionsProperties.specVersion,
-                extensionsProperties.extensionName);
-        }
-        debugger->writeMSG("\n");
-    }
+    DisplayExtensions(availableExtensions);
 
     VkInstanceCreateInfo createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
@@ -86,14 +66,7 @@ CInstance::CInstance(const std::vector<const char*> requiredValidationLayers){
     auto extensions = getRequiredExtensions();
     createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
     createInfo.ppEnabledExtensionNames = extensions.data();
-    debugger->writeMSG("Required extensions:\n");
-    if(debugger->getVerbose()){
-        for (const auto& extensionsProperties : extensions) {
-            fprintf(debugger->FpDebug, "'%s'\n",
-                extensionsProperties);
-        }
-        debugger->writeMSG("\n");
-    }
+    DisplayExtensions(extensions);
 
     //Third create instance
     result = vkCreateInstance(&createInfo, nullptr, &handle);
@@ -189,12 +162,12 @@ void CInstance::findAllPhysicalDevices(){
 
 }
 
-bool CInstance::pickSuitablePhysicalDevice(VkSurfaceKHR surface, const std::vector<const char*>  requireDeviceExtensions, VkQueueFlagBits requiredQueueFamilies){
+std::unique_ptr<CPhysicalDevice>* CInstance::pickSuitablePhysicalDevice(VkSurfaceKHR surface, const std::vector<const char*>  requireDeviceExtensions, VkQueueFlagBits requiredQueueFamilies){
     HERE_I_AM("pickSuitablePhysicalDevice");
 
     if(physicalDevices.empty()){
         debugger->writeMSG("Error: No physical devices!\n");
-        return false;
+        return nullptr;
     }
 
     for ( auto& phy_device : physicalDevices) {
@@ -213,30 +186,78 @@ bool CInstance::pickSuitablePhysicalDevice(VkSurfaceKHR surface, const std::vect
         if (indices.isComplete() && extensionsSupported && swapChainAdequate) {
             if(requiredQueueFamilies & VK_QUEUE_GRAPHICS_BIT) {
                 debugger->writeMSG("Require VK_QUEUE_GRAPHICS_BIT\n"); debugger->flush();
-                if(!indices.graphicsFamily.has_value()) return false;
+                if(!indices.graphicsFamily.has_value()) return nullptr;
                 debugger->writeMSG("Picked physical device index: %d\n", indices.graphicsFamily.value());debugger->flush();
             }
             if(requiredQueueFamilies & VK_QUEUE_COMPUTE_BIT) {
                 debugger->writeMSG("Require VK_QUEUE_COMPUTE_BIT\n");debugger->flush();
-                if(!indices.computeFamily.has_value()) return false;
+                if(!indices.computeFamily.has_value()) return nullptr;
                 debugger->writeMSG("Picked physical device index: %d\n", indices.computeFamily.value());debugger->flush();
 
             }
             if((requiredQueueFamilies & VK_QUEUE_COMPUTE_BIT) & VK_QUEUE_GRAPHICS_BIT){
                 debugger->writeMSG("Require VK_QUEUE_COMPUTE_BIT & VK_QUEUE_GRAPHICS_BIT\n");debugger->flush();
-                if(!indices.graphicsAndComputeFamily.has_value()) return false;
+                if(!indices.graphicsAndComputeFamily.has_value()) return nullptr;
                 debugger->writeMSG("Picked physical device index: %d\n", indices.graphicsAndComputeFamily.value());debugger->flush();
             }
 
-            pickedPhysicalDevice = &phy_device;
-            return true;
+            //pickedPhysicalDevice = &phy_device;
+            return &phy_device;
         }
     }
 
     //if (physicalDevice == VK_NULL_HANDLE) {
     throw std::runtime_error("failed to find a suitable GPU!");
     //}
-    return false;
+    return nullptr;
 }
+
+void CInstance::DisplayLayers(std::vector<VkLayerProperties> &availableLayers){
+    debugger->writeMSG("Available layers:\n");
+    if(debugger->getVerbose()){
+        for (const auto& layerProperties : availableLayers) {
+            fprintf(debugger->FpDebug, "0x%08x  %5d  '%s'  '%s'\n",
+                layerProperties.specVersion,
+                layerProperties.implementationVersion,
+                layerProperties.layerName,
+                layerProperties.description);
+        }
+        debugger->writeMSG("\n");
+    }
+}
+
+void CInstance::DisplayExtensions(std::vector<VkExtensionProperties> &availableExtensions){
+    debugger->writeMSG("Available extensions:\n");
+    if(debugger->getVerbose()){
+        for (const auto& extensionsProperties : availableExtensions) {
+            fprintf(debugger->FpDebug, "0x%08x  '%s'\n",
+                extensionsProperties.specVersion,
+                extensionsProperties.extensionName);
+        }
+        debugger->writeMSG("\n");
+    }
+}
+
+void CInstance::DisplayExtensions(std::vector<const char*> &availableExtensions){
+    debugger->writeMSG("Required extensions:\n");
+    if(debugger->getVerbose()){
+        for (const auto& extensionsProperties : availableExtensions) {
+            fprintf(debugger->FpDebug, "'%s'\n",
+                extensionsProperties);
+        }
+        debugger->writeMSG("\n");
+    }
+}
+
+// void CInstance::DisplayRequiredExtensions(){
+//     debugger->writeMSG("Required extensions:\n");
+//     if(debugger->getVerbose()){
+//         for (const auto& extensionsProperties : extensions) {
+//             fprintf(debugger->FpDebug, "'%s'\n",
+//                 extensionsProperties);
+//         }
+//         debugger->writeMSG("\n");
+//     }
+// }
 
     

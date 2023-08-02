@@ -1,6 +1,7 @@
 #ifndef H_DATASTRUCTURE
 #define H_DATASTRUCTURE
 #include "common.h"
+#include "context.h"
 
 struct Vertex3D {
 	glm::vec3 pos;
@@ -90,7 +91,7 @@ public:
     CWxjBuffer(){}
     ~CWxjBuffer(){}
 
-    VkResult init(IN VkDeviceSize requiredSize, VkBufferUsageFlags usage, VkPhysicalDevice physicalDevice, VkDevice logicalDevice) {
+    VkResult init(IN VkDeviceSize requiredSize, VkBufferUsageFlags usage) {
         //HERE_I_AM("Init05DataBuffer");
         //Step1:Create Buffer(create buffer)
         VkResult result = VK_SUCCESS;
@@ -104,12 +105,12 @@ public:
         vbci.queueFamilyIndexCount = 0;
         vbci.pQueueFamilyIndices = (const uint32_t *)nullptr;
         vbci.sharingMode = VK_SHARING_MODE_EXCLUSIVE;	// can only use CONCURRENT if .queueFamilyIndexCount > 0
-        result = vkCreateBuffer(logicalDevice, IN &vbci, PALLOCATOR, OUT &buffer);
+        result = vkCreateBuffer(CContext::GetHandle().GetLogicalDevice(), IN &vbci, PALLOCATOR, OUT &buffer);
         //REPORT("vkCreateBuffer");
 
         //Step 2:allocate memory(create deviceMemory in gpu)
         VkMemoryRequirements			vmr;
-        vkGetBufferMemoryRequirements(logicalDevice, IN buffer, OUT &vmr);		// fills vmr
+        vkGetBufferMemoryRequirements(CContext::GetHandle().GetLogicalDevice(), IN buffer, OUT &vmr);		// fills vmr
         //if (Verbose){
         //fprintf(debugger->FpDebug, "Buffer vmr.size = %lld\n", vmr.size);
         //fprintf(debugger->FpDebug, "Buffer vmr.alignment = %lld\n", vmr.alignment);
@@ -122,33 +123,33 @@ public:
         vmai.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
         vmai.pNext = nullptr;
         vmai.allocationSize = vmr.size; 
-        vmai.memoryTypeIndex = FindMemoryThatIsHostVisible(vmr.memoryTypeBits, physicalDevice);
+        vmai.memoryTypeIndex = FindMemoryThatIsHostVisible(vmr.memoryTypeBits);
         //VkDeviceMemory				vdm;
-        result = vkAllocateMemory(logicalDevice, IN &vmai, PALLOCATOR, OUT &deviceMemory);
+        result = vkAllocateMemory(CContext::GetHandle().GetLogicalDevice(), IN &vmai, PALLOCATOR, OUT &deviceMemory);
        
         //REPORT("vkAllocateMemory");
         //deviceMemory = vdm;
 
         //Step 3: bind memory(bind buffer and deviceMemory)
-        result = vkBindBufferMemory(logicalDevice, buffer, IN deviceMemory, 0);		// 0 is the offset
+        result = vkBindBufferMemory(CContext::GetHandle().GetLogicalDevice(), buffer, IN deviceMemory, 0);		// 0 is the offset
         //REPORT("vkBindBufferMemory");
 
         return result;
     }
 
-    VkResult fill(IN void * data, VkDevice logicalDevice) {
+    VkResult fill(IN void * data) {
         //Step 4:copy memory(copy data into deviceMemory)
         void * pGpuMemory;
-        vkMapMemory(logicalDevice, IN deviceMemory, 0, VK_WHOLE_SIZE, 0, &pGpuMemory);	// 0 and 0 are offset and flags
+        vkMapMemory(CContext::GetHandle().GetLogicalDevice(), IN deviceMemory, 0, VK_WHOLE_SIZE, 0, &pGpuMemory);	// 0 and 0 are offset and flags
         memcpy(pGpuMemory, data, (size_t)m_size);
-        vkUnmapMemory(logicalDevice, IN deviceMemory);
+        vkUnmapMemory(CContext::GetHandle().GetLogicalDevice(), IN deviceMemory);
         return VK_SUCCESS;
     }
 
-    void DestroyAndFree(VkDevice logicalDevice){
+    void DestroyAndFree(){
         if(m_size > 0){
-            vkDestroyBuffer(logicalDevice, buffer, nullptr);
-            vkFreeMemory(logicalDevice, deviceMemory, nullptr);
+            vkDestroyBuffer(CContext::GetHandle().GetLogicalDevice(), buffer, nullptr);
+            vkFreeMemory(CContext::GetHandle().GetLogicalDevice(), deviceMemory, nullptr);
         }
     }
 
@@ -158,9 +159,9 @@ public:
 private:
 	VkDeviceSize		m_size = 0;
 
-    int FindMemoryByFlagAndType(VkMemoryPropertyFlagBits memoryFlagBits, uint32_t  memoryTypeBits, VkPhysicalDevice physicalDevice) {
+    int FindMemoryByFlagAndType(VkMemoryPropertyFlagBits memoryFlagBits, uint32_t  memoryTypeBits) {
         VkPhysicalDeviceMemoryProperties	vpdmp;
-        vkGetPhysicalDeviceMemoryProperties(physicalDevice, OUT &vpdmp);//instance->pickedPhysicalDevice->get()->getHandle()
+        vkGetPhysicalDeviceMemoryProperties(CContext::GetHandle().GetPhysicalDevice(), OUT &vpdmp);//instance->pickedPhysicalDevice->get()->getHandle()
         for (unsigned int i = 0; i < vpdmp.memoryTypeCount; i++) {
             VkMemoryType vmt = vpdmp.memoryTypes[i];
             VkMemoryPropertyFlags vmpf = vmt.propertyFlags;
@@ -176,8 +177,8 @@ private:
         throw  std::runtime_error("Could not find given memory flag and type");
     }
 
-    int FindMemoryThatIsHostVisible(uint32_t memoryTypeBits, VkPhysicalDevice physicalDevice) {
-        return FindMemoryByFlagAndType(VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, memoryTypeBits, physicalDevice);
+    int FindMemoryThatIsHostVisible(uint32_t memoryTypeBits) {
+        return FindMemoryByFlagAndType(VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, memoryTypeBits);
     }
 
 
