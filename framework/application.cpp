@@ -51,20 +51,6 @@ void CApplication::prepareVulkanDevices(){
     instance->pickedPhysicalDevice->get()->createLogicalDevices(surface, requiredValidationLayers, requireDeviceExtensions);
 }
 
-void CApplication::Init05CreateUniformBuffers(std::vector<MyBuffer> &_uniformBuffers, std::vector<void*> &_uniformBuffersMapped, VkBufferUsageFlags usage, VkDeviceSize bufferSize) {
-    HERE_I_AM("Init05CreateUniformBuffers");
-
-    _uniformBuffers.resize(MAX_FRAMES_IN_FLIGHT);
-    _uniformBuffersMapped.resize(MAX_FRAMES_IN_FLIGHT);
-
-    for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-        VkResult result = InitDataBufferHelper(bufferSize, usage, &_uniformBuffers[i]);
-        REPORT("InitDataBufferHelper");
-
-        vkMapMemory(LOGICAL_DEVICE, _uniformBuffers[i].deviceMemory, 0, bufferSize, 0, &_uniformBuffersMapped[i]);
-    }
-}
-
 void CApplication::Init06CreateCommandPool() {
     HERE_I_AM("Init06CommandPools");
 
@@ -277,12 +263,13 @@ CApplication::~CApplication(){
     //vkDestroyPipeline(logicalDevice, pipeline_compute, nullptr);
     //vkDestroyPipelineLayout(logicalDevice, pipelineLayout_compute, nullptr);
 
-    if(bEnableUniform){
-        for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-            vkDestroyBuffer(LOGICAL_DEVICE, uniformBuffers[i].buffer, nullptr);
-            vkFreeMemory(LOGICAL_DEVICE, uniformBuffers[i].deviceMemory, nullptr);
-        }
+    // if(bEnableUniform){
+    // }
+    for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+        uniformBuffers[i].DestroyAndFree(LOGICAL_DEVICE);
     }
+    indexDataBuffer.DestroyAndFree(LOGICAL_DEVICE);
+    vertexDataBuffer.DestroyAndFree(LOGICAL_DEVICE);
 
     if(textureImageBuffer.size != (VkDeviceSize)0){
         vkDestroyImage(LOGICAL_DEVICE, textureImageBuffer.image, nullptr);
@@ -323,14 +310,6 @@ CApplication::~CApplication(){
         vkDestroyImageView(LOGICAL_DEVICE, depthImageView, nullptr);
     }
 
-    if(indexDataBuffer.size != 0){
-        vkDestroyBuffer(LOGICAL_DEVICE, indexDataBuffer.buffer, nullptr);
-        vkFreeMemory(LOGICAL_DEVICE, indexDataBuffer.deviceMemory, nullptr);
-    }
-    if(vertexDataBuffer.size != 0){
-        vkDestroyBuffer(LOGICAL_DEVICE, vertexDataBuffer.buffer, nullptr);
-        vkFreeMemory(LOGICAL_DEVICE, vertexDataBuffer.deviceMemory, nullptr);
-    }
 
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
         vkDestroySemaphore(LOGICAL_DEVICE, renderFinishedSemaphores[i], nullptr);

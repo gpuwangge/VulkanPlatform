@@ -34,9 +34,9 @@ public:
 
     CDebugger * debugger;
 
-	MyBuffer vertexDataBuffer;  //05
-	MyBuffer indexDataBuffer; //05
-    std::vector<MyBuffer> uniformBuffers; //05 MVP uniform
+	CWxjBuffer vertexDataBuffer;  //05
+	CWxjBuffer indexDataBuffer; //05
+    std::vector<CWxjBuffer> uniformBuffers; //05 MVP uniform
 	std::vector<void*> uniformBuffersMapped; //05 MVP uniform
 
     std::vector<VkCommandBuffer> commandBuffers;//06
@@ -98,13 +98,13 @@ public:
     void createGLFWSurface();
     void prepareVulkanDevices();
 
-    int FindMemoryByFlagAndType(VkMemoryPropertyFlagBits memoryFlagBits, uint32_t  memoryTypeBits);
-	int FindMemoryThatIsHostVisible(uint32_t memoryTypeBits);
-    VkResult InitDataBufferHelper(VkDeviceSize size, VkBufferUsageFlags usage, OUT MyBuffer * pMyBuffer);
-    VkResult FillDataBufferHelper(IN MyBuffer myBuffer, IN void * data);
+    //int FindMemoryByFlagAndType(VkMemoryPropertyFlagBits memoryFlagBits, uint32_t  memoryTypeBits);
+	//int FindMemoryThatIsHostVisible(uint32_t memoryTypeBits);
+    //VkResult InitDataBufferHelper(VkDeviceSize size, VkBufferUsageFlags usage, OUT MyBuffer * pMyBuffer);
+    //VkResult FillDataBufferHelper(IN MyBuffer myBuffer, IN void * data);
     //void Init05CreateVertexBuffer();
     //void Init05CreateIndexBuffer();
-    void Init05CreateUniformBuffers(std::vector<MyBuffer> &_uniformBuffers, std::vector<void*> &_uniformBuffersMapped, VkBufferUsageFlags usage, VkDeviceSize bufferSize);
+    //void Init05CreateUniformBuffers(std::vector<CWxjBuffer> &_uniformBuffers, std::vector<void*> &_uniformBuffersMapped, VkBufferUsageFlags usage, VkDeviceSize bufferSize);
 
     void Init06CreateCommandPool();
     void Init06CreateCommandBuffers();

@@ -19,9 +19,12 @@ public:
         VkDeviceSize bufferSize = sizeof(input[0]) * input.size();
 
         //VK_BUFFER_USAGE_TRANSFER_SRC_BIT
-        VkResult result = InitDataBufferHelper(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, &vertexDataBuffer);//allocate vertexDataBuffer bufferSize(decided by vertices3D) memory
+        //VkResult result = InitDataBufferHelper(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, &vertexDataBuffer);//allocate vertexDataBuffer bufferSize(decided by vertices3D) memory
+        VkResult result = vertexDataBuffer.init(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, PHYSICAL_DEVICE, LOGICAL_DEVICE);
+
         REPORT("InitVertexDataBuffer");
-        FillDataBufferHelper(vertexDataBuffer, (void *)(input.data()));//copy vertices3D to vertexDataBuffer
+        //FillDataBufferHelper(vertexDataBuffer, (void *)(input.data()));//copy vertices3D to vertexDataBuffer
+        vertexDataBuffer.fill((void *)(input.data()), LOGICAL_DEVICE);
     }
 
     void wxjCreateIndexBuffer(std::vector<uint32_t> &indices3D);

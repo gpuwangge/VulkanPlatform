@@ -583,23 +583,6 @@ void CVulkanBase::wxjCreateCommandBuffer(){
 	Init06CreateCommandBuffers();
 }
 
-// template <typename T>
-// void CVulkanBase::wxjCreateVertexBuffer(T input){
-//     Init05CreateVertexBuffer();
-// }
-
-// template <typename T>
-// void CVulkanBase::wxjCreateVertexBuffer(T input){
-// 	//Init05CreateVertexBuffer();
-// 	HERE_I_AM("Init05CreateVertexBuffer");
-// 	VkDeviceSize bufferSize = sizeof(input[0]) * input.size();
-
-// 	//VK_BUFFER_USAGE_TRANSFER_SRC_BIT
-// 	VkResult result = InitDataBufferHelper(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, &vertexDataBuffer);//allocate vertexDataBuffer bufferSize(decided by vertices3D) memory
-// 	REPORT("InitVertexDataBuffer");
-// 	FillDataBufferHelper(vertexDataBuffer, (void *)(input.data()));//copy vertices3D to vertexDataBuffer
-// }
-
 void CVulkanBase::wxjCreateIndexBuffer(std::vector<uint32_t> &indices3D){
     //Init05CreateIndexBuffer();
 
@@ -607,13 +590,30 @@ void CVulkanBase::wxjCreateIndexBuffer(std::vector<uint32_t> &indices3D){
     VkDeviceSize bufferSize = sizeof(indices3D[0]) * indices3D.size();
 
     //VK_BUFFER_USAGE_TRANSFER_SRC_BIT
-    VkResult result = InitDataBufferHelper(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, &indexDataBuffer);
-    REPORT("InitIndexDataBuffer");
-    FillDataBufferHelper(indexDataBuffer, (void *)(indices3D.data()));
+    //VkResult result = InitDataBufferHelper(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, &indexDataBuffer);
+    VkResult result = indexDataBuffer.init(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, PHYSICAL_DEVICE, LOGICAL_DEVICE);
+ 
+	REPORT("InitIndexDataBuffer");
+    //FillDataBufferHelper(indexDataBuffer, (void *)(indices3D.data()));
+	indexDataBuffer.fill((void *)(indices3D.data()), LOGICAL_DEVICE);
 }
 void CVulkanBase::wxjCreateUniformBuffers(){
+	HERE_I_AM("wxjCreateUniformBuffers");
+
 	bEnableUniform = true;
-    Init05CreateUniformBuffers(uniformBuffers, uniformBuffersMapped, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, sizeof(UniformBufferObject));
+	
+    uniformBuffers.resize(MAX_FRAMES_IN_FLIGHT);
+    uniformBuffersMapped.resize(MAX_FRAMES_IN_FLIGHT);
+
+    for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+        //VkResult result = InitDataBufferHelper(bufferSize, usage, &_uniformBuffers[i]);
+        VkResult result = uniformBuffers[i].init(sizeof(UniformBufferObject), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, PHYSICAL_DEVICE, LOGICAL_DEVICE);
+        REPORT("InitDataBufferHelper");
+
+        vkMapMemory(LOGICAL_DEVICE, uniformBuffers[i].deviceMemory, 0, sizeof(UniformBufferObject), 0, &uniformBuffersMapped[i]);
+    }
+
+    //Init05CreateUniformBuffers(uniformBuffers, uniformBuffersMapped, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT, sizeof(UniformBufferObject));
 }
 
 void CVulkanBase::wxjBeginCommandBuffer(){
@@ -707,8 +707,10 @@ void CVulkanBase::wxjCreateImage_texture(const std::string texturePath, VkImageU
 	if (!pixels) throw std::runtime_error("failed to load texture image!");
 
 
-	MyBuffer stagingBuffer;
-	VkResult result = InitDataBufferHelper(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, &stagingBuffer);
+	CWxjBuffer stagingBuffer;
+	//VkResult result = InitDataBufferHelper(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, &stagingBuffer);
+	VkResult result = stagingBuffer.init(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, PHYSICAL_DEVICE, LOGICAL_DEVICE);
+
 	REPORT("InitTextureImageBuffer");
 	//FillDataBufferHelper(stagingBuffer, (void *)(vertices.data()));
 
@@ -716,7 +718,8 @@ void CVulkanBase::wxjCreateImage_texture(const std::string texturePath, VkImageU
 	//VkDeviceMemory stagingBufferMemory;
 	//createBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
 
-	FillDataBufferHelper(stagingBuffer, pixels);
+	//FillDataBufferHelper(stagingBuffer, pixels);
+	stagingBuffer.fill(pixels, LOGICAL_DEVICE);
 	//void* data;
 	//vkMapMemory(logicalDevice, stagingBuffer.deviceMemory, 0, imageSize, 0, &data);
 	//memcpy(data, pixels, static_cast<size_t>(imageSize));

@@ -4,6 +4,7 @@
 /**************
 Memory Management Utility Functions
 ************/
+/*
 int CApplication::FindMemoryByFlagAndType(VkMemoryPropertyFlagBits memoryFlagBits, uint32_t  memoryTypeBits) {
     VkPhysicalDeviceMemoryProperties	vpdmp;
     vkGetPhysicalDeviceMemoryProperties(instance->pickedPhysicalDevice->get()->getHandle(), OUT &vpdmp);
@@ -105,7 +106,7 @@ VkResult CApplication::FillDataBufferHelper(IN MyBuffer myBuffer, IN void * data
     // instead, except that this requires use of the CommandBuffer
     // which might not be so bad since we are using the CommandBuffer at that moment to draw anyway
 }
-
+*/
 /**************
 Swap Chain Utility Functions
 ************/
