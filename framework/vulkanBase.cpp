@@ -234,8 +234,12 @@ void CVulkanBase::wxjCreateDescriptorSetLayout(std::vector<VkDescriptorType> &de
 
 	VkDescriptorSetLayoutCreateInfo layoutInfo{};
 	layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-	layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
-	layoutInfo.pBindings = bindings.data();
+	// layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
+	// layoutInfo.pBindings = bindings.data();
+	layoutInfo.bindingCount = 1;//TODO: test
+	auto binding = UniformBufferObject::GetBinding();//TODO: test
+	binding.binding = 0;//TODO: test
+	layoutInfo.pBindings = &binding;//TODO: test
 
 	//Step 2
 	VkResult result = vkCreateDescriptorSetLayout(CContext::GetHandle().GetLogicalDevice(), &layoutInfo, nullptr, OUT &descriptorSetLayout);
