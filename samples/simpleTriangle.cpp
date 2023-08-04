@@ -25,11 +25,9 @@ public:
 		wxjCreateFragmentShader("../shaders/simpleTriangle/frag.spv");
 
 		//Create Descriptors
-		std::vector<VkDescriptorType> descriptorTypes{};
-		std::vector<VkShaderStageFlagBits> shaderStageFlagBits{};
-		wxjCreateDescriptorPool(descriptorTypes);
-		wxjCreateDescriptorSetLayout(descriptorTypes, shaderStageFlagBits);
-		wxjCreateDescriptorSets(descriptorTypes);
+		descriptor.createDescriptorPool();
+		descriptor.createDescriptorSetLayout();
+		descriptor.createDescriptorSets(textureImageView);
 
 		wxjCreateGraphicsPipeline(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
 

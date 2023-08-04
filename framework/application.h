@@ -10,6 +10,7 @@
 #include "swapchain.h"
 #include "dataStructure.hpp"
 #include "context.h"
+#include "descriptor.h"
 
 // #define LOGICAL_DEVICE *(instance->pickedPhysicalDevice->get()->getLogicalDevice())
 // #define PHYSICAL_DEVICE instance->pickedPhysicalDevice->get()->getHandle()
@@ -37,8 +38,8 @@ public:
 
 	CWxjBuffer vertexDataBuffer;  //05
 	CWxjBuffer indexDataBuffer; //05
-    std::vector<CWxjBuffer> uniformBuffers; //05 MVP uniform
-	std::vector<void*> uniformBuffersMapped; //05 MVP uniform
+    //std::vector<CWxjBuffer> uniformBuffers; //05 MVP uniform
+	//std::vector<void*> uniformBuffersMapped; //05 MVP uniform
 
     std::vector<VkCommandBuffer> commandBuffers;//06
     VkCommandPool commandPool;//06
@@ -59,9 +60,10 @@ public:
     VkShaderModule vertShaderModule;//12
 	VkShaderModule fragShaderModule;//12
 
-    VkDescriptorPool descriptorPool;
-    VkDescriptorSetLayout descriptorSetLayout;
-    std::vector<VkDescriptorSet> descriptorSets;
+    // VkDescriptorPool descriptorPool;
+    // VkDescriptorSetLayout descriptorSetLayout;
+    // std::vector<VkDescriptorSet> descriptorSets;
+    CDescriptor descriptor;
 
     VkPipelineLayout pipelineLayout;
 	VkPipeline graphicsPipeline;
@@ -76,7 +78,7 @@ public:
     //Resource for Texture
     int32_t texWidth, texHeight;
     //std::string texturePath = "";
-	VkSampler textureSampler;
+	//VkSampler textureSampler;
 	MyImageBuffer textureImageBuffer; 
 	VkImageView textureImageView; 
 
@@ -91,7 +93,7 @@ public:
 	VkImageView msaaColorImageView;
     VkSampleCountFlagBits msaaSamples;
 
-	bool bEnableUniform;
+	//bool bEnableUniform;
 
     void run();
 

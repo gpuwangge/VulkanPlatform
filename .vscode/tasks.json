@@ -24,6 +24,7 @@
                 "${fileDirname}\\..\\framework\\logicalDevice.cpp",
                 "${fileDirname}\\..\\framework\\swapchain.cpp",
                 "${fileDirname}\\..\\framework\\context.cpp",
+                "${fileDirname}\\..\\framework\\descriptor.cpp",
                 //"${fileDirname}\\..\\samples\\simpleTriangle.cpp",
                 "-L%VULKAN_SDK%/Lib",
                 "-LC:/VulkanSDK/GLFW/lib-mingw-w64",

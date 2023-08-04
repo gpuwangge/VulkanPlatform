@@ -18,13 +18,11 @@ public:
 		//Create buffers
 		wxjCreateVertexBuffer<Vertex3D>(vertices3D);
 		wxjCreateIndexBuffer(indices3D);
-		wxjCreateUniformBuffers();
 		wxjCreateCommandBuffer();
 
 		//Create texture resource
 		VkImageUsageFlags usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
 		wxjCreateImage_texture("../textures/texture.jpg", usage, textureImageBuffer, texWidth, texHeight);
-		wxjCreateSampler_texture();
 		wxjCreateImageView(textureImageBuffer.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, mipLevels, OUT textureImageView);
 
 		wxjCreateSwapChainImagesAndImageViews();
@@ -45,11 +43,11 @@ public:
 		wxjCreateFragmentShader("../shaders/texture/frag_texture.spv");
 
 		//Create Descriptors
-		std::vector<VkDescriptorType> descriptorTypes{VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER};
-		std::vector<VkShaderStageFlagBits> shaderStageFlagBits{VK_SHADER_STAGE_VERTEX_BIT, VK_SHADER_STAGE_FRAGMENT_BIT};
-		wxjCreateDescriptorPool(descriptorTypes);
-		wxjCreateDescriptorSetLayout(descriptorTypes, shaderStageFlagBits);
-		wxjCreateDescriptorSets(descriptorTypes);
+		descriptor.addMVPUniformBuffer();
+		descriptor.addImageSamplerUniformBuffer(mipLevels);
+		descriptor.createDescriptorPool();
+		descriptor.createDescriptorSetLayout();
+		descriptor.createDescriptorSets(textureImageView);
 
 		wxjCreateGraphicsPipeline<Vertex3D>(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, true);
 

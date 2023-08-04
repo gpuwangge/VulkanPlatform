@@ -8,9 +8,9 @@ CApplication::CApplication(){
 
     bEnableDepthTest = false;
 
-    bEnableUniform = false;
+    //bEnableUniform = false;
 
-    textureSampler = NULL;
+    //textureSampler = NULL;
 
     mainCamera.type = Camera::CameraType::firstperson;
     mainCamera.setPosition(glm::vec3(0.0f, -2.5f, -2.5f));
@@ -220,7 +220,7 @@ void CApplication::update(){
 
     mainCamera.update(deltaTime);
 
-    if(bEnableUniform) updateUniformBuffer(currentFrame, durationTime);
+    if(descriptor.bUseMVP) updateUniformBuffer(currentFrame, durationTime);
 
     currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 }
@@ -268,9 +268,9 @@ CApplication::~CApplication(){
     //vkDestroyPipelineLayout(logicalDevice, pipelineLayout_compute, nullptr);
 
     //if(bEnableUniform){
-    for (size_t i = 0; i < uniformBuffers.size(); i++) {
-        uniformBuffers[i].DestroyAndFree();
-    }
+    // for (size_t i = 0; i < uniformBuffers.size(); i++) {
+    //     uniformBuffers[i].DestroyAndFree();
+    // }
     //}
     indexDataBuffer.DestroyAndFree();
     vertexDataBuffer.DestroyAndFree();
@@ -281,8 +281,10 @@ CApplication::~CApplication(){
         vkDestroyImageView(CContext::GetHandle().GetLogicalDevice(), textureImageView, nullptr);
     }
 
-    vkDestroyDescriptorPool(CContext::GetHandle().GetLogicalDevice(), descriptorPool, nullptr);
-    vkDestroyDescriptorSetLayout(CContext::GetHandle().GetLogicalDevice(), descriptorSetLayout, nullptr);
+    //vkDestroyDescriptorPool(CContext::GetHandle().GetLogicalDevice(), descriptorPool, nullptr);
+    //vkDestroyDescriptorSetLayout(CContext::GetHandle().GetLogicalDevice(), descriptorSetLayout, nullptr);
+    descriptor.DestroyAndFree();
+
     vkDestroyPipeline(CContext::GetHandle().GetLogicalDevice(), graphicsPipeline, nullptr);
     vkDestroyPipelineLayout(CContext::GetHandle().GetLogicalDevice(), pipelineLayout, nullptr);
 
@@ -306,7 +308,7 @@ CApplication::~CApplication(){
         vkFreeMemory(CContext::GetHandle().GetLogicalDevice(), msaaColorImageBuffer.deviceMemory, nullptr);
     }
 
-    if(textureSampler) vkDestroySampler(CContext::GetHandle().GetLogicalDevice(), textureSampler, nullptr);
+    //if(textureSampler) vkDestroySampler(CContext::GetHandle().GetLogicalDevice(), textureSampler, nullptr);
 
     if(bEnableDepthTest){
         vkDestroyImage(CContext::GetHandle().GetLogicalDevice(), depthImageBuffer.image, nullptr);
@@ -361,7 +363,7 @@ void CApplication::updateUniformBuffer(uint32_t currentFrame, float durationTime
         //ubo.model = glm::rotate(glm::mat4(1.0f), durationTime * glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
     //}
 
-    memcpy(uniformBuffersMapped[currentFrame], &ubo, sizeof(ubo));
+    memcpy(descriptor.uniformBuffersMapped[currentFrame], &ubo, sizeof(ubo));
 
     //CApplication::updateUniformBuffer(currentFrame, durationTime);
 }

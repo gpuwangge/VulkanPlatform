@@ -10,3 +10,4 @@ logs/swapchainLog.txt
 bins/basicTriangles.exe
 bins/simpleTriangle.exe
 bins/simpleVertexBuffer.exe
+logs/descriptorLog.txt

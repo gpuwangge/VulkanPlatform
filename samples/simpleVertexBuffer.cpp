@@ -32,11 +32,9 @@ public:
 		wxjCreateFragmentShader("../shaders/simpleVertexBuffer/frag.spv");
 
 		//Create Descriptors
-		std::vector<VkDescriptorType> descriptorTypes{};
-		std::vector<VkShaderStageFlagBits> shaderStageFlagBits{};
-		wxjCreateDescriptorPool(descriptorTypes);
-		wxjCreateDescriptorSetLayout(descriptorTypes, shaderStageFlagBits);
-		wxjCreateDescriptorSets(descriptorTypes);
+		descriptor.createDescriptorPool();
+		descriptor.createDescriptorSetLayout();
+		descriptor.createDescriptorSets(textureImageView);
 
 		wxjCreateGraphicsPipeline<Vertex2D>(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
 

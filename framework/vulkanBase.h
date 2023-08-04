@@ -28,7 +28,6 @@ public:
     }
 
     void wxjCreateIndexBuffer(std::vector<uint32_t> &indices3D);
-    void wxjCreateUniformBuffers();
 
     void wxjCreateCommandBuffer();
 
@@ -61,9 +60,9 @@ public:
 
     void wxjCreateFramebuffers();
 
-    void wxjCreateDescriptorPool(std::vector<VkDescriptorType> &descriptorTypes);
-    void wxjCreateDescriptorSetLayout(std::vector<VkDescriptorType> &descriptorTypes, std::vector<VkShaderStageFlagBits>& shaderStageFlagBits);
-    void wxjCreateDescriptorSets(std::vector<VkDescriptorType> &descriptorTypes);
+    //void wxjCreateDescriptorPool(std::vector<VkDescriptorType> &descriptorTypes);
+    //void wxjCreateDescriptorSetLayout(std::vector<VkDescriptorType> &descriptorTypes, std::vector<VkShaderStageFlagBits>& shaderStageFlagBits);
+    //void wxjCreateDescriptorSets(std::vector<VkDescriptorType> &descriptorTypes);
 
     void wxjCreateGraphicsPipeline(VkPrimitiveTopology topology){
         wxjCreateGraphicsPipeline<Vertex2D>(topology, false); //Vertex2D doesn't really matter here, because no vertex attributes used
@@ -208,7 +207,7 @@ public:
         // 	pipelineLayoutInfo.pSetLayouts = nullptr;
         // }else {
         pipelineLayoutInfo.setLayoutCount = 1;
-        pipelineLayoutInfo.pSetLayouts = &descriptorSetLayout;
+        pipelineLayoutInfo.pSetLayouts = &descriptor.descriptorSetLayout;//  descriptorSetLayout;//todo: LAYOUT
         //}
         //Create Graphics Pipeline Layout
         result = vkCreatePipelineLayout(CContext::GetHandle().GetLogicalDevice(), &pipelineLayoutInfo, nullptr, &pipelineLayout);
@@ -251,7 +250,6 @@ public:
     //void wxjCreateSyncObjects();
 
     void wxjCreateImage_texture(const std::string texturePath, VkImageUsageFlags usage, OUT MyImageBuffer &textureImageBuffer, OUT int32_t &texWidth, OUT int32_t &texHeight);
-    void wxjCreateSampler_texture();
     void wxjCreateImageView(IN VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, int mipLevel, OUT VkImageView &imageView);
     void wxjCreateImage(VkSampleCountFlagBits numSamples, VkFormat format, VkImageUsageFlags usage, OUT MyImageBuffer &imageBuffer);
 

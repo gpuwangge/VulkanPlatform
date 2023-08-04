@@ -19,7 +19,6 @@ public:
 		//Create bufferss
 		wxjCreateVertexBuffer<Vertex2D>(vertices);
 		wxjCreateIndexBuffer(indices3D);
-		wxjCreateUniformBuffers();
 		wxjCreateCommandBuffer();
 
 		wxjCreateSwapChainImagesAndImageViews();
@@ -40,11 +39,10 @@ public:
 		wxjCreateFragmentShader("../shaders/basicTriangles/frag.spv");
 
 		//Create Descriptors
-		std::vector<VkDescriptorType> descriptorTypes{VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER};
-		std::vector<VkShaderStageFlagBits> shaderStageFlagBits{VK_SHADER_STAGE_VERTEX_BIT};
-		wxjCreateDescriptorPool(descriptorTypes);
-		wxjCreateDescriptorSetLayout(descriptorTypes, shaderStageFlagBits);
-		wxjCreateDescriptorSets(descriptorTypes);
+		descriptor.addMVPUniformBuffer();
+		descriptor.createDescriptorPool();
+		descriptor.createDescriptorSetLayout();
+		descriptor.createDescriptorSets(textureImageView);
 
 		wxjCreateGraphicsPipeline<Vertex2D>(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
 
