@@ -76,7 +76,7 @@ void CRenderProcess::createRenderPass(){
 }
 
 
-void CRenderProcess::addColorAttachment(VkSampleCountFlagBits msaaSamples, VkFormat swapChainImageFormat, VkImageLayout imageLayout){  
+void CRenderProcess::addColorAttachment(VkFormat swapChainImageFormat, VkSampleCountFlagBits msaaSamples, VkImageLayout imageLayout){  
     //Concept of attachment in Vulkan is like render target in OpenGL
 	//Subpass is a procedure to write/read attachments (a render process can has many subpasses, aka a render pass)
 	//Subpass is designed for mobile TBDR architecture
@@ -147,4 +147,11 @@ VkFormat CRenderProcess::findDepthFormat() {
         VK_IMAGE_TILING_OPTIMAL,
         VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT
     );
+}
+
+void CRenderProcess::Cleanup(){
+	vkDestroyRenderPass(CContext::GetHandle().GetLogicalDevice(), renderPass, nullptr);
+
+	vkDestroyPipeline(CContext::GetHandle().GetLogicalDevice(), graphicsPipeline, nullptr);
+    vkDestroyPipelineLayout(CContext::GetHandle().GetLogicalDevice(), pipelineLayout, nullptr);
 }

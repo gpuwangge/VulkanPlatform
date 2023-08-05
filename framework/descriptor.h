@@ -39,11 +39,11 @@ public:
     int getDescriptorSize();
 
     void createDescriptorPool(VkDescriptorType    type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER);
-    void createDescriptorSetLayout(
-        VkDescriptorType      descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-        VkShaderStageFlags    stageFlags = VK_SHADER_STAGE_VERTEX_BIT,
-        uint32_t              descriptorCount = 1,
-        const VkSampler*      pImmutableSamplers = nullptr);
+    void createDescriptorSetLayout(VkDescriptorSetLayoutBinding *customBinding = nullptr);//
+        //VkDescriptorType      descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+        //VkShaderStageFlags    stageFlags = VK_SHADER_STAGE_VERTEX_BIT,
+        //uint32_t              descriptorCount = 1,
+        //const VkSampler*      pImmutableSamplers = nullptr);
     void createDescriptorSets(VkImageView *textureImageView = nullptr);
 
     void DestroyAndFree();

@@ -11,7 +11,15 @@ CSwapchain::~CSwapchain(){
 //     m_physical_device = physical_device;
 // }
 
-void CSwapchain::queryInfo(VkSurfaceKHR surface, int width, int height){
+void CSwapchain::createSwapchainImages(VkSurfaceKHR surface, int width, int height){
+    //vulkan draws on the vkImage(s)
+    //SwapChain will set vkImage to present on the screen
+    //Surface will tell the format of the vkImage
+    //PresentQueue is a queue to present
+
+    //Need preare surface and presentQueue first.
+    //swapchain.GetPhysicalDevice(CContext::GetHandle().physicalDevice->get());
+
     VkResult result = VK_SUCCESS;
 
     //SwapChainSupportDetails swapChainSupport = instance->pickedPhysicalDevice->get()->querySwapChainSupport(surface);
@@ -162,4 +170,17 @@ VkExtent2D CSwapchain::chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabili
 
         return actualExtent;
     }
+}
+
+
+void CSwapchain::CleanUp(){
+    for (auto framebuffer : swapChainFramebuffers) {
+        vkDestroyFramebuffer(CContext::GetHandle().GetLogicalDevice(), framebuffer, nullptr);
+    }
+
+    for (auto imageView : swapChainImageViews) {
+        vkDestroyImageView(CContext::GetHandle().GetLogicalDevice(), imageView, nullptr);
+    }
+
+    vkDestroySwapchainKHR(CContext::GetHandle().GetLogicalDevice(), handle, nullptr);
 }

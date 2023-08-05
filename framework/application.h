@@ -46,18 +46,13 @@ public:
     VkCommandPool commandPool;//06
 
 	CSwapchain swapchain;
-    // VkSwapchainKHR swapChain;//08
-	// std::vector<VkImage> swapChainImages;//08
-	// VkFormat swapChainImageFormat;//08
-	// VkExtent2D swapChainExtent;//08
-	// std::vector<VkImageView> swapChainImageViews;//08
 
     //VkFormat findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
     //VkFormat findDepthFormat();
     //VkRenderPass renderPass; //10
     CRenderProcess renderProcess;//new
 
-    std::vector<VkFramebuffer> swapChainFramebuffers;//11
+    //std::vector<VkFramebuffer> swapChainFramebuffers;//11
 
     VkShaderModule vertShaderModule;//12
 	VkShaderModule fragShaderModule;//12
@@ -67,8 +62,8 @@ public:
     // std::vector<VkDescriptorSet> descriptorSets;
     CDescriptor descriptor;
 
-    VkPipelineLayout pipelineLayout;
-	VkPipeline graphicsPipeline;
+    //VkPipelineLayout pipelineLayout;
+	//VkPipeline graphicsPipeline;
 
     std::vector<VkSemaphore> imageAvailableSemaphores;
 	std::vector<VkSemaphore> renderFinishedSemaphores;
@@ -95,21 +90,11 @@ public:
 	VkImageView msaaColorImageView;
     VkSampleCountFlagBits msaaSamples;
 
-	//bool bEnableUniform;
-
     void run();
 
     void prepareGLFW();
     void createGLFWSurface();
     void prepareVulkanDevices();
-
-    //int FindMemoryByFlagAndType(VkMemoryPropertyFlagBits memoryFlagBits, uint32_t  memoryTypeBits);
-	//int FindMemoryThatIsHostVisible(uint32_t memoryTypeBits);
-    //VkResult InitDataBufferHelper(VkDeviceSize size, VkBufferUsageFlags usage, OUT MyBuffer * pMyBuffer);
-    //VkResult FillDataBufferHelper(IN MyBuffer myBuffer, IN void * data);
-    //void Init05CreateVertexBuffer();
-    //void Init05CreateIndexBuffer();
-    //void Init05CreateUniformBuffers(std::vector<CWxjBuffer> &_uniformBuffers, std::vector<void*> &_uniformBuffersMapped, VkBufferUsageFlags usage, VkDeviceSize bufferSize);
 
     void Init06CreateCommandPool();
     void Init06CreateCommandBuffers();
@@ -135,7 +120,6 @@ public:
 
 
     /*Clean up Functions*/
-    void cleanupSwapChain();
     void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator);
     
     float durationTime = 0;
@@ -165,7 +149,6 @@ public:
     virtual void recordCommandBuffer();
     
     /*Pure virtual function(=0): base class not implment, derived class must implement*/
-
 
 };
 

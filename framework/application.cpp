@@ -236,17 +236,6 @@ void CApplication::mainLoop(){
 		vkDeviceWaitIdle(CContext::GetHandle().GetLogicalDevice());//Wait GPU to complete all jobs before CPU destroy resources
 }
 
-void CApplication::cleanupSwapChain() {
-    for (auto framebuffer : swapChainFramebuffers) {
-        vkDestroyFramebuffer(CContext::GetHandle().GetLogicalDevice(), framebuffer, nullptr);
-    }
-
-    for (auto imageView : swapchain.swapChainImageViews) {
-        vkDestroyImageView(CContext::GetHandle().GetLogicalDevice(), imageView, nullptr);
-    }
-
-    vkDestroySwapchainKHR(CContext::GetHandle().GetLogicalDevice(), swapchain.getHandle(), nullptr);
-}
 
 void CApplication::DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator) {
     auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
@@ -260,9 +249,11 @@ CApplication::~CApplication(){
     //clean up
     HERE_I_AM("Clean up application");
 
-    cleanupSwapChain();
+    swapchain.CleanUp();
 
-    vkDestroyRenderPass(CContext::GetHandle().GetLogicalDevice(), renderProcess.renderPass, nullptr);
+    renderProcess.Cleanup();
+
+    //vkDestroyRenderPass(CContext::GetHandle().GetLogicalDevice(), renderProcess.renderPass, nullptr);
 
     //vkDestroyPipeline(logicalDevice, pipeline_compute, nullptr);
     //vkDestroyPipelineLayout(logicalDevice, pipelineLayout_compute, nullptr);
@@ -285,8 +276,8 @@ CApplication::~CApplication(){
     //vkDestroyDescriptorSetLayout(CContext::GetHandle().GetLogicalDevice(), descriptorSetLayout, nullptr);
     descriptor.DestroyAndFree();
 
-    vkDestroyPipeline(CContext::GetHandle().GetLogicalDevice(), graphicsPipeline, nullptr);
-    vkDestroyPipelineLayout(CContext::GetHandle().GetLogicalDevice(), pipelineLayout, nullptr);
+    //vkDestroyPipeline(CContext::GetHandle().GetLogicalDevice(), renderProcess.graphicsPipeline, nullptr);
+    //vkDestroyPipelineLayout(CContext::GetHandle().GetLogicalDevice(), renderProcess.pipelineLayout, nullptr);
 
     //for (int i = 0; i < 1; i++) {
         //vkDestroyDescriptorPool(LOGICAL_DEVICE, descriptorPool[i], nullptr);

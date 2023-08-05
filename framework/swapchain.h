@@ -7,11 +7,12 @@
 //#include "application.h"
 
 class CSwapchain final{
-    //VkSwapchainKHR swapChain;//08
     VkSwapchainKHR handle{VK_NULL_HANDLE};
 public:
     CSwapchain();
     ~CSwapchain();
+
+    void CleanUp();
 
     //SwapchainInfo info;
     //CPhysicalDevice *m_physical_device;
@@ -20,14 +21,17 @@ public:
     VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
     VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
     VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities, int width, int height);
-    void queryInfo(VkSurfaceKHR surface, int width, int height);
+    void createSwapchainImages(VkSurfaceKHR surface, int width, int height);
 
     VkSwapchainKHR getHandle() const{ return handle;}
 
 	std::vector<VkImage> swapChainImages;//08
+    std::vector<VkImageView> swapChainImageViews;//08
 	VkFormat swapChainImageFormat;//08
 	VkExtent2D swapChainExtent;//08
-	std::vector<VkImageView> swapChainImageViews;//08
+	
+
+    std::vector<VkFramebuffer> swapChainFramebuffers;
 
     void displaySwapchainInfo(SwapChainSupportDetails swapChainSupport);
     CDebugger * debugger;

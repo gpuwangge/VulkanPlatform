@@ -49,9 +49,9 @@ public:
 		//Create Renderpass
 		VkImageLayout imageLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 		if(bEnableMSAA) imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-		renderProcess.createColorAttachment(imageLayout, msaaSamples, swapchain.swapChainImageFormat); //add this function will enable color attachment (bUseColorAttachment = true)
-		renderProcess.createDepthAttachment(msaaSamples); //add this function will enable depth attachment(bUseDepthAttachment = true)
-		if(bEnableMSAA) renderProcess.createColorAttachmentResolve(swapchain.swapChainImageFormat); //add this function will enable color resolve attachment (bUseColorAttachmentResolve = true)
+		renderProcess.addColorAttachment(swapchain.swapChainImageFormat, msaaSamples, imageLayout); //add this function will enable color attachment (bUseColorAttachment = true)
+		renderProcess.addDepthAttachment(); //add this function will enable depth attachment(bUseDepthAttachment = true)
+		if(bEnableMSAA) renderProcess.addColorAttachmentResolve(); //add this function will enable color resolve attachment (bUseColorAttachmentResolve = true)
 		renderProcess.createSubpass();
 		VkPipelineStageFlags srcPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
 		VkPipelineStageFlags dstPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
@@ -71,7 +71,7 @@ public:
 		descriptor.createDescriptorSetLayout();
 		descriptor.createDescriptorSets(&textureImageView);
 
-		wxjCreateGraphicsPipeline<Vertex3D>(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST); 
+		renderProcess.createGraphicsPipeline<Vertex3D>(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, vertShaderModule, fragShaderModule, descriptor.descriptorSetLayout);
 
 		CApplication::initialize();
 	}

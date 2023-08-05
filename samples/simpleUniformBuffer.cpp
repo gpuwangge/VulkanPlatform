@@ -25,12 +25,9 @@ public:
 		wxjCreateSwapChainImagesAndImageViews();
 
 		//Create Renderpass
-		VkImageLayout imageLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-		renderProcess.createColorAttachment(imageLayout, msaaSamples, swapchain.swapChainImageFormat); //add this function will enable color attachment (bUseColorAttachment = true)
+		renderProcess.addColorAttachment(swapchain.swapChainImageFormat); //add this function will enable color attachment (bUseColorAttachment = true)
 		renderProcess.createSubpass();
-		VkPipelineStageFlags srcPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-		VkPipelineStageFlags dstPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-		renderProcess.createDependency(srcPipelineStageFlag, dstPipelineStageFlag);
+		renderProcess.createDependency();
 		renderProcess.createRenderPass();
 
 		wxjCreateFramebuffers();
@@ -42,11 +39,11 @@ public:
 		//Create Descriptors
 		descriptor.addCustomUniformBuffer(sizeof(CustomUniformBufferObject));
 		descriptor.createDescriptorPool();
-		VkDescriptorSetLayoutBinding bd = CustomUniformBufferObject::GetBinding();
-		descriptor.createDescriptorSetLayout(bd.descriptorType, bd.stageFlags, bd.descriptorCount, bd.pImmutableSamplers);
+		VkDescriptorSetLayoutBinding customBinding = CustomUniformBufferObject::GetBinding();
+		descriptor.createDescriptorSetLayout(&customBinding);
 		descriptor.createDescriptorSets();
 
-		wxjCreateGraphicsPipeline(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
+		renderProcess.createGraphicsPipeline(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, vertShaderModule, fragShaderModule, descriptor.descriptorSetLayout);
 
 		CApplication::initialize();
 	}

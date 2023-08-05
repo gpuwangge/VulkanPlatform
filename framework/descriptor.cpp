@@ -138,7 +138,8 @@ void CDescriptor::createDescriptorPool(VkDescriptorType type){
 	REPORT("vkCreateDescriptorPool");
 }
 
-void CDescriptor::createDescriptorSetLayout(VkDescriptorType descriptorType, VkShaderStageFlags stageFlags, uint32_t descriptorCount, const VkSampler*  pImmutableSamplers){
+void CDescriptor::createDescriptorSetLayout(VkDescriptorSetLayoutBinding *customBinding){
+    //VkDescriptorType descriptorType, VkShaderStageFlags stageFlags, uint32_t descriptorCount, const VkSampler*  pImmutableSamplers){
 	HERE_I_AM("wxjCreateDescriptorSetLayout");
 
 	// switch (pt) {
@@ -163,10 +164,10 @@ void CDescriptor::createDescriptorSetLayout(VkDescriptorType descriptorType, VkS
 
 	if(bUseCustomUniformBuffer){
         bindings[counter].binding = counter;
-		bindings[counter].descriptorCount = descriptorCount;
-		bindings[counter].descriptorType = descriptorType;
-		bindings[counter].pImmutableSamplers = pImmutableSamplers;
-		bindings[counter].stageFlags = stageFlags;
+		bindings[counter].descriptorCount = customBinding->descriptorCount;
+		bindings[counter].descriptorType = customBinding->descriptorType;
+		bindings[counter].pImmutableSamplers = customBinding->pImmutableSamplers;
+		bindings[counter].stageFlags = customBinding->stageFlags;
 		counter++;
 	}
 

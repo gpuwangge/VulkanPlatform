@@ -14,7 +14,7 @@ void CVulkanBase::wxjCreateFramebuffers(){
 
 	VkResult result = VK_SUCCESS;
 
-	swapChainFramebuffers.resize(swapchain.swapChainImageViews.size());
+	swapchain.swapChainFramebuffers.resize(swapchain.swapChainImageViews.size());
 
 	for (size_t i = 0; i < swapchain.swapChainImageViews.size(); i++) {
 		std::vector<VkImageView> attachments; 
@@ -38,7 +38,7 @@ void CVulkanBase::wxjCreateFramebuffers(){
 		framebufferInfo.height = swapchain.swapChainExtent.height;
 		framebufferInfo.layers = 1;
 
-		result = vkCreateFramebuffer(CContext::GetHandle().GetLogicalDevice(), &framebufferInfo, nullptr, &swapChainFramebuffers[i]);
+		result = vkCreateFramebuffer(CContext::GetHandle().GetLogicalDevice(), &framebufferInfo, nullptr, &swapchain.swapChainFramebuffers[i]);
 		if (result != VK_SUCCESS) throw std::runtime_error("failed to create framebuffer!");
 		REPORT("vkCreateFrameBuffer");
 	}	
@@ -88,7 +88,7 @@ void CVulkanBase::wxjBeginRenderPass(std::vector<VkClearValue> &clearValues){
     VkRenderPassBeginInfo renderPassInfo{};
     renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
     renderPassInfo.renderPass = renderProcess.renderPass;
-    renderPassInfo.framebuffer = swapChainFramebuffers[imageIndex];
+    renderPassInfo.framebuffer = swapchain.swapChainFramebuffers[imageIndex];
     renderPassInfo.renderArea.offset = { 0, 0 };
     renderPassInfo.renderArea.extent = swapchain.swapChainExtent;
 
@@ -109,7 +109,7 @@ void CVulkanBase::wxjBeginRenderPass(std::vector<VkClearValue> &clearValues){
     vkCmdBeginRenderPass(commandBuffers[currentFrame], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 }
 void CVulkanBase::wxjBindPipeline(){
-	vkCmdBindPipeline(commandBuffers[currentFrame], VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsPipeline);
+	vkCmdBindPipeline(commandBuffers[currentFrame], VK_PIPELINE_BIND_POINT_GRAPHICS, renderProcess.graphicsPipeline);
 }
 void CVulkanBase::wxjSetViewport(){
 	VkViewport viewport{};
@@ -137,7 +137,7 @@ void CVulkanBase::wxjBindIndexBuffer(){
 	vkCmdBindIndexBuffer(commandBuffers[currentFrame], indexDataBuffer.buffer, 0, VK_INDEX_TYPE_UINT32);
 }
 void CVulkanBase::wxjBindDescriptorSets(){
-	vkCmdBindDescriptorSets(commandBuffers[currentFrame], VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptor.descriptorSets[currentFrame], 0, nullptr);
+	vkCmdBindDescriptorSets(commandBuffers[currentFrame], VK_PIPELINE_BIND_POINT_GRAPHICS, renderProcess.pipelineLayout, 0, 1, &descriptor.descriptorSets[currentFrame], 0, nullptr);
 }
 void CVulkanBase::wxjDrawIndexed(std::vector<uint32_t> &indices3D){
 	vkCmdDrawIndexed(commandBuffers[currentFrame], static_cast<uint32_t>(indices3D.size()), 1, 0, 0, 0);
@@ -218,17 +218,10 @@ void CVulkanBase::wxjCreateImage(VkSampleCountFlagBits numSamples, VkFormat form
 }
 void CVulkanBase::wxjCreateSwapChainImagesAndImageViews(){
 	HERE_I_AM("Init08Swapchain");
-    //vulkan draws on the vkImage(s)
-    //SwapChain will set vkImage to present on the screen
-    //Surface will tell the format of the vkImage
-    //PresentQueue is a queue to present
-
-    //Need preare surface and presentQueue first.
-    //swapchain.GetPhysicalDevice(CContext::GetHandle().physicalDevice->get());
 
     int width, height;
     glfwGetFramebufferSize(window, &width, &height);
-    swapchain.queryInfo(surface, width, height);
+    swapchain.createSwapchainImages(surface, width, height);
 
     //generate swapChainImageViews
     for (size_t i = 0; i < swapchain.swapChainImages.size(); i++) {

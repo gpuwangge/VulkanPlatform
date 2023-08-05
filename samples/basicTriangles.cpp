@@ -33,6 +33,7 @@ public:
 	void initialize(){
 		//Create bufferss
 		wxjCreateVertexBuffer<Vertex3D>(vertices3D);
+		
 		wxjCreateIndexBuffer(indices3D);
 		wxjCreateCommandBuffer();
 
@@ -45,7 +46,7 @@ public:
 		wxjCreateSwapChainImagesAndImageViews();
 
 		//Create Renderpass
-		renderProcess.addColorAttachment(msaaSamples, swapchain.swapChainImageFormat); //add this function will enable color attachment (bUseColorAttachment = true)
+		renderProcess.addColorAttachment(swapchain.swapChainImageFormat); //add this function will enable color attachment (bUseColorAttachment = true)
 		renderProcess.createSubpass();
 		renderProcess.createDependency();
 		renderProcess.createRenderPass();
@@ -61,11 +62,11 @@ public:
 		descriptor.addMVPUniformBuffer();
 		descriptor.addCustomUniformBuffer(sizeof(CustomUniformBufferObject));
 		descriptor.createDescriptorPool();
-		VkDescriptorSetLayoutBinding bd = CustomUniformBufferObject::GetBinding();
-		descriptor.createDescriptorSetLayout(bd.descriptorType, bd.stageFlags, bd.descriptorCount, bd.pImmutableSamplers);
+		VkDescriptorSetLayoutBinding customBinding = CustomUniformBufferObject::GetBinding();
+		descriptor.createDescriptorSetLayout(&customBinding);
 		descriptor.createDescriptorSets(&textureImageView);
 
-		wxjCreateGraphicsPipeline<Vertex3D>(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
+		renderProcess.createGraphicsPipeline<Vertex3D>(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, vertShaderModule, fragShaderModule, descriptor.descriptorSetLayout);
 
 		CApplication::initialize();
 	}
