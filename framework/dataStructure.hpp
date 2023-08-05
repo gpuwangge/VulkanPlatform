@@ -193,7 +193,7 @@ public:
     MyImageBuffer(): size(0){}
 } MyImage;
 
-struct UniformBufferObject {
+struct MVPUniformBufferObject {
 	alignas(16) glm::mat4 model;
 	alignas(16) glm::mat4 view;
 	alignas(16) glm::mat4 proj;

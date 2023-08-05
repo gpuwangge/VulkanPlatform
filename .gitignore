@@ -2,12 +2,14 @@ logs/instanceLog.txt
 logs/logicalDeviceLog.txt
 logs/applicationLog.txt
 logs/physicalDeviceLog.txt
+logs/swapchainLog.txt
+logs/descriptorLog.txt
+
 bins/objModel.exe
-bins/triangleTex.exe
 bins/modelMSAA.exe
 bins/simpleHallway.exe
-logs/swapchainLog.txt
 bins/basicTriangles.exe
 bins/simpleTriangle.exe
 bins/simpleVertexBuffer.exe
-logs/descriptorLog.txt
+bins/simpleUniformBuffer.exe
+bins/simpleTexture.exe

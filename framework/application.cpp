@@ -2,7 +2,7 @@
 
 CApplication::CApplication(){
     debugger = new CDebugger("../logs/applicationLog.txt");
-    ubo.model = glm::mat4(1.0f);
+    //ubo.model = glm::mat4(1.0f);
     bEnableMSAA = false;
     msaaSamples = VK_SAMPLE_COUNT_1_BIT;
 
@@ -220,7 +220,7 @@ void CApplication::update(){
 
     mainCamera.update(deltaTime);
 
-    if(descriptor.bUseMVP) updateUniformBuffer(currentFrame, durationTime);
+    descriptor.updateMVPUniformBuffer(currentFrame, durationTime);
 
     currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 }
@@ -345,25 +345,3 @@ CApplication::~CApplication(){
     CContext::Quit();
 }
 
-void CApplication::updateUniformBuffer(uint32_t currentFrame, float durationTime) {
-    // UniformBufferObject ubo{};
-    // ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-    // glm::mat4x4 m = glm::perspective(glm::radians(45.0f), WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 10.0f);
-    // m[1][1] *= -1;
-    // ubo.proj = m;
-    // ubo.model = glm::rotate(glm::mat4(1.0f), durationTime * glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-
-    //UniformBufferObject ubo{};
-    ubo.view = mainCamera.matrices.view;
-    ubo.proj = mainCamera.matrices.perspective;
-    // if (pipelineType == PIPELINE_MIPMAP) {
-            //ubo.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-    // }
-    // else {
-        //ubo.model = glm::rotate(glm::mat4(1.0f), durationTime * glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-    //}
-
-    memcpy(descriptor.uniformBuffersMapped[currentFrame], &ubo, sizeof(ubo));
-
-    //CApplication::updateUniformBuffer(currentFrame, durationTime);
-}

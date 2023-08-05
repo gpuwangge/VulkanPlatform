@@ -1,17 +1,25 @@
 #include "..\\framework\\vulkanBase.h"
 
-#define TEST_CLASS_NAME CSimpleVertexBuffer
+#define TEST_CLASS_NAME CSimpleUniformBuffer
 class TEST_CLASS_NAME: public CVulkanBase{
 public:
-	std::vector<Vertex2D> vertices = {
-		{ { 0.0f, -0.5f},{ 1.0f, 0.0f, 0.0f }},
-		{ { 0.5f, 0.5f},{ 0.0f, 1.0f, 0.0f }},
-		{ { -0.5f, 0.5f},{ 0.0f, 0.0f, 1.0f }}		
+	struct CustomUniformBufferObject {
+		glm::vec4 color;
+
+		static VkDescriptorSetLayoutBinding GetBinding(){
+			VkDescriptorSetLayoutBinding binding;
+			binding.binding = 0;//not important, will be reset
+			binding.descriptorCount = 1;
+			binding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+			binding.pImmutableSamplers = nullptr;
+			binding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+			return binding;
+		}
 	};
+	CustomUniformBufferObject customUBO{};
 
 	void initialize(){
 		//Create bufferss
-		wxjCreateVertexBuffer<Vertex2D>(vertices);
 		wxjCreateCommandBuffer();
 
 		wxjCreateSwapChainImagesAndImageViews();
@@ -28,39 +36,39 @@ public:
 		wxjCreateFramebuffers();
 
 		//Create shader resource
-		wxjCreateVertexShader("../shaders/simpleVertexBuffer/vert.spv");
-		wxjCreateFragmentShader("../shaders/simpleVertexBuffer/frag.spv");
+		wxjCreateVertexShader("../shaders/simpleUniformBuffer/vert.spv");
+		wxjCreateFragmentShader("../shaders/simpleUniformBuffer/frag.spv");
 
 		//Create Descriptors
+		descriptor.addCustomUniformBuffer(sizeof(CustomUniformBufferObject));
 		descriptor.createDescriptorPool();
-		descriptor.createDescriptorSetLayout();
+		VkDescriptorSetLayoutBinding bd = CustomUniformBufferObject::GetBinding();
+		descriptor.createDescriptorSetLayout(bd.descriptorType, bd.stageFlags, bd.descriptorCount, bd.pImmutableSamplers);
 		descriptor.createDescriptorSets();
 
-		wxjCreateGraphicsPipeline<Vertex2D>(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
+		wxjCreateGraphicsPipeline(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
 
 		CApplication::initialize();
 	}
 
 	void update(){
+		//printf("%f\n", durationTime);
+		customUBO.color = {(sin(durationTime) + 1.0f) / 2.0f, (cos(durationTime) + 1.0f) / 2.0f, 0.0f, 1.0f};
+		descriptor.updateCustomUniformBuffer<CustomUniformBufferObject>(currentFrame, durationTime, customUBO);
 		CApplication::update();
 	}
 
 	void recordCommandBuffer(){
 		wxjBeginCommandBuffer();
-
 		std::vector<VkClearValue> clearValues{ {  0.0f, 0.0f, 0.0f, 1.0f  } };
 		wxjBeginRenderPass(clearValues);
-
 		wxjBindPipeline();
 		wxjSetViewport();
 		wxjSetScissor();
-		wxjBindVertexBuffer();
 		wxjBindDescriptorSets();
 		wxjDraw(3);
-
 		wxjEndRenderPass();
 		wxjEndCOmmandBuffer();
-
 		CApplication::recordCommandBuffer();
 	}
 };

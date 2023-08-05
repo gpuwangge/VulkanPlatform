@@ -138,8 +138,8 @@ public:
     
     float durationTime = 0;
     float deltaTime = 0;
-    UniformBufferObject ubo{};
-    void updateUniformBuffer(uint32_t currentFrame, float durationTime);
+    // MVPUniformBufferObject mvpUBO{};
+    // void updateUniformBuffer(uint32_t currentFrame, float durationTime);
 
     uint32_t imageIndex = 0;
     //void recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);

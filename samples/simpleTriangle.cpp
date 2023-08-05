@@ -27,7 +27,7 @@ public:
 		//Create Descriptors
 		descriptor.createDescriptorPool();
 		descriptor.createDescriptorSetLayout();
-		descriptor.createDescriptorSets(textureImageView);
+		descriptor.createDescriptorSets();
 
 		wxjCreateGraphicsPipeline(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
 
@@ -40,19 +40,14 @@ public:
 
 	void recordCommandBuffer(){
 		wxjBeginCommandBuffer();
-
 		std::vector<VkClearValue> clearValues{ {  0.0f, 0.0f, 0.0f, 1.0f  } };
 		wxjBeginRenderPass(clearValues);
-
 		wxjBindPipeline();
 		wxjSetViewport();
 		wxjSetScissor();
-		wxjBindDescriptorSets();
 		wxjDraw(3);
-
 		wxjEndRenderPass();
 		wxjEndCOmmandBuffer();
-
 		CApplication::recordCommandBuffer();
 	}
 };

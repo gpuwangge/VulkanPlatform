@@ -1,12 +1,12 @@
 #include "..\\framework\\vulkanBase.h"
-#define TEST_CLASS_NAME CTriangleTex
+#define TEST_CLASS_NAME CSimpleTexture
 class TEST_CLASS_NAME: public CVulkanBase{
 public:
 	std::vector<Vertex3D> vertices3D = {
-	{ { -0.5f, -0.5f, 0.0f },{ 1.0f, 0.0f, 0.0f },{ 1.0f, 0.0f } },
-	{ { 0.5f, -0.5f, 0.0f },{ 0.0f, 1.0f, 0.0f },{ 0.0f, 0.0f } },
-	{ { 0.5f, 0.5f, 0.0f },{ 0.0f, 0.0f, 1.0f },{ 0.0f, 1.0f } },
-	{ { -0.5f, 0.5f, 0.0f },{ 1.0f, 1.0f, 1.0f },{ 1.0f, 1.0f } }
+		{ { -0.5f, -0.5f, 0.0f },{ 1.0f, 0.0f, 0.0f },{ 1.0f, 0.0f } },
+		{ { 0.5f, -0.5f, 0.0f },{ 0.0f, 1.0f, 0.0f },{ 0.0f, 0.0f } },
+		{ { 0.5f, 0.5f, 0.0f },{ 0.0f, 0.0f, 1.0f },{ 0.0f, 1.0f } },
+		{ { -0.5f, 0.5f, 0.0f },{ 1.0f, 1.0f, 1.0f },{ 1.0f, 1.0f } }
 	};
 
 	/************
@@ -39,23 +39,23 @@ public:
 		wxjCreateFramebuffers();
 
 		//Create shader resource
-		wxjCreateVertexShader("../shaders/texture/vert_texture.spv");
-		wxjCreateFragmentShader("../shaders/texture/frag_texture.spv");
+		wxjCreateVertexShader("../shaders/texture/vert.spv");
+		wxjCreateFragmentShader("../shaders/texture/frag.spv");
 
 		//Create Descriptors
 		descriptor.addMVPUniformBuffer();
 		descriptor.addImageSamplerUniformBuffer(mipLevels);
 		descriptor.createDescriptorPool();
 		descriptor.createDescriptorSetLayout();
-		descriptor.createDescriptorSets(textureImageView);
+		descriptor.createDescriptorSets(&textureImageView);
 
-		wxjCreateGraphicsPipeline<Vertex3D>(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, true);
+		wxjCreateGraphicsPipeline<Vertex3D>(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST);
 
 		CApplication::initialize();
 	}
 
 	void update(){
-		ubo.model = glm::rotate(glm::mat4(1.0f), durationTime * glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		descriptor.mvpUBO.model = glm::rotate(glm::mat4(1.0f), durationTime * glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 		CApplication::update();
 	}
 

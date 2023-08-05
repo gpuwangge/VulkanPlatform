@@ -69,7 +69,7 @@ public:
 		descriptor.addImageSamplerUniformBuffer(mipLevels);
 		descriptor.createDescriptorPool();
 		descriptor.createDescriptorSetLayout();
-		descriptor.createDescriptorSets(textureImageView);
+		descriptor.createDescriptorSets(&textureImageView);
 
 		wxjCreateGraphicsPipeline<Vertex3D>(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST); 
 
