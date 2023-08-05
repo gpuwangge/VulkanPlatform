@@ -37,26 +37,26 @@ public:
     void wxjCreateFragmentShader(std::string shaderName);
 
     //RenderPass: Attachments
-    VkAttachmentDescription colorAttachment{};
-    bool bUseColorAttachment = false;
-    VkAttachmentDescription depthAttachment{};
-    bool bUseDepthAttachment = false;
-    VkAttachmentDescription colorAttachmentResolve{};
-    bool bUseColorAttachmentResolve = false;
-    void wxjCreateColorAttachment(VkImageLayout imageLayout);
-    void wxjCreateDepthAttachment();
-    void wxjCreateColorAttachmentResolve();
+    //VkAttachmentDescription colorAttachment{};
+    //bool bUseColorAttachment = false;
+    //VkAttachmentDescription depthAttachment{};
+    //bool bUseDepthAttachment = false;
+    //VkAttachmentDescription colorAttachmentResolve{};
+    //bool bUseColorAttachmentResolve = false;
+    //void wxjCreateColorAttachment(VkImageLayout imageLayout);
+    //void wxjCreateDepthAttachment();
+    //void wxjCreateColorAttachmentResolve();
     //RenderPass: Subpass
-    VkAttachmentReference colorAttachmentRef{};
-    VkAttachmentReference depthAttachmentRef{};
-    VkAttachmentReference colorAttachmentResolveRef{};
-    VkSubpassDescription subpass{};
-    void wxjCreateSubpass();
+    //VkAttachmentReference colorAttachmentRef{};
+    //VkAttachmentReference depthAttachmentRef{};
+    //VkAttachmentReference colorAttachmentResolveRef{};
+    //VkSubpassDescription subpass{};
+    //void wxjCreateSubpass();
     //RenderPass:Dependency
-    VkSubpassDependency dependency{};
-    void wxjCreateDependency(VkPipelineStageFlags srcPipelineStageFlag, VkPipelineStageFlags dstPipelineStageFlag);
+    //VkSubpassDependency dependency{};
+    //void wxjCreateDependency(VkPipelineStageFlags srcPipelineStageFlag, VkPipelineStageFlags dstPipelineStageFlag);
     //RenderPass
-    void wxjCreateRenderPass();
+    //void wxjCreateRenderPass();
 
     void wxjCreateFramebuffers();
 
@@ -217,12 +217,12 @@ public:
         
         /*********10 Renderpass Layout(Vulkan Special Concept)**********/
         //Renderpass is to specify what kind of data goes to graphics pipeline
-        pipelineInfo.renderPass = renderPass;	//10 
+        pipelineInfo.renderPass = renderProcess.renderPass;	//10 
         pipelineInfo.subpass = 0;
         pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 
         /*********11**********/
-        if (bUseDepthAttachment) {
+        if (renderProcess.bUseDepthAttachment) {
             VkPipelineDepthStencilStateCreateInfo depthStencil{};
             depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
             depthStencil.depthTestEnable = VK_TRUE;

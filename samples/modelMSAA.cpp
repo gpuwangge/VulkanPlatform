@@ -32,7 +32,7 @@ public:
 		}
 
 		//Create depth resource
-		VkFormat depthFormat = findDepthFormat();
+		VkFormat depthFormat = renderProcess.findDepthFormat();
 		usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
 		wxjCreateImage(msaaSamples, depthFormat, usage, OUT depthImageBuffer);//need swapChainExtent. call this after swapchain creation
 		wxjCreateImageView(depthImageBuffer.image, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT, 1, OUT depthImageView);
@@ -40,14 +40,14 @@ public:
 		//Create Renderpass
 		VkImageLayout imageLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 		if(bEnableMSAA) imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-		wxjCreateColorAttachment(imageLayout); //add this function will enable color attachment (bUseColorAttachment = true)
-		wxjCreateDepthAttachment(); //add this function will enable depth attachment(bUseDepthAttachment = true)
-		if(bEnableMSAA) wxjCreateColorAttachmentResolve(); //add this function will enable color resolve attachment (bUseColorAttachmentResolve = true)
-		wxjCreateSubpass();
+		renderProcess.createColorAttachment(imageLayout, msaaSamples, swapchain.swapChainImageFormat); //add this function will enable color attachment (bUseColorAttachment = true)
+		renderProcess.createDepthAttachment(msaaSamples); //add this function will enable depth attachment(bUseDepthAttachment = true)
+		if(bEnableMSAA) renderProcess.createColorAttachmentResolve(swapchain.swapChainImageFormat); //add this function will enable color resolve attachment (bUseColorAttachmentResolve = true)
+		renderProcess.createSubpass();
 		VkPipelineStageFlags srcPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
 		VkPipelineStageFlags dstPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-		wxjCreateDependency(srcPipelineStageFlag, dstPipelineStageFlag);
-		wxjCreateRenderPass();
+		renderProcess.createDependency(srcPipelineStageFlag, dstPipelineStageFlag);
+		renderProcess.createRenderPass();
 
 		wxjCreateFramebuffers(); //need create imageviews first
 

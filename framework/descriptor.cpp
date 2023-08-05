@@ -13,7 +13,7 @@ CDescriptor::CDescriptor(){
     textureSampler = NULL;
 }
 
-CDescriptor::~CDescriptor(){}
+CDescriptor::~CDescriptor(){if (!debugger) delete debugger;}
 
 void CDescriptor::addCustomUniformBuffer(VkDeviceSize customUniformBufferSize){
 	bUseCustomUniformBuffer = true;
@@ -409,6 +409,5 @@ void CDescriptor::DestroyAndFree(){
     //no need to destroy descriptorSets, because they are from descriptorPool
     vkDestroyDescriptorPool(CContext::GetHandle().GetLogicalDevice(), descriptorPool, nullptr);
     vkDestroyDescriptorSetLayout(CContext::GetHandle().GetLogicalDevice(), descriptorSetLayout, nullptr);
-    if (!debugger) delete debugger;
 }
 

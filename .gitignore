@@ -4,6 +4,7 @@ logs/applicationLog.txt
 logs/physicalDeviceLog.txt
 logs/swapchainLog.txt
 logs/descriptorLog.txt
+logs/renderProcessLog.txt
 
 bins/objModel.exe
 bins/modelMSAA.exe
@@ -13,3 +14,4 @@ bins/simpleTriangle.exe
 bins/simpleVertexBuffer.exe
 bins/simpleUniformBuffer.exe
 bins/simpleTexture.exe
+

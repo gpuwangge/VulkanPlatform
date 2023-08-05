@@ -11,6 +11,7 @@
 #include "dataStructure.hpp"
 #include "context.h"
 #include "descriptor.h"
+#include "renderProcess.h"
 
 // #define LOGICAL_DEVICE *(instance->pickedPhysicalDevice->get()->getLogicalDevice())
 // #define PHYSICAL_DEVICE instance->pickedPhysicalDevice->get()->getHandle()
@@ -51,9 +52,10 @@ public:
 	// VkExtent2D swapChainExtent;//08
 	// std::vector<VkImageView> swapChainImageViews;//08
 
-    VkFormat findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
-    VkFormat findDepthFormat();
-    VkRenderPass renderPass; //10
+    //VkFormat findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
+    //VkFormat findDepthFormat();
+    //VkRenderPass renderPass; //10
+    CRenderProcess renderProcess;//new
 
     std::vector<VkFramebuffer> swapChainFramebuffers;//11
 
@@ -83,7 +85,7 @@ public:
 	VkImageView textureImageView; 
 
     //Resource for Depth Test
-    bool bEnableDepthTest;
+    //bool bEnableDepthTest;
 	MyImageBuffer depthImageBuffer;
 	VkImageView depthImageView;
 

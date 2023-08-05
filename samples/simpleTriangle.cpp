@@ -11,12 +11,12 @@ public:
 
 		//Create Renderpass
 		VkImageLayout imageLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-		wxjCreateColorAttachment(imageLayout); //add this function will enable color attachment (bUseColorAttachment = true)
-		wxjCreateSubpass();
+		renderProcess.createColorAttachment(imageLayout, msaaSamples, swapchain.swapChainImageFormat); //add this function will enable color attachment (bUseColorAttachment = true)
+		renderProcess.createSubpass();
 		VkPipelineStageFlags srcPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 		VkPipelineStageFlags dstPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-		wxjCreateDependency(srcPipelineStageFlag, dstPipelineStageFlag);
-		wxjCreateRenderPass();
+		renderProcess.createDependency(srcPipelineStageFlag, dstPipelineStageFlag);
+		renderProcess.createRenderPass();
 
 		wxjCreateFramebuffers();
 

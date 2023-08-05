@@ -6,105 +6,8 @@
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
 
-void CVulkanBase::wxjCreateColorAttachment(VkImageLayout imageLayout){  
-	//Concept of attachment in Vulkan is like render target in OpenGL
-	//Subpass is a procedure to write/read attachments (a render process can has many subpasses, aka a render pass)
-	//Subpass is designed for mobile TBDR architecture
-	//At the beginning of subpass, attachment is loaded; at the end of attachment, attachment is stored
-	bUseColorAttachment = true;
 
-	colorAttachment.format = swapchain.swapChainImageFormat;//VK_FORMAT_B8G8R8A8_SRGB
-	colorAttachment.samples = msaaSamples;
-	colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-	colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-	colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-	colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	colorAttachment.finalLayout = imageLayout;
-}
-void CVulkanBase::wxjCreateDepthAttachment(){  
-	bUseDepthAttachment = true;
 
-	//added for model
-	depthAttachment.format = findDepthFormat();
-	depthAttachment.samples = msaaSamples;
-	depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-	depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-	depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	depthAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	depthAttachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-    
-}
-void CVulkanBase::wxjCreateColorAttachmentResolve(){  
-	bUseColorAttachmentResolve = true;
-
-	//added for MSAA
-	colorAttachmentResolve.format = swapchain.swapChainImageFormat;
-	colorAttachmentResolve.samples = VK_SAMPLE_COUNT_1_BIT;
-	colorAttachmentResolve.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-	colorAttachmentResolve.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-	colorAttachmentResolve.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-	colorAttachmentResolve.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	colorAttachmentResolve.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	colorAttachmentResolve.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-}
-void CVulkanBase::wxjCreateSubpass(){ 
-	uint32_t attachmentCount = 0;
-	if(bUseColorAttachment){
-		colorAttachmentRef.attachment = attachmentCount++;
-		colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-		subpass.pColorAttachments = &colorAttachmentRef;
-	}
-	if(bUseDepthAttachment){
-		//added for model
-		depthAttachmentRef.attachment = attachmentCount++;
-		depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-		subpass.pDepthStencilAttachment = &depthAttachmentRef; //added for model
-	}
-	if(bUseColorAttachmentResolve){
-		//added for MSAA
-		colorAttachmentResolveRef.attachment = attachmentCount++;
-		colorAttachmentResolveRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-		subpass.pResolveAttachments = &colorAttachmentResolveRef; //added for MSAA
-	}
-	subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-	subpass.colorAttachmentCount = 1;
-}
-void CVulkanBase::wxjCreateDependency(VkPipelineStageFlags srcPipelineStageFlag, VkPipelineStageFlags dstPipelineStageFlag){  
-	dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
-	dependency.dstSubpass = 0;
-	dependency.srcStageMask = srcPipelineStageFlag;
-	dependency.srcAccessMask = 0;//VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT
-	dependency.dstStageMask = dstPipelineStageFlag;
-	dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-	if (bUseDepthAttachment) 
-		dependency.dstAccessMask |= VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
-}
-void CVulkanBase::wxjCreateRenderPass(){ 
-	HERE_I_AM("wxjCreateRenderPass");
-
-	VkResult result = VK_SUCCESS;
-
-	std::vector<VkAttachmentDescription> attachments;
-	if(bUseColorAttachment) attachments.push_back(colorAttachment);
-	if(bUseDepthAttachment) attachments.push_back(depthAttachment);
-	if(bUseColorAttachmentResolve) attachments.push_back(colorAttachmentResolve);
-
-	VkRenderPassCreateInfo renderPassInfo{};
-	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-	renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
-	renderPassInfo.pAttachments = attachments.data(); //1
-	renderPassInfo.subpassCount = 1;
-	renderPassInfo.pSubpasses = &subpass;//2
-	renderPassInfo.dependencyCount = 1;
-	renderPassInfo.pDependencies = &dependency;//3
-
-	result = vkCreateRenderPass(CContext::GetHandle().GetLogicalDevice(), &renderPassInfo, nullptr, &renderPass);
-	if (result != VK_SUCCESS) throw std::runtime_error("failed to create render pass!");
-	REPORT("vkCreateRenderPass");
-		 
-}
 
 void CVulkanBase::wxjCreateFramebuffers(){
 	HERE_I_AM("wxjCreateFramebuffers");
@@ -115,11 +18,11 @@ void CVulkanBase::wxjCreateFramebuffers(){
 
 	for (size_t i = 0; i < swapchain.swapChainImageViews.size(); i++) {
 		std::vector<VkImageView> attachments; 
-		 if (bUseDepthAttachment && bUseColorAttachmentResolve) {//Renderpass attachment(render target) order: Color, Depth, ColorResolve
+		 if (renderProcess.bUseDepthAttachment && renderProcess.bUseColorAttachmentResolve) {//Renderpass attachment(render target) order: Color, Depth, ColorResolve
 		    attachments.push_back(msaaColorImageView);
 		    attachments.push_back(depthImageView);
 			attachments.push_back(swapchain.swapChainImageViews[i]);
-		 }else if(bUseDepthAttachment){//Renderpass attachment(render target) order: Color, Depth
+		 }else if(renderProcess.bUseDepthAttachment){//Renderpass attachment(render target) order: Color, Depth
 			attachments.push_back(swapchain.swapChainImageViews[i]);
 			attachments.push_back(depthImageView);
 		}else{ //Renderpass attachment(render target) order: Color
@@ -128,7 +31,7 @@ void CVulkanBase::wxjCreateFramebuffers(){
 
 		VkFramebufferCreateInfo framebufferInfo{};
 		framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-		framebufferInfo.renderPass = renderPass;
+		framebufferInfo.renderPass = renderProcess.renderPass;
 		framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
 		framebufferInfo.pAttachments = attachments.data();//swapChainImageViews, 类型是VkImageView
 		framebufferInfo.width = swapchain.swapChainExtent.width;
@@ -184,7 +87,7 @@ void CVulkanBase::wxjBeginCommandBuffer(){
 void CVulkanBase::wxjBeginRenderPass(std::vector<VkClearValue> &clearValues){
     VkRenderPassBeginInfo renderPassInfo{};
     renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
-    renderPassInfo.renderPass = renderPass;
+    renderPassInfo.renderPass = renderProcess.renderPass;
     renderPassInfo.framebuffer = swapChainFramebuffers[imageIndex];
     renderPassInfo.renderArea.offset = { 0, 0 };
     renderPassInfo.renderArea.extent = swapchain.swapChainExtent;

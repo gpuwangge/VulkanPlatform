@@ -4,7 +4,7 @@
 #include "context.h"
 #include "dataStructure.hpp"
 
-class CDescriptor{
+class CDescriptor final{
 
 public:
     CDescriptor();

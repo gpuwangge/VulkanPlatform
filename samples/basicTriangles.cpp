@@ -45,13 +45,10 @@ public:
 		wxjCreateSwapChainImagesAndImageViews();
 
 		//Create Renderpass
-		VkImageLayout imageLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-		wxjCreateColorAttachment(imageLayout); //add this function will enable color attachment (bUseColorAttachment = true)
-		wxjCreateSubpass();
-		VkPipelineStageFlags srcPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-		VkPipelineStageFlags dstPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-		wxjCreateDependency(srcPipelineStageFlag, dstPipelineStageFlag);
-		wxjCreateRenderPass();
+		renderProcess.addColorAttachment(msaaSamples, swapchain.swapChainImageFormat); //add this function will enable color attachment (bUseColorAttachment = true)
+		renderProcess.createSubpass();
+		renderProcess.createDependency();
+		renderProcess.createRenderPass();
 
 		wxjCreateFramebuffers();
 

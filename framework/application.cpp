@@ -6,7 +6,7 @@ CApplication::CApplication(){
     bEnableMSAA = false;
     msaaSamples = VK_SAMPLE_COUNT_1_BIT;
 
-    bEnableDepthTest = false;
+    //bEnableDepthTest = false;
 
     //bEnableUniform = false;
 
@@ -262,7 +262,7 @@ CApplication::~CApplication(){
 
     cleanupSwapChain();
 
-    vkDestroyRenderPass(CContext::GetHandle().GetLogicalDevice(), renderPass, nullptr);
+    vkDestroyRenderPass(CContext::GetHandle().GetLogicalDevice(), renderProcess.renderPass, nullptr);
 
     //vkDestroyPipeline(logicalDevice, pipeline_compute, nullptr);
     //vkDestroyPipelineLayout(logicalDevice, pipelineLayout_compute, nullptr);
@@ -310,7 +310,7 @@ CApplication::~CApplication(){
 
     //if(textureSampler) vkDestroySampler(CContext::GetHandle().GetLogicalDevice(), textureSampler, nullptr);
 
-    if(bEnableDepthTest){
+    if(renderProcess.bUseDepthAttachment){
         vkDestroyImage(CContext::GetHandle().GetLogicalDevice(), depthImageBuffer.image, nullptr);
         vkFreeMemory(CContext::GetHandle().GetLogicalDevice(), depthImageBuffer.deviceMemory, nullptr);
         vkDestroyImageView(CContext::GetHandle().GetLogicalDevice(), depthImageView, nullptr);
