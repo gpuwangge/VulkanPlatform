@@ -52,11 +52,6 @@ public:
     VkDescriptorSetLayout descriptorSetLayout;
     std::vector<VkDescriptorSet> descriptorSets;
 
-    //std::vector<VkDescriptorType> descriptorTypes;
-    //std::vector<VkShaderStageFlagBits> shaderStageFlagBits;
-
-    
-
     CDebugger * debugger;
 };
 

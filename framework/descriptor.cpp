@@ -42,9 +42,6 @@ void CDescriptor::addMVPUniformBuffer(){
 
         vkMapMemory(CContext::GetHandle().GetLogicalDevice(), mvpUniformBuffers[i].deviceMemory, 0, sizeof(MVPUniformBufferObject), 0, &mvpUniformBuffersMapped[i]);
     }
-
-    //descriptorTypes.push_back(VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER);
-	//shaderStageFlagBits.push_back(VK_SHADER_STAGE_VERTEX_BIT);
 }
 
 void CDescriptor::addImageSamplerUniformBuffer(uint32_t mipLevels){
@@ -76,9 +73,6 @@ void CDescriptor::addImageSamplerUniformBuffer(uint32_t mipLevels){
 
 	VkResult result = vkCreateSampler(CContext::GetHandle().GetLogicalDevice(), &samplerInfo, nullptr, &textureSampler);
 	REPORT("vkCreateSampler");
-
-    //descriptorTypes.push_back(VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER);
-    //shaderStageFlagBits.push_back(VK_SHADER_STAGE_FRAGMENT_BIT);
 }
 
 
@@ -105,12 +99,6 @@ void CDescriptor::createDescriptorPool(VkDescriptorType type){
 	 	poolSizes[counter].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
 		counter++;
     }
-
-
-	// for(int i = 0; i < descriptorTypes.size(); i++){
-	// 	poolSizes[i].type = descriptorTypes[i];
-	// 	poolSizes[i].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
-	// }
 
 	//std::vector<VkDescriptorPoolSize> poolSizes;
 	// switch (pt) {
@@ -145,7 +133,6 @@ void CDescriptor::createDescriptorPool(VkDescriptorType type){
 	poolInfo.pPoolSizes = poolSizes.data();
 	poolInfo.maxSets = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
 
-	//Step 1
 	VkResult result = vkCreateDescriptorPool(CContext::GetHandle().GetLogicalDevice(), &poolInfo, nullptr, &descriptorPool);
 	if (result != VK_SUCCESS) throw std::runtime_error("failed to create descriptor pool!");
 	REPORT("vkCreateDescriptorPool");
@@ -153,29 +140,6 @@ void CDescriptor::createDescriptorPool(VkDescriptorType type){
 
 void CDescriptor::createDescriptorSetLayout(VkDescriptorType descriptorType, VkShaderStageFlags stageFlags, uint32_t descriptorCount, const VkSampler*  pImmutableSamplers){
 	HERE_I_AM("wxjCreateDescriptorSetLayout");
-
-	//VkDescriptorSetLayoutBinding uboLayoutBinding{};
-	//std::vector<VkDescriptorSetLayoutBinding> bindings;
-	//bindings.resize(descriptorTypes.size());
-	// for(int i = 0; i < descriptorTypes.size(); i++){
-	// 	bindings[i].binding = i;
-	// 	bindings[i].descriptorCount = 1;
-	// 	bindings[i].descriptorType = descriptorTypes[i];
-	// 	bindings[i].pImmutableSamplers = nullptr;
-	// 	bindings[i].stageFlags = shaderStageFlagBits[i];
-	// }
-
-
-	// uboLayoutBinding.binding = 0;
-	// uboLayoutBinding.descriptorCount = 1;
-	// uboLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-	// uboLayoutBinding.pImmutableSamplers = nullptr;
-	// uboLayoutBinding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-
-	//std::vector<VkDescriptorSetLayoutBinding> bindings;
-	//bindings.push_back(uboLayoutBinding);
-
-	//VkDescriptorSetLayoutBinding samplerLayoutBinding{};
 
 	// switch (pt) {
 	// case PIPELINE_BASIC:
@@ -228,12 +192,7 @@ void CDescriptor::createDescriptorSetLayout(VkDescriptorType descriptorType, VkS
 	layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
 	layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
 	layoutInfo.pBindings = bindings.data();
-	//layoutInfo.bindingCount = 1;//TODO: test
-	//auto binding = UniformBufferObject::GetBinding();//TODO: test
-	//binding.binding = 0;//TODO: test
-	//layoutInfo.pBindings = &binding;//TODO: test
 
-	//Step 2
 	VkResult result = vkCreateDescriptorSetLayout(CContext::GetHandle().GetLogicalDevice(), &layoutInfo, nullptr, OUT &descriptorSetLayout);
 	if (result != VK_SUCCESS) throw std::runtime_error("failed to create descriptor set layout!");
 	REPORT("vkCreateDescriptorSetLayout");
@@ -269,7 +228,6 @@ void CDescriptor::createDescriptorSets(VkImageView *textureImageView){
             VkDescriptorBufferInfo storageBufferInfoCurrentFrame{}; //for compute shader
 
             descriptorWrites.resize(descriptorSize);
-            //for(int j = 0; j < descriptorTypes.size(); j++){
             int counter = 0;
 
             if(bUseCustomUniformBuffer){
@@ -313,7 +271,6 @@ void CDescriptor::createDescriptorSets(VkImageView *textureImageView){
                 descriptorWrites[counter].pImageInfo = &imageInfo;
                 counter++;
             }
-            //}
 
             /*switch (pt) {
             case PIPELINE_BASIC:
@@ -406,7 +363,6 @@ void CDescriptor::createDescriptorSets(VkImageView *textureImageView){
 
             //Step 4
             vkUpdateDescriptorSets(CContext::GetHandle().GetLogicalDevice(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
-            //vkUpdateDescriptorSets(logicalDevice, 1, &descriptorWrites[0], 0, nullptr);
 
         }
     }
@@ -424,12 +380,6 @@ void CDescriptor::updateMVPUniformBuffer(uint32_t currentFrame, float durationTi
         //UniformBufferObject ubo{};
         mvpUBO.view = CApplication::mainCamera.matrices.view;
         mvpUBO.proj = CApplication::mainCamera.matrices.perspective;
-        // if (pipelineType == PIPELINE_MIPMAP) {
-                //ubo.model = glm::rotate(glm::mat4(1.0f), time * glm::radians(0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-        // }
-        // else {
-            //ubo.model = glm::rotate(glm::mat4(1.0f), durationTime * glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-        //}
 
         memcpy(mvpUniformBuffersMapped[currentFrame], &mvpUBO, sizeof(mvpUBO));
 
