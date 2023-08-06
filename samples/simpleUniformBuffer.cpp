@@ -32,7 +32,7 @@ public:
 
 		wxjCreateFramebuffers();
 
-		//Create shader resource
+		//Create shader resources
 		wxjCreateVertexShader("../shaders/simpleUniformBuffer/vert.spv");
 		wxjCreateFragmentShader("../shaders/simpleUniformBuffer/frag.spv");
 

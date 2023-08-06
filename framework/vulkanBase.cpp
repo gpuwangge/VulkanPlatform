@@ -51,10 +51,6 @@ void CVulkanBase::wxjCreateFragmentShader(std::string shaderName){
 	Init12SpirvShader(shaderName, &fragShaderModule);
 }
 
-// void CVulkanBase::wxjCreateSyncObjects(){
-//     createSyncObjects();
-// }
-
 void CVulkanBase::wxjCreateCommandBuffer(){
 	Init06CreateCommandPool();
 	Init06CreateCommandBuffers();

@@ -37,7 +37,7 @@ public:
 
 	void recordCommandBuffer(){
 		wxjBeginCommandBuffer();
-		std::vector<VkClearValue> clearValues{ {  0.0f, 0.0f, 0.0f, 1.0f  } };
+		std::vector<VkClearValue> clearValues{ {  0.0f, 1.0f, 0.0f, 1.0f  } };
 		wxjBeginRenderPass(clearValues);
 		wxjBindPipeline();
 		wxjSetViewport();

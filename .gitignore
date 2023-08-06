@@ -1,3 +1,4 @@
+build
 logs/instanceLog.txt
 logs/logicalDeviceLog.txt
 logs/applicationLog.txt
@@ -6,12 +7,4 @@ logs/swapchainLog.txt
 logs/descriptorLog.txt
 logs/renderProcessLog.txt
 
-bins/objModel.exe
-bins/modelMSAA.exe
-bins/simpleHallway.exe
-bins/basicTriangles.exe
-bins/simpleTriangle.exe
-bins/simpleVertexBuffer.exe
-bins/simpleUniformBuffer.exe
-bins/simpleTexture.exe
 
