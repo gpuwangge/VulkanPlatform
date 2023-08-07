@@ -1,4 +1,4 @@
-#include "..\\framework\\vulkanBase.h"
+#include "..\\framework\\include\\vulkanBase.h"
 
 #define TEST_CLASS_NAME CSimpleTriangle
 class TEST_CLASS_NAME: public CVulkanBase{
@@ -49,6 +49,6 @@ public:
 	}
 };
 
-#include "..\\framework\\main.hpp"
+#include "..\\framework\\include\\main.hpp"
 
 

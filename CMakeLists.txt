@@ -8,7 +8,7 @@ include_directories(
     $ENV{VULKAN_SDK}/Include
     C:/VulkanSDK/GLFW/include
     C:/VulkanSDK/GLM
-    ${PROJECT_SOURCE_DIR}/framework)
+    ${PROJECT_SOURCE_DIR}/framework/include)
 
 link_directories(
     $ENV{VULKAN_SDK}/Lib
