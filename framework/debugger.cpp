@@ -23,15 +23,15 @@
 	}
 
 	void CDebugger::writeMSG(std::string s) {
-		if(Verbose) fprintf(FpDebug, s.c_str());
+		if(Verbose) fprintf(FpDebug, "%s", s.c_str());
 	}
 
 	void CDebugger::writeMSG(std::string s0, std::string s1) {
-		if (Verbose) fprintf(FpDebug, s0.c_str(), s1.c_str());
+		if (Verbose) fprintf(FpDebug, "%s %s", s0.c_str(), s1.c_str());
 	}
 
 	void CDebugger::writeMSG(std::string s, uint32_t n) {
-		if (Verbose) fprintf(FpDebug, s.c_str(), n);
+		if (Verbose) fprintf(FpDebug, "%s %d", s.c_str(), n);
 	}
 
 	void CDebugger::printVkError(VkResult result, std::string prefix){

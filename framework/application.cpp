@@ -220,7 +220,7 @@ void CApplication::update(){
 
     mainCamera.update(deltaTime);
 
-    descriptor.updateMVPUniformBuffer(currentFrame, durationTime);
+    descriptor.updateMVPUniformBuffer(currentFrame, durationTime, mainCamera);
 
     currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
 }

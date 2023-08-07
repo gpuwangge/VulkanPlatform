@@ -8,8 +8,8 @@
       "args": [],
       "stopAtEntry": false,
       "externalConsole": true,
-      "cwd": "${workspaceFolder}/build",
-      "program": "${cwd}/build/myVulkanPlatform.exe",
+      "cwd": "${workspaceFolder}/bin",
+      "program": "${cwd}/bin/simpleHallway.exe",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [

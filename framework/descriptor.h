@@ -3,6 +3,7 @@
 
 #include "context.h"
 #include "dataStructure.hpp"
+#include "camera.hpp"
 
 class CDescriptor final{
 
@@ -30,7 +31,7 @@ public:
 	std::vector<void*> mvpUniformBuffersMapped;
     void addMVPUniformBuffer();
     MVPUniformBufferObject mvpUBO{};
-    void updateMVPUniformBuffer(uint32_t currentFrame, float durationTime);
+    void updateMVPUniformBuffer(uint32_t currentFrame, float durationTime, Camera &mainCamera);
 
     bool bUseSampler;
     VkSampler textureSampler;

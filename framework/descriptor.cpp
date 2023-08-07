@@ -1,5 +1,4 @@
 #include "descriptor.h"
-#include "application.h"
 
 //Camera CApplication::mainCamera;
 
@@ -369,7 +368,7 @@ void CDescriptor::createDescriptorSets(VkImageView *textureImageView){
     }
 
 
-void CDescriptor::updateMVPUniformBuffer(uint32_t currentFrame, float durationTime) {
+void CDescriptor::updateMVPUniformBuffer(uint32_t currentFrame, float durationTime, Camera &mainCamera) {
     if(bUseMVP){
         // UniformBufferObject ubo{};
         // ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
@@ -379,8 +378,8 @@ void CDescriptor::updateMVPUniformBuffer(uint32_t currentFrame, float durationTi
         // ubo.model = glm::rotate(glm::mat4(1.0f), durationTime * glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 
         //UniformBufferObject ubo{};
-        mvpUBO.view = CApplication::mainCamera.matrices.view;
-        mvpUBO.proj = CApplication::mainCamera.matrices.perspective;
+        mvpUBO.view = mainCamera.matrices.view;
+        mvpUBO.proj = mainCamera.matrices.perspective;
 
         memcpy(mvpUniformBuffersMapped[currentFrame], &mvpUBO, sizeof(mvpUBO));
 
