@@ -212,6 +212,7 @@ void CApplication::update(){
     //printf("app update...\n");
 
     static auto startTime = std::chrono::high_resolution_clock::now();
+    static auto lastTime = std::chrono::high_resolution_clock::now();
 
     auto currentTime = std::chrono::high_resolution_clock::now();
     durationTime = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();

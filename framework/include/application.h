@@ -70,7 +70,7 @@ public:
     std::vector<VkFence> inFlightFences;
 
     uint32_t currentFrame = 1;
-    std::chrono::_V2::system_clock::time_point lastTime;
+    //std::chrono::_V2::system_clock::time_point lastTime;
 
     //Resource for Texture
     int32_t texWidth, texHeight;
