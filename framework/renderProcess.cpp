@@ -1,7 +1,7 @@
 #include "renderProcess.h"
 
 CRenderProcess::CRenderProcess(){
-    debugger = new CDebugger("../logs/renderProcessLog.txt");
+    debugger = new CDebugger("../logs/renderProcess.log");
     
     bUseColorAttachment = false;
     bUseDepthAttachment = false;

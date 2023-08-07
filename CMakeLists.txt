@@ -4,50 +4,49 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_BUILD_TYPE "Debug")
 
 include_directories(
-    C:/VulkanSDK 
+    C:/VulkanSDK
     $ENV{VULKAN_SDK}/Include
     C:/VulkanSDK/GLFW/include
-    C:/VulkanSDK/GLM)
+    C:/VulkanSDK/GLM
+    ${PROJECT_SOURCE_DIR}/framework)
 
 link_directories(
     $ENV{VULKAN_SDK}/Lib
-    C:/VulkanSDK/GLFW/lib-mingw-w64)
+    C:/VulkanSDK/GLFW/lib-static-ucrt)
 
-#link_libraries("/opt/MATLAB/R2012a/bin/glnxa64/libeng.so"　"/opt/MATLAB/R2012a/bin/glnxa64/libmx.so")
+add_subdirectory(framework)
+link_libraries(wxj-vulkan-framework vulkan-1 glfw3dll)
+
+set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
+
+aux_source_directory(${PROJECT_SOURCE_DIR}/samples SRC)
+foreach(sampleFile IN LISTS SRC)
+    get_filename_component(sampleName ${sampleFile} NAME_WE)
+    add_executable(${sampleName} ${sampleFile})
+endforeach()
 
 
-add_executable(simpleTriangle
-    samples/simpleTriangle.cpp
-    framework/application.cpp
-    framework/applicationUtility.cpp
-    framework/applicationController.cpp
-    framework/vulkanBase.cpp
-    framework/instance.cpp
-    framework/debugger.cpp
-    framework/physicalDevice.cpp
-    framework/logicalDevice.cpp
-    framework/swapchain.cpp
-    framework/context.cpp
-    framework/descriptor.cpp
-    framework/renderProcess.cpp)
 
-target_link_libraries(simpleTriangle vulkan-1.lib glfw3dll.lib)
 
-add_executable(simpleUniformBuffer
-    samples/simpleUniformBuffer.cpp
-    framework/application.cpp
-    framework/applicationUtility.cpp
-    framework/applicationController.cpp
-    framework/vulkanBase.cpp
-    framework/instance.cpp
-    framework/debugger.cpp
-    framework/physicalDevice.cpp
-    framework/logicalDevice.cpp
-    framework/swapchain.cpp
-    framework/context.cpp
-    framework/descriptor.cpp
-    framework/renderProcess.cpp)
 
-target_link_libraries(simpleUniformBuffer vulkan-1.lib glfw3dll.lib)
 
+
+
+
+
+#test link to a specific exe
+# add_executable(simpleTriangle samples/simpleTriangle.cpp)
+# target_link_libraries(simpleTriangle wxj-vulkan-framework vulkan-1 glfw3dll)
+
+#test work code   
+# aux_source_directory(${PROJECT_SOURCE_DIR}/framework SRC) 
+# add_executable(testfw samples/simpleTriangle.cpp ${SRC})
+# target_link_libraries(testfw vulkan-1 glfw3dll)
+
+#test work code
+# aux_source_directory(${PROJECT_SOURCE_DIR}/framework SRC)
+# set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR})
+# add_library(fw STATIC ${SRC})
+# add_executable(testfw samples/simpleTriangle.cpp)
+# target_link_libraries(testfw fw vulkan-1 glfw3dll)
 

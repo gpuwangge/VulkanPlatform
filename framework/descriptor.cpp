@@ -4,7 +4,7 @@
 //Camera CApplication::mainCamera;
 
 CDescriptor::CDescriptor(){
-    debugger = new CDebugger("../logs/descriptorLog.txt");
+    debugger = new CDebugger("../logs/descriptor.log");
 	bUseCustomUniformBuffer = false;
     bUseMVP = false;
     bUseSampler = false;

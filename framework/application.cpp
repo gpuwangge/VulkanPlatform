@@ -1,7 +1,7 @@
 #include "application.h"
 
 CApplication::CApplication(){
-    debugger = new CDebugger("../logs/applicationLog.txt");
+    debugger = new CDebugger("../logs/application.log");
     //ubo.model = glm::mat4(1.0f);
     bEnableMSAA = false;
     msaaSamples = VK_SAMPLE_COUNT_1_BIT;

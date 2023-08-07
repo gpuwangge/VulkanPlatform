@@ -1,7 +1,7 @@
 #include "logicalDevice.h"
 
 CLogicalDevice::CLogicalDevice(){
-    debugger = new CDebugger("../logs/logicalDeviceLog.txt");
+    debugger = new CDebugger("../logs/logicalDevice.log");
 }
 
 CLogicalDevice::~CLogicalDevice(){

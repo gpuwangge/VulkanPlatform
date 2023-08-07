@@ -1,7 +1,7 @@
 #include "instance.h"
 
 CInstance::CInstance(const std::vector<const char*> requiredValidationLayers){
-    debugger = new CDebugger("../logs/instanceLog.txt");
+    debugger = new CDebugger("../logs/instance.log");
 
     HERE_I_AM("CInstance Constructor");
 

@@ -1,7 +1,7 @@
 #include "swapchain.h"
 
 CSwapchain::CSwapchain(){
-    debugger = new CDebugger("../logs/swapchainLog.txt");
+    debugger = new CDebugger("../logs/swapchain.log");
 }
 CSwapchain::~CSwapchain(){
     if (!debugger) delete debugger;
