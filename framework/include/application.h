@@ -62,9 +62,6 @@ public:
     // std::vector<VkDescriptorSet> descriptorSets;
     CDescriptor descriptor;
 
-    //VkPipelineLayout pipelineLayout;
-	//VkPipeline graphicsPipeline;
-
     std::vector<VkSemaphore> imageAvailableSemaphores;
 	std::vector<VkSemaphore> renderFinishedSemaphores;
     std::vector<VkFence> inFlightFences;

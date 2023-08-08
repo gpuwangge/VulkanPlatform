@@ -1,3 +1,12 @@
+======How to compile======
+cd build
+cmake -G "MinGW Makefiles" .. 
+make
+
+cd buildS
+cmake -G "MinGW Makefiles" -D SINGLE=true ..
+make
+
 =========Concet of InFlight========
 InFlight: means fast
 

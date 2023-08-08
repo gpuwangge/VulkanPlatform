@@ -19,11 +19,15 @@ link_libraries(wxj-vulkan-framework vulkan-1 glfw3dll)
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 
-aux_source_directory(${PROJECT_SOURCE_DIR}/samples SRC)
-foreach(sampleFile IN LISTS SRC)
-    get_filename_component(sampleName ${sampleFile} NAME_WE)
-    add_executable(${sampleName} ${sampleFile})
-endforeach()
+if(SINGLE)
+    add_executable(simpleTriangle samples/simpleTriangle.cpp)
+else()
+    aux_source_directory(${PROJECT_SOURCE_DIR}/samples SRC)
+    foreach(sampleFile IN LISTS SRC)
+        get_filename_component(sampleName ${sampleFile} NAME_WE)
+        add_executable(${sampleName} ${sampleFile})
+    endforeach()
+endif()
 
 
 
