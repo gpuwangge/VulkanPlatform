@@ -11,7 +11,7 @@ CSwapchain::~CSwapchain(){
 //     m_physical_device = physical_device;
 // }
 
-void CSwapchain::createImages(VkSurfaceKHR surface, int width, int height){
+void CSwapchain::createSwapchainImages(VkSurfaceKHR surface, int width, int height){
     //vulkan draws on the vkImage(s)
     //SwapChain will set vkImage to present on the screen
     //Surface will tell the format of the vkImage
@@ -83,9 +83,9 @@ void CSwapchain::createImages(VkSurfaceKHR surface, int width, int height){
     imageManager.views.resize(imageManager.imageSize);
 }
 
-void CSwapchain::createImageViews(VkImageAspectFlags aspectFlags, uint32_t mipLevels){
+void CSwapchain::createImageViews(VkImageAspectFlags aspectFlags){
     for (size_t i = 0; i < imageManager.imageSize; i++) {
-		imageManager.views[i] = imageManager.createImageView(imageManager.images[i], swapChainImageFormat, aspectFlags, mipLevels);
+		imageManager.views[i] = imageManager.createImageView(imageManager.images[i], swapChainImageFormat, aspectFlags, 1);
     }
 }
 
@@ -189,6 +189,41 @@ void CSwapchain::createDepthImages(VkFormat format, VkImageTiling tiling, VkImag
 }
 void CSwapchain::createDepthImageViews(VkFormat format, VkImageAspectFlags aspectFlags){
     imageManager.depthImageView = imageManager.createImageView(imageManager.depthImageBuffer.image, format, aspectFlags, 1);
+}
+
+void CSwapchain::CreateFramebuffers(bool bUseDepthAttachment, bool bUseColorResolveAttachment, VkRenderPass &renderPass){
+	HERE_I_AM("CreateFramebuffers");
+
+	VkResult result = VK_SUCCESS;
+
+	swapChainFramebuffers.resize(imageManager.views.size());
+
+	for (size_t i = 0; i < imageManager.imageSize; i++) {
+		std::vector<VkImageView> attachments; 
+		 if (bUseDepthAttachment && bUseColorResolveAttachment) {//Renderpass attachment(render target) order: Color, Depth, ColorResolve
+		    attachments.push_back(imageManager.msaaColorImageView);
+		    attachments.push_back(imageManager.depthImageView);
+			attachments.push_back(imageManager.views[i]);
+		 }else if(bUseDepthAttachment){//Renderpass attachment(render target) order: Color, Depth
+			attachments.push_back(imageManager.views[i]);
+			attachments.push_back(imageManager.depthImageView);
+		}else{ //Renderpass attachment(render target) order: Color
+			attachments.push_back(imageManager.views[i]);
+		}
+
+		VkFramebufferCreateInfo framebufferInfo{};
+		framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+		framebufferInfo.renderPass = renderPass;
+		framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
+		framebufferInfo.pAttachments = attachments.data();//swapChainImageViews, 类型是VkImageView
+		framebufferInfo.width = swapChainExtent.width;
+		framebufferInfo.height = swapChainExtent.height;
+		framebufferInfo.layers = 1;
+
+		result = vkCreateFramebuffer(CContext::GetHandle().GetLogicalDevice(), &framebufferInfo, nullptr, &swapChainFramebuffers[i]);
+		if (result != VK_SUCCESS) throw std::runtime_error("failed to create framebuffer!");
+		REPORT("vkCreateFrameBuffer");
+	}	
 }
 
 void CSwapchain::CleanUp(){

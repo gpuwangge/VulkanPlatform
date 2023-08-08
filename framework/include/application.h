@@ -14,8 +14,9 @@
 #include "renderProcess.h"
 #include "shaderManager.h"
 #include "renderer.h"
-//#include "imageManager.h"
-#include "texture.h"
+//#include "imageManager.h" 
+#include "texture.h" //this includes imageManager.h
+#include "modelManager.h"
 
 class CApplication{
 public:
@@ -23,11 +24,13 @@ public:
     ~CApplication();
 
     GLFWwindow * window;
+    int windowWidth, windowHeight;
 
     //VkInstance instance;//01
     std::unique_ptr<CInstance> instance{nullptr};
 
     VkSurfaceKHR surface;//03
+    
     
     bool framebufferResized = false;
 
@@ -37,6 +40,9 @@ public:
     CRenderProcess renderProcess;
     CShaderManager shaderManager;
     CDescriptor descriptor;
+    CRenderer renderer;
+    CTextureImage textureImage;
+    CModelManager modelManager;
 
     //std::chrono::_V2::system_clock::time_point lastTime;
 
@@ -54,21 +60,11 @@ public:
 	static void GLFWMouseMotion(GLFWwindow *window, double xpos, double ypos);
 	static void GLFWMouseButton(GLFWwindow *window, int button, int action, int mods);
 
-
     /*Clean up Functions*/
     void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator);
     
     float durationTime = 0;
     float deltaTime = 0;
-
-    CRenderer renderer;
-    CTextureImage textureImage;
-    
-    void wxjLoadObjModel(IN const std::string modelName, OUT std::vector<Vertex3D> &vertices3D, OUT std::vector<uint32_t> &indices3D);
-
-    void wxjCreateSwapChainImagesAndImageViews();
-
-    void wxjCreateFramebuffers();
 
     /*Virtual function: base and derived class will implement. If drived class not implement, call base's verson*/
     virtual void initialize();

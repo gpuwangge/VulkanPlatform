@@ -5,6 +5,16 @@
 #include "context.h"
 #include "dataStructure.hpp"
 
+typedef struct MyImageBuffer
+{
+	VkImage		image;
+	VkDeviceMemory		deviceMemory;
+	VkDeviceSize		size;
+    VkImageView view;
+public:
+    MyImageBuffer(): size(0){}
+} MyImage;
+
 class CImageManager{
 
 public:

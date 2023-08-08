@@ -184,15 +184,6 @@ private:
 
 };
 
-typedef struct MyImageBuffer
-{
-	VkImage		image;
-	VkDeviceMemory		deviceMemory;
-	VkDeviceSize		size;
-public:
-    MyImageBuffer(): size(0){}
-} MyImage;
-
 struct MVPUniformBufferObject {
 	alignas(16) glm::mat4 model;
 	alignas(16) glm::mat4 view;

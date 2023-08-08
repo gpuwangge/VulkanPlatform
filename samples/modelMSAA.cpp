@@ -9,7 +9,7 @@ public:
 		swapchain.imageManager.bEnableMSAA = true;//!To enable MSAA, make sure it has depth test (call addDepthAttachment())
 
 		//Create vertex resource
-		wxjLoadObjModel("../models/viking_room.obj", vertices3D, indices3D);
+		modelManager.LoadObjModel("../models/viking_room.obj", vertices3D, indices3D);
 		
 		//Create buffers
 		renderer.CreateVertexBuffer<Vertex3D>(vertices3D);
@@ -24,8 +24,6 @@ public:
 		textureImage.CreateImage("../textures/viking_room.png", usage, renderer.commandPool);
 		//textureImage.textureImageView = textureImage.createImageView(textureImage.textureImageBuffer.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, textureImage.mipLevels);
 		textureImage.CreateImageView(VK_IMAGE_ASPECT_COLOR_BIT);
-
-		wxjCreateSwapChainImagesAndImageViews();
 
 		//Create msaa resource
 		if(swapchain.imageManager.bEnableMSAA){
@@ -66,7 +64,8 @@ public:
 		renderProcess.createDependency(srcPipelineStageFlag, dstPipelineStageFlag);
 		renderProcess.createRenderPass();
 
-		wxjCreateFramebuffers(); //need create imageviews first
+		//wxjCreateFramebuffers(); //need create imageviews first
+		swapchain.CreateFramebuffers(renderProcess.bUseDepthAttachment, renderProcess.bUseColorAttachmentResolve, renderProcess.renderPass);
 
 		//Create shader resource
 		shaderManager.InitVertexShader("../shaders/model/vert_model.spv");

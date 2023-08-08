@@ -15,7 +15,7 @@ public:
 		mainCamera.setPerspective(60.0f, (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 256.0f);
 
 		//Create vertex resource
-		wxjLoadObjModel("../models/hallway.obj", vertices3D, indices3D);
+		modelManager.LoadObjModel("../models/hallway.obj", vertices3D, indices3D);
 
 		//Create buffers
 		renderer.CreateVertexBuffer<Vertex3D>(vertices3D);
@@ -31,12 +31,9 @@ public:
 		//textureImage.textureImageView = textureImage.createImageView(textureImage.textureImageBuffer.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, textureImage.mipLevels);
 		textureImage.CreateImageView(VK_IMAGE_ASPECT_COLOR_BIT);
 
-		textureImage.generateMipmaps();
-		//textureImage.generateMipmaps("../textures/checkerboard", usage_texture);
+		//textureImage.generateMipmaps();
+		textureImage.generateMipmaps("../textures/checkerboard", usage_texture);
 		
-
-		wxjCreateSwapChainImagesAndImageViews();
-
 		VkImageUsageFlags usage;
 		//Create msaa resource
 		if(swapchain.imageManager.bEnableMSAA){
@@ -78,7 +75,8 @@ public:
 		renderProcess.createDependency(srcPipelineStageFlag, dstPipelineStageFlag);
 		renderProcess.createRenderPass();
 
-		wxjCreateFramebuffers(); //need create imageviews first
+		//wxjCreateFramebuffers(); //need create imageviews first
+		swapchain.CreateFramebuffers(renderProcess.bUseDepthAttachment, renderProcess.bUseColorAttachmentResolve, renderProcess.renderPass);
 
 		//Create shader resource
 		shaderManager.InitVertexShader("../shaders/model/vert_model.spv");

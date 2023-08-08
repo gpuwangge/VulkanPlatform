@@ -45,15 +45,14 @@ public:
 		//textureImage.textureImageView = textureImage.createImageView(textureImage.textureImageBuffer.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, textureImage.mipLevels);
 		textureImage.CreateImageView(VK_IMAGE_ASPECT_COLOR_BIT);
 
-		wxjCreateSwapChainImagesAndImageViews();
-
 		//Create Renderpass
 		renderProcess.addColorAttachment(swapchain.swapChainImageFormat); //add this function will enable color attachment (bUseColorAttachment = true)
 		renderProcess.createSubpass();
 		renderProcess.createDependency();
 		renderProcess.createRenderPass();
 
-		wxjCreateFramebuffers();
+		//wxjCreateFramebuffers();
+		swapchain.CreateFramebuffers(renderProcess.bUseDepthAttachment, renderProcess.bUseColorAttachmentResolve, renderProcess.renderPass);
 
 		//Create shader resource
 		shaderManager.InitVertexShader("../shaders/basicTriangles/vert.spv");

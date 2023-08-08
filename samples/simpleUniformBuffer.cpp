@@ -23,15 +23,14 @@ public:
 		renderer.InitCreateCommandPool(surface);
 		renderer.InitCreateCommandBuffers();
 
-		wxjCreateSwapChainImagesAndImageViews();
-
 		//Create Renderpass
 		renderProcess.addColorAttachment(swapchain.swapChainImageFormat); //add this function will enable color attachment (bUseColorAttachment = true)
 		renderProcess.createSubpass();
 		renderProcess.createDependency();
 		renderProcess.createRenderPass();
 
-		wxjCreateFramebuffers();
+		//wxjCreateFramebuffers();
+		swapchain.CreateFramebuffers(renderProcess.bUseDepthAttachment, renderProcess.bUseColorAttachmentResolve, renderProcess.renderPass);
 
 		//Create shader resources
 		shaderManager.InitVertexShader("../shaders/simpleUniformBuffer/vert.spv");
