@@ -23,8 +23,11 @@ public:
 
 		//Create texture resource
 		VkImageUsageFlags usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
-		wxjCreateImage_texture("../textures/texture.jpg", usage, textureImageBuffer, texWidth, texHeight);
-		wxjCreateImageView(textureImageBuffer.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, mipLevels, OUT textureImageView);
+		//wxjCreateImage_texture("../textures/texture.jpg", usage, textureImageBuffer, texWidth, texHeight);
+		//wxjCreateImageView(textureImageBuffer.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, mipLevels, OUT textureImageView);
+		textureImage.CreateImage_texture("../textures/texture.jpg", usage, textureImage.textureImageBuffer, textureImage.texWidth, textureImage.texHeight, renderer.commandPool);
+		textureImage.textureImageView = textureImage.createImageView(textureImage.textureImageBuffer.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, textureImage.mipLevels);
+
 
 		wxjCreateSwapChainImagesAndImageViews();
 
@@ -42,10 +45,10 @@ public:
 
 		//Create Descriptors
 		descriptor.addMVPUniformBuffer();
-		descriptor.addImageSamplerUniformBuffer(mipLevels);
+		descriptor.addImageSamplerUniformBuffer(textureImage.mipLevels);
 		descriptor.createDescriptorPool();
 		descriptor.createDescriptorSetLayout();
-		descriptor.createDescriptorSets(&textureImageView);
+		descriptor.createDescriptorSets(&textureImage.textureImageView);
 
 		renderProcess.createGraphicsPipeline<Vertex3D>(
 			VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 

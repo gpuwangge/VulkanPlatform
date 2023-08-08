@@ -2,15 +2,6 @@
 
 CApplication::CApplication(){
     debugger = new CDebugger("../logs/application.log");
-    //ubo.model = glm::mat4(1.0f);
-    bEnableMSAA = false;
-    msaaSamples = VK_SAMPLE_COUNT_1_BIT;
-
-    //bEnableDepthTest = false;
-
-    //bEnableUniform = false;
-
-    //textureSampler = NULL;
 
     mainCamera.type = Camera::CameraType::firstperson;
     mainCamera.setPosition(glm::vec3(0.0f, -2.5f, -2.5f));
@@ -125,11 +116,11 @@ CApplication::~CApplication(){
     //indexDataBuffer.DestroyAndFree();
     //vertexDataBuffer.DestroyAndFree();
 
-    if(textureImageBuffer.size != (VkDeviceSize)0){
-        vkDestroyImage(CContext::GetHandle().GetLogicalDevice(), textureImageBuffer.image, nullptr);
-        vkFreeMemory(CContext::GetHandle().GetLogicalDevice(), textureImageBuffer.deviceMemory, nullptr);
-        vkDestroyImageView(CContext::GetHandle().GetLogicalDevice(), textureImageView, nullptr);
-    }
+    // if(textureImageBuffer.size != (VkDeviceSize)0){
+    //     vkDestroyImage(CContext::GetHandle().GetLogicalDevice(), textureImageBuffer.image, nullptr);
+    //     vkFreeMemory(CContext::GetHandle().GetLogicalDevice(), textureImageBuffer.deviceMemory, nullptr);
+    //     vkDestroyImageView(CContext::GetHandle().GetLogicalDevice(), textureImageView, nullptr);
+    // }
 
     //vkDestroyDescriptorPool(CContext::GetHandle().GetLogicalDevice(), descriptorPool, nullptr);
     //vkDestroyDescriptorSetLayout(CContext::GetHandle().GetLogicalDevice(), descriptorSetLayout, nullptr);
@@ -152,19 +143,21 @@ CApplication::~CApplication(){
     //     vkDestroyImage(logicalDevice, textureImageBuffers_mipmap[i].image, nullptr);
     //     vkFreeMemory(logicalDevice, textureImageBuffers_mipmap[i].deviceMemory, nullptr);
     // }
-    if(bEnableMSAA){
-        vkDestroyImageView(CContext::GetHandle().GetLogicalDevice(), msaaColorImageView, nullptr);
-        vkDestroyImage(CContext::GetHandle().GetLogicalDevice(), msaaColorImageBuffer.image, nullptr);
-        vkFreeMemory(CContext::GetHandle().GetLogicalDevice(), msaaColorImageBuffer.deviceMemory, nullptr);
-    }
+    // if(bEnableMSAA){
+    //     vkDestroyImageView(CContext::GetHandle().GetLogicalDevice(), msaaColorImageView, nullptr);
+    //     vkDestroyImage(CContext::GetHandle().GetLogicalDevice(), msaaColorImageBuffer.image, nullptr);
+    //     vkFreeMemory(CContext::GetHandle().GetLogicalDevice(), msaaColorImageBuffer.deviceMemory, nullptr);
+    // }
+    
 
     //if(textureSampler) vkDestroySampler(CContext::GetHandle().GetLogicalDevice(), textureSampler, nullptr);
 
-    if(renderProcess.bUseDepthAttachment){
-        vkDestroyImage(CContext::GetHandle().GetLogicalDevice(), depthImageBuffer.image, nullptr);
-        vkFreeMemory(CContext::GetHandle().GetLogicalDevice(), depthImageBuffer.deviceMemory, nullptr);
-        vkDestroyImageView(CContext::GetHandle().GetLogicalDevice(), depthImageView, nullptr);
-    }
+    // if(renderProcess.bUseDepthAttachment){
+    //     vkDestroyImage(CContext::GetHandle().GetLogicalDevice(), depthImageBuffer.image, nullptr);
+    //     vkFreeMemory(CContext::GetHandle().GetLogicalDevice(), depthImageBuffer.deviceMemory, nullptr);
+    //     vkDestroyImageView(CContext::GetHandle().GetLogicalDevice(), depthImageView, nullptr);
+    // }
+    textureImage.Destroy();
 
 
     // for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {

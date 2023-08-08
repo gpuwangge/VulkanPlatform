@@ -72,15 +72,15 @@ void CSwapchain::createSwapchainImages(VkSurfaceKHR surface, int width, int heig
 
     result = vkGetSwapchainImagesKHR(CContext::GetHandle().GetLogicalDevice(), handle, &imageCount, nullptr);
     REPORT("vkGetSwapchainImagesKHR(Get imageCount)");
-    swapChainImages.resize(imageCount);
-    result = vkGetSwapchainImagesKHR(CContext::GetHandle().GetLogicalDevice(), handle, &imageCount, swapChainImages.data());
+    swapchainImage.swapChainImages.resize(imageCount);
+    result = vkGetSwapchainImagesKHR(CContext::GetHandle().GetLogicalDevice(), handle, &imageCount, swapchainImage.swapChainImages.data());
     REPORT("vkGetSwapchainImagesKHR");
 
     swapChainImageFormat = surfaceFormat.format;
     swapChainExtent = extent;
 
     // present views for the double-buffering:
-    swapChainImageViews.resize(swapChainImages.size());
+    swapchainImage.swapChainImageViews.resize(swapchainImage.swapChainImages.size());
 }
 
 void CSwapchain::displaySwapchainInfo(SwapChainSupportDetails details){
@@ -178,9 +178,11 @@ void CSwapchain::CleanUp(){
         vkDestroyFramebuffer(CContext::GetHandle().GetLogicalDevice(), framebuffer, nullptr);
     }
 
-    for (auto imageView : swapChainImageViews) {
+    for (auto imageView : swapchainImage.swapChainImageViews) {
         vkDestroyImageView(CContext::GetHandle().GetLogicalDevice(), imageView, nullptr);
     }
 
     vkDestroySwapchainKHR(CContext::GetHandle().GetLogicalDevice(), handle, nullptr);
+
+    swapchainImage.Destroy();
 }

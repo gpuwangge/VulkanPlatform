@@ -9,7 +9,7 @@
       "stopAtEntry": false,
       "externalConsole": true,
       "cwd": "${workspaceFolder}/bin",
-      "program": "${cwd}/bin/simpleHallway.exe",
+      "program": "${cwd}/bin/modelMSAA.exe",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [

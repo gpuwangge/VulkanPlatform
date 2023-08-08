@@ -4,6 +4,7 @@
 #include "vulkan\vulkan.h"
 #include "physicalDevice.h"
 #include "context.h"
+#include "imageManager.h"
 //#include "application.h"
 
 class CSwapchain final{
@@ -25,8 +26,7 @@ public:
 
     VkSwapchainKHR getHandle() const{ return handle;}
 
-	std::vector<VkImage> swapChainImages;//08
-    std::vector<VkImageView> swapChainImageViews;//08
+	CSwapchainImage swapchainImage;
 	VkFormat swapChainImageFormat;//08
 	VkExtent2D swapChainExtent;//08
 	

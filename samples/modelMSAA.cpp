@@ -6,7 +6,7 @@ public:
 	std::vector<uint32_t> indices3D;
 
     void initialize(){
-		bEnableMSAA = true;//!To enable MSAA, make sure it has depth test (call addDepthAttachment())
+		swapchain.swapchainImage.bEnableMSAA = true;//!To enable MSAA, make sure it has depth test (call addDepthAttachment())
 
 		//Create vertex resource
 		wxjLoadObjModel("../models/viking_room.obj", vertices3D, indices3D);
@@ -19,31 +19,44 @@ public:
 
 		//Create texture resource
 		VkImageUsageFlags usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
-		wxjCreateImage_texture("../textures/viking_room.png", usage, textureImageBuffer, texWidth, texHeight);
-		wxjCreateImageView(textureImageBuffer.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, mipLevels, OUT textureImageView);
+		//wxjCreateImage_texture("../textures/viking_room.png", usage, textureImageBuffer, texWidth, texHeight);
+		//wxjCreateImageView(textureImageBuffer.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, mipLevels, OUT textureImageView);
+		textureImage.CreateImage_texture("../textures/viking_room.png", usage, textureImage.textureImageBuffer, textureImage.texWidth, textureImage.texHeight, renderer.commandPool);
+		textureImage.textureImageView = textureImage.createImageView(textureImage.textureImageBuffer.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, textureImage.mipLevels);
+
 
 		wxjCreateSwapChainImagesAndImageViews();
 
 		//Create msaa resource
-		if(bEnableMSAA){
-			wxjGetMaxUsableSampleCount();
+		if(swapchain.swapchainImage.bEnableMSAA){
+			//wxjGetMaxUsableSampleCount();
+			swapchain.swapchainImage.GetMaxUsableSampleCount();
 			usage = VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-			wxjCreateImage(msaaSamples, swapchain.swapChainImageFormat, usage, OUT msaaColorImageBuffer);//need swapChainExtent. call this after swapchain creation
-			wxjCreateImageView(msaaColorImageBuffer.image, swapchain.swapChainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1, OUT msaaColorImageView);
+			//wxjCreateImage(msaaSamples, swapchain.swapChainImageFormat, usage, OUT msaaColorImageBuffer);//need swapChainExtent. call this after swapchain creation
+			//createImage(swapchain.swapChainExtent.width, swapchain.swapChainExtent.height, 1, numSamples, format, VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, imageBuffer);
+			swapchain.swapchainImage.createImage(swapchain.swapChainExtent.width, swapchain.swapChainExtent.height, 1, swapchain.swapchainImage.msaaSamples, swapchain.swapChainImageFormat, 
+				VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, OUT swapchain.swapchainImage.msaaColorImageBuffer);
+			//wxjCreateImageView(msaaColorImageBuffer.image, swapchain.swapChainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1, OUT msaaColorImageView);
+			swapchain.swapchainImage.msaaColorImageView = swapchain.swapchainImage.createImageView(swapchain.swapchainImage.msaaColorImageBuffer.image, swapchain.swapChainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
+
 		}
 
 		//Create depth resource
+		swapchain.swapchainImage.bEnableDepthTest = true; //TODO: for clean up only
 		VkFormat depthFormat = renderProcess.findDepthFormat();
 		usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
-		wxjCreateImage(msaaSamples, depthFormat, usage, OUT depthImageBuffer);//need swapChainExtent. call this after swapchain creation
-		wxjCreateImageView(depthImageBuffer.image, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT, 1, OUT depthImageView);
+		//wxjCreateImage(msaaSamples, depthFormat, usage, OUT depthImageBuffer);//need swapChainExtent. call this after swapchain creation
+		swapchain.swapchainImage.createImage(swapchain.swapChainExtent.width, swapchain.swapChainExtent.height, 1, swapchain.swapchainImage.msaaSamples, depthFormat, 
+				VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, OUT swapchain.swapchainImage.depthImageBuffer);
+		//wxjCreateImageView(depthImageBuffer.image, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT, 1, OUT depthImageView);
+		swapchain.swapchainImage.depthImageView = swapchain.swapchainImage.createImageView(swapchain.swapchainImage.depthImageBuffer.image, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT, 1);
 
 		//Create Renderpass
 		VkImageLayout imageLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-		if(bEnableMSAA) imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-		renderProcess.addColorAttachment(swapchain.swapChainImageFormat, msaaSamples, imageLayout); //add this function will enable color attachment (bUseColorAttachment = true)
+		if(swapchain.swapchainImage.bEnableMSAA) imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+		renderProcess.addColorAttachment(swapchain.swapChainImageFormat, swapchain.swapchainImage.msaaSamples, imageLayout); //add this function will enable color attachment (bUseColorAttachment = true)
 		renderProcess.addDepthAttachment(); //add this function will enable depth attachment(bUseDepthAttachment = true)
-		if(bEnableMSAA) renderProcess.addColorAttachmentResolve(); //add this function will enable color resolve attachment (bUseColorAttachmentResolve = true)
+		if(swapchain.swapchainImage.bEnableMSAA) renderProcess.addColorAttachmentResolve(); //add this function will enable color resolve attachment (bUseColorAttachmentResolve = true)
 		renderProcess.createSubpass();
 		VkPipelineStageFlags srcPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
 		VkPipelineStageFlags dstPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
@@ -58,10 +71,10 @@ public:
 
 		//Create Descriptors
 		descriptor.addMVPUniformBuffer();
-		descriptor.addImageSamplerUniformBuffer(mipLevels);
+		descriptor.addImageSamplerUniformBuffer(textureImage.mipLevels);
 		descriptor.createDescriptorPool();
 		descriptor.createDescriptorSetLayout();
-		descriptor.createDescriptorSets(&textureImageView);
+		descriptor.createDescriptorSets(&textureImage.textureImageView);
 
 		renderProcess.createGraphicsPipeline<Vertex3D>(
 			VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 

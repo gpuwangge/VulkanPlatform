@@ -1,14 +1,13 @@
-#ifndef H_LOGICAL_DEVICE
-#define H_LOGICAL_DEVICE
+#ifndef H_LOGICALDEVICE
+#define H_LOGICALDEVICE
 
 
 #include "common.h"
 
-class CLogicalDevice{
+class CLogicalDevice final{
 
 public:
     CLogicalDevice();
-
     ~CLogicalDevice();
 
     VkDevice logicalDevice;

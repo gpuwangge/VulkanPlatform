@@ -1,5 +1,5 @@
-#ifndef H_PHYSICAL_DEVICE
-#define H_PHYSICAL_DEVICE
+#ifndef H_PHYSICALDEVICE
+#define H_PHYSICALDEVICE
 
 //#include "instance.h"
 #include "logicalDevice.h"
