@@ -12,6 +12,7 @@
 #include "context.h"
 #include "descriptor.h"
 #include "renderProcess.h"
+#include "shaderManager.h"
 
 // #define LOGICAL_DEVICE *(instance->pickedPhysicalDevice->get()->getLogicalDevice())
 // #define PHYSICAL_DEVICE instance->pickedPhysicalDevice->get()->getHandle()
@@ -54,12 +55,7 @@ public:
 
     //std::vector<VkFramebuffer> swapChainFramebuffers;//11
 
-    VkShaderModule vertShaderModule;//12
-	VkShaderModule fragShaderModule;//12
-
-    // VkDescriptorPool descriptorPool;
-    // VkDescriptorSetLayout descriptorSetLayout;
-    // std::vector<VkDescriptorSet> descriptorSets;
+    CShaderManager shaderManager;
     CDescriptor descriptor;
 
     std::vector<VkSemaphore> imageAvailableSemaphores;
@@ -102,8 +98,8 @@ public:
     VkImageView createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels);
 
 
-    std::vector<char> readFile(const std::string& filename);
-    void Init12SpirvShader(std::string filename, VkShaderModule * pShaderModule);
+    //std::vector<char> readFile(const std::string& filename);
+    //void Init12SpirvShader(std::string filename, VkShaderModule * pShaderModule);
 
     void createSyncObjects();
 

@@ -25,15 +25,19 @@ public:
 		wxjCreateFramebuffers();
 
 		//Create shader resource
-		wxjCreateVertexShader("../shaders/simpleVertexBuffer/vert.spv");
-		wxjCreateFragmentShader("../shaders/simpleVertexBuffer/frag.spv");
+		shaderManager.InitVertexShader("../shaders/simpleVertexBuffer/vert.spv");
+		shaderManager.InitFragmentShader("../shaders/simpleVertexBuffer/frag.spv");
 
 		//Create Descriptors
 		descriptor.createDescriptorPool();
 		descriptor.createDescriptorSetLayout();
 		descriptor.createDescriptorSets();
 
-		renderProcess.createGraphicsPipeline<Vertex2D>(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, vertShaderModule, fragShaderModule, descriptor.descriptorSetLayout);
+		renderProcess.createGraphicsPipeline<Vertex2D>(
+			VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
+			shaderManager.vertShaderModule, 
+			shaderManager.fragShaderModule, 
+			descriptor.descriptorSetLayout);
 
 		CApplication::initialize();
 	}

@@ -44,13 +44,6 @@ void CVulkanBase::wxjCreateFramebuffers(){
 	}	
 }
 
-void CVulkanBase::wxjCreateVertexShader(std::string shaderName){
-    Init12SpirvShader(shaderName, &vertShaderModule);
-}
-void CVulkanBase::wxjCreateFragmentShader(std::string shaderName){
-	Init12SpirvShader(shaderName, &fragShaderModule);
-}
-
 void CVulkanBase::wxjCreateCommandBuffer(){
 	Init06CreateCommandPool();
 	Init06CreateCommandBuffers();

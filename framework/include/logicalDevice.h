@@ -11,15 +11,15 @@ public:
 
     ~CLogicalDevice();
 
-    VkDevice logicalDevice;//04
-	VkQueue graphicsQueue;//04
-	VkQueue presentQueue;//04
-	VkQueue computeQueue;//04
+    VkDevice logicalDevice;
+	VkQueue graphicsQueue;
+	VkQueue presentQueue;
+	VkQueue computeQueue;
 
     //VkDevice handle{VK_NULL_HANDLE};
     //VkDevice getHandle() const{ return handle;}
 
-    CDebugger * debugger;
+    //CDebugger * debugger;
 };
 
 #endif

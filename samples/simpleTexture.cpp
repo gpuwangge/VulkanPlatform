@@ -36,8 +36,8 @@ public:
 		wxjCreateFramebuffers();
 
 		//Create shader resource
-		wxjCreateVertexShader("../shaders/texture/vert.spv");
-		wxjCreateFragmentShader("../shaders/texture/frag.spv");
+		shaderManager.InitVertexShader("../shaders/texture/vert.spv");
+		shaderManager.InitFragmentShader("../shaders/texture/frag.spv");
 
 		//Create Descriptors
 		descriptor.addMVPUniformBuffer();
@@ -46,7 +46,11 @@ public:
 		descriptor.createDescriptorSetLayout();
 		descriptor.createDescriptorSets(&textureImageView);
 
-		renderProcess.createGraphicsPipeline<Vertex3D>(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, vertShaderModule, fragShaderModule, descriptor.descriptorSetLayout);
+		renderProcess.createGraphicsPipeline<Vertex3D>(
+			VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
+			shaderManager.vertShaderModule, 
+			shaderManager.fragShaderModule, 
+			descriptor.descriptorSetLayout);
 
 		CApplication::initialize();
 	}

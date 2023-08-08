@@ -240,8 +240,7 @@ public:
 
 
         /*********Clean up**********/
-        vkDestroyShaderModule(CContext::GetHandle().GetLogicalDevice(), fragShaderModule, nullptr);
-        vkDestroyShaderModule(CContext::GetHandle().GetLogicalDevice(), vertShaderModule, nullptr);
+        
 
         HERE_I_AM("DrawFrame() will begin");
     }

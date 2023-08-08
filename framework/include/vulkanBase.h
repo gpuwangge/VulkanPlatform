@@ -33,9 +33,6 @@ public:
 
     void wxjCreateSwapChainImagesAndImageViews();
 
-    void wxjCreateVertexShader(std::string shaderName);
-    void wxjCreateFragmentShader(std::string shaderName);
-
     void wxjCreateFramebuffers();
 
     void wxjCreateImage_texture(const std::string texturePath, VkImageUsageFlags usage, OUT MyImageBuffer &textureImageBuffer, OUT int32_t &texWidth, OUT int32_t &texHeight);

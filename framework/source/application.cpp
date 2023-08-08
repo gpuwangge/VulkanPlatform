@@ -29,6 +29,8 @@ void CApplication::run(){
 
 void CApplication::initialize(){
     createSyncObjects();
+
+    shaderManager.Destroy();
 }
 
 void CApplication::prepareVulkanDevices(){
@@ -90,23 +92,6 @@ void CApplication::Init06CreateCommandBuffers() {
 
     if (result != VK_SUCCESS) throw std::runtime_error("failed to allocate command buffers!");
     REPORT("vkAllocateCommandBuffers");
-}
-
-
-void CApplication::Init12SpirvShader(std::string filename, VkShaderModule * pShaderModule){
-    HERE_I_AM("Init12SpirvShader");
-
-    auto shaderCode = readFile(filename.c_str());
-
-    VkShaderModuleCreateInfo createInfo{};
-    createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-    createInfo.codeSize = shaderCode.size();
-    createInfo.pCode = reinterpret_cast<const uint32_t*>(shaderCode.data());
-
-    VkResult result = vkCreateShaderModule(CContext::GetHandle().GetLogicalDevice(), &createInfo, PALLOCATOR, pShaderModule);
-    REPORT("vkCreateShaderModule");
-    debugger->writeMSG("Shader Module '%s' successfully loaded\n", filename.c_str());
-
 }
 
 void CApplication::createSyncObjects() {

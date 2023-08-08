@@ -1,21 +1,21 @@
 # How to compile
 ## generate makefile that build all samples
 mkdir build  
-cd build
-cmake -G "MinGW Makefiles" .. 
-make
+cd build  
+cmake -G "MinGW Makefiles" ..   
+make  
 
 ## generate makefile that build one sample(SimpleTriangle)
-mkdir buildS
-cd buildS
-cmake -G "MinGW Makefiles" -D SINGLE=true ..
-make
+mkdir buildS  
+cd buildS  
+cmake -G "MinGW Makefiles" -D SINGLE=true ..  
+make  
 
 
 
 
 # Construction
-=========Concet of InFlight========
+=========Concet of InFlight========  
 InFlight: means fast
 
 

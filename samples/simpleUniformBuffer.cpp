@@ -33,8 +33,8 @@ public:
 		wxjCreateFramebuffers();
 
 		//Create shader resources
-		wxjCreateVertexShader("../shaders/simpleUniformBuffer/vert.spv");
-		wxjCreateFragmentShader("../shaders/simpleUniformBuffer/frag.spv");
+		shaderManager.InitVertexShader("../shaders/simpleUniformBuffer/vert.spv");
+		shaderManager.InitFragmentShader("../shaders/simpleUniformBuffer/frag.spv");
 
 		//Create Descriptors
 		descriptor.addCustomUniformBuffer(sizeof(CustomUniformBufferObject));
@@ -43,7 +43,11 @@ public:
 		descriptor.createDescriptorSetLayout(&customBinding);
 		descriptor.createDescriptorSets();
 
-		renderProcess.createGraphicsPipeline(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, vertShaderModule, fragShaderModule, descriptor.descriptorSetLayout);
+		renderProcess.createGraphicsPipeline(
+			VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
+			shaderManager.vertShaderModule, 
+			shaderManager.fragShaderModule, 
+			descriptor.descriptorSetLayout);
 
 		CApplication::initialize();
 	}

@@ -54,8 +54,8 @@ public:
 		wxjCreateFramebuffers();
 
 		//Create shader resource
-		wxjCreateVertexShader("../shaders/basicTriangles/vert.spv");
-		wxjCreateFragmentShader("../shaders/basicTriangles/frag.spv");
+		shaderManager.InitVertexShader("../shaders/basicTriangles/vert.spv");
+		shaderManager.InitFragmentShader("../shaders/basicTriangles/frag.spv");
 
 		//Create Descriptors
 		descriptor.addImageSamplerUniformBuffer(mipLevels);
@@ -66,7 +66,11 @@ public:
 		descriptor.createDescriptorSetLayout(&customBinding);
 		descriptor.createDescriptorSets(&textureImageView);
 
-		renderProcess.createGraphicsPipeline<Vertex3D>(VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, vertShaderModule, fragShaderModule, descriptor.descriptorSetLayout);
+		renderProcess.createGraphicsPipeline<Vertex3D>(
+			VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
+			shaderManager.vertShaderModule, 
+			shaderManager.fragShaderModule, 
+			descriptor.descriptorSetLayout);
 
 		CApplication::initialize();
 	}
