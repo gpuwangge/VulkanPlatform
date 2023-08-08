@@ -1,6 +1,6 @@
-#include "..\\framework\\include\\vulkanBase.h"
+#include "..\\framework\\include\\application.h"
 #define TEST_CLASS_NAME CSimpleTexture
-class TEST_CLASS_NAME: public CVulkanBase{
+class TEST_CLASS_NAME: public CApplication{
 public:
 	std::vector<Vertex3D> vertices3D = {
 		{ { -0.5f, -0.5f, 0.0f },{ 1.0f, 0.0f, 0.0f },{ 1.0f, 0.0f } },

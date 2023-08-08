@@ -14,8 +14,8 @@
 #include "renderProcess.h"
 #include "shaderManager.h"
 #include "renderer.h"
-#include "imageManager.h"
-
+//#include "imageManager.h"
+#include "texture.h"
 
 class CApplication{
 public:
@@ -74,8 +74,14 @@ public:
     CTextureImage textureImage;
     
 	
-    void generateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels, std::array<MyImageBuffer, MIPMAP_TEXTURE_COUNT> *tmpTextureBufferForRainbowMipmaps, bool bEnableRainbowMipmaps);
+    //void generateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels, std::array<MyImageBuffer, MIPMAP_TEXTURE_COUNT> *tmpTextureBufferForRainbowMipmaps, bool bEnableRainbowMipmaps);
  
+    void wxjLoadObjModel(IN const std::string modelName, OUT std::vector<Vertex3D> &vertices3D, OUT std::vector<uint32_t> &indices3D);
+
+    void wxjCreateSwapChainImagesAndImageViews();
+
+    void wxjCreateFramebuffers();
+
     /*Virtual function: base and derived class will implement. If drived class not implement, call base's verson*/
     virtual void initialize();
     virtual void update();

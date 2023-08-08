@@ -1,7 +1,7 @@
-#include "..\\framework\\include\\vulkanBase.h"
+#include "..\\framework\\include\\application.h"
 
 #define TEST_CLASS_NAME CSimpleVertexBuffer
-class TEST_CLASS_NAME: public CVulkanBase{
+class TEST_CLASS_NAME: public CApplication{
 public:
 	std::vector<Vertex2D> vertices = {
 		{ { 0.0f, -0.5f},{ 1.0f, 0.0f, 0.0f }},

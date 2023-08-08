@@ -1,7 +1,7 @@
-#include "..\\framework\\include\\vulkanBase.h"
+#include "..\\framework\\include\\application.h"
 
 #define TEST_CLASS_NAME CSimpleUniformBuffer
-class TEST_CLASS_NAME: public CVulkanBase{
+class TEST_CLASS_NAME: public CApplication{
 public:
 	struct CustomUniformBufferObject {
 		glm::vec4 color;

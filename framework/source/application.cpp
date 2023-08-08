@@ -1,5 +1,8 @@
 #include "application.h"
 
+#define TINYOBJLOADER_IMPLEMENTATION
+#include <tiny_obj_loader.h>
+
 CApplication::CApplication(){
     debugger = new CDebugger("../logs/application.log");
 
@@ -20,7 +23,6 @@ void CApplication::run(){
 
 void CApplication::initialize(){
     renderer.CreateSyncObjects();
-
     shaderManager.Destroy();
 }
 
@@ -47,13 +49,9 @@ void CApplication::prepareVulkanDevices(){
     CContext::GetHandle().physicalDevice->get()->createLogicalDevices(surface, requiredValidationLayers, requireDeviceExtensions);
 }
 
-
 void CApplication::recordCommandBuffer(){
 
 }
-
-
-
 
 void CApplication::update(){
     //printf("app update...\n");
@@ -86,6 +84,108 @@ void CApplication::mainLoop(){
 		vkDeviceWaitIdle(CContext::GetHandle().GetLogicalDevice());//Wait GPU to complete all jobs before CPU destroy resources
 }
 
+void CApplication::wxjCreateFramebuffers(){
+	HERE_I_AM("wxjCreateFramebuffers");
+
+	VkResult result = VK_SUCCESS;
+
+	swapchain.swapChainFramebuffers.resize(swapchain.swapchainImage.swapChainImageViews.size());
+
+	for (size_t i = 0; i < swapchain.swapchainImage.swapChainImageViews.size(); i++) {
+		std::vector<VkImageView> attachments; 
+		 if (renderProcess.bUseDepthAttachment && renderProcess.bUseColorAttachmentResolve) {//Renderpass attachment(render target) order: Color, Depth, ColorResolve
+		    attachments.push_back(swapchain.swapchainImage.msaaColorImageView);
+		    attachments.push_back(swapchain.swapchainImage.depthImageView);
+			attachments.push_back(swapchain.swapchainImage.swapChainImageViews[i]);
+		 }else if(renderProcess.bUseDepthAttachment){//Renderpass attachment(render target) order: Color, Depth
+			attachments.push_back(swapchain.swapchainImage.swapChainImageViews[i]);
+			attachments.push_back(swapchain.swapchainImage.depthImageView);
+		}else{ //Renderpass attachment(render target) order: Color
+			attachments.push_back(swapchain.swapchainImage.swapChainImageViews[i]);
+		}
+
+		VkFramebufferCreateInfo framebufferInfo{};
+		framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+		framebufferInfo.renderPass = renderProcess.renderPass;
+		framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
+		framebufferInfo.pAttachments = attachments.data();//swapChainImageViews, 类型是VkImageView
+		framebufferInfo.width = swapchain.swapChainExtent.width;
+		framebufferInfo.height = swapchain.swapChainExtent.height;
+		framebufferInfo.layers = 1;
+
+		result = vkCreateFramebuffer(CContext::GetHandle().GetLogicalDevice(), &framebufferInfo, nullptr, &swapchain.swapChainFramebuffers[i]);
+		if (result != VK_SUCCESS) throw std::runtime_error("failed to create framebuffer!");
+		REPORT("vkCreateFrameBuffer");
+	}	
+}
+
+
+
+// void CVulkanBase::wxjCreateImageView(IN VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, int mipLevel, OUT VkImageView &imageView){
+//     imageView = createImageView(image, format, aspectFlags, mipLevel);
+// }
+// void CVulkanBase::wxjCreateImage(VkSampleCountFlagBits numSamples, VkFormat format, VkImageUsageFlags usage, OUT MyImageBuffer &imageBuffer){
+// 	//do not use mipLevels here, because only depth and msaa(colorResolve) buffer calls this, they dont need mipmap
+// 	//texture (w/o mipmap) has another function to create image
+// 	createImage(swapchain.swapChainExtent.width, swapchain.swapChainExtent.height, 1, numSamples, format, VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, imageBuffer);
+// }
+
+void CApplication::wxjCreateSwapChainImagesAndImageViews(){
+	HERE_I_AM("Init08Swapchain");
+
+    int width, height;
+    glfwGetFramebufferSize(window, &width, &height);
+    swapchain.createSwapchainImages(surface, width, height);
+
+    //generate swapChainImageViews
+    for (size_t i = 0; i < swapchain.swapchainImage.swapChainImages.size(); i++) {
+        //swapchain.swapchainImage.swapChainImageViews[i] = createImageView(swapchain.swapChainImages[i], swapchain.swapChainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
+		swapchain.swapchainImage.swapChainImageViews[i] = swapchain.swapchainImage.createImageView(swapchain.swapchainImage.swapChainImages[i], swapchain.swapChainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
+        //REPORT("vkCreateImageView");
+    }
+}
+
+void CApplication::wxjLoadObjModel(IN const std::string modelName, OUT std::vector<Vertex3D> &vertices3D, OUT std::vector<uint32_t> &indices3D) {
+	tinyobj::attrib_t attrib;
+	std::vector<tinyobj::shape_t> shapes;
+	std::vector<tinyobj::material_t> materials;
+	std::string warn, err;
+
+	if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, modelName.c_str())) {
+		throw std::runtime_error(warn + err);
+	}
+
+	std::unordered_map<Vertex3D, uint32_t> uniqueVertices{};
+
+	//vertices3D.clear();
+	//indices3D.clear();
+
+	for (const auto& shape : shapes) {
+		for (const auto& index : shape.mesh.indices) {
+			Vertex3D vertex{};
+
+			vertex.pos = {
+				attrib.vertices[3 * index.vertex_index + 0],
+				attrib.vertices[3 * index.vertex_index + 1],
+				attrib.vertices[3 * index.vertex_index + 2]
+			};
+
+			vertex.texCoord = {
+				attrib.texcoords[2 * index.texcoord_index + 0],
+				1.0f - attrib.texcoords[2 * index.texcoord_index + 1]
+			};
+
+			vertex.color = { 1.0f, 1.0f, 1.0f };
+
+			if (uniqueVertices.count(vertex) == 0) {
+				uniqueVertices[vertex] = static_cast<uint32_t>(vertices3D.size());
+				vertices3D.push_back(vertex);
+			}
+
+			indices3D.push_back(uniqueVertices[vertex]);
+		}
+	}
+}
 
 void CApplication::DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator) {
     auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
@@ -100,75 +200,9 @@ CApplication::~CApplication(){
     HERE_I_AM("Clean up application");
 
     swapchain.CleanUp();
-
     renderProcess.Cleanup();
-
-    //vkDestroyRenderPass(CContext::GetHandle().GetLogicalDevice(), renderProcess.renderPass, nullptr);
-
-    //vkDestroyPipeline(logicalDevice, pipeline_compute, nullptr);
-    //vkDestroyPipelineLayout(logicalDevice, pipelineLayout_compute, nullptr);
-
-    //if(bEnableUniform){
-    // for (size_t i = 0; i < uniformBuffers.size(); i++) {
-    //     uniformBuffers[i].DestroyAndFree();
-    // }
-    //}
-    //indexDataBuffer.DestroyAndFree();
-    //vertexDataBuffer.DestroyAndFree();
-
-    // if(textureImageBuffer.size != (VkDeviceSize)0){
-    //     vkDestroyImage(CContext::GetHandle().GetLogicalDevice(), textureImageBuffer.image, nullptr);
-    //     vkFreeMemory(CContext::GetHandle().GetLogicalDevice(), textureImageBuffer.deviceMemory, nullptr);
-    //     vkDestroyImageView(CContext::GetHandle().GetLogicalDevice(), textureImageView, nullptr);
-    // }
-
-    //vkDestroyDescriptorPool(CContext::GetHandle().GetLogicalDevice(), descriptorPool, nullptr);
-    //vkDestroyDescriptorSetLayout(CContext::GetHandle().GetLogicalDevice(), descriptorSetLayout, nullptr);
     descriptor.DestroyAndFree();
-
-    //vkDestroyPipeline(CContext::GetHandle().GetLogicalDevice(), renderProcess.graphicsPipeline, nullptr);
-    //vkDestroyPipelineLayout(CContext::GetHandle().GetLogicalDevice(), renderProcess.pipelineLayout, nullptr);
-
-    //for (int i = 0; i < 1; i++) {
-        //vkDestroyDescriptorPool(LOGICAL_DEVICE, descriptorPool[i], nullptr);
-        //vkDestroyDescriptorSetLayout(LOGICAL_DEVICE, descriptorSetLayout[i], nullptr);
-        //vkDestroyPipeline(LOGICAL_DEVICE, graphicsPipeline[i], nullptr);
-        //vkDestroyPipelineLayout(LOGICAL_DEVICE, pipelineLayout[i], nullptr);
-
-        //vkDestroyImage(logicalDevice, textureImageBuffer[i].image, nullptr);
-        //vkFreeMemory(logicalDevice, textureImageBuffer[i].deviceMemory, nullptr);
-        //vkDestroyImageView(logicalDevice, textureImageView[i], nullptr);
-    //}
-    // for (int i = 0; i < MIPMAP_TEXTURE_COUNT; i++) {
-    //     vkDestroyImage(logicalDevice, textureImageBuffers_mipmap[i].image, nullptr);
-    //     vkFreeMemory(logicalDevice, textureImageBuffers_mipmap[i].deviceMemory, nullptr);
-    // }
-    // if(bEnableMSAA){
-    //     vkDestroyImageView(CContext::GetHandle().GetLogicalDevice(), msaaColorImageView, nullptr);
-    //     vkDestroyImage(CContext::GetHandle().GetLogicalDevice(), msaaColorImageBuffer.image, nullptr);
-    //     vkFreeMemory(CContext::GetHandle().GetLogicalDevice(), msaaColorImageBuffer.deviceMemory, nullptr);
-    // }
-    
-
-    //if(textureSampler) vkDestroySampler(CContext::GetHandle().GetLogicalDevice(), textureSampler, nullptr);
-
-    // if(renderProcess.bUseDepthAttachment){
-    //     vkDestroyImage(CContext::GetHandle().GetLogicalDevice(), depthImageBuffer.image, nullptr);
-    //     vkFreeMemory(CContext::GetHandle().GetLogicalDevice(), depthImageBuffer.deviceMemory, nullptr);
-    //     vkDestroyImageView(CContext::GetHandle().GetLogicalDevice(), depthImageView, nullptr);
-    // }
     textureImage.Destroy();
-
-
-    // for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-    //     vkDestroySemaphore(CContext::GetHandle().GetLogicalDevice(), renderFinishedSemaphores[i], nullptr);
-    //     vkDestroySemaphore(CContext::GetHandle().GetLogicalDevice(), imageAvailableSemaphores[i], nullptr);
-    //     //vkDestroySemaphore(logicalDevice, computeFinishedSemaphores[i], nullptr);
-    //     vkDestroyFence(CContext::GetHandle().GetLogicalDevice(), inFlightFences[i], nullptr);
-    //     //vkDestroyFence(logicalDevice, computeInFlightFences[i], nullptr);
-    // }
-
-    // vkDestroyCommandPool(CContext::GetHandle().GetLogicalDevice(), commandPool, nullptr);
     renderer.Destroy();
 
     vkDestroyDevice(CContext::GetHandle().GetLogicalDevice(), nullptr);

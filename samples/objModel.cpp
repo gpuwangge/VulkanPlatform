@@ -1,6 +1,6 @@
-#include "..\\framework\\include\\vulkanBase.h"
+#include "..\\framework\\include\\application.h"
 #define TEST_CLASS_NAME CObjModel
-class TEST_CLASS_NAME: public CVulkanBase{
+class TEST_CLASS_NAME: public CApplication{
 public:
 	std::vector<Vertex3D> vertices3D;
 	std::vector<uint32_t> indices3D;
