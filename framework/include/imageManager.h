@@ -20,16 +20,17 @@ public:
 
 
 
-class CSwapchainImage : public CImageManager{
+class CSwapchainImageManager : public CImageManager{
 public:
-    CSwapchainImage();
-    ~CSwapchainImage();
+    CSwapchainImageManager();
+    ~CSwapchainImageManager();
     void Destroy();
 
     void GetMaxUsableSampleCount();
 
-    std::vector<VkImage> swapChainImages;//08
-    std::vector<VkImageView> swapChainImageViews;//08
+    std::vector<VkImage> images;//08
+    std::vector<VkImageView> views;//08
+    uint32_t imageSize;
 
     //Resource for Depth Test
     bool bEnableDepthTest = false;
@@ -38,9 +39,9 @@ public:
 
     //Resource for MSAA
     bool bEnableMSAA;
+    VkSampleCountFlagBits msaaSamples;
     MyImageBuffer msaaColorImageBuffer;
 	VkImageView msaaColorImageView;
-    VkSampleCountFlagBits msaaSamples;
 };
 
 #endif

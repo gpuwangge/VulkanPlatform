@@ -98,18 +98,21 @@ uint32_t CImageManager::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlag
 
 
 
-CSwapchainImage::CSwapchainImage(){
+CSwapchainImageManager::CSwapchainImageManager(){
+    imageSize = 0;
     bEnableMSAA = false;
     msaaSamples = VK_SAMPLE_COUNT_1_BIT;
 }
-CSwapchainImage::~CSwapchainImage(){}
+CSwapchainImageManager::~CSwapchainImageManager(){}
 
-void CSwapchainImage::GetMaxUsableSampleCount(){
+void CSwapchainImageManager::GetMaxUsableSampleCount(){
 	msaaSamples = CContext::GetHandle().physicalDevice->get()->getMaxUsableSampleCount();
 	//msaaSamples = VK_SAMPLE_COUNT_1_BIT;
 }
 
-void CSwapchainImage::Destroy(){//TODO
+
+
+void CSwapchainImageManager::Destroy(){//TODO
     if(bEnableDepthTest){
         vkDestroyImage(CContext::GetHandle().GetLogicalDevice(), depthImageBuffer.image, nullptr);
         vkFreeMemory(CContext::GetHandle().GetLogicalDevice(), depthImageBuffer.deviceMemory, nullptr);

@@ -11,7 +11,7 @@ CSwapchain::~CSwapchain(){
 //     m_physical_device = physical_device;
 // }
 
-void CSwapchain::createSwapchainImages(VkSurfaceKHR surface, int width, int height){
+void CSwapchain::createImages(VkSurfaceKHR surface, int width, int height){
     //vulkan draws on the vkImage(s)
     //SwapChain will set vkImage to present on the screen
     //Surface will tell the format of the vkImage
@@ -30,16 +30,16 @@ void CSwapchain::createSwapchainImages(VkSurfaceKHR surface, int width, int heig
     VkPresentModeKHR presentMode = chooseSwapPresentMode(swapChainSupport.presentModes);
     VkExtent2D extent = chooseSwapExtent(swapChainSupport.capabilities, width, height);
 
-    uint32_t imageCount = swapChainSupport.capabilities.minImageCount + 1;
-    if (swapChainSupport.capabilities.maxImageCount > 0 && imageCount > swapChainSupport.capabilities.maxImageCount) {
-        imageCount = swapChainSupport.capabilities.maxImageCount;
+    imageManager.imageSize = swapChainSupport.capabilities.minImageCount + 1;
+    if (swapChainSupport.capabilities.maxImageCount > 0 && imageManager.imageSize > swapChainSupport.capabilities.maxImageCount) {
+        imageManager.imageSize = swapChainSupport.capabilities.maxImageCount;
     }
 
     VkSwapchainCreateInfoKHR createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
     createInfo.surface = surface;
 
-    createInfo.minImageCount = imageCount;
+    createInfo.minImageCount = imageManager.imageSize;
     createInfo.imageFormat = surfaceFormat.format;
     createInfo.imageColorSpace = surfaceFormat.colorSpace;
     createInfo.imageExtent = extent;
@@ -70,17 +70,23 @@ void CSwapchain::createSwapchainImages(VkSurfaceKHR surface, int width, int heig
     if (result != VK_SUCCESS) throw std::runtime_error("failed to create swap chain!");
     REPORT("vkCreateSwapchainKHR");
 
-    result = vkGetSwapchainImagesKHR(CContext::GetHandle().GetLogicalDevice(), handle, &imageCount, nullptr);
+    result = vkGetSwapchainImagesKHR(CContext::GetHandle().GetLogicalDevice(), handle, &imageManager.imageSize, nullptr);
     REPORT("vkGetSwapchainImagesKHR(Get imageCount)");
-    swapchainImage.swapChainImages.resize(imageCount);
-    result = vkGetSwapchainImagesKHR(CContext::GetHandle().GetLogicalDevice(), handle, &imageCount, swapchainImage.swapChainImages.data());
+    imageManager.images.resize(imageManager.imageSize);
+    result = vkGetSwapchainImagesKHR(CContext::GetHandle().GetLogicalDevice(), handle, &imageManager.imageSize, imageManager.images.data());
     REPORT("vkGetSwapchainImagesKHR");
 
     swapChainImageFormat = surfaceFormat.format;
     swapChainExtent = extent;
 
     // present views for the double-buffering:
-    swapchainImage.swapChainImageViews.resize(swapchainImage.swapChainImages.size());
+    imageManager.views.resize(imageManager.imageSize);
+}
+
+void CSwapchain::createImageViews(VkImageAspectFlags aspectFlags, uint32_t mipLevels){
+    for (size_t i = 0; i < imageManager.imageSize; i++) {
+		imageManager.views[i] = imageManager.createImageView(imageManager.images[i], swapChainImageFormat, aspectFlags, mipLevels);
+    }
 }
 
 void CSwapchain::displaySwapchainInfo(SwapChainSupportDetails details){
@@ -172,17 +178,29 @@ VkExtent2D CSwapchain::chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabili
     }
 }
 
+void CSwapchain::createMSAAImages(VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties){
+    imageManager.createImage(swapChainExtent.width,swapChainExtent.height, 1, imageManager.msaaSamples, swapChainImageFormat, tiling, usage, properties, imageManager.msaaColorImageBuffer);
+}
+void CSwapchain::createMSAAImageViews(VkImageAspectFlags aspectFlags){
+    imageManager.msaaColorImageView = imageManager.createImageView(imageManager.msaaColorImageBuffer.image, swapChainImageFormat, aspectFlags, 1);
+}
+void CSwapchain::createDepthImages(VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties){
+    imageManager.createImage(swapChainExtent.width,swapChainExtent.height, 1, imageManager.msaaSamples, format, tiling, usage, properties, imageManager.depthImageBuffer);
+}
+void CSwapchain::createDepthImageViews(VkFormat format, VkImageAspectFlags aspectFlags){
+    imageManager.depthImageView = imageManager.createImageView(imageManager.depthImageBuffer.image, format, aspectFlags, 1);
+}
 
 void CSwapchain::CleanUp(){
     for (auto framebuffer : swapChainFramebuffers) {
         vkDestroyFramebuffer(CContext::GetHandle().GetLogicalDevice(), framebuffer, nullptr);
     }
 
-    for (auto imageView : swapchainImage.swapChainImageViews) {
+    for (auto imageView : imageManager.views) {
         vkDestroyImageView(CContext::GetHandle().GetLogicalDevice(), imageView, nullptr);
     }
 
     vkDestroySwapchainKHR(CContext::GetHandle().GetLogicalDevice(), handle, nullptr);
 
-    swapchainImage.Destroy();
+    imageManager.Destroy();
 }

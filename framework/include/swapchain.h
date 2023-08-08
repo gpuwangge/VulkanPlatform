@@ -22,11 +22,17 @@ public:
     VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
     VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
     VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities, int width, int height);
-    void createSwapchainImages(VkSurfaceKHR surface, int width, int height);
+    void createImages(VkSurfaceKHR surface, int width, int height);
+    void createImageViews(VkImageAspectFlags aspectFlags, uint32_t mipLevels);
+
+    void createMSAAImages(VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties);
+    void createMSAAImageViews(VkImageAspectFlags aspectFlags);
+    void createDepthImages(VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties);
+    void createDepthImageViews(VkFormat format, VkImageAspectFlags aspectFlags);
 
     VkSwapchainKHR getHandle() const{ return handle;}
 
-	CSwapchainImage swapchainImage;
+	CSwapchainImageManager imageManager;
 	VkFormat swapChainImageFormat;//08
 	VkExtent2D swapChainExtent;//08
 	

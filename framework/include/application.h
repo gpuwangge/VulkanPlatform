@@ -29,8 +29,6 @@ public:
 
     VkSurfaceKHR surface;//03
     
-    //std::vector<Vertex3D> vertices3D;
-    //std::vector<uint32_t> indices3D;
     bool framebufferResized = false;
 
     CDebugger * debugger;
@@ -41,7 +39,6 @@ public:
     CDescriptor descriptor;
 
     //std::chrono::_V2::system_clock::time_point lastTime;
-
 
     void run();
 
@@ -65,17 +62,8 @@ public:
     float deltaTime = 0;
 
     CRenderer renderer;
-
-    //texture utility functions
-    //VkCommandBuffer beginSingleTimeCommands();
-    //void endSingleTimeCommands(VkCommandBuffer commandBuffer);
-    //void transitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t mipLevels);
-    //void copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
     CTextureImage textureImage;
     
-	
-    //void generateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels, std::array<MyImageBuffer, MIPMAP_TEXTURE_COUNT> *tmpTextureBufferForRainbowMipmaps, bool bEnableRainbowMipmaps);
- 
     void wxjLoadObjModel(IN const std::string modelName, OUT std::vector<Vertex3D> &vertices3D, OUT std::vector<uint32_t> &indices3D);
 
     void wxjCreateSwapChainImagesAndImageViews();

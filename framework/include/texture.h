@@ -5,28 +5,35 @@
 // #include "context.h"
 // #include "dataStructure.hpp"
 #include "imageManager.h"
+#include "renderer.h"
 
-class CTextureImage : public CImageManager{
+class CTextureImage : private CImageManager{
 public:
     CTextureImage();
     ~CTextureImage();
     void Destroy();
 
-    void copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height, VkCommandPool &commandPool);
-    VkCommandBuffer beginSingleTimeCommands(VkCommandPool &commandPool);
-    void endSingleTimeCommands(VkCommandBuffer commandBuffer, VkCommandPool &commandPool);
-    void transitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t mipLevels, VkCommandPool &commandPool);
-    void CreateImage_texture(const std::string texturePath, VkImageUsageFlags usage, OUT MyImageBuffer &textureImageBuffer, OUT int32_t &texWidth, OUT int32_t &texHeight, VkCommandPool &commandPool);
+    void copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
+    VkCommandBuffer beginSingleTimeCommands();
+    void endSingleTimeCommands(VkCommandBuffer commandBuffer);
+    void transitionImageLayout(VkImage image, VkImageLayout oldLayout, VkImageLayout newLayout);
+    void CreateImage(const std::string texturePath, VkImageUsageFlags usage, VkCommandPool &commandPool);
+    void CreateImage(const std::string texturePath, VkImageUsageFlags usage, MyImageBuffer &imageBuffer, VkCommandPool &commandPool);
+    void CreateImageView(VkImageAspectFlags aspectFlags);
 
-    void generateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels, std::array<MyImageBuffer, MIPMAP_TEXTURE_COUNT> *textureImageBuffers_mipmaps, bool bMix, VkCommandPool &commandPool);
-    void CreateRainbowMipmaps(IN OUT VkImage image, VkImageUsageFlags usage, std::string rainbowCheckerboardTexturePath, VkCommandPool &commandPool);
+    void generateMipmaps();
+    void generateMipmaps(VkImage image, bool bMix = false, std::array<MyImageBuffer, MIPMAP_TEXTURE_COUNT> *textureImageBuffers_mipmaps = NULL);
+    void generateMipmaps(std::string rainbowCheckerboardTexturePath, VkImageUsageFlags usage);
 
     //Resource for Texture
     int32_t texWidth, texHeight;
+    VkFormat imageFormat;
     //std::string texturePath = "";
 	//VkSampler textureSampler;
 	MyImageBuffer textureImageBuffer;
 	VkImageView textureImageView;
+
+    VkCommandPool *pCommandPool;
 
     uint32_t mipLevels = 1; //1 means no mipmap
     bool bEnableMipMap = false;

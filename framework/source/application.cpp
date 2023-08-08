@@ -89,19 +89,19 @@ void CApplication::wxjCreateFramebuffers(){
 
 	VkResult result = VK_SUCCESS;
 
-	swapchain.swapChainFramebuffers.resize(swapchain.swapchainImage.swapChainImageViews.size());
+	swapchain.swapChainFramebuffers.resize(swapchain.imageManager.views.size());
 
-	for (size_t i = 0; i < swapchain.swapchainImage.swapChainImageViews.size(); i++) {
+	for (size_t i = 0; i < swapchain.imageManager.imageSize; i++) {
 		std::vector<VkImageView> attachments; 
 		 if (renderProcess.bUseDepthAttachment && renderProcess.bUseColorAttachmentResolve) {//Renderpass attachment(render target) order: Color, Depth, ColorResolve
-		    attachments.push_back(swapchain.swapchainImage.msaaColorImageView);
-		    attachments.push_back(swapchain.swapchainImage.depthImageView);
-			attachments.push_back(swapchain.swapchainImage.swapChainImageViews[i]);
+		    attachments.push_back(swapchain.imageManager.msaaColorImageView);
+		    attachments.push_back(swapchain.imageManager.depthImageView);
+			attachments.push_back(swapchain.imageManager.views[i]);
 		 }else if(renderProcess.bUseDepthAttachment){//Renderpass attachment(render target) order: Color, Depth
-			attachments.push_back(swapchain.swapchainImage.swapChainImageViews[i]);
-			attachments.push_back(swapchain.swapchainImage.depthImageView);
+			attachments.push_back(swapchain.imageManager.views[i]);
+			attachments.push_back(swapchain.imageManager.depthImageView);
 		}else{ //Renderpass attachment(render target) order: Color
-			attachments.push_back(swapchain.swapchainImage.swapChainImageViews[i]);
+			attachments.push_back(swapchain.imageManager.views[i]);
 		}
 
 		VkFramebufferCreateInfo framebufferInfo{};
@@ -135,14 +135,15 @@ void CApplication::wxjCreateSwapChainImagesAndImageViews(){
 
     int width, height;
     glfwGetFramebufferSize(window, &width, &height);
-    swapchain.createSwapchainImages(surface, width, height);
+    swapchain.createImages(surface, width, height);
 
     //generate swapChainImageViews
-    for (size_t i = 0; i < swapchain.swapchainImage.swapChainImages.size(); i++) {
+    //for (size_t i = 0; i < swapchain.imageManager.imageSize; i++) {
         //swapchain.swapchainImage.swapChainImageViews[i] = createImageView(swapchain.swapChainImages[i], swapchain.swapChainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
-		swapchain.swapchainImage.swapChainImageViews[i] = swapchain.swapchainImage.createImageView(swapchain.swapchainImage.swapChainImages[i], swapchain.swapChainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
+	//	swapchain.imageManager.views[i] = swapchain.imageManager.createImageView(swapchain.imageManager.images[i], swapchain.swapChainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
         //REPORT("vkCreateImageView");
-    }
+    //}
+    swapchain.createImageViews(VK_IMAGE_ASPECT_COLOR_BIT, 1);
 }
 
 void CApplication::wxjLoadObjModel(IN const std::string modelName, OUT std::vector<Vertex3D> &vertices3D, OUT std::vector<uint32_t> &indices3D) {

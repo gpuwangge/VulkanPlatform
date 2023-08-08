@@ -4,12 +4,20 @@
 #include <stb_image.h>
 
 
-CTextureImage::CTextureImage(){}
+CTextureImage::CTextureImage(){
+    imageFormat = VK_FORMAT_R8G8B8A8_SRGB;
+}
 CTextureImage::~CTextureImage(){}
 
-void CTextureImage::CreateImage_texture(const std::string texturePath, VkImageUsageFlags usage, 
-        OUT MyImageBuffer &textureImageBuffer, OUT int32_t &texWidth, OUT int32_t &texHeight, VkCommandPool &commandPool) {
-	HERE_I_AM("Init07CreateTextureImage");
+void CTextureImage::CreateImage(const std::string texturePath, VkImageUsageFlags usage, VkCommandPool &commandPool) {
+    pCommandPool = &commandPool;
+    //m_CommandPool = commandPool;
+    //m_renderer = renderer;
+    CreateImage(texturePath, usage, textureImageBuffer, commandPool);
+}
+
+void CTextureImage::CreateImage(const std::string texturePath, VkImageUsageFlags usage, MyImageBuffer &imageBuffer, VkCommandPool &commandPool) {
+	HERE_I_AM("CreateImage");
 
 	int texChannels;
 	stbi_uc* pixels = stbi_load(texturePath.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
@@ -40,19 +48,19 @@ void CTextureImage::CreateImage_texture(const std::string texturePath, VkImageUs
 
 	stbi_image_free(pixels);
 
-	createImage(texWidth, texHeight, mipLevels, VK_SAMPLE_COUNT_1_BIT, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, textureImageBuffer);
+	createImage(texWidth, texHeight, mipLevels, VK_SAMPLE_COUNT_1_BIT, imageFormat, VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, imageBuffer);
 
 	//hallway mipmap use this:
 	//transitionImageLayout(textureImageBuffer.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, mipLevels);
 	//other use this:
 	//TODO:
 	if(mipLevels == 1){
-		transitionImageLayout(textureImageBuffer.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, mipLevels, commandPool);
- 		copyBufferToImage(stagingBuffer.buffer, textureImageBuffer.image, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight), commandPool);
-      	transitionImageLayout(textureImageBuffer.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, mipLevels, commandPool);
+		transitionImageLayout(imageBuffer.image, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+ 		copyBufferToImage(stagingBuffer.buffer, imageBuffer.image, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
+      	transitionImageLayout(imageBuffer.image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL);
 	}else{
-		transitionImageLayout(textureImageBuffer.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, mipLevels, commandPool);
-		copyBufferToImage(stagingBuffer.buffer, textureImageBuffer.image, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight), commandPool);
+		transitionImageLayout(imageBuffer.image, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+		copyBufferToImage(stagingBuffer.buffer, imageBuffer.image, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
 
 	}
 	//MIPMAP TODO: no need transition?? If comment out this, validation layer get error
@@ -62,8 +70,12 @@ void CTextureImage::CreateImage_texture(const std::string texturePath, VkImageUs
 	vkFreeMemory(CContext::GetHandle().GetLogicalDevice(), stagingBuffer.deviceMemory, nullptr);
 }
 
-void CTextureImage::transitionImageLayout(VkImage image, VkFormat format, VkImageLayout oldLayout, VkImageLayout newLayout, uint32_t mipLevels, VkCommandPool &commandPool) {
-    VkCommandBuffer commandBuffer = beginSingleTimeCommands(commandPool);
+void CTextureImage::CreateImageView(VkImageAspectFlags aspectFlags){
+    textureImageView = createImageView(textureImageBuffer.image, imageFormat, aspectFlags, mipLevels);
+}
+
+void CTextureImage::transitionImageLayout(VkImage image, VkImageLayout oldLayout, VkImageLayout newLayout) {
+    VkCommandBuffer commandBuffer = beginSingleTimeCommands();
 
     VkImageMemoryBarrier barrier{};
     barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
@@ -108,11 +120,11 @@ void CTextureImage::transitionImageLayout(VkImage image, VkFormat format, VkImag
         1, &barrier
     );
 
-    endSingleTimeCommands(commandBuffer, commandPool);
+    endSingleTimeCommands(commandBuffer);
 }
 
-void CTextureImage::copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height, VkCommandPool &commandPool) {
-    VkCommandBuffer commandBuffer = beginSingleTimeCommands(commandPool);
+void CTextureImage::copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height) {
+    VkCommandBuffer commandBuffer = beginSingleTimeCommands();
 
     VkBufferImageCopy region{};
     region.bufferOffset = 0;
@@ -131,14 +143,14 @@ void CTextureImage::copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t w
 
     vkCmdCopyBufferToImage(commandBuffer, buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
 
-    endSingleTimeCommands(commandBuffer, commandPool);
+    endSingleTimeCommands(commandBuffer);
 }
 
-VkCommandBuffer CTextureImage::beginSingleTimeCommands(VkCommandPool &commandPool) {
+VkCommandBuffer CTextureImage::beginSingleTimeCommands() {
     VkCommandBufferAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
     allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-    allocInfo.commandPool = commandPool;
+    allocInfo.commandPool = *pCommandPool;
     allocInfo.commandBufferCount = 1;
 
     VkCommandBuffer commandBuffer;
@@ -153,7 +165,7 @@ VkCommandBuffer CTextureImage::beginSingleTimeCommands(VkCommandPool &commandPoo
     return commandBuffer;
 }
 
-void CTextureImage::endSingleTimeCommands(VkCommandBuffer commandBuffer, VkCommandPool &commandPool) {
+void CTextureImage::endSingleTimeCommands(VkCommandBuffer commandBuffer) {
     vkEndCommandBuffer(commandBuffer);
 
     VkSubmitInfo submitInfo{};
@@ -164,10 +176,15 @@ void CTextureImage::endSingleTimeCommands(VkCommandBuffer commandBuffer, VkComma
     vkQueueSubmit(CContext::GetHandle().GetGraphicsQueue(), 1, &submitInfo, VK_NULL_HANDLE);
     vkQueueWaitIdle(CContext::GetHandle().GetGraphicsQueue());
 
-    vkFreeCommandBuffers(CContext::GetHandle().GetLogicalDevice(), commandPool, 1, &commandBuffer);
+    vkFreeCommandBuffers(CContext::GetHandle().GetLogicalDevice(), *pCommandPool, 1, &commandBuffer);
 }
 
-void CTextureImage::generateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels, std::array<MyImageBuffer, MIPMAP_TEXTURE_COUNT> *textureImageBuffers_mipmaps, bool bMix, VkCommandPool &commandPool) {
+void CTextureImage::generateMipmaps(){
+    if(mipLevels <= 1) return;
+    generateMipmaps(textureImageBuffer.image);
+}
+
+void CTextureImage::generateMipmaps(VkImage image, bool bMix, std::array<MyImageBuffer, MIPMAP_TEXTURE_COUNT> *textureImageBuffers_mipmaps) {
 	// Check if image format supports linear blitting
 	VkFormatProperties formatProperties;
 	vkGetPhysicalDeviceFormatProperties(CContext::GetHandle().GetPhysicalDevice(), imageFormat, &formatProperties);
@@ -176,7 +193,7 @@ void CTextureImage::generateMipmaps(VkImage image, VkFormat imageFormat, int32_t
 		throw std::runtime_error("texture image format does not support linear blitting!");
 	}
 
-	VkCommandBuffer commandBuffer = beginSingleTimeCommands(commandPool);
+	VkCommandBuffer commandBuffer = beginSingleTimeCommands();
 
 	VkImageMemoryBarrier barrier{};
 	barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
@@ -266,25 +283,21 @@ void CTextureImage::generateMipmaps(VkImage image, VkFormat imageFormat, int32_t
 		0, nullptr,
 		1, &barrier);
 
-	endSingleTimeCommands(commandBuffer, commandPool);
-}
-void CTextureImage::Destroy(){
-    if(textureImageBuffer.size != (VkDeviceSize)0){
-        vkDestroyImage(CContext::GetHandle().GetLogicalDevice(), textureImageBuffer.image, nullptr);
-        vkFreeMemory(CContext::GetHandle().GetLogicalDevice(), textureImageBuffer.deviceMemory, nullptr);
-        vkDestroyImageView(CContext::GetHandle().GetLogicalDevice(), textureImageView, nullptr);
-    }
+	endSingleTimeCommands(commandBuffer);
 }
 
-void CTextureImage::CreateRainbowMipmaps(IN OUT VkImage image, VkImageUsageFlags usage, std::string rainbowCheckerboardTexturePath, VkCommandPool &commandPool){ //rainbow mipmaps case
+void CTextureImage::generateMipmaps(std::string rainbowCheckerboardTexturePath, VkImageUsageFlags usage){ //rainbow mipmaps case
+    if(mipLevels <= 1) return;
+
 	std::array<MyImageBuffer, MIPMAP_TEXTURE_COUNT> tmpTextureBufferForRainbowMipmaps;//create temp mipmaps
 	for (int i = 0; i < MIPMAP_TEXTURE_COUNT; i++) {//fill temp mipmaps
 		//wxjCreateImage_texture(rainbowCheckerboardTexturePath + std::to_string(i) + ".png", usage, tmpTextureBufferForRainbowMipmaps[i], texWidth, texHeight);
-        CreateImage_texture(rainbowCheckerboardTexturePath + std::to_string(i) + ".png", usage, tmpTextureBufferForRainbowMipmaps[i], texWidth, texHeight, commandPool);
-		generateMipmaps(tmpTextureBufferForRainbowMipmaps[i].image, VK_FORMAT_R8G8B8A8_SRGB, texWidth, texHeight, mipLevels, &tmpTextureBufferForRainbowMipmaps, false, commandPool);
+        //CreateImage_texture(rainbowCheckerboardTexturePath + std::to_string(i) + ".png", usage, tmpTextureBufferForRainbowMipmaps[i], texWidth, texHeight, commandPool);
+		CreateImage(rainbowCheckerboardTexturePath + std::to_string(i) + ".png", usage, tmpTextureBufferForRainbowMipmaps[i], *pCommandPool);
+        generateMipmaps(tmpTextureBufferForRainbowMipmaps[i].image);
 	}
-	//use tmp mipmaps texture to update main texture
-	generateMipmaps(image, VK_FORMAT_R8G8B8A8_SRGB, texWidth, texHeight, mipLevels, &tmpTextureBufferForRainbowMipmaps, true, commandPool);
+	//Generate mipmaps for image, using tmpTextureBufferForRainbowMipmaps
+	generateMipmaps(textureImageBuffer.image, true, &tmpTextureBufferForRainbowMipmaps);
 	//Clean up
 	for (int i = 0; i < MIPMAP_TEXTURE_COUNT; i++) {
 		vkDestroyImage(CContext::GetHandle().GetLogicalDevice(), tmpTextureBufferForRainbowMipmaps[i].image, nullptr);
@@ -292,5 +305,11 @@ void CTextureImage::CreateRainbowMipmaps(IN OUT VkImage image, VkImageUsageFlags
 	}
 }
 
-
+void CTextureImage::Destroy(){
+    if(textureImageBuffer.size != (VkDeviceSize)0){
+        vkDestroyImage(CContext::GetHandle().GetLogicalDevice(), textureImageBuffer.image, nullptr);
+        vkFreeMemory(CContext::GetHandle().GetLogicalDevice(), textureImageBuffer.deviceMemory, nullptr);
+        vkDestroyImageView(CContext::GetHandle().GetLogicalDevice(), textureImageView, nullptr);
+    }
+}
 
