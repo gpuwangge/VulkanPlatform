@@ -32,10 +32,10 @@ public:
 
 	void initialize(){
 		//Create bufferss
-		wxjCreateVertexBuffer<Vertex3D>(vertices3D);
-		
-		wxjCreateIndexBuffer(indices3D);
-		wxjCreateCommandBuffer();
+		renderer.CreateVertexBuffer<Vertex3D>(vertices3D);
+		renderer.CreateIndexBuffer(indices3D);
+		renderer.InitCreateCommandPool(surface);
+		renderer.InitCreateCommandBuffers();
 
 		//Create texture resource
 		VkImageUsageFlags usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
@@ -77,28 +77,28 @@ public:
 
 	void update(){
 		customUBO.color = {0.0, (sin(durationTime) + 1.0f) / 2.0f, (cos(durationTime) + 1.0f) / 2.0f};
-		descriptor.updateCustomUniformBuffer<CustomUniformBufferObject>(currentFrame, durationTime, customUBO);
+		descriptor.updateCustomUniformBuffer<CustomUniformBufferObject>(renderer.currentFrame, durationTime, customUBO);
 
 		descriptor.mvpUBO.model = glm::rotate(glm::mat4(1.0f), durationTime * glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 		CApplication::update();
 	}
 
 	void recordCommandBuffer(){
-		wxjBeginCommandBuffer();
+		renderer.BeginCommandBuffer();
 
 		std::vector<VkClearValue> clearValues{ {  0.0f, 0.0f, 0.0f, 1.0f  } };
-		wxjBeginRenderPass(clearValues);
+		renderer.BeginRenderPass(renderProcess.renderPass, swapchain.swapChainFramebuffers, swapchain.swapChainExtent, clearValues);
 
-		wxjBindPipeline();
-		wxjSetViewport();
-		wxjSetScissor();
-		wxjBindVertexBuffer();
-		wxjBindIndexBuffer();
-		wxjBindDescriptorSets();
-		wxjDrawIndexed(indices3D);
+		renderer.BindPipeline(renderProcess.graphicsPipeline);
+		renderer.SetViewport(swapchain.swapChainExtent);
+		renderer.SetScissor(swapchain.swapChainExtent);
+		renderer.BindVertexBuffer();
+		renderer.BindIndexBuffer();
+		renderer.BindDescriptorSets(renderProcess.pipelineLayout, descriptor.descriptorSets);
+		renderer.DrawIndexed(indices3D);
 
-		wxjEndRenderPass();
-		wxjEndCOmmandBuffer();
+		renderer.EndRenderPass();
+		renderer.EndCOmmandBuffer();
 
 		CApplication::recordCommandBuffer();
 	}

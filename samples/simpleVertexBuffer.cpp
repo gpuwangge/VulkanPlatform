@@ -11,8 +11,9 @@ public:
 
 	void initialize(){
 		//Create bufferss
-		wxjCreateVertexBuffer<Vertex2D>(vertices);
-		wxjCreateCommandBuffer();
+		renderer.CreateVertexBuffer<Vertex2D>(vertices);
+		renderer.InitCreateCommandPool(surface);
+		renderer.InitCreateCommandBuffers();
 
 		wxjCreateSwapChainImagesAndImageViews();
 
@@ -47,20 +48,20 @@ public:
 	}
 
 	void recordCommandBuffer(){
-		wxjBeginCommandBuffer();
+		renderer.BeginCommandBuffer();
 
 		std::vector<VkClearValue> clearValues{ {  0.0f, 0.0f, 0.0f, 1.0f  } };
-		wxjBeginRenderPass(clearValues);
+		renderer.BeginRenderPass(renderProcess.renderPass, swapchain.swapChainFramebuffers, swapchain.swapChainExtent, clearValues);
 
-		wxjBindPipeline();
-		wxjSetViewport();
-		wxjSetScissor();
-		wxjBindVertexBuffer();
-		wxjBindDescriptorSets();
-		wxjDraw(3);
+		renderer.BindPipeline(renderProcess.graphicsPipeline);
+		renderer.SetViewport(swapchain.swapChainExtent);
+		renderer.SetScissor(swapchain.swapChainExtent);
+		renderer.BindVertexBuffer();
+		renderer.BindDescriptorSets(renderProcess.pipelineLayout, descriptor.descriptorSets);
+		renderer.Draw(3);
 
-		wxjEndRenderPass();
-		wxjEndCOmmandBuffer();
+		renderer.EndRenderPass();
+		renderer.EndCOmmandBuffer();
 
 		CApplication::recordCommandBuffer();
 	}

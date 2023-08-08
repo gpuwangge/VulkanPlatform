@@ -13,6 +13,7 @@
 #include "descriptor.h"
 #include "renderProcess.h"
 #include "shaderManager.h"
+#include "renderer.h"
 
 // #define LOGICAL_DEVICE *(instance->pickedPhysicalDevice->get()->getLogicalDevice())
 // #define PHYSICAL_DEVICE instance->pickedPhysicalDevice->get()->getHandle()
@@ -38,31 +39,11 @@ public:
 
     CDebugger * debugger;
 
-	CWxjBuffer vertexDataBuffer;  //05
-	CWxjBuffer indexDataBuffer; //05
-    //std::vector<CWxjBuffer> uniformBuffers; //05 MVP uniform
-	//std::vector<void*> uniformBuffersMapped; //05 MVP uniform
-
-    std::vector<VkCommandBuffer> commandBuffers;//06
-    VkCommandPool commandPool;//06
-
 	CSwapchain swapchain;
-
-    //VkFormat findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
-    //VkFormat findDepthFormat();
-    //VkRenderPass renderPass; //10
-    CRenderProcess renderProcess;//new
-
-    //std::vector<VkFramebuffer> swapChainFramebuffers;//11
-
+    CRenderProcess renderProcess;
     CShaderManager shaderManager;
     CDescriptor descriptor;
 
-    std::vector<VkSemaphore> imageAvailableSemaphores;
-	std::vector<VkSemaphore> renderFinishedSemaphores;
-    std::vector<VkFence> inFlightFences;
-
-    uint32_t currentFrame = 1;
     //std::chrono::_V2::system_clock::time_point lastTime;
 
     //Resource for Texture
@@ -89,9 +70,6 @@ public:
     void createGLFWSurface();
     void prepareVulkanDevices();
 
-    void Init06CreateCommandPool();
-    void Init06CreateCommandBuffers();
-
     // VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
     // VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
     // VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities);
@@ -100,8 +78,6 @@ public:
 
     //std::vector<char> readFile(const std::string& filename);
     //void Init12SpirvShader(std::string filename, VkShaderModule * pShaderModule);
-
-    void createSyncObjects();
 
     void mainLoop();
     
@@ -117,12 +93,8 @@ public:
     
     float durationTime = 0;
     float deltaTime = 0;
-    // MVPUniformBufferObject mvpUBO{};
-    // void updateUniformBuffer(uint32_t currentFrame, float durationTime);
 
-    uint32_t imageIndex = 0;
-    //void recordCommandBuffer(VkCommandBuffer commandBuffer, uint32_t imageIndex);
-    void drawFrame();
+    CRenderer renderer;
 
     //texture utility functions
     VkCommandBuffer beginSingleTimeCommands();

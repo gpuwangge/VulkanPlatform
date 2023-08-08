@@ -16,9 +16,10 @@ public:
 
     void initialize(){
 		//Create buffers
-		wxjCreateVertexBuffer<Vertex3D>(vertices3D);
-		wxjCreateIndexBuffer(indices3D);
-		wxjCreateCommandBuffer();
+		renderer.CreateVertexBuffer<Vertex3D>(vertices3D);
+		renderer.CreateIndexBuffer(indices3D);
+		renderer.InitCreateCommandPool(surface);
+		renderer.InitCreateCommandBuffers();
 
 		//Create texture resource
 		VkImageUsageFlags usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
@@ -61,21 +62,21 @@ public:
 	}
 
 	void recordCommandBuffer(){
-		wxjBeginCommandBuffer();
+		renderer.BeginCommandBuffer();
 
 		std::vector<VkClearValue> clearValues{ {  1.0f, 1.0f, 1.0f, 1.0f  } };
-		wxjBeginRenderPass(clearValues);
+		renderer.BeginRenderPass(renderProcess.renderPass, swapchain.swapChainFramebuffers, swapchain.swapChainExtent, clearValues);
 
-		wxjBindPipeline();
-		wxjSetViewport();
-		wxjSetScissor();
-		wxjBindVertexBuffer();
-		wxjBindIndexBuffer();
-		wxjBindDescriptorSets();
-		wxjDrawIndexed(indices3D);
+		renderer.BindPipeline(renderProcess.graphicsPipeline);
+		renderer.SetViewport(swapchain.swapChainExtent);
+		renderer.SetScissor(swapchain.swapChainExtent);
+		renderer.BindVertexBuffer();
+		renderer.BindIndexBuffer();
+		renderer.BindDescriptorSets(renderProcess.pipelineLayout, descriptor.descriptorSets);
+		renderer.DrawIndexed(indices3D);
 
-		wxjEndRenderPass();
-		wxjEndCOmmandBuffer();
+		renderer.EndRenderPass();
+		renderer.EndCOmmandBuffer();
 
 		CApplication::recordCommandBuffer();
 	}

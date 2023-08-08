@@ -20,7 +20,8 @@ public:
 
 	void initialize(){
 		//Create bufferss
-		wxjCreateCommandBuffer();
+		renderer.InitCreateCommandPool(surface);
+		renderer.InitCreateCommandBuffers();
 
 		wxjCreateSwapChainImagesAndImageViews();
 
@@ -55,21 +56,21 @@ public:
 	void update(){
 		//printf("%f\n", durationTime);
 		customUBO.color = {(sin(durationTime) + 1.0f) / 2.0f, (cos(durationTime) + 1.0f) / 2.0f, 0.0f, 1.0f};
-		descriptor.updateCustomUniformBuffer<CustomUniformBufferObject>(currentFrame, durationTime, customUBO);
+		descriptor.updateCustomUniformBuffer<CustomUniformBufferObject>(renderer.currentFrame, durationTime, customUBO);
 		CApplication::update();
 	}
 
 	void recordCommandBuffer(){
-		wxjBeginCommandBuffer();
+		renderer.BeginCommandBuffer();
 		std::vector<VkClearValue> clearValues{ {  0.0f, 0.0f, 0.0f, 1.0f  } };
-		wxjBeginRenderPass(clearValues);
-		wxjBindPipeline();
-		wxjSetViewport();
-		wxjSetScissor();
-		wxjBindDescriptorSets();
-		wxjDraw(3);
-		wxjEndRenderPass();
-		wxjEndCOmmandBuffer();
+		renderer.BeginRenderPass(renderProcess.renderPass, swapchain.swapChainFramebuffers, swapchain.swapChainExtent, clearValues);
+		renderer.BindPipeline(renderProcess.graphicsPipeline);
+		renderer.SetViewport(swapchain.swapChainExtent);
+		renderer.SetScissor(swapchain.swapChainExtent);
+		renderer.BindDescriptorSets(renderProcess.pipelineLayout, descriptor.descriptorSets);
+		renderer.Draw(3);
+		renderer.EndRenderPass();
+		renderer.EndCOmmandBuffer();
 		CApplication::recordCommandBuffer();
 	}
 };

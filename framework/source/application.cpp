@@ -28,7 +28,7 @@ void CApplication::run(){
 }
 
 void CApplication::initialize(){
-    createSyncObjects();
+    renderer.CreateSyncObjects();
 
     shaderManager.Destroy();
 }
@@ -56,141 +56,12 @@ void CApplication::prepareVulkanDevices(){
     CContext::GetHandle().physicalDevice->get()->createLogicalDevices(surface, requiredValidationLayers, requireDeviceExtensions);
 }
 
-void CApplication::Init06CreateCommandPool() {
-    HERE_I_AM("Init06CommandPools");
-
-    VkResult result = VK_SUCCESS;
-
-    //QueueFamilyIndices queueFamilyIndices = instance->pickedPhysicalDevice->get()->findQueueFamilies(surface);
-    QueueFamilyIndices queueFamilyIndices = CContext::GetHandle().physicalDevice->get()->findQueueFamilies(surface);
-
-    VkCommandPoolCreateInfo poolInfo{};
-    poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
-    poolInfo.flags = VK_COMMAND_POOL_CREATE_RESET_COMMAND_BUFFER_BIT;
-    //poolInfo.queueFamilyIndex = queueFamilyIndices.graphicsFamily.value();//find a queue family that does graphics
-    poolInfo.queueFamilyIndex = queueFamilyIndices.graphicsAndComputeFamily.value();
-
-    result = vkCreateCommandPool(CContext::GetHandle().GetLogicalDevice(), &poolInfo, nullptr, &commandPool);
-    if (result != VK_SUCCESS) throw std::runtime_error("failed to create graphics command pool!");
-    REPORT("vkCreateCommandPool -- Graphics");
-}
-
-void CApplication::Init06CreateCommandBuffers() {
-    HERE_I_AM("Init06CommandBuffers");
-
-    VkResult result = VK_SUCCESS;
-
-    commandBuffers.resize(MAX_FRAMES_IN_FLIGHT);
-
-    VkCommandBufferAllocateInfo allocInfo{};
-    allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-    allocInfo.commandPool = commandPool;
-    allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-    allocInfo.commandBufferCount = (uint32_t)commandBuffers.size();
-
-    result = vkAllocateCommandBuffers(CContext::GetHandle().GetLogicalDevice(), &allocInfo, commandBuffers.data());
-
-    if (result != VK_SUCCESS) throw std::runtime_error("failed to allocate command buffers!");
-    REPORT("vkAllocateCommandBuffers");
-}
-
-void CApplication::createSyncObjects() {
-    imageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
-    renderFinishedSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
-    //computeFinishedSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
-    inFlightFences.resize(MAX_FRAMES_IN_FLIGHT);
-    //computeInFlightFences.resize(MAX_FRAMES_IN_FLIGHT);
-
-    VkSemaphoreCreateInfo semaphoreInfo{};
-    semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
-
-    VkFenceCreateInfo fenceInfo{};
-    fenceInfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
-    fenceInfo.flags = VK_FENCE_CREATE_SIGNALED_BIT;
-
-    for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-        if (vkCreateSemaphore(CContext::GetHandle().GetLogicalDevice(), &semaphoreInfo, nullptr, &imageAvailableSemaphores[i]) != VK_SUCCESS ||
-            vkCreateSemaphore(CContext::GetHandle().GetLogicalDevice(), &semaphoreInfo, nullptr, &renderFinishedSemaphores[i]) != VK_SUCCESS ||
-            vkCreateFence(CContext::GetHandle().GetLogicalDevice(), &fenceInfo, nullptr, &inFlightFences[i]) != VK_SUCCESS) {
-            throw std::runtime_error("failed to create synchronization objects for a frame!");
-        }
-        //if (vkCreateSemaphore(logicalDevice, &semaphoreInfo, nullptr, &computeFinishedSemaphores[i]) != VK_SUCCESS ||
-            //vkCreateFence(logicalDevice, &fenceInfo, nullptr, &computeInFlightFences[i]) != VK_SUCCESS) {
-            //throw std::runtime_error("failed to create compute synchronization objects for a frame!");
-        //}
-    }
-}
-
 
 void CApplication::recordCommandBuffer(){
-    //printf("application recordCommandBuffer...\n");
-    //std::cout<<"imageIndex: "<<imageIndex<<", ";
-    //std::cout<<"currentFrame: "<<currentFrame<<std::endl;
 
-    //recordCommandBuffer(commandBuffers[currentFrame], imageIndex);
 }
 
-void CApplication::drawFrame() {
-    //printf("currentFrame: %d, ", currentFrame);
 
-    VkSubmitInfo submitInfo{};
-    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-
-    //CPU-GPU sync use fence
-    VkResult result = vkWaitForFences(CContext::GetHandle().GetLogicalDevice(), 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
-    //if(result == VK_SUCCESS) printf("frame is ready. ");
-    //else printf("waiting for frame ready. ");
-
-    //CPU need to know which framebuffer to draw。GPU notify CPU the image is ready or not
-    //GPU-GPU sync use semaphore
-    //semaphore check if image is ready or not. imageIndex is the ready image.
-    result = vkAcquireNextImageKHR(CContext::GetHandle().GetLogicalDevice(), swapchain.getHandle(), UINT64_MAX, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &imageIndex);
-    //if(result == VK_SUCCESS) printf("acquired next image %d. \n", imageIndex);
-    //else printf("Unable to aquire next image. \n");
-
-    vkResetFences(CContext::GetHandle().GetLogicalDevice(), 1, &inFlightFences[currentFrame]);
-
-    vkResetCommandBuffer(commandBuffers[currentFrame], /*VkCommandBufferResetFlagBits*/ 0);
-    recordCommandBuffer();
-
-    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
-
-    VkPresentInfoKHR presentInfo{};
-
-    VkSemaphore waitSemaphores[] = {imageAvailableSemaphores[currentFrame] };
-    VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
-    submitInfo.waitSemaphoreCount = 1;
-    submitInfo.pWaitSemaphores = waitSemaphores;
-    submitInfo.pWaitDstStageMask = waitStages;
-
-    submitInfo.commandBufferCount = 1;
-    submitInfo.pCommandBuffers = &commandBuffers[currentFrame];
-
-    VkSemaphore signalSemaphores[] = { renderFinishedSemaphores[currentFrame] };
-    submitInfo.signalSemaphoreCount = 1;
-    submitInfo.pSignalSemaphores = signalSemaphores;
-
-    presentInfo.pWaitSemaphores = signalSemaphores;
-    
-    //GPU read recorded command buffer and execute
-    if (vkQueueSubmit(CContext::GetHandle().GetGraphicsQueue(), 1, &submitInfo, inFlightFences[currentFrame]) != VK_SUCCESS) {
-        debugger->writeMSG("Failed to submit draw command buffer! CurrentFrame: %d\n", currentFrame);
-        throw std::runtime_error("failed to submit draw command buffer!");
-    }
-
-    presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
-    presentInfo.waitSemaphoreCount = 1;
-
-
-    VkSwapchainKHR swapChains[] = { swapchain.getHandle() };
-    presentInfo.swapchainCount = 1;
-    presentInfo.pSwapchains = swapChains;
-
-    presentInfo.pImageIndices = &imageIndex;
-
-    //present engine read image the present(present imageIndex)
-    result = vkQueuePresentKHR(CContext::GetHandle().GetPresentQueue(), &presentInfo);
-}
 
 
 void CApplication::update(){
@@ -206,16 +77,18 @@ void CApplication::update(){
 
     mainCamera.update(deltaTime);
 
-    descriptor.updateMVPUniformBuffer(currentFrame, durationTime, mainCamera);
+    descriptor.updateMVPUniformBuffer(renderer.currentFrame, durationTime, mainCamera);
 
-    currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
+    renderer.Update();
 }
 
 void CApplication::mainLoop(){
 		while (!glfwWindowShouldClose(window)) {
 			glfwPollEvents();
             update();
-            drawFrame();
+            renderer.prepareCurrentFrameAndAcquireImageIndex(swapchain);
+            recordCommandBuffer();
+            renderer.drawFrame(swapchain);
 			if (NeedToExit) break;
 		}
 
@@ -249,8 +122,8 @@ CApplication::~CApplication(){
     //     uniformBuffers[i].DestroyAndFree();
     // }
     //}
-    indexDataBuffer.DestroyAndFree();
-    vertexDataBuffer.DestroyAndFree();
+    //indexDataBuffer.DestroyAndFree();
+    //vertexDataBuffer.DestroyAndFree();
 
     if(textureImageBuffer.size != (VkDeviceSize)0){
         vkDestroyImage(CContext::GetHandle().GetLogicalDevice(), textureImageBuffer.image, nullptr);
@@ -294,15 +167,16 @@ CApplication::~CApplication(){
     }
 
 
-    for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-        vkDestroySemaphore(CContext::GetHandle().GetLogicalDevice(), renderFinishedSemaphores[i], nullptr);
-        vkDestroySemaphore(CContext::GetHandle().GetLogicalDevice(), imageAvailableSemaphores[i], nullptr);
-        //vkDestroySemaphore(logicalDevice, computeFinishedSemaphores[i], nullptr);
-        vkDestroyFence(CContext::GetHandle().GetLogicalDevice(), inFlightFences[i], nullptr);
-        //vkDestroyFence(logicalDevice, computeInFlightFences[i], nullptr);
-    }
+    // for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+    //     vkDestroySemaphore(CContext::GetHandle().GetLogicalDevice(), renderFinishedSemaphores[i], nullptr);
+    //     vkDestroySemaphore(CContext::GetHandle().GetLogicalDevice(), imageAvailableSemaphores[i], nullptr);
+    //     //vkDestroySemaphore(logicalDevice, computeFinishedSemaphores[i], nullptr);
+    //     vkDestroyFence(CContext::GetHandle().GetLogicalDevice(), inFlightFences[i], nullptr);
+    //     //vkDestroyFence(logicalDevice, computeInFlightFences[i], nullptr);
+    // }
 
-    vkDestroyCommandPool(CContext::GetHandle().GetLogicalDevice(), commandPool, nullptr);
+    // vkDestroyCommandPool(CContext::GetHandle().GetLogicalDevice(), commandPool, nullptr);
+    renderer.Destroy();
 
     vkDestroyDevice(CContext::GetHandle().GetLogicalDevice(), nullptr);
 

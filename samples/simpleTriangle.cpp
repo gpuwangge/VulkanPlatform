@@ -5,7 +5,8 @@ class TEST_CLASS_NAME: public CVulkanBase{
 public:
 	void initialize(){
 		//Create bufferss
-		wxjCreateCommandBuffer();
+		renderer.InitCreateCommandPool(surface);
+		renderer.InitCreateCommandBuffers();
 
 		wxjCreateSwapChainImagesAndImageViews();
 
@@ -40,15 +41,15 @@ public:
 	}
 
 	void recordCommandBuffer(){
-		wxjBeginCommandBuffer();
+		renderer.BeginCommandBuffer();
 		std::vector<VkClearValue> clearValues{ {  0.0f, 1.0f, 0.0f, 1.0f  } };
-		wxjBeginRenderPass(clearValues);
-		wxjBindPipeline();
-		wxjSetViewport();
-		wxjSetScissor();
-		wxjDraw(3);
-		wxjEndRenderPass();
-		wxjEndCOmmandBuffer();
+		renderer.BeginRenderPass(renderProcess.renderPass, swapchain.swapChainFramebuffers, swapchain.swapChainExtent, clearValues);
+		renderer.BindPipeline(renderProcess.graphicsPipeline);
+		renderer.SetViewport(swapchain.swapChainExtent);
+		renderer.SetScissor(swapchain.swapChainExtent);
+		renderer.Draw(3);
+		renderer.EndRenderPass();
+		renderer.EndCOmmandBuffer();
 		CApplication::recordCommandBuffer();
 	}
 };

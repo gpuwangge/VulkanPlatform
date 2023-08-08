@@ -1,112 +1,5 @@
 #include "application.h"
 
-
-/**************
-Memory Management Utility Functions
-************/
-/*
-int CApplication::FindMemoryByFlagAndType(VkMemoryPropertyFlagBits memoryFlagBits, uint32_t  memoryTypeBits) {
-    VkPhysicalDeviceMemoryProperties	vpdmp;
-    vkGetPhysicalDeviceMemoryProperties(instance->pickedPhysicalDevice->get()->getHandle(), OUT &vpdmp);
-    for (unsigned int i = 0; i < vpdmp.memoryTypeCount; i++) {
-        VkMemoryType vmt = vpdmp.memoryTypes[i];
-        VkMemoryPropertyFlags vmpf = vmt.propertyFlags;
-        if ((memoryTypeBits & (1 << i)) != 0) {
-            if ((vmpf & memoryFlagBits) != 0){
-                fprintf(debugger->FpDebug, "Found given memory flag (0x%08x) and type (0x%08x): i = %d\n", memoryFlagBits, memoryTypeBits, i);
-                return i;
-            }
-        }
-    }
-
-    fprintf(debugger->FpDebug, "Could not find given memory flag (0x%08x) and type (0x%08x)\n", memoryFlagBits, memoryTypeBits);
-    throw  std::runtime_error("Could not find given memory flag and type");
-}
-
-int CApplication::FindMemoryThatIsHostVisible(uint32_t memoryTypeBits) {
-    return FindMemoryByFlagAndType(VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT, memoryTypeBits);
-}
-
-VkResult CApplication::InitDataBufferHelper(VkDeviceSize size, VkBufferUsageFlags usage, OUT MyBuffer * pMyBuffer) {
-    //HERE_I_AM("Init05DataBuffer");
-    
-    //Step1:
-    VkResult result = VK_SUCCESS;
-
-    VkBufferCreateInfo  vbci;
-    vbci.sType = VK_STRUCTURE_TYPE_BUFFER_CREATE_INFO;
-    vbci.pNext = nullptr;
-    vbci.flags = 0;
-    vbci.size = size;
-    vbci.usage = usage;
-#ifdef CHOICES
-    VK_USAGE_TRANSFER_SRC_BIT
-        VK_USAGE_TRANSFER_DST_BIT
-        VK_USAGE_UNIFORM_TEXEL_BUFFER_BIT
-        VK_USAGE_STORAGE_TEXEL_BUFFER_BIT
-        VK_USAGE_UNIFORM_BUFFER_BIT
-        VK_USAGE_STORAGE_BUFFER_BIT
-        VK_USAGE_INDEX_BUFFER_BIT
-        VK_USAGE_VERTEX_BUFFER_BIT
-        VK_USAGE_INDIRECT_BUFFER_BIT
-#endif
-    vbci.queueFamilyIndexCount = 0;
-    vbci.pQueueFamilyIndices = (const uint32_t *)nullptr;
-    vbci.sharingMode = VK_SHARING_MODE_EXCLUSIVE;	// can only use CONCURRENT if .queueFamilyIndexCount > 0
-#ifdef CHOICES
-    VK_SHARING_MODE_EXCLUSIVE
-        VK_SHARING_MODE_CONCURRENT
-#endif
-
-    pMyBuffer->size = size;
-    result = vkCreateBuffer(LOGICAL_DEVICE, IN &vbci, PALLOCATOR, OUT &pMyBuffer->buffer);
-    REPORT("vkCreateBuffer");
-
-    //Step 2:
-    VkMemoryRequirements			vmr;
-    vkGetBufferMemoryRequirements(LOGICAL_DEVICE, IN pMyBuffer->buffer, OUT &vmr);		// fills vmr
-    //if (Verbose){
-    fprintf(debugger->FpDebug, "Buffer vmr.size = %lld\n", vmr.size);
-    fprintf(debugger->FpDebug, "Buffer vmr.alignment = %lld\n", vmr.alignment);
-    fprintf(debugger->FpDebug, "Buffer vmr.memoryTypeBits = 0x%08x\n", vmr.memoryTypeBits);
-    fflush(debugger->FpDebug);
-    //}
-
-    VkMemoryAllocateInfo			vmai;
-    vmai.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
-    vmai.pNext = nullptr;
-    vmai.allocationSize = vmr.size;
-    vmai.memoryTypeIndex = FindMemoryThatIsHostVisible(vmr.memoryTypeBits);
-
-    VkDeviceMemory				vdm;
-    result = vkAllocateMemory(LOGICAL_DEVICE, IN &vmai, PALLOCATOR, OUT &vdm);
-    REPORT("vkAllocateMemory");
-    pMyBuffer->deviceMemory = vdm;
-
-    //Step 3:
-    result = vkBindBufferMemory(LOGICAL_DEVICE, pMyBuffer->buffer, IN vdm, 0);		// 0 is the offset
-    REPORT("vkBindBufferMemory");
-
-    return result;
-}
-
-VkResult CApplication::FillDataBufferHelper(IN MyBuffer myBuffer, IN void * data) {
-    // the size of the data had better match the size that was used to Init the buffer!
-
-    //Step 4:
-    void * pGpuMemory;
-    vkMapMemory(LOGICAL_DEVICE, IN myBuffer.deviceMemory, 0, VK_WHOLE_SIZE, 0, &pGpuMemory);	// 0 and 0 are offset and flags
-    memcpy(pGpuMemory, data, (size_t)myBuffer.size);
-    vkUnmapMemory(LOGICAL_DEVICE, IN myBuffer.deviceMemory);
-    return VK_SUCCESS;
-
-    // the way shown here makes it happen immediately
-    //
-    // but, we could use vkCmdUpdateBuffer( CommandBuffer, myBuffer.buffer, 0, myBuffer.size, data );
-    // instead, except that this requires use of the CommandBuffer
-    // which might not be so bad since we are using the CommandBuffer at that moment to draw anyway
-}
-*/
 /**************
 Swap Chain Utility Functions
 ************/
@@ -260,7 +153,7 @@ VkCommandBuffer CApplication::beginSingleTimeCommands() {
     VkCommandBufferAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
     allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-    allocInfo.commandPool = commandPool;
+    allocInfo.commandPool = renderer.commandPool;
     allocInfo.commandBufferCount = 1;
 
     VkCommandBuffer commandBuffer;
@@ -299,7 +192,7 @@ void CApplication::endSingleTimeCommands(VkCommandBuffer commandBuffer) {
     vkQueueSubmit(CContext::GetHandle().GetGraphicsQueue(), 1, &submitInfo, VK_NULL_HANDLE);
     vkQueueWaitIdle(CContext::GetHandle().GetGraphicsQueue());
 
-    vkFreeCommandBuffers(CContext::GetHandle().GetLogicalDevice(), commandPool, 1, &commandBuffer);
+    vkFreeCommandBuffers(CContext::GetHandle().GetLogicalDevice(), renderer.commandPool, 1, &commandBuffer);
 }
 
 void CApplication::generateMipmaps(VkImage image, VkFormat imageFormat, int32_t texWidth, int32_t texHeight, uint32_t mipLevels, std::array<MyImageBuffer, MIPMAP_TEXTURE_COUNT> *textureImageBuffers_mipmaps, bool bMix) {
@@ -433,7 +326,4 @@ void CApplication::createGLFWSurface() {
 }
 
 
-/**************
-MISC Utility Functions
-************/
 
