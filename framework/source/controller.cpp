@@ -1,4 +1,4 @@
-#include "application.h"
+#include "controller.h"
 //#include <math.h>
 #ifndef M_PI
 #define M_PI  3.14159265f
@@ -18,11 +18,16 @@ const int RIGHT = { 1 };
 const float MINSCALE = { 0.05f };
 
 
-bool CApplication::NeedToExit = false;
-Camera CApplication::mainCamera;
+// bool CApplication::NeedToExit = false;
+// Camera CApplication::mainCamera;
 
+bool NeedToExit;
+Camera mainCamera;
 
-void CApplication::GLFWKeyboard(GLFWwindow * window, int key, int scancode, int action, int mods) {
+CController::CController(){}
+CController::~CController(){}
+
+void CController::GLFWKeyboard(GLFWwindow * window, int key, int scancode, int action, int mods) {
 	static bool				UseIndexBuffer;			// true = use both vertex and index buffer, false = just use vertex buffer
 	static bool				UseLighting;			// true = use lighting for display
 	static bool				UseRotate;			// true = rotate-animate, false = use mouse for interaction
@@ -144,7 +149,7 @@ void CApplication::GLFWKeyboard(GLFWwindow * window, int key, int scancode, int 
 
 }
 
-void CApplication::GLFWMouseMotion(GLFWwindow *window, double xpos, double ypos){
+void CController::GLFWMouseMotion(GLFWwindow *window, double xpos, double ypos){
 	static int				Xmouse, Ymouse;			// mouse values
 	static float				Xrot, Yrot;			// rotation angles in degrees
 	static int				ActiveButton;			// current button that is down
@@ -174,7 +179,7 @@ void CApplication::GLFWMouseMotion(GLFWwindow *window, double xpos, double ypos)
 	Ymouse = (int)ypos;
 }
 
-void CApplication::GLFWMouseButton(GLFWwindow *window, int button, int action, int mods) {
+void CController::GLFWMouseButton(GLFWwindow *window, int button, int action, int mods) {
 	static int				Xmouse, Ymouse;			// mouse values
 	static int				ActiveButton;			// current button that is down
 

@@ -17,6 +17,7 @@
 //#include "imageManager.h" 
 #include "texture.h" //this includes imageManager.h
 #include "modelManager.h"
+#include "controller.h"
 
 class CApplication{
 public:
@@ -43,6 +44,7 @@ public:
     CRenderer renderer;
     CTextureImage textureImage;
     CModelManager modelManager;
+    CController controller;
 
     //std::chrono::_V2::system_clock::time_point lastTime;
 
@@ -54,11 +56,9 @@ public:
 
     void mainLoop();
     
-    static Camera mainCamera;
+    static Camera mainCamera; //declare static class member. But can not define and init them in the header file!
     static bool NeedToExit;
-    static void GLFWKeyboard(GLFWwindow * window, int key, int scancode, int action, int mods);
-	static void GLFWMouseMotion(GLFWwindow *window, double xpos, double ypos);
-	static void GLFWMouseButton(GLFWwindow *window, int button, int action, int mods);
+
 
     /*Clean up Functions*/
     void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator);

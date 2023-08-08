@@ -1,5 +1,8 @@
 #include "application.h"
 
+Camera CApplication::mainCamera;  //define static class members
+bool CApplication::NeedToExit = false; 
+
 CApplication::CApplication(){
     debugger = new CDebugger("../logs/application.log");
 
@@ -12,6 +15,8 @@ CApplication::CApplication(){
 
     windowWidth = 0;
     windowHeight = 0;
+
+    //NeedToExit = false;
 }
 
 void CApplication::run(){
@@ -106,9 +111,9 @@ void CApplication::prepareGLFW(){
 
 		glfwGetFramebufferSize(window, &windowWidth, &windowHeight);
 
-		glfwSetKeyCallback(window, GLFWKeyboard);
-		glfwSetCursorPosCallback(window, GLFWMouseMotion);
-		glfwSetMouseButtonCallback(window, GLFWMouseButton);
+		glfwSetKeyCallback(window, controller.GLFWKeyboard);
+		glfwSetCursorPosCallback(window, controller.GLFWMouseMotion);
+		glfwSetMouseButtonCallback(window, controller.GLFWMouseButton);
 }
 
 void CApplication::createGLFWSurface() {
