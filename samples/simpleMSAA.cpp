@@ -1,23 +1,17 @@
 #include "..\\framework\\include\\application.h"
-#define TEST_CLASS_NAME CSimpleHallway
+#define TEST_CLASS_NAME CSimpleMSAA
 class TEST_CLASS_NAME: public CApplication{
 public:
 	std::vector<Vertex3D> vertices3D;
 	std::vector<uint32_t> indices3D;
 
     void initialize(){
-		swapchain.bEnableDepthTest = true;
-		swapchain.bEnableMSAA = true; //!To enable MSAA, make sure it has depth test first (call wxjCreateDepthAttachment())
-		textureImage.bEnableMipMap = true;
-
-		mainCamera.type = Camera::CameraType::firstperson;
-		mainCamera.setPosition(glm::vec3(0.0f, -0.8f, 0.0f));
-		mainCamera.setRotation(glm::vec3(0.0f, 90.00001f, 0.0f));
-		mainCamera.setPerspective(60.0f, (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 256.0f);
+		swapchain.bEnableMSAA = true;//!To enable MSAA, make sure it has depth test (call addDepthAttachment())
+		swapchain.bEnableDepthTest = true; 
 
 		//Create vertex resource
-		modelManager.LoadObjModel("../models/hallway.obj", vertices3D, indices3D);
-
+		modelManager.LoadObjModel("../models/viking_room.obj", vertices3D, indices3D);
+		
 		//Create buffers
 		renderer.CreateVertexBuffer<Vertex3D>(vertices3D);
 		renderer.CreateIndexBuffer(indices3D);
@@ -25,17 +19,12 @@ public:
 		renderer.InitCreateCommandBuffers();
 
 		//Create texture resource
-		VkImageUsageFlags usage_texture = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
-		textureImage.CreateTextureImage("../textures/checkerboard_marble.jpg", usage_texture, renderer.commandPool);
+		VkImageUsageFlags usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+		textureImage.CreateTextureImage("../textures/viking_room.png", usage, renderer.commandPool);
 		textureImage.CreateImageView(VK_IMAGE_ASPECT_COLOR_BIT);
 
-		//textureImage.generateMipmaps();
-		textureImage.generateMipmaps("../textures/checkerboard", usage_texture);
-		
-		VkImageUsageFlags usage;
 		//Create msaa resource
 		if(swapchain.bEnableMSAA){
-			//wxjGetMaxUsableSampleCount();
 			swapchain.GetMaxUsableSampleCount();
 			usage = VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 			swapchain.createMSAAImages(VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
@@ -47,7 +36,6 @@ public:
 		usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
 		swapchain.createDepthImages(depthFormat, VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 		swapchain.createDepthImageViews(depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT);
-
 
 		//Create Renderpass
 		VkImageLayout imageLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
@@ -61,6 +49,7 @@ public:
 		renderProcess.createDependency(srcPipelineStageFlag, dstPipelineStageFlag);
 		renderProcess.createRenderPass();
 
+		//wxjCreateFramebuffers(); //need create imageviews first
 		swapchain.CreateFramebuffers(renderProcess.renderPass);
 
 		//Create shader resource
@@ -84,17 +73,14 @@ public:
 	}
 
 	void update(){
+		descriptor.mvpUBO.model = glm::rotate(glm::mat4(1.0f), durationTime * glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 		CApplication::update();
-
-		//static int counter = 0;
-		//if(counter==0)NeedToExit = true;
-		//counter++;
 	}
 
 	void recordCommandBuffer(){
 		renderer.BeginCommandBuffer();
 
-		std::vector<VkClearValue> clearValues{ {  0.0f, 0.0f, 0.0f, 1.0f  },  { 1.0f, 0 } };
+		std::vector<VkClearValue> clearValues{ {  1.0f, 1.0f, 1.0f, 1.0f  },  { 1.0f, 0 } };
 		renderer.BeginRenderPass(renderProcess.renderPass, swapchain.swapChainFramebuffers, swapchain.swapChainExtent, clearValues);
 
 		renderer.BindPipeline(renderProcess.graphicsPipeline);

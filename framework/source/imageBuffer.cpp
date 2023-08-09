@@ -1,12 +1,12 @@
 #include "imageBuffer.h"
 
 CWxjImageBuffer::CWxjImageBuffer(){
-    debugger = new CDebugger("../logs/imageBuffer.log");
+    //debugger = new CDebugger("../logs/imageBuffer.log");
     size = 0;
 }
 
 CWxjImageBuffer::~CWxjImageBuffer(){
-    if (!debugger) delete debugger;
+    //if (!debugger) delete debugger;
 }
 
 void CWxjImageBuffer::createImage(uint32_t width, uint32_t height, uint32_t mipLevels, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties) {

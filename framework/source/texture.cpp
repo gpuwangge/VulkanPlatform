@@ -6,9 +6,11 @@
 
 CTextureImage::CTextureImage(){
     imageFormat = VK_FORMAT_R8G8B8A8_SRGB;
-	debugger = new CDebugger("../logs/texture.log");
+	//debugger = new CDebugger("../logs/texture.log");
 }
-CTextureImage::~CTextureImage(){if (!debugger) delete debugger;}
+CTextureImage::~CTextureImage(){
+	//if (!debugger) delete debugger;
+}
 
 void CTextureImage::CreateTextureImage(const std::string texturePath, VkImageUsageFlags usage, VkCommandPool &commandPool) {
     pCommandPool = &commandPool;

@@ -28,7 +28,7 @@ public:
     void createImageView(VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels);
     VkImageView createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels);
 
-    CDebugger * debugger;
+    //CDebugger * debugger;//can not use debugger in ImageBuffer, because multiple image buffer is created at the same time for swapchain
 };
 
 #endif

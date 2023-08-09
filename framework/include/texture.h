@@ -35,7 +35,7 @@ public:
     uint32_t mipLevels = 1; //1 means no mipmap
     bool bEnableMipMap = false;
 
-    CDebugger * debugger;
+    //CDebugger * debugger;
 };
 
 #endif
