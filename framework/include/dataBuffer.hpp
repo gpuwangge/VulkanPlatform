@@ -1,5 +1,5 @@
-#ifndef H_DATASTRUCTURE
-#define H_DATASTRUCTURE
+#ifndef H_DATABUFFER
+#define H_DATABUFFER
 #include "common.h"
 #include "context.h"
 

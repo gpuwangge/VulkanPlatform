@@ -3,7 +3,7 @@
 
 
 #include "common.h"
-#include "dataStructure.hpp"
+#include "dataBuffer.hpp"
 
 class CModelManager final{
 

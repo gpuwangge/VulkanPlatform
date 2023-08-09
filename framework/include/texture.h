@@ -1,9 +1,6 @@
 #ifndef H_TEXTURE
 #define H_TEXTURE
 
-// #include "common.h"
-// #include "context.h"
-// #include "dataStructure.hpp"
 #include "imageBuffer.h"
 #include "renderer.h"
 

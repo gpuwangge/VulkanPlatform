@@ -2,7 +2,7 @@
 #define H_DESCRIPTOR
 
 #include "context.h"
-#include "dataStructure.hpp"
+#include "dataBuffer.hpp"
 #include "camera.hpp"
 
 class CDescriptor final{

@@ -3,7 +3,7 @@
 
 #include "common.h"
 #include "context.h"
-#include "dataStructure.hpp"
+#include "dataBuffer.hpp"
 #include "swapchain.h"
 
 class CRenderer final{

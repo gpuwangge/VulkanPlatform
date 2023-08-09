@@ -8,7 +8,7 @@
 #include "camera.hpp"
 #include "instance.h"
 #include "swapchain.h"
-#include "dataStructure.hpp"
+#include "dataBuffer.hpp"
 #include "context.h"
 #include "descriptor.h"
 #include "renderProcess.h"
