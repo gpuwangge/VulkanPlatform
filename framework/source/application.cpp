@@ -57,10 +57,6 @@ void CApplication::initialize(){
     shaderManager.Destroy();
 }
 
-void CApplication::recordCommandBuffer(){
-
-}
-
 void CApplication::update(){
     //printf("app update...\n");
 
@@ -75,6 +71,7 @@ void CApplication::update(){
     mainCamera.update(deltaTime);
 
     descriptor.updateMVPUniformBuffer(renderer.currentFrame, durationTime, mainCamera);
+    descriptor.updateVPUniformBuffer(renderer.currentFrame, durationTime, mainCamera);
 
     renderer.Update();
 }

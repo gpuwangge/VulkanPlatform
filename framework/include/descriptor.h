@@ -33,6 +33,14 @@ public:
     MVPUniformBufferObject mvpUBO{};
     void updateMVPUniformBuffer(uint32_t currentFrame, float durationTime, Camera &mainCamera);
 
+    bool bUseVP;
+    std::vector<CWxjBuffer> vpUniformBuffers; 
+	std::vector<void*> vpUniformBuffersMapped;
+    void addVPUniformBuffer();
+    VPUniformBufferObject vpUBO{};
+    void updateVPUniformBuffer(uint32_t currentFrame, float durationTime, Camera &mainCamera);
+
+
     bool bUseSampler;
     VkSampler textureSampler;
     void addImageSamplerUniformBuffer(uint32_t mipLevels);

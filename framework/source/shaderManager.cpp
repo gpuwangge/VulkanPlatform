@@ -1,6 +1,9 @@
 #include "shaderManager.h"
 
-CShaderManager::CShaderManager(){debugger = new CDebugger("../logs/shaderManager.log");}
+CShaderManager::CShaderManager(){
+    debugger = new CDebugger("../logs/shaderManager.log");
+    //bEnablePushConstant = false;
+}
 CShaderManager::~CShaderManager(){if (!debugger) delete debugger;}
 
 void CShaderManager::InitVertexShader(const std::string shaderName){

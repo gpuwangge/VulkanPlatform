@@ -6,6 +6,7 @@ CDescriptor::CDescriptor(){
     debugger = new CDebugger("../logs/descriptor.log");
 	bUseCustomUniformBuffer = false;
     bUseMVP = false;
+    bUseVP = false;
     bUseSampler = false;
 	m_customUniformBufferSize = 0;
 	mvpUBO.model = glm::mat4(1.0f);
@@ -35,11 +36,24 @@ void CDescriptor::addMVPUniformBuffer(){
     mvpUniformBuffersMapped.resize(MAX_FRAMES_IN_FLIGHT);
 
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-        //VkResult result = InitDataBufferHelper(bufferSize, usage, &_uniformBuffers[i]);
         VkResult result = mvpUniformBuffers[i].init(sizeof(MVPUniformBufferObject), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
         REPORT("InitDataBufferHelper");
 
         vkMapMemory(CContext::GetHandle().GetLogicalDevice(), mvpUniformBuffers[i].deviceMemory, 0, sizeof(MVPUniformBufferObject), 0, &mvpUniformBuffersMapped[i]);
+    }
+}
+
+void CDescriptor::addVPUniformBuffer(){
+    bUseVP = true;
+	
+    vpUniformBuffers.resize(MAX_FRAMES_IN_FLIGHT);
+    vpUniformBuffersMapped.resize(MAX_FRAMES_IN_FLIGHT);
+
+    for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+        VkResult result = vpUniformBuffers[i].init(sizeof(VPUniformBufferObject), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
+        REPORT("InitDataBufferHelper");
+
+        vkMapMemory(CContext::GetHandle().GetLogicalDevice(), vpUniformBuffers[i].deviceMemory, 0, sizeof(VPUniformBufferObject), 0, &vpUniformBuffersMapped[i]);
     }
 }
 
@@ -87,7 +101,7 @@ void CDescriptor::createDescriptorPool(VkDescriptorType type){
 		counter++;
 	}
 	
-    if(bUseMVP){
+    if(bUseMVP || bUseVP){
         poolSizes[counter].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 	 	poolSizes[counter].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
 		counter++;
@@ -180,6 +194,16 @@ void CDescriptor::createDescriptorSetLayout(VkDescriptorSetLayoutBinding *custom
 		counter++;
     }
 
+    if(bUseVP){
+        VkDescriptorSetLayoutBinding binding = VPUniformBufferObject::GetBinding();
+        bindings[counter].binding = counter;
+		bindings[counter].descriptorCount = binding.descriptorCount;
+		bindings[counter].descriptorType = binding.descriptorType;
+		bindings[counter].pImmutableSamplers = binding.pImmutableSamplers;
+		bindings[counter].stageFlags = binding.stageFlags;
+		counter++;
+    }
+
     if(bUseSampler){
         bindings[counter].binding = counter;
         bindings[counter].descriptorCount = 1;
@@ -220,16 +244,13 @@ void CDescriptor::createDescriptorSets(VkImageView *textureImageView){
 
         for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
             std::vector<VkWriteDescriptorSet> descriptorWrites;
-            VkDescriptorBufferInfo customBufferInfo{}; //for custom uniform
-            VkDescriptorBufferInfo mvpBufferInfo{}; //for mvp
-            VkDescriptorImageInfo imageInfo{}; //for texture sampler
-
-            VkDescriptorBufferInfo storageBufferInfoLastFrame{}; //for compute shader
-            VkDescriptorBufferInfo storageBufferInfoCurrentFrame{}; //for compute shader
+            //VkDescriptorBufferInfo storageBufferInfoLastFrame{}; //for compute shader
+            //VkDescriptorBufferInfo storageBufferInfoCurrentFrame{}; //for compute shader
 
             descriptorWrites.resize(descriptorSize);
             int counter = 0;
 
+            VkDescriptorBufferInfo customBufferInfo{}; //for custom uniform
             if(bUseCustomUniformBuffer){
                 customBufferInfo.buffer = customUniformBuffers[i].buffer;
                 customBufferInfo.offset = 0;
@@ -244,6 +265,7 @@ void CDescriptor::createDescriptorSets(VkImageView *textureImageView){
                 counter++;
             }
 
+            VkDescriptorBufferInfo mvpBufferInfo{}; //for mvp
             if(bUseMVP){
                 mvpBufferInfo.buffer = mvpUniformBuffers[i].buffer;
                 mvpBufferInfo.offset = 0;
@@ -258,6 +280,22 @@ void CDescriptor::createDescriptorSets(VkImageView *textureImageView){
                 counter++;
             }
 
+            VkDescriptorBufferInfo vpBufferInfo{}; //for vp
+            if(bUseVP){
+                vpBufferInfo.buffer = vpUniformBuffers[i].buffer;
+                vpBufferInfo.offset = 0;
+                vpBufferInfo.range = sizeof(VPUniformBufferObject);
+                descriptorWrites[counter].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+                descriptorWrites[counter].dstSet = descriptorSets[i];
+                descriptorWrites[counter].dstBinding = counter;
+                descriptorWrites[counter].dstArrayElement = 0;
+                descriptorWrites[counter].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+                descriptorWrites[counter].descriptorCount = 1;
+                descriptorWrites[counter].pBufferInfo = &vpBufferInfo;
+                counter++;
+            }
+
+            VkDescriptorImageInfo imageInfo{}; //for texture sampler
             if(bUseSampler){
                 imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
                 imageInfo.imageView = *textureImageView;
@@ -387,10 +425,22 @@ void CDescriptor::updateMVPUniformBuffer(uint32_t currentFrame, float durationTi
     }
 }
 
+void CDescriptor::updateVPUniformBuffer(uint32_t currentFrame, float durationTime, Camera &mainCamera) {
+    if(bUseVP){
+        //UniformBufferObject ubo{};
+        vpUBO.view = mainCamera.matrices.view;
+        vpUBO.proj = mainCamera.matrices.perspective;
+
+        memcpy(vpUniformBuffersMapped[currentFrame], &vpUBO, sizeof(vpUBO));
+
+        //CApplication::updateUniformBuffer(currentFrame, durationTime);
+    }
+}
+
 int CDescriptor::getDescriptorSize(){
 	int descriptorSize = 0;
 	descriptorSize += bUseCustomUniformBuffer ? 1:0;
-	descriptorSize += bUseMVP ? 1:0;
+	descriptorSize += (bUseMVP||bUseVP) ? 1:0;
 	descriptorSize += bUseSampler ? 1:0;
 	return descriptorSize;
 }
@@ -404,6 +454,10 @@ void CDescriptor::DestroyAndFree(){
 
     for (size_t i = 0; i < mvpUniformBuffers.size(); i++) {
         mvpUniformBuffers[i].DestroyAndFree();
+    }
+
+    for (size_t i = 0; i < vpUniformBuffers.size(); i++) {
+        vpUniformBuffers[i].DestroyAndFree();
     }
 
     //no need to destroy descriptorSets, because they are from descriptorPool

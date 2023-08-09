@@ -148,6 +148,34 @@ VkFormat CRenderProcess::findDepthFormat() {
     );
 }
 
+void CRenderProcess::createLayout(VkDescriptorSetLayout &descriptorSetLayout){
+	VkPushConstantRange dummyPushConstantRange;
+	createLayout(descriptorSetLayout, dummyPushConstantRange, false);
+}
+void CRenderProcess::createLayout(VkDescriptorSetLayout &descriptorSetLayout, VkPushConstantRange &pushConstantRange, bool bUsePushConstant){
+	VkResult result = VK_SUCCESS;
+
+	VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
+	pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+	// if (pt == PIPELINE_COMPUTE) {
+	// 	pipelineLayoutInfo.setLayoutCount = 0;
+	// 	pipelineLayoutInfo.pSetLayouts = nullptr;
+	// }else {
+	pipelineLayoutInfo.setLayoutCount = 1;
+	pipelineLayoutInfo.pSetLayouts = &descriptorSetLayout;//  descriptorSetLayout;//todo: LAYOUT
+	//}
+
+	if(bUsePushConstant){
+		pipelineLayoutInfo.pushConstantRangeCount = 1;
+		pipelineLayoutInfo.pPushConstantRanges = &pushConstantRange;
+	}
+
+	//Create Graphics Pipeline Layout
+	result = vkCreatePipelineLayout(CContext::GetHandle().GetLogicalDevice(), &pipelineLayoutInfo, nullptr, &pipelineLayout);
+	if (result != VK_SUCCESS) throw std::runtime_error("failed to create pipeline layout!");
+	REPORT("vkCreatePipelineLayout");
+}
+
 void CRenderProcess::Cleanup(){
 	vkDestroyRenderPass(CContext::GetHandle().GetLogicalDevice(), renderPass, nullptr);
 

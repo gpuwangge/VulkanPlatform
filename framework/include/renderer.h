@@ -30,6 +30,15 @@ public:
     void InitCreateCommandBuffers();
     void CreateSyncObjects();
 
+    //Create start() and end() to make sample command recording simple
+    void Start(VkPipeline &pipeline, VkPipelineLayout &pipelineLayout, 
+        VkRenderPass &renderPass, 
+        std::vector<VkFramebuffer> &swapChainFramebuffers, VkExtent2D &extent,
+        std::vector<VkDescriptorSet> &descriptorSets,
+        std::vector<VkClearValue> &clearValues);
+    void End();
+
+    //Start(...)
     void BeginCommandBuffer();
     void BeginRenderPass(VkRenderPass &renderPass, std::vector<VkFramebuffer> &swapChainFramebuffers, VkExtent2D &extent, std::vector<VkClearValue> &clearValues);
     void BindPipeline(VkPipeline &pipeline);
@@ -38,8 +47,16 @@ public:
     void BindVertexBuffer();
     void BindIndexBuffer();
     void BindDescriptorSets(VkPipelineLayout &pipelineLayout, std::vector<VkDescriptorSet> &descriptorSets);
+
+    //Draw
+    template <typename T>
+    void PushConstant(T &pc, VkPipelineLayout pipelineLayout, VkPushConstantRange &pushConstantRange){
+        vkCmdPushConstants(commandBuffers[currentFrame], pipelineLayout, pushConstantRange.stageFlags, pushConstantRange.offset, pushConstantRange.size, &pc);
+    }
     void DrawIndexed(std::vector<uint32_t> &indices3D);
     void Draw(uint32_t n);
+
+    //End()
     void EndRenderPass();
     void EndCOmmandBuffer();
 

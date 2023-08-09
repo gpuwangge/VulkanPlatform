@@ -157,6 +157,24 @@ void CRenderer::CreateSyncObjects() {
     }
 }
 
+
+void CRenderer::Start(VkPipeline &pipeline, VkPipelineLayout &pipelineLayout, 
+        VkRenderPass &renderPass, 
+        std::vector<VkFramebuffer> &swapChainFramebuffers, VkExtent2D &extent,
+        std::vector<VkDescriptorSet> &descriptorSets,
+        std::vector<VkClearValue> &clearValues){
+    BeginCommandBuffer();
+    BeginRenderPass(renderPass, swapChainFramebuffers, extent, clearValues);
+    BindPipeline(pipeline);
+    SetViewport(extent);
+    SetScissor(extent);
+    BindDescriptorSets(pipelineLayout, descriptorSets);
+}
+void CRenderer::End(){
+	EndRenderPass();
+	EndCOmmandBuffer();
+}
+
 void CRenderer::BeginCommandBuffer(){
     VkCommandBufferBeginInfo beginInfo{};
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
@@ -218,9 +236,10 @@ void CRenderer::BindVertexBuffer(){
 void CRenderer::BindIndexBuffer(){
 	vkCmdBindIndexBuffer(commandBuffers[currentFrame], indexDataBuffer.buffer, 0, VK_INDEX_TYPE_UINT32);
 }
-void CRenderer::BindDescriptorSets(VkPipelineLayout &pipelineLayout, std::vector<VkDescriptorSet> &descriptorSets){//renderProcess.pipelineLayout, &descriptor.descriptorSets[currentFrame]
+void CRenderer::BindDescriptorSets(VkPipelineLayout &pipelineLayout, std::vector<VkDescriptorSet> &descriptorSets){
 	vkCmdBindDescriptorSets(commandBuffers[currentFrame], VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[currentFrame], 0, nullptr);
 }
+
 void CRenderer::DrawIndexed(std::vector<uint32_t> &indices3D){
 	vkCmdDrawIndexed(commandBuffers[currentFrame], static_cast<uint32_t>(indices3D.size()), 1, 0, 0, 0);
 }

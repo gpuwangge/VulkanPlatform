@@ -19,6 +19,14 @@
 #include "modelManager.h"
 #include "controller.h"
 
+#define RENDER_START { \
+    renderer.Start(renderProcess.graphicsPipeline, renderProcess.pipelineLayout, \
+    renderProcess.renderPass,   \
+    swapchain.swapChainFramebuffers,swapchain.swapChainExtent,   \
+    descriptor.descriptorSets,  \
+    clearValues);}
+#define RENDER_END renderer.End();
+
 class CApplication{
 public:
     CApplication();
@@ -67,12 +75,11 @@ public:
     float deltaTime = 0;
 
     /*Virtual function: base and derived class will implement. If drived class not implement, call base's verson*/
-    virtual void initialize();
-    virtual void update();
-    virtual void recordCommandBuffer();
+    virtual void initialize(); //base: create sync object, destroy shader resource
+    virtual void update(); //base: update time, frame id, camera and ubo
     
     /*Pure virtual function(=0): base class not implment, derived class must implement*/
-
+    virtual void recordCommandBuffer() = 0;
 };
 
 #endif

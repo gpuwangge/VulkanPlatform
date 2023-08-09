@@ -14,6 +14,8 @@ public:
 	************/
 	std::vector<uint32_t> indices3D = { 0, 1, 2, 2, 3, 0};
 
+	std::vector<VkClearValue> clearValues{ {  1.0f, 1.0f, 1.0f, 1.0f  } };
+
     void initialize(){
 		//Create buffers
 		renderer.CreateVertexBuffer<Vertex3D>(vertices3D);
@@ -32,52 +34,49 @@ public:
 		renderProcess.createDependency();
 		renderProcess.createRenderPass();
 
-		//wxjCreateFramebuffers();
 		swapchain.CreateFramebuffers(renderProcess.renderPass);
 
 		//Create shader resource
-		shaderManager.InitVertexShader("../shaders/texture/vert.spv");
-		shaderManager.InitFragmentShader("../shaders/texture/frag.spv");
+		shaderManager.InitVertexShader("../shaders/simplePushConstant/vert.spv");
+		shaderManager.InitFragmentShader("../shaders/simplePushConstant/frag.spv");
+		shaderManager.CreatePushConstantRange<ModelPushConstants>(VK_SHADER_STAGE_VERTEX_BIT, 0);
 
-		//Create Descriptors
-		descriptor.addMVPUniformBuffer();
+		//Create Descriptors for shader uniforms
+		descriptor.addVPUniformBuffer();
 		descriptor.addImageSamplerUniformBuffer(textureImage.mipLevels);
 		descriptor.createDescriptorPool();
 		descriptor.createDescriptorSetLayout();
 		descriptor.createDescriptorSets(&textureImage.textureImageBuffer.view);
 
+		renderProcess.createLayout(descriptor.descriptorSetLayout, shaderManager.pushConstantRange);
 		renderProcess.createGraphicsPipeline<Vertex3D>(
 			VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
 			shaderManager.vertShaderModule, 
-			shaderManager.fragShaderModule, 
-			descriptor.descriptorSetLayout);
+			shaderManager.fragShaderModule);
 		
 		CApplication::initialize();
 	}
 
 	void update(){
-		descriptor.mvpUBO.model = glm::rotate(glm::mat4(1.0f), durationTime * glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		//descriptor.mvpUBO.model = glm::rotate(glm::mat4(1.0f), durationTime * glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 		CApplication::update();
 	}
 
 	void recordCommandBuffer(){
-		renderer.BeginCommandBuffer();
+		RENDER_START
 
-		std::vector<VkClearValue> clearValues{ {  1.0f, 1.0f, 1.0f, 1.0f  } };
-		renderer.BeginRenderPass(renderProcess.renderPass, swapchain.swapChainFramebuffers, swapchain.swapChainExtent, clearValues);
-
-		renderer.BindPipeline(renderProcess.graphicsPipeline);
-		renderer.SetViewport(swapchain.swapChainExtent);
-		renderer.SetScissor(swapchain.swapChainExtent);
 		renderer.BindVertexBuffer();
-		renderer.BindIndexBuffer();
-		renderer.BindDescriptorSets(renderProcess.pipelineLayout, descriptor.descriptorSets);
+    	renderer.BindIndexBuffer();
+		ModelPushConstants pushConstants;
+		// pushConstants.model = glm::mat4(1, 0, 0, 0,
+		// 							    0, 1, 0, 0,
+		// 								0 ,0, 1, 0,
+		// 								0, 0, 0, 1);
+		pushConstants.model = glm::rotate(glm::mat4(1.0f), durationTime * glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		renderer.PushConstant<ModelPushConstants>(pushConstants, renderProcess.pipelineLayout, shaderManager.pushConstantRange);
 		renderer.DrawIndexed(indices3D);
 
-		renderer.EndRenderPass();
-		renderer.EndCOmmandBuffer();
-
-		CApplication::recordCommandBuffer();
+		RENDER_END
 	}
 };
 

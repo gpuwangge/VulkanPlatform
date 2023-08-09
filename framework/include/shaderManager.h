@@ -15,6 +15,16 @@ public:
     void InitVertexShader(const std::string shaderName);
     void InitFragmentShader(const std::string shaderName);
 
+    //bool bEnablePushConstant;
+    VkPushConstantRange pushConstantRange;
+    template<typename T>
+    void CreatePushConstantRange(VkShaderStageFlagBits shaderStageFlagBits, uint32_t offset){
+        //bEnablePushConstant = true;
+        pushConstantRange.stageFlags = shaderStageFlagBits;
+        pushConstantRange.offset = offset;
+        pushConstantRange.size = sizeof(T);
+    }
+
     void Destroy();
 
 private:

@@ -3,6 +3,8 @@
 #define TEST_CLASS_NAME CSimpleTriangle
 class TEST_CLASS_NAME: public CApplication{
 public:
+	std::vector<VkClearValue> clearValues{ {  0.0f, 1.0f, 0.0f, 1.0f  } };
+
 	void initialize(){
 		//Create bufferss
 		renderer.InitCreateCommandPool(surface);
@@ -26,11 +28,11 @@ public:
 		descriptor.createDescriptorSetLayout();
 		descriptor.createDescriptorSets();
 
+		renderProcess.createLayout(descriptor.descriptorSetLayout);
 		renderProcess.createGraphicsPipeline(
 			VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
 			shaderManager.vertShaderModule, 
-			shaderManager.fragShaderModule, 
-			descriptor.descriptorSetLayout);
+			shaderManager.fragShaderModule);
 
 		CApplication::initialize();
 	}
@@ -40,16 +42,12 @@ public:
 	}
 
 	void recordCommandBuffer(){
-		renderer.BeginCommandBuffer();
-		std::vector<VkClearValue> clearValues{ {  0.0f, 1.0f, 0.0f, 1.0f  } };
-		renderer.BeginRenderPass(renderProcess.renderPass, swapchain.swapChainFramebuffers, swapchain.swapChainExtent, clearValues);
-		renderer.BindPipeline(renderProcess.graphicsPipeline);
-		renderer.SetViewport(swapchain.swapChainExtent);
-		renderer.SetScissor(swapchain.swapChainExtent);
+		RENDER_START
+		//actually this sample doesn't need BindDescriptorSets
+
 		renderer.Draw(3);
-		renderer.EndRenderPass();
-		renderer.EndCOmmandBuffer();
-		CApplication::recordCommandBuffer();
+		
+		RENDER_END
 	}
 };
 

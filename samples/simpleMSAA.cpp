@@ -5,6 +5,8 @@ public:
 	std::vector<Vertex3D> vertices3D;
 	std::vector<uint32_t> indices3D;
 
+	std::vector<VkClearValue> clearValues{ {  1.0f, 1.0f, 1.0f, 1.0f  },  { 1.0f, 0 } };
+
     void initialize(){
 		swapchain.bEnableMSAA = true;//!To enable MSAA, make sure it has depth test (call addDepthAttachment())
 		swapchain.bEnableDepthTest = true; 
@@ -63,11 +65,11 @@ public:
 		descriptor.createDescriptorSetLayout();
 		descriptor.createDescriptorSets(&textureImage.textureImageBuffer.view);
 
+		renderProcess.createLayout(descriptor.descriptorSetLayout);
 		renderProcess.createGraphicsPipeline<Vertex3D>(
 			VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
 			shaderManager.vertShaderModule, 
-			shaderManager.fragShaderModule, 
-			descriptor.descriptorSetLayout);
+			shaderManager.fragShaderModule);
 
 		CApplication::initialize();
 	}
@@ -78,23 +80,13 @@ public:
 	}
 
 	void recordCommandBuffer(){
-		renderer.BeginCommandBuffer();
+		RENDER_START
 
-		std::vector<VkClearValue> clearValues{ {  1.0f, 1.0f, 1.0f, 1.0f  },  { 1.0f, 0 } };
-		renderer.BeginRenderPass(renderProcess.renderPass, swapchain.swapChainFramebuffers, swapchain.swapChainExtent, clearValues);
-
-		renderer.BindPipeline(renderProcess.graphicsPipeline);
-		renderer.SetViewport(swapchain.swapChainExtent);
-		renderer.SetScissor(swapchain.swapChainExtent);
 		renderer.BindVertexBuffer();
 		renderer.BindIndexBuffer();
-		renderer.BindDescriptorSets(renderProcess.pipelineLayout, descriptor.descriptorSets);
 		renderer.DrawIndexed(indices3D);
 
-		renderer.EndRenderPass();
-		renderer.EndCOmmandBuffer();
-
-		CApplication::recordCommandBuffer();
+		RENDER_END
 	}
 };
 

@@ -3,6 +3,8 @@
 
 #include "common.h"
 #include "context.h"
+#include "dataBuffer.hpp"
+
 
 class CRenderProcess final{
 public:
@@ -50,6 +52,9 @@ public:
 	VkPipeline graphicsPipeline;
 
 
+    void createLayout(VkDescriptorSetLayout &descriptorSetLayout);
+    void createLayout(VkDescriptorSetLayout &descriptorSetLayout, VkPushConstantRange &pushConstantRange, bool bUsePushConstant = true);
+    
     struct DummyVertex {
         static VkVertexInputBindingDescription getBindingDescription() {
             VkVertexInputBindingDescription bindingDescription{};
@@ -61,14 +66,20 @@ public:
         }
     };
 
+    /*******
+     * 
+     * Graphics Pipeline Template
+     * 
+     * 
+     * *****/
     //this function is for samples that are NOT using vertex shader
-    void createGraphicsPipeline(VkPrimitiveTopology topology, VkShaderModule &vertShaderModule, VkShaderModule &fragShaderModule, VkDescriptorSetLayout &descriptorSetLayout){
-        createGraphicsPipeline<DummyVertex>(topology, vertShaderModule, fragShaderModule, descriptorSetLayout, false); //DummyVertex doesn't really matter here, because no vertex attributes used
+    void createGraphicsPipeline(VkPrimitiveTopology topology, VkShaderModule &vertShaderModule, VkShaderModule &fragShaderModule){
+        createGraphicsPipeline<DummyVertex>(topology, vertShaderModule, fragShaderModule, false); //DummyVertex doesn't really matter here, because no vertex attributes used
     }
 
     //this function is for samples that are  using vertex shader
     template <typename T>
-    void createGraphicsPipeline(VkPrimitiveTopology topology, VkShaderModule &vertShaderModule, VkShaderModule &fragShaderModule, VkDescriptorSetLayout &descriptorSetLayout, bool bUseVertexBuffer = true){
+    void createGraphicsPipeline(VkPrimitiveTopology topology, VkShaderModule &vertShaderModule, VkShaderModule &fragShaderModule, bool bUseVertexBuffer = true){
         HERE_I_AM("wxjCreateGraphicsPipeline");
 
         VkResult result = VK_SUCCESS;
@@ -199,19 +210,7 @@ public:
          
 
         /*********9 Layout(Vulkan Special Concept)**********/
-        VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
-        pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-        // if (pt == PIPELINE_COMPUTE) {
-        // 	pipelineLayoutInfo.setLayoutCount = 0;
-        // 	pipelineLayoutInfo.pSetLayouts = nullptr;
-        // }else {
-        pipelineLayoutInfo.setLayoutCount = 1;
-        pipelineLayoutInfo.pSetLayouts = &descriptorSetLayout;//  descriptorSetLayout;//todo: LAYOUT
-        //}
-        //Create Graphics Pipeline Layout
-        result = vkCreatePipelineLayout(CContext::GetHandle().GetLogicalDevice(), &pipelineLayoutInfo, nullptr, &pipelineLayout);
-        if (result != VK_SUCCESS) throw std::runtime_error("failed to create pipeline layout!");
-        REPORT("vkCreatePipelineLayout");
+        //CreateLayout(descriptorSetLayout);
         pipelineInfo.layout = pipelineLayout;	//9
         
         /*********10 Renderpass Layout(Vulkan Special Concept)**********/
