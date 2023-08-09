@@ -7,6 +7,7 @@ public:
 
     void initialize(){
 		swapchain.bEnableMSAA = true;//!To enable MSAA, make sure it has depth test (call addDepthAttachment())
+		swapchain.bEnableDepthTest = true; 
 
 		//Create vertex resource
 		modelManager.LoadObjModel("../models/viking_room.obj", vertices3D, indices3D);
@@ -19,37 +20,21 @@ public:
 
 		//Create texture resource
 		VkImageUsageFlags usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
-		//wxjCreateImage_texture("../textures/viking_room.png", usage, textureImageBuffer, texWidth, texHeight);
-		//wxjCreateImageView(textureImageBuffer.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, mipLevels, OUT textureImageView);
-		textureImage.CreateImage("../textures/viking_room.png", usage, renderer.commandPool);
-		//textureImage.textureImageView = textureImage.createImageView(textureImage.textureImageBuffer.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_ASPECT_COLOR_BIT, textureImage.mipLevels);
+		textureImage.CreateTextureImage("../textures/viking_room.png", usage, renderer.commandPool);
 		textureImage.CreateImageView(VK_IMAGE_ASPECT_COLOR_BIT);
 
 		//Create msaa resource
 		if(swapchain.bEnableMSAA){
-			//wxjGetMaxUsableSampleCount();
 			swapchain.GetMaxUsableSampleCount();
 			usage = VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-			//wxjCreateImage(msaaSamples, swapchain.swapChainImageFormat, usage, OUT msaaColorImageBuffer);//need swapChainExtent. call this after swapchain creation
-			//createImage(swapchain.swapChainExtent.width, swapchain.swapChainExtent.height, 1, numSamples, format, VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, imageBuffer);
-			//swapchain.swapchainImage.createImage(swapchain.swapChainExtent.width, swapchain.swapChainExtent.height, 1, swapchain.swapchainImage.msaaSamples, swapchain.swapChainImageFormat, 
-				//VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, OUT swapchain.swapchainImage.msaaColorImageBuffer);
 			swapchain.createMSAAImages(VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-			//wxjCreateImageView(msaaColorImageBuffer.image, swapchain.swapChainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1, OUT msaaColorImageView);
-			//swapchain.swapchainImage.msaaColorImageView = swapchain.swapchainImage.createImageView(swapchain.swapchainImage.msaaColorImageBuffer.image, swapchain.swapChainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1);
 			swapchain.createMSAAImageViews(VK_IMAGE_ASPECT_COLOR_BIT);
 		}
 
 		//Create depth resource
-		swapchain.bEnableDepthTest = true; //TODO: for clean up only
 		VkFormat depthFormat = renderProcess.findDepthFormat();
 		usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
-		//wxjCreateImage(msaaSamples, depthFormat, usage, OUT depthImageBuffer);//need swapChainExtent. call this after swapchain creation
-		//swapchain.swapchainImage.createImage(swapchain.swapChainExtent.width, swapchain.swapChainExtent.height, 1, swapchain.swapchainImage.msaaSamples, depthFormat, 
-		//		VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, OUT swapchain.swapchainImage.depthImageBuffer);
 		swapchain.createDepthImages(depthFormat, VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-		//wxjCreateImageView(depthImageBuffer.image, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT, 1, OUT depthImageView);
-		//swapchain.swapchainImage.depthImageView = swapchain.swapchainImage.createImageView(swapchain.swapchainImage.depthImageBuffer.image, depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT, 1);
 		swapchain.createDepthImageViews(depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT);
 
 		//Create Renderpass
@@ -65,7 +50,7 @@ public:
 		renderProcess.createRenderPass();
 
 		//wxjCreateFramebuffers(); //need create imageviews first
-		swapchain.CreateFramebuffers(renderProcess.bUseDepthAttachment, renderProcess.bUseColorAttachmentResolve, renderProcess.renderPass);
+		swapchain.CreateFramebuffers(renderProcess.renderPass);
 
 		//Create shader resource
 		shaderManager.InitVertexShader("../shaders/model/vert_model.spv");

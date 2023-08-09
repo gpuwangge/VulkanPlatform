@@ -30,7 +30,7 @@ public:
 		renderProcess.createRenderPass();
 
 		//wxjCreateFramebuffers();
-		swapchain.CreateFramebuffers(renderProcess.bUseDepthAttachment, renderProcess.bUseColorAttachmentResolve, renderProcess.renderPass);
+		swapchain.CreateFramebuffers(renderProcess.renderPass);
 
 		//Create shader resources
 		shaderManager.InitVertexShader("../shaders/simpleUniformBuffer/vert.spv");

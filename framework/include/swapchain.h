@@ -54,9 +54,9 @@ public:
 	VkExtent2D swapChainExtent;//08
 	
 
-    
+
     std::vector<VkFramebuffer> swapChainFramebuffers;
-    void CreateFramebuffers(bool bUseDepthAttachment, bool bUseColorResolveAttachment, VkRenderPass &renderPass);
+    void CreateFramebuffers(VkRenderPass &renderPass);
 
     void displaySwapchainInfo(SwapChainSupportDetails swapChainSupport);
     CDebugger * debugger;

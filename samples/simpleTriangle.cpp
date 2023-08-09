@@ -15,7 +15,7 @@ public:
 		renderProcess.createRenderPass();
 
 		//wxjCreateFramebuffers();
-		swapchain.CreateFramebuffers(renderProcess.bUseDepthAttachment, renderProcess.bUseColorAttachmentResolve, renderProcess.renderPass);
+		swapchain.CreateFramebuffers(renderProcess.renderPass);
 
 		//Create shader resource
 		shaderManager.InitVertexShader("../shaders/simpleTriangle/vert.spv");

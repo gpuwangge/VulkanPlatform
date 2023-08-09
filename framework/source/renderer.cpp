@@ -75,7 +75,7 @@ void CRenderer::prepareCurrentFrameAndAcquireImageIndex(CSwapchain &swapchain){
     //if(result == VK_SUCCESS) printf("frame is ready. ");
     //else printf("waiting for frame ready. ");
 
-    //CPU need to know which framebuffer to draw。GPU notify CPU the image is ready or not
+    //CPU need to know which framebuffer to draw,GPU notify CPU the image is ready or not
     //GPU-GPU sync use semaphore
     //semaphore check if image is ready or not. imageIndex is the ready image.
     result = vkAcquireNextImageKHR(CContext::GetHandle().GetLogicalDevice(), swapchain.getHandle(), UINT64_MAX, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &imageIndex);

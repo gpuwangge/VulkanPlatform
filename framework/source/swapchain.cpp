@@ -168,17 +168,9 @@ VkExtent2D CSwapchain::chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabili
         return capabilities.currentExtent;
     }
     else {
-        //int width, height;
-        //glfwGetFramebufferSize(window, &width, &height);
-
-        VkExtent2D actualExtent = {
-            static_cast<uint32_t>(width),
-            static_cast<uint32_t>(height)
-        };
-
+        VkExtent2D actualExtent = { static_cast<uint32_t>(width), static_cast<uint32_t>(height) };
         actualExtent.width = std::clamp(actualExtent.width, capabilities.minImageExtent.width, capabilities.maxImageExtent.width);
         actualExtent.height = std::clamp(actualExtent.height, capabilities.minImageExtent.height, capabilities.maxImageExtent.height);
-
         return actualExtent;
     }
 }
@@ -196,7 +188,7 @@ void CSwapchain::createDepthImageViews(VkFormat format, VkImageAspectFlags aspec
     depthImageBuffer.createImageView(format, aspectFlags, 1);
 }
 
-void CSwapchain::CreateFramebuffers(bool bUseDepthAttachment, bool bUseColorResolveAttachment, VkRenderPass &renderPass){
+void CSwapchain::CreateFramebuffers(VkRenderPass &renderPass){
 	HERE_I_AM("CreateFramebuffers");
 
 	VkResult result = VK_SUCCESS;
@@ -204,23 +196,23 @@ void CSwapchain::CreateFramebuffers(bool bUseDepthAttachment, bool bUseColorReso
 	swapChainFramebuffers.resize(views.size());
 
 	for (size_t i = 0; i < imageSize; i++) {
-		std::vector<VkImageView> attachments; 
-		 if (bUseDepthAttachment && bUseColorResolveAttachment) {//Renderpass attachment(render target) order: Color, Depth, ColorResolve
-		    attachments.push_back(msaaColorImageBuffer.view);
-		    attachments.push_back(depthImageBuffer.view);
-			attachments.push_back(views[i]);
-		 }else if(bUseDepthAttachment){//Renderpass attachment(render target) order: Color, Depth
-			attachments.push_back(views[i]);
-			attachments.push_back(depthImageBuffer.view);
+		std::vector<VkImageView> imageViews_to_attach; 
+		 if (bEnableDepthTest && bEnableMSAA) {//Renderpass attachment(render target) order: Color, Depth, ColorResolve
+		    imageViews_to_attach.push_back(msaaColorImageBuffer.view);
+		    imageViews_to_attach.push_back(depthImageBuffer.view);
+			imageViews_to_attach.push_back(views[i]);
+		 }else if(bEnableDepthTest){//Renderpass attachment(render target) order: Color, Depth
+			imageViews_to_attach.push_back(views[i]);
+			imageViews_to_attach.push_back(depthImageBuffer.view);
 		}else{ //Renderpass attachment(render target) order: Color
-			attachments.push_back(views[i]);
+			imageViews_to_attach.push_back(views[i]);
 		}
 
 		VkFramebufferCreateInfo framebufferInfo{};
 		framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
 		framebufferInfo.renderPass = renderPass;
-		framebufferInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
-		framebufferInfo.pAttachments = attachments.data();//swapChainImageViews, 类型是VkImageView
+		framebufferInfo.attachmentCount = static_cast<uint32_t>(imageViews_to_attach.size());
+		framebufferInfo.pAttachments = imageViews_to_attach.data();
 		framebufferInfo.width = swapChainExtent.width;
 		framebufferInfo.height = swapChainExtent.height;
 		framebufferInfo.layers = 1;
@@ -247,17 +239,6 @@ void CSwapchain::CleanUp(){
 
     vkDestroySwapchainKHR(CContext::GetHandle().GetLogicalDevice(), handle, nullptr);
 
-    //imageManager.Destroy();
-    // if(bEnableDepthTest){
-    //     vkDestroyImage(CContext::GetHandle().GetLogicalDevice(), depthImageBuffer.image, nullptr);
-    //     vkFreeMemory(CContext::GetHandle().GetLogicalDevice(), depthImageBuffer.deviceMemory, nullptr);
-    //     vkDestroyImageView(CContext::GetHandle().GetLogicalDevice(), depthImageBuffer.view, nullptr);
-    // }
-    // if(bEnableMSAA){
-    //     vkDestroyImageView(CContext::GetHandle().GetLogicalDevice(), msaaColorImageBuffer.view, nullptr);
-    //     vkDestroyImage(CContext::GetHandle().GetLogicalDevice(), msaaColorImageBuffer.image, nullptr);
-    //     vkFreeMemory(CContext::GetHandle().GetLogicalDevice(), msaaColorImageBuffer.deviceMemory, nullptr);
-    // }
     depthImageBuffer.destroy();
     msaaColorImageBuffer.destroy();
 }

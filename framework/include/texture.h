@@ -14,8 +14,8 @@ public:
     VkCommandBuffer beginSingleTimeCommands();
     void endSingleTimeCommands(VkCommandBuffer commandBuffer);
     void transitionImageLayout(VkImage image, VkImageLayout oldLayout, VkImageLayout newLayout);
-    void CreateImage(const std::string texturePath, VkImageUsageFlags usage, VkCommandPool &commandPool);
-    void CreateImage(const std::string texturePath, VkImageUsageFlags usage, CWxjImageBuffer &imageBuffer, VkCommandPool &commandPool);
+    void CreateTextureImage(const std::string texturePath, VkImageUsageFlags usage, VkCommandPool &commandPool);
+    void CreateTextureImage(const std::string texturePath, VkImageUsageFlags usage, CWxjImageBuffer &imageBuffer, VkCommandPool &commandPool);
     void CreateImageView(VkImageAspectFlags aspectFlags);
 
     void generateMipmaps();

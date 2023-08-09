@@ -9,14 +9,14 @@ CTextureImage::CTextureImage(){
 }
 CTextureImage::~CTextureImage(){}
 
-void CTextureImage::CreateImage(const std::string texturePath, VkImageUsageFlags usage, VkCommandPool &commandPool) {
+void CTextureImage::CreateTextureImage(const std::string texturePath, VkImageUsageFlags usage, VkCommandPool &commandPool) {
     pCommandPool = &commandPool;
     //m_CommandPool = commandPool;
     //m_renderer = renderer;
-    CreateImage(texturePath, usage, textureImageBuffer, commandPool);
+    CreateTextureImage(texturePath, usage, textureImageBuffer, commandPool);
 }
 
-void CTextureImage::CreateImage(const std::string texturePath, VkImageUsageFlags usage, CWxjImageBuffer &imageBuffer, VkCommandPool &commandPool) {
+void CTextureImage::CreateTextureImage(const std::string texturePath, VkImageUsageFlags usage, CWxjImageBuffer &imageBuffer, VkCommandPool &commandPool) {
 	//HERE_I_AM("CreateImage");
 
 	int texChannels;
@@ -293,7 +293,7 @@ void CTextureImage::generateMipmaps(std::string rainbowCheckerboardTexturePath, 
 	for (int i = 0; i < MIPMAP_TEXTURE_COUNT; i++) {//fill temp mipmaps
 		//wxjCreateImage_texture(rainbowCheckerboardTexturePath + std::to_string(i) + ".png", usage, tmpTextureBufferForRainbowMipmaps[i], texWidth, texHeight);
         //CreateImage_texture(rainbowCheckerboardTexturePath + std::to_string(i) + ".png", usage, tmpTextureBufferForRainbowMipmaps[i], texWidth, texHeight, commandPool);
-		CreateImage(rainbowCheckerboardTexturePath + std::to_string(i) + ".png", usage, tmpTextureBufferForRainbowMipmaps[i], *pCommandPool);
+		CreateTextureImage(rainbowCheckerboardTexturePath + std::to_string(i) + ".png", usage, tmpTextureBufferForRainbowMipmaps[i], *pCommandPool);
         generateMipmaps(tmpTextureBufferForRainbowMipmaps[i].image);
 	}
 	//Generate mipmaps for image, using tmpTextureBufferForRainbowMipmaps
