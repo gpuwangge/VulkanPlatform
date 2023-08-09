@@ -1,4 +1,5 @@
 #include "controller.h"
+#include "application.h"
 //#include <math.h>
 #ifndef M_PI
 #define M_PI  3.14159265f
@@ -18,16 +19,18 @@ const int RIGHT = { 1 };
 const float MINSCALE = { 0.05f };
 
 
-// bool CApplication::NeedToExit = false;
-// Camera CApplication::mainCamera;
+//bool CApplication::NeedToExit = false;
+//Camera CApplication::mainCamera;
 
-bool NeedToExit;
-Camera mainCamera;
+// bool NeedToExit = false;
+// Camera mainCamera;
 
 CController::CController(){}
 CController::~CController(){}
 
 void CController::GLFWKeyboard(GLFWwindow * window, int key, int scancode, int action, int mods) {
+	//printf("controller!\n");
+
 	static bool				UseIndexBuffer;			// true = use both vertex and index buffer, false = just use vertex buffer
 	static bool				UseLighting;			// true = use lighting for display
 	static bool				UseRotate;			// true = rotate-animate, false = use mouse for interaction
@@ -38,32 +41,32 @@ void CController::GLFWKeyboard(GLFWwindow * window, int key, int scancode, int a
 	if (action == GLFW_PRESS) {
 		switch (key) {
 		case 262:
-			mainCamera.keys.right = true;
+			CApplication::mainCamera.keys.right = true;
 			break;
 		case 263:
-			mainCamera.keys.left = true;
+			CApplication::mainCamera.keys.left = true;
 			break;
 		case 264:
-			mainCamera.keys.down = true;
+			CApplication::mainCamera.keys.down = true;
 			break;
 		case 265:
-			mainCamera.keys.up = true;
+			CApplication::mainCamera.keys.up = true;
 			break;
 		case 'w':
 		case 'W':
-			mainCamera.keys.forward = true;
+			CApplication::mainCamera.keys.forward = true;
 			break;
 		case 's':
 		case 'S':
-			mainCamera.keys.backward = true;
+			CApplication::mainCamera.keys.backward = true;
 			break;
 		case 'a':
 		case 'A':
-			mainCamera.keys.turnLeft = true;
+			CApplication::mainCamera.keys.turnLeft = true;
 			break;
 		case 'd':
 		case 'D':
-			mainCamera.keys.turnRight = true;
+			CApplication::mainCamera.keys.turnRight = true;
 			break;
 
 		case 'i':
@@ -91,7 +94,7 @@ void CController::GLFWKeyboard(GLFWwindow * window, int key, int scancode, int a
 		case 'q':
 		case 'Q':
 		case GLFW_KEY_ESCAPE:
-			NeedToExit = true;
+			CApplication::NeedToExit = true;
 			break;
 
 		case 'r':
@@ -115,32 +118,32 @@ void CController::GLFWKeyboard(GLFWwindow * window, int key, int scancode, int a
 	if (action == GLFW_RELEASE) {	
 		switch (key) {
 		case 262:
-			mainCamera.keys.right = false;
+			CApplication::mainCamera.keys.right = false;
 			break;
 		case 263:
-			mainCamera.keys.left = false;
+			CApplication::mainCamera.keys.left = false;
 			break;
 		case 264:
-			mainCamera.keys.down = false;
+			CApplication::mainCamera.keys.down = false;
 			break;
 		case 265:
-			mainCamera.keys.up = false;
+			CApplication::mainCamera.keys.up = false;
 			break;
 		case 'w':
 		case 'W':
-			mainCamera.keys.forward = false;
+			CApplication::mainCamera.keys.forward = false;
 			break;
 		case 's':
 		case 'S':
-			mainCamera.keys.backward = false;
+			CApplication::mainCamera.keys.backward = false;
 			break;
 		case 'a':
 		case 'A':
-			mainCamera.keys.turnLeft = false;
+			CApplication::mainCamera.keys.turnLeft = false;
 			break;
 		case 'd':
 		case 'D':
-			mainCamera.keys.turnRight = false;
+			CApplication::mainCamera.keys.turnRight = false;
 			break;
 		default:
 			break;

@@ -6,7 +6,7 @@ public:
 	std::vector<uint32_t> indices3D;
 
     void initialize(){
-		swapchain.imageManager.bEnableMSAA = true;//!To enable MSAA, make sure it has depth test (call addDepthAttachment())
+		swapchain.bEnableMSAA = true;//!To enable MSAA, make sure it has depth test (call addDepthAttachment())
 
 		//Create vertex resource
 		modelManager.LoadObjModel("../models/viking_room.obj", vertices3D, indices3D);
@@ -26,9 +26,9 @@ public:
 		textureImage.CreateImageView(VK_IMAGE_ASPECT_COLOR_BIT);
 
 		//Create msaa resource
-		if(swapchain.imageManager.bEnableMSAA){
+		if(swapchain.bEnableMSAA){
 			//wxjGetMaxUsableSampleCount();
-			swapchain.imageManager.GetMaxUsableSampleCount();
+			swapchain.GetMaxUsableSampleCount();
 			usage = VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 			//wxjCreateImage(msaaSamples, swapchain.swapChainImageFormat, usage, OUT msaaColorImageBuffer);//need swapChainExtent. call this after swapchain creation
 			//createImage(swapchain.swapChainExtent.width, swapchain.swapChainExtent.height, 1, numSamples, format, VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, imageBuffer);
@@ -41,7 +41,7 @@ public:
 		}
 
 		//Create depth resource
-		swapchain.imageManager.bEnableDepthTest = true; //TODO: for clean up only
+		swapchain.bEnableDepthTest = true; //TODO: for clean up only
 		VkFormat depthFormat = renderProcess.findDepthFormat();
 		usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
 		//wxjCreateImage(msaaSamples, depthFormat, usage, OUT depthImageBuffer);//need swapChainExtent. call this after swapchain creation
@@ -54,10 +54,10 @@ public:
 
 		//Create Renderpass
 		VkImageLayout imageLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-		if(swapchain.imageManager.bEnableMSAA) imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-		renderProcess.addColorAttachment(swapchain.swapChainImageFormat, swapchain.imageManager.msaaSamples, imageLayout); //add this function will enable color attachment (bUseColorAttachment = true)
+		if(swapchain.bEnableMSAA) imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+		renderProcess.addColorAttachment(swapchain.swapChainImageFormat, swapchain.msaaSamples, imageLayout); //add this function will enable color attachment (bUseColorAttachment = true)
 		renderProcess.addDepthAttachment(); //add this function will enable depth attachment(bUseDepthAttachment = true)
-		if(swapchain.imageManager.bEnableMSAA) renderProcess.addColorAttachmentResolve(); //add this function will enable color resolve attachment (bUseColorAttachmentResolve = true)
+		if(swapchain.bEnableMSAA) renderProcess.addColorAttachmentResolve(); //add this function will enable color resolve attachment (bUseColorAttachmentResolve = true)
 		renderProcess.createSubpass();
 		VkPipelineStageFlags srcPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
 		VkPipelineStageFlags dstPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
@@ -76,7 +76,7 @@ public:
 		descriptor.addImageSamplerUniformBuffer(textureImage.mipLevels);
 		descriptor.createDescriptorPool();
 		descriptor.createDescriptorSetLayout();
-		descriptor.createDescriptorSets(&textureImage.textureImageView);
+		descriptor.createDescriptorSets(&textureImage.textureImageBuffer.view);
 
 		renderProcess.createGraphicsPipeline<Vertex3D>(
 			VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 

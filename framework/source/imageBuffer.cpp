@@ -1,14 +1,15 @@
-#include "imageManager.h"
+#include "imageBuffer.h"
 
-CImageManager::CImageManager(){
-    debugger = new CDebugger("../logs/imageManager.log");
+CWxjImageBuffer::CWxjImageBuffer(){
+    debugger = new CDebugger("../logs/imageBuffer.log");
+    size = 0;
 }
 
-CImageManager::~CImageManager(){
+CWxjImageBuffer::~CWxjImageBuffer(){
     if (!debugger) delete debugger;
 }
 
-void CImageManager::createImage(uint32_t width, uint32_t height, uint32_t mipLevels, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, MyImageBuffer &imageBuffer) {
+void CWxjImageBuffer::createImage(uint32_t width, uint32_t height, uint32_t mipLevels, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties) {
     VkImageCreateInfo imageInfo{};
     imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
     imageInfo.imageType = VK_IMAGE_TYPE_2D;
@@ -24,29 +25,29 @@ void CImageManager::createImage(uint32_t width, uint32_t height, uint32_t mipLev
     imageInfo.samples = numSamples;
     imageInfo.sharingMode = VK_SHARING_MODE_EXCLUSIVE;
 
-    if (vkCreateImage(CContext::GetHandle().GetLogicalDevice(), &imageInfo, nullptr, &imageBuffer.image) != VK_SUCCESS) {
+    if (vkCreateImage(CContext::GetHandle().GetLogicalDevice(), &imageInfo, nullptr, &image) != VK_SUCCESS) {
         throw std::runtime_error("failed to create image!");
     }
 
     VkMemoryRequirements memRequirements;
-    vkGetImageMemoryRequirements(CContext::GetHandle().GetLogicalDevice(), imageBuffer.image, &memRequirements);
+    vkGetImageMemoryRequirements(CContext::GetHandle().GetLogicalDevice(), image, &memRequirements);
 
     VkMemoryAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
     allocInfo.allocationSize = memRequirements.size;
     allocInfo.memoryTypeIndex = findMemoryType(memRequirements.memoryTypeBits, properties);
 
-    if (vkAllocateMemory(CContext::GetHandle().GetLogicalDevice(), &allocInfo, nullptr, &imageBuffer.deviceMemory) != VK_SUCCESS) {
+    if (vkAllocateMemory(CContext::GetHandle().GetLogicalDevice(), &allocInfo, nullptr, &deviceMemory) != VK_SUCCESS) {
         throw std::runtime_error("failed to allocate image memory!");
     }
 
-    imageBuffer.size = allocInfo.allocationSize;
+    size = allocInfo.allocationSize;
 
-    vkBindImageMemory(CContext::GetHandle().GetLogicalDevice(), imageBuffer.image, imageBuffer.deviceMemory, 0);
+    vkBindImageMemory(CContext::GetHandle().GetLogicalDevice(), image, deviceMemory, 0);
 }
 
-VkImageView CImageManager::createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels) {
-    //Concept of imageView that something can change how we present the image, but no need to change the image itself
+VkImageView CWxjImageBuffer::createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels){
+   //Concept of imageView that something can change how we present the image, but no need to change the image itself
     //Imageviews are commonly used in Vulkan, all images should have their imageviews.
 
     VkImageViewCreateInfo viewInfo{};
@@ -79,7 +80,11 @@ VkImageView CImageManager::createImageView(VkImage image, VkFormat format, VkIma
     return imageView;
 }
 
-uint32_t CImageManager::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) {
+void CWxjImageBuffer::createImageView(VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels) {
+    view = createImageView(image, format, aspectFlags, mipLevels);
+}
+
+uint32_t CWxjImageBuffer::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) {
     VkPhysicalDeviceMemoryProperties memProperties;
     vkGetPhysicalDeviceMemoryProperties(CContext::GetHandle().GetPhysicalDevice(), &memProperties);
 
@@ -93,34 +98,10 @@ uint32_t CImageManager::findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlag
 }
 
 
-
-
-
-
-
-CSwapchainImageManager::CSwapchainImageManager(){
-    imageSize = 0;
-    bEnableMSAA = false;
-    msaaSamples = VK_SAMPLE_COUNT_1_BIT;
-}
-CSwapchainImageManager::~CSwapchainImageManager(){}
-
-void CSwapchainImageManager::GetMaxUsableSampleCount(){
-	msaaSamples = CContext::GetHandle().physicalDevice->get()->getMaxUsableSampleCount();
-	//msaaSamples = VK_SAMPLE_COUNT_1_BIT;
-}
-
-
-
-void CSwapchainImageManager::Destroy(){//TODO
-    if(bEnableDepthTest){
-        vkDestroyImage(CContext::GetHandle().GetLogicalDevice(), depthImageBuffer.image, nullptr);
-        vkFreeMemory(CContext::GetHandle().GetLogicalDevice(), depthImageBuffer.deviceMemory, nullptr);
-        vkDestroyImageView(CContext::GetHandle().GetLogicalDevice(), depthImageView, nullptr);
-    }
-    if(bEnableMSAA){
-        vkDestroyImageView(CContext::GetHandle().GetLogicalDevice(), msaaColorImageView, nullptr);
-        vkDestroyImage(CContext::GetHandle().GetLogicalDevice(), msaaColorImageBuffer.image, nullptr);
-        vkFreeMemory(CContext::GetHandle().GetLogicalDevice(), msaaColorImageBuffer.deviceMemory, nullptr);
+void CWxjImageBuffer::destroy(){
+    if(size != (VkDeviceSize)0){
+        vkDestroyImage(CContext::GetHandle().GetLogicalDevice(), image, nullptr);
+        vkFreeMemory(CContext::GetHandle().GetLogicalDevice(), deviceMemory, nullptr);
+        vkDestroyImageView(CContext::GetHandle().GetLogicalDevice(), view, nullptr);
     }
 }

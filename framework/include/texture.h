@@ -4,10 +4,10 @@
 // #include "common.h"
 // #include "context.h"
 // #include "dataStructure.hpp"
-#include "imageManager.h"
+#include "imageBuffer.h"
 #include "renderer.h"
 
-class CTextureImage : private CImageManager{
+class CTextureImage final{
 public:
     CTextureImage();
     ~CTextureImage();
@@ -18,11 +18,11 @@ public:
     void endSingleTimeCommands(VkCommandBuffer commandBuffer);
     void transitionImageLayout(VkImage image, VkImageLayout oldLayout, VkImageLayout newLayout);
     void CreateImage(const std::string texturePath, VkImageUsageFlags usage, VkCommandPool &commandPool);
-    void CreateImage(const std::string texturePath, VkImageUsageFlags usage, MyImageBuffer &imageBuffer, VkCommandPool &commandPool);
+    void CreateImage(const std::string texturePath, VkImageUsageFlags usage, CWxjImageBuffer &imageBuffer, VkCommandPool &commandPool);
     void CreateImageView(VkImageAspectFlags aspectFlags);
 
     void generateMipmaps();
-    void generateMipmaps(VkImage image, bool bMix = false, std::array<MyImageBuffer, MIPMAP_TEXTURE_COUNT> *textureImageBuffers_mipmaps = NULL);
+    void generateMipmaps(VkImage image, bool bMix = false, std::array<CWxjImageBuffer, MIPMAP_TEXTURE_COUNT> *textureImageBuffers_mipmaps = NULL);
     void generateMipmaps(std::string rainbowCheckerboardTexturePath, VkImageUsageFlags usage);
 
     //Resource for Texture
@@ -30,8 +30,8 @@ public:
     VkFormat imageFormat;
     //std::string texturePath = "";
 	//VkSampler textureSampler;
-	MyImageBuffer textureImageBuffer;
-	VkImageView textureImageView;
+	CWxjImageBuffer textureImageBuffer;
+	//VkImageView textureImageView;
 
     VkCommandPool *pCommandPool;
 

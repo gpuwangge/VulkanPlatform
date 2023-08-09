@@ -47,7 +47,7 @@ public:
 		descriptor.addImageSamplerUniformBuffer(textureImage.mipLevels);
 		descriptor.createDescriptorPool();
 		descriptor.createDescriptorSetLayout();
-		descriptor.createDescriptorSets(&textureImage.textureImageView);
+		descriptor.createDescriptorSets(&textureImage.textureImageBuffer.view);
 
 		renderProcess.createGraphicsPipeline<Vertex3D>(
 			VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 

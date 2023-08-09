@@ -24,7 +24,7 @@ public:
 		textureImage.CreateImageView(VK_IMAGE_ASPECT_COLOR_BIT);
 
 		//Create depth resource
-		swapchain.imageManager.bEnableDepthTest = true; //TODO: for clean up only
+		swapchain.bEnableDepthTest = true; //TODO: for clean up only
 		VkFormat depthFormat = renderProcess.findDepthFormat();
 		usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
 		//wxjCreateImage(VK_SAMPLE_COUNT_1_BIT, depthFormat, usage, OUT depthImageBuffer);//need swapChainExtent. call this after swapchain creation
@@ -56,7 +56,7 @@ public:
 		descriptor.addImageSamplerUniformBuffer(textureImage.mipLevels);
 		descriptor.createDescriptorPool();
 		descriptor.createDescriptorSetLayout();
-		descriptor.createDescriptorSets(&textureImage.textureImageView);
+		descriptor.createDescriptorSets(&textureImage.textureImageBuffer.view);
 
 		renderProcess.createGraphicsPipeline<Vertex3D>(
 			VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 

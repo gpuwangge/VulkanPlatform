@@ -65,7 +65,7 @@ public:
 		descriptor.createDescriptorPool();
 		VkDescriptorSetLayoutBinding customBinding = CustomUniformBufferObject::GetBinding();
 		descriptor.createDescriptorSetLayout(&customBinding);
-		descriptor.createDescriptorSets(&textureImage.textureImageView);
+		descriptor.createDescriptorSets(&textureImage.textureImageBuffer.view);
 
 		renderProcess.createGraphicsPipeline<Vertex3D>(
 			VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
@@ -77,7 +77,7 @@ public:
 	}
 
 	void update(){
-		customUBO.color = {0.0, (sin(durationTime) + 1.0f) / 2.0f, (cos(durationTime) + 1.0f) / 2.0f};
+		customUBO.color = {(sin(durationTime) + 1.0f) / 2.0f, 0.0f, (cos(durationTime) + 1.0f) / 2.0f};
 		descriptor.updateCustomUniformBuffer<CustomUniformBufferObject>(renderer.currentFrame, durationTime, customUBO);
 
 		descriptor.mvpUBO.model = glm::rotate(glm::mat4(1.0f), durationTime * glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));

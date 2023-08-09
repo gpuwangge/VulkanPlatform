@@ -4,7 +4,7 @@
 #include "vulkan\vulkan.h"
 #include "physicalDevice.h"
 #include "context.h"
-#include "imageManager.h"
+#include "imageBuffer.h"
 //#include "application.h"
 
 class CSwapchain final{
@@ -31,10 +31,30 @@ public:
     void createDepthImages(VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties);
     void createDepthImageViews(VkFormat format, VkImageAspectFlags aspectFlags);
 
-	CSwapchainImageManager imageManager;
+
+	//CSwapchainImageManager imageManager;
+    void GetMaxUsableSampleCount();
+
+    std::vector<VkImage> images;//08
+    std::vector<VkImageView> views;//08
+    uint32_t imageSize;
+
+    //Resource for Depth Test
+    bool bEnableDepthTest = false;
+	CWxjImageBuffer depthImageBuffer;
+	//VkImageView depthImageView;
+
+    //Resource for MSAA
+    bool bEnableMSAA;
+    VkSampleCountFlagBits msaaSamples;
+    CWxjImageBuffer msaaColorImageBuffer;
+	//VkImageView msaaColorImageView;
+
 	VkFormat swapChainImageFormat;//08
 	VkExtent2D swapChainExtent;//08
 	
+
+    
     std::vector<VkFramebuffer> swapChainFramebuffers;
     void CreateFramebuffers(bool bUseDepthAttachment, bool bUseColorResolveAttachment, VkRenderPass &renderPass);
 

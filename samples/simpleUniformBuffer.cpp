@@ -54,7 +54,7 @@ public:
 
 	void update(){
 		//printf("%f\n", durationTime);
-		customUBO.color = {(sin(durationTime) + 1.0f) / 2.0f, (cos(durationTime) + 1.0f) / 2.0f, 0.0f, 1.0f};
+		customUBO.color = {(sin(durationTime*3) + 1.0f) / 2.0f, (cos(durationTime*3) + 1.0f) / 2.0f, 0.0f, 1.0f};
 		descriptor.updateCustomUniformBuffer<CustomUniformBufferObject>(renderer.currentFrame, durationTime, customUBO);
 		CApplication::update();
 	}

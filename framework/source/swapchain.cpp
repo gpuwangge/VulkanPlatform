@@ -2,6 +2,10 @@
 
 CSwapchain::CSwapchain(){
     debugger = new CDebugger("../logs/swapchain.log");
+
+    imageSize = 0;
+    bEnableMSAA = false;
+    msaaSamples = VK_SAMPLE_COUNT_1_BIT;
 }
 CSwapchain::~CSwapchain(){
     if (!debugger) delete debugger;
@@ -30,16 +34,16 @@ void CSwapchain::createSwapchainImages(VkSurfaceKHR surface, int width, int heig
     VkPresentModeKHR presentMode = chooseSwapPresentMode(swapChainSupport.presentModes);
     VkExtent2D extent = chooseSwapExtent(swapChainSupport.capabilities, width, height);
 
-    imageManager.imageSize = swapChainSupport.capabilities.minImageCount + 1;
-    if (swapChainSupport.capabilities.maxImageCount > 0 && imageManager.imageSize > swapChainSupport.capabilities.maxImageCount) {
-        imageManager.imageSize = swapChainSupport.capabilities.maxImageCount;
+    imageSize = swapChainSupport.capabilities.minImageCount + 1;
+    if (swapChainSupport.capabilities.maxImageCount > 0 && imageSize > swapChainSupport.capabilities.maxImageCount) {
+        imageSize = swapChainSupport.capabilities.maxImageCount;
     }
 
     VkSwapchainCreateInfoKHR createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
     createInfo.surface = surface;
 
-    createInfo.minImageCount = imageManager.imageSize;
+    createInfo.minImageCount = imageSize;
     createInfo.imageFormat = surfaceFormat.format;
     createInfo.imageColorSpace = surfaceFormat.colorSpace;
     createInfo.imageExtent = extent;
@@ -70,22 +74,23 @@ void CSwapchain::createSwapchainImages(VkSurfaceKHR surface, int width, int heig
     if (result != VK_SUCCESS) throw std::runtime_error("failed to create swap chain!");
     REPORT("vkCreateSwapchainKHR");
 
-    result = vkGetSwapchainImagesKHR(CContext::GetHandle().GetLogicalDevice(), handle, &imageManager.imageSize, nullptr);
+    result = vkGetSwapchainImagesKHR(CContext::GetHandle().GetLogicalDevice(), handle, &imageSize, nullptr);
     REPORT("vkGetSwapchainImagesKHR(Get imageCount)");
-    imageManager.images.resize(imageManager.imageSize);
-    result = vkGetSwapchainImagesKHR(CContext::GetHandle().GetLogicalDevice(), handle, &imageManager.imageSize, imageManager.images.data());
+    images.resize(imageSize);
+    result = vkGetSwapchainImagesKHR(CContext::GetHandle().GetLogicalDevice(), handle, &imageSize, images.data());
     REPORT("vkGetSwapchainImagesKHR");
 
     swapChainImageFormat = surfaceFormat.format;
     swapChainExtent = extent;
 
     // present views for the double-buffering:
-    imageManager.views.resize(imageManager.imageSize);
+    views.resize(imageSize);
 }
 
 void CSwapchain::createImageViews(VkImageAspectFlags aspectFlags){
-    for (size_t i = 0; i < imageManager.imageSize; i++) {
-		imageManager.views[i] = imageManager.createImageView(imageManager.images[i], swapChainImageFormat, aspectFlags, 1);
+    for (size_t i = 0; i < imageSize; i++) {
+        CWxjImageBuffer dummyImageBuffer; //dummyImageBuffer doesn't really matter here, just use it's create function
+		views[i] = dummyImageBuffer.createImageView(images[i], swapChainImageFormat, aspectFlags, 1);
     }
 }
 
@@ -179,16 +184,16 @@ VkExtent2D CSwapchain::chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabili
 }
 
 void CSwapchain::createMSAAImages(VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties){
-    imageManager.createImage(swapChainExtent.width,swapChainExtent.height, 1, imageManager.msaaSamples, swapChainImageFormat, tiling, usage, properties, imageManager.msaaColorImageBuffer);
+    msaaColorImageBuffer.createImage(swapChainExtent.width,swapChainExtent.height, 1, msaaSamples, swapChainImageFormat, tiling, usage, properties);
 }
 void CSwapchain::createMSAAImageViews(VkImageAspectFlags aspectFlags){
-    imageManager.msaaColorImageView = imageManager.createImageView(imageManager.msaaColorImageBuffer.image, swapChainImageFormat, aspectFlags, 1);
+    msaaColorImageBuffer.createImageView(swapChainImageFormat, aspectFlags, 1);
 }
 void CSwapchain::createDepthImages(VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties){
-    imageManager.createImage(swapChainExtent.width,swapChainExtent.height, 1, imageManager.msaaSamples, format, tiling, usage, properties, imageManager.depthImageBuffer);
+    depthImageBuffer.createImage(swapChainExtent.width,swapChainExtent.height, 1, msaaSamples, format, tiling, usage, properties);
 }
 void CSwapchain::createDepthImageViews(VkFormat format, VkImageAspectFlags aspectFlags){
-    imageManager.depthImageView = imageManager.createImageView(imageManager.depthImageBuffer.image, format, aspectFlags, 1);
+    depthImageBuffer.createImageView(format, aspectFlags, 1);
 }
 
 void CSwapchain::CreateFramebuffers(bool bUseDepthAttachment, bool bUseColorResolveAttachment, VkRenderPass &renderPass){
@@ -196,19 +201,19 @@ void CSwapchain::CreateFramebuffers(bool bUseDepthAttachment, bool bUseColorReso
 
 	VkResult result = VK_SUCCESS;
 
-	swapChainFramebuffers.resize(imageManager.views.size());
+	swapChainFramebuffers.resize(views.size());
 
-	for (size_t i = 0; i < imageManager.imageSize; i++) {
+	for (size_t i = 0; i < imageSize; i++) {
 		std::vector<VkImageView> attachments; 
 		 if (bUseDepthAttachment && bUseColorResolveAttachment) {//Renderpass attachment(render target) order: Color, Depth, ColorResolve
-		    attachments.push_back(imageManager.msaaColorImageView);
-		    attachments.push_back(imageManager.depthImageView);
-			attachments.push_back(imageManager.views[i]);
+		    attachments.push_back(msaaColorImageBuffer.view);
+		    attachments.push_back(depthImageBuffer.view);
+			attachments.push_back(views[i]);
 		 }else if(bUseDepthAttachment){//Renderpass attachment(render target) order: Color, Depth
-			attachments.push_back(imageManager.views[i]);
-			attachments.push_back(imageManager.depthImageView);
+			attachments.push_back(views[i]);
+			attachments.push_back(depthImageBuffer.view);
 		}else{ //Renderpass attachment(render target) order: Color
-			attachments.push_back(imageManager.views[i]);
+			attachments.push_back(views[i]);
 		}
 
 		VkFramebufferCreateInfo framebufferInfo{};
@@ -226,16 +231,33 @@ void CSwapchain::CreateFramebuffers(bool bUseDepthAttachment, bool bUseColorReso
 	}	
 }
 
+void CSwapchain::GetMaxUsableSampleCount(){
+	msaaSamples = CContext::GetHandle().physicalDevice->get()->getMaxUsableSampleCount();
+	//msaaSamples = VK_SAMPLE_COUNT_1_BIT;
+}
+
 void CSwapchain::CleanUp(){
     for (auto framebuffer : swapChainFramebuffers) {
         vkDestroyFramebuffer(CContext::GetHandle().GetLogicalDevice(), framebuffer, nullptr);
     }
 
-    for (auto imageView : imageManager.views) {
+    for (auto imageView : views) {
         vkDestroyImageView(CContext::GetHandle().GetLogicalDevice(), imageView, nullptr);
     }
 
     vkDestroySwapchainKHR(CContext::GetHandle().GetLogicalDevice(), handle, nullptr);
 
-    imageManager.Destroy();
+    //imageManager.Destroy();
+    // if(bEnableDepthTest){
+    //     vkDestroyImage(CContext::GetHandle().GetLogicalDevice(), depthImageBuffer.image, nullptr);
+    //     vkFreeMemory(CContext::GetHandle().GetLogicalDevice(), depthImageBuffer.deviceMemory, nullptr);
+    //     vkDestroyImageView(CContext::GetHandle().GetLogicalDevice(), depthImageBuffer.view, nullptr);
+    // }
+    // if(bEnableMSAA){
+    //     vkDestroyImageView(CContext::GetHandle().GetLogicalDevice(), msaaColorImageBuffer.view, nullptr);
+    //     vkDestroyImage(CContext::GetHandle().GetLogicalDevice(), msaaColorImageBuffer.image, nullptr);
+    //     vkFreeMemory(CContext::GetHandle().GetLogicalDevice(), msaaColorImageBuffer.deviceMemory, nullptr);
+    // }
+    depthImageBuffer.destroy();
+    msaaColorImageBuffer.destroy();
 }

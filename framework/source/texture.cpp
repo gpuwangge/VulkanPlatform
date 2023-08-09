@@ -16,8 +16,8 @@ void CTextureImage::CreateImage(const std::string texturePath, VkImageUsageFlags
     CreateImage(texturePath, usage, textureImageBuffer, commandPool);
 }
 
-void CTextureImage::CreateImage(const std::string texturePath, VkImageUsageFlags usage, MyImageBuffer &imageBuffer, VkCommandPool &commandPool) {
-	HERE_I_AM("CreateImage");
+void CTextureImage::CreateImage(const std::string texturePath, VkImageUsageFlags usage, CWxjImageBuffer &imageBuffer, VkCommandPool &commandPool) {
+	//HERE_I_AM("CreateImage");
 
 	int texChannels;
 	stbi_uc* pixels = stbi_load(texturePath.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
@@ -32,7 +32,7 @@ void CTextureImage::CreateImage(const std::string texturePath, VkImageUsageFlags
 	//VkResult result = InitDataBufferHelper(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, &stagingBuffer);
 	VkResult result = stagingBuffer.init(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
 
-	REPORT("InitTextureImageBuffer");
+	//REPORT("InitTextureImageBuffer");
 	//FillDataBufferHelper(stagingBuffer, (void *)(vertices.data()));
 
 	//VkBuffer stagingBuffer;
@@ -48,7 +48,7 @@ void CTextureImage::CreateImage(const std::string texturePath, VkImageUsageFlags
 
 	stbi_image_free(pixels);
 
-	createImage(texWidth, texHeight, mipLevels, VK_SAMPLE_COUNT_1_BIT, imageFormat, VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, imageBuffer);
+	imageBuffer.createImage(texWidth, texHeight, mipLevels, VK_SAMPLE_COUNT_1_BIT, imageFormat, VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
 	//hallway mipmap use this:
 	//transitionImageLayout(textureImageBuffer.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, mipLevels);
@@ -71,7 +71,7 @@ void CTextureImage::CreateImage(const std::string texturePath, VkImageUsageFlags
 }
 
 void CTextureImage::CreateImageView(VkImageAspectFlags aspectFlags){
-    textureImageView = createImageView(textureImageBuffer.image, imageFormat, aspectFlags, mipLevels);
+    textureImageBuffer.createImageView(imageFormat, aspectFlags, mipLevels);
 }
 
 void CTextureImage::transitionImageLayout(VkImage image, VkImageLayout oldLayout, VkImageLayout newLayout) {
@@ -184,7 +184,7 @@ void CTextureImage::generateMipmaps(){
     generateMipmaps(textureImageBuffer.image);
 }
 
-void CTextureImage::generateMipmaps(VkImage image, bool bMix, std::array<MyImageBuffer, MIPMAP_TEXTURE_COUNT> *textureImageBuffers_mipmaps) {
+void CTextureImage::generateMipmaps(VkImage image, bool bMix, std::array<CWxjImageBuffer, MIPMAP_TEXTURE_COUNT> *textureImageBuffers_mipmaps) {
 	// Check if image format supports linear blitting
 	VkFormatProperties formatProperties;
 	vkGetPhysicalDeviceFormatProperties(CContext::GetHandle().GetPhysicalDevice(), imageFormat, &formatProperties);
@@ -289,7 +289,7 @@ void CTextureImage::generateMipmaps(VkImage image, bool bMix, std::array<MyImage
 void CTextureImage::generateMipmaps(std::string rainbowCheckerboardTexturePath, VkImageUsageFlags usage){ //rainbow mipmaps case
     if(mipLevels <= 1) return;
 
-	std::array<MyImageBuffer, MIPMAP_TEXTURE_COUNT> tmpTextureBufferForRainbowMipmaps;//create temp mipmaps
+	std::array<CWxjImageBuffer, MIPMAP_TEXTURE_COUNT> tmpTextureBufferForRainbowMipmaps;//create temp mipmaps
 	for (int i = 0; i < MIPMAP_TEXTURE_COUNT; i++) {//fill temp mipmaps
 		//wxjCreateImage_texture(rainbowCheckerboardTexturePath + std::to_string(i) + ".png", usage, tmpTextureBufferForRainbowMipmaps[i], texWidth, texHeight);
         //CreateImage_texture(rainbowCheckerboardTexturePath + std::to_string(i) + ".png", usage, tmpTextureBufferForRainbowMipmaps[i], texWidth, texHeight, commandPool);
@@ -300,16 +300,18 @@ void CTextureImage::generateMipmaps(std::string rainbowCheckerboardTexturePath, 
 	generateMipmaps(textureImageBuffer.image, true, &tmpTextureBufferForRainbowMipmaps);
 	//Clean up
 	for (int i = 0; i < MIPMAP_TEXTURE_COUNT; i++) {
-		vkDestroyImage(CContext::GetHandle().GetLogicalDevice(), tmpTextureBufferForRainbowMipmaps[i].image, nullptr);
-		vkFreeMemory(CContext::GetHandle().GetLogicalDevice(), tmpTextureBufferForRainbowMipmaps[i].deviceMemory, nullptr);
+		//vkDestroyImage(CContext::GetHandle().GetLogicalDevice(), tmpTextureBufferForRainbowMipmaps[i].image, nullptr);
+		//vkFreeMemory(CContext::GetHandle().GetLogicalDevice(), tmpTextureBufferForRainbowMipmaps[i].deviceMemory, nullptr);
+        tmpTextureBufferForRainbowMipmaps[i].destroy();
 	}
 }
 
 void CTextureImage::Destroy(){
-    if(textureImageBuffer.size != (VkDeviceSize)0){
-        vkDestroyImage(CContext::GetHandle().GetLogicalDevice(), textureImageBuffer.image, nullptr);
-        vkFreeMemory(CContext::GetHandle().GetLogicalDevice(), textureImageBuffer.deviceMemory, nullptr);
-        vkDestroyImageView(CContext::GetHandle().GetLogicalDevice(), textureImageView, nullptr);
-    }
+    textureImageBuffer.destroy();
+    // if(textureImageBuffer.size != (VkDeviceSize)0){
+    //     vkDestroyImage(CContext::GetHandle().GetLogicalDevice(), textureImageBuffer.image, nullptr);
+    //     vkFreeMemory(CContext::GetHandle().GetLogicalDevice(), textureImageBuffer.deviceMemory, nullptr);
+    //     vkDestroyImageView(CContext::GetHandle().GetLogicalDevice(), textureImageBuffer.view, nullptr);
+    // }
 }
 
