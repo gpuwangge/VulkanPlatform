@@ -142,15 +142,12 @@ CApplication::~CApplication(){
 
     vkDestroyDevice(CContext::GetHandle().GetLogicalDevice(), nullptr);
 
-    if (enableValidationLayers) {
+    if (enableValidationLayers) 
         DestroyDebugUtilsMessengerEXT(instance->getHandle(), instance->debugMessenger, nullptr);
-    }
 
     vkDestroySurfaceKHR(instance->getHandle(), surface, nullptr);
     vkDestroyInstance(instance->getHandle(), nullptr);
-
     glfwDestroyWindow(window);
-
     glfwTerminate();
 
     delete debugger;

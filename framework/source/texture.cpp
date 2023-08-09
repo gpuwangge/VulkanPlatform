@@ -6,19 +6,19 @@
 
 CTextureImage::CTextureImage(){
     imageFormat = VK_FORMAT_R8G8B8A8_SRGB;
+	debugger = new CDebugger("../logs/texture.log");
 }
-CTextureImage::~CTextureImage(){}
+CTextureImage::~CTextureImage(){if (!debugger) delete debugger;}
 
 void CTextureImage::CreateTextureImage(const std::string texturePath, VkImageUsageFlags usage, VkCommandPool &commandPool) {
     pCommandPool = &commandPool;
-    //m_CommandPool = commandPool;
-    //m_renderer = renderer;
     CreateTextureImage(texturePath, usage, textureImageBuffer, commandPool);
 }
 
 void CTextureImage::CreateTextureImage(const std::string texturePath, VkImageUsageFlags usage, CWxjImageBuffer &imageBuffer, VkCommandPool &commandPool) {
 	//HERE_I_AM("CreateImage");
 
+	//Step 1: prepare staging buffer with texture pixels inside
 	int texChannels;
 	stbi_uc* pixels = stbi_load(texturePath.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
 	VkDeviceSize imageSize = texWidth * texHeight * 4;
@@ -27,33 +27,19 @@ void CTextureImage::CreateTextureImage(const std::string texturePath, VkImageUsa
 
 	if (!pixels) throw std::runtime_error("failed to load texture image!");
 
-
 	CWxjBuffer stagingBuffer;
-	//VkResult result = InitDataBufferHelper(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, &stagingBuffer);
 	VkResult result = stagingBuffer.init(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
-
-	//REPORT("InitTextureImageBuffer");
-	//FillDataBufferHelper(stagingBuffer, (void *)(vertices.data()));
-
-	//VkBuffer stagingBuffer;
-	//VkDeviceMemory stagingBufferMemory;
-	//createBuffer(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT | VK_MEMORY_PROPERTY_HOST_COHERENT_BIT, stagingBuffer, stagingBufferMemory);
-
-	//FillDataBufferHelper(stagingBuffer, pixels);
 	stagingBuffer.fill(pixels);
-	//void* data;
-	//vkMapMemory(logicalDevice, stagingBuffer.deviceMemory, 0, imageSize, 0, &data);
-	//memcpy(data, pixels, static_cast<size_t>(imageSize));
-	//vkUnmapMemory(logicalDevice, stagingBuffer.deviceMemory);
 
 	stbi_image_free(pixels);
 
+	//Step 2: create(allocate) image buffer
 	imageBuffer.createImage(texWidth, texHeight, mipLevels, VK_SAMPLE_COUNT_1_BIT, imageFormat, VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 
-	//hallway mipmap use this:
-	//transitionImageLayout(textureImageBuffer.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, mipLevels);
-	//other use this:
-	//TODO:
+	//Step 3: copy stagingBuffer(pixels) to imageBuffer(empty)
+	//To perform the copy, need change imageBuffer's layout: undefined->transferDST->shader-read-only 
+	//If the image is mipmap enabled, keep the transferDST layout (it will be mipmaped anyway)
+	//(transfer image in non-DST layout is not optimal???)
 	if(mipLevels == 1){
 		transitionImageLayout(imageBuffer.image, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
  		copyBufferToImage(stagingBuffer.buffer, imageBuffer.image, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
@@ -61,13 +47,11 @@ void CTextureImage::CreateTextureImage(const std::string texturePath, VkImageUsa
 	}else{
 		transitionImageLayout(imageBuffer.image, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
 		copyBufferToImage(stagingBuffer.buffer, imageBuffer.image, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
-
 	}
-	//MIPMAP TODO: no need transition?? If comment out this, validation layer get error
-	//transitionImageLayout(textureImageBuffer.image, VK_FORMAT_R8G8B8A8_SRGB, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL, mipLevels);
 
-	vkDestroyBuffer(CContext::GetHandle().GetLogicalDevice(), stagingBuffer.buffer, nullptr);
-	vkFreeMemory(CContext::GetHandle().GetLogicalDevice(), stagingBuffer.deviceMemory, nullptr);
+	stagingBuffer.DestroyAndFree();
+	//vkDestroyBuffer(CContext::GetHandle().GetLogicalDevice(), stagingBuffer.buffer, nullptr);
+	//vkFreeMemory(CContext::GetHandle().GetLogicalDevice(), stagingBuffer.deviceMemory, nullptr);
 }
 
 void CTextureImage::CreateImageView(VkImageAspectFlags aspectFlags){

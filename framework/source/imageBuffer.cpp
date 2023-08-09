@@ -30,7 +30,7 @@ void CWxjImageBuffer::createImage(uint32_t width, uint32_t height, uint32_t mipL
     }
 
     VkMemoryRequirements memRequirements;
-    vkGetImageMemoryRequirements(CContext::GetHandle().GetLogicalDevice(), image, &memRequirements);
+    vkGetImageMemoryRequirements(CContext::GetHandle().GetLogicalDevice(), image, &memRequirements);//this is different from buffer allocation
 
     VkMemoryAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_MEMORY_ALLOCATE_INFO;
