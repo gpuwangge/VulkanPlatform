@@ -51,6 +51,8 @@ public:
     VkPipelineLayout pipelineLayout;
 	VkPipeline graphicsPipeline;
 
+    VkPipelineLayout pipelineLayout_compute;
+	VkPipeline pipeline_compute;
 
     void createLayout(VkDescriptorSetLayout &descriptorSetLayout);
     void createLayout(VkDescriptorSetLayout &descriptorSetLayout, VkPushConstantRange &pushConstantRange, bool bUsePushConstant = true);
@@ -244,6 +246,10 @@ public:
 
         HERE_I_AM("DrawFrame() will begin");
     }
+
+
+    void createComputePipeline(VkShaderModule &computeShaderModule, VkDescriptorSetLayout &computeDescriptorSetLayout);
+
 
     CDebugger * debugger;
 };

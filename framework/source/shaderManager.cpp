@@ -12,6 +12,10 @@ void CShaderManager::InitVertexShader(const std::string shaderName){
 void CShaderManager::InitFragmentShader(const std::string shaderName){
     InitSpirVShader(shaderName, &fragShaderModule);
 }
+void CShaderManager::InitComputeShader(const std::string shaderName){
+    InitSpirVShader(shaderName, &computeShaderModule);
+}
+
 
 void CShaderManager::InitSpirVShader(const std::string shaderName, VkShaderModule *pShaderModule){
     HERE_I_AM("InitSpirVShader");

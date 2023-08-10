@@ -9,7 +9,7 @@
       "stopAtEntry": false,
       "externalConsole": true,
       "cwd": "${workspaceFolder}/bin",
-      "program": "${cwd}/bin/modelMSAA.exe",
+      "program": "${cwd}/bin/simpleCompute.exe",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [

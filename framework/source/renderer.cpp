@@ -64,6 +64,21 @@ void CRenderer::CreateCommandBuffers() {
     REPORT("vkAllocateCommandBuffers");
 }
 
+void CRenderer::CreateComputeCommandBuffers() {
+	commandBuffers_compute.resize(MAX_FRAMES_IN_FLIGHT);
+
+	VkCommandBufferAllocateInfo allocInfo{};
+	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+	allocInfo.commandPool = commandPool;
+	allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+	allocInfo.commandBufferCount = (uint32_t)commandBuffers_compute.size();
+
+	if (vkAllocateCommandBuffers(CContext::GetHandle().GetLogicalDevice(), &allocInfo, commandBuffers_compute.data()) != VK_SUCCESS) { //compute recordCommandBuffer需要用这个buffer： recordComputeCommandBuffer(commandBuffers_compute[currentFrame]);
+		throw std::runtime_error("failed to allocate compute command buffers!");
+	}
+}
+
+
 void CRenderer::prepareCurrentFrameAndAcquireImageIndex(CSwapchain &swapchain){
     //printf("currentFrame: %d, ", currentFrame);
 
@@ -255,6 +270,51 @@ void CRenderer::EndCOmmandBuffer(){
     }
 }
 
+
+void CRenderer::drawComputeFrame(VkPipeline &pipeline_compute, VkPipelineLayout &pipelineLayout_compute, std::vector<VkDescriptorSet> &descriptorSets_compute){
+    VkSubmitInfo submitInfo{};
+    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+
+    vkWaitForFences(CContext::GetHandle().GetLogicalDevice(), 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
+
+    //updateUniformBuffer_compute(currentFrame);
+
+    vkResetFences(CContext::GetHandle().GetLogicalDevice(), 1, &inFlightFences[currentFrame]);
+
+    vkResetCommandBuffer(commandBuffers_compute[currentFrame], /*VkCommandBufferResetFlagBits*/ 0);
+    recordComputeCommandBuffer(pipeline_compute, pipelineLayout_compute, descriptorSets_compute); //Dispatch in this function
+
+    submitInfo.commandBufferCount = 1;
+    submitInfo.pCommandBuffers = &commandBuffers_compute[currentFrame];
+    //submitInfo.signalSemaphoreCount = 1;
+    //submitInfo.pSignalSemaphores = &renderFinishedSemaphores[currentFrame];
+
+    if (vkQueueSubmit(CContext::GetHandle().GetComputeQueue(), 1, &submitInfo, inFlightFences[currentFrame]) != VK_SUCCESS) {
+        throw std::runtime_error("failed to submit compute command buffer!");
+    };    
+}
+
+void CRenderer::recordComputeCommandBuffer(VkPipeline &pipeline_compute, VkPipelineLayout &pipelineLayout_compute, std::vector<VkDescriptorSet> &descriptorSets_compute) {
+    VkCommandBufferBeginInfo beginInfo{};
+    beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+
+    if (vkBeginCommandBuffer(commandBuffers_compute[currentFrame], &beginInfo) != VK_SUCCESS) {
+        throw std::runtime_error("failed to begin recording compute command buffer!");
+    }
+
+    vkCmdBindPipeline(commandBuffers_compute[currentFrame], VK_PIPELINE_BIND_POINT_COMPUTE, pipeline_compute);
+
+    vkCmdBindDescriptorSets(commandBuffers_compute[currentFrame], VK_PIPELINE_BIND_POINT_COMPUTE, pipelineLayout_compute, 0, 1, &descriptorSets_compute[currentFrame], 0, nullptr);
+
+    vkCmdDispatch(commandBuffers_compute[currentFrame], 4, 1, 1);//DISPATCH?
+
+    if (vkEndCommandBuffer(commandBuffers_compute[currentFrame]) != VK_SUCCESS) {
+        throw std::runtime_error("failed to record compute command buffer!");
+    }
+
+}
+
+
 void CRenderer::Destroy(){
     indexDataBuffer.DestroyAndFree();
     vertexDataBuffer.DestroyAndFree();
@@ -269,3 +329,6 @@ void CRenderer::Destroy(){
 
     vkDestroyCommandPool(CContext::GetHandle().GetLogicalDevice(), commandPool, nullptr);
 }
+
+
+

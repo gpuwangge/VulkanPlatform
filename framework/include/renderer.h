@@ -74,6 +74,11 @@ public:
     std::vector<VkCommandBuffer> commandBuffers;//06
     VkCommandPool commandPool;//06
 
+    std::vector<VkCommandBuffer> commandBuffers_compute; //专门用于compute的command buffer
+    void CreateComputeCommandBuffers();
+    void drawComputeFrame(VkPipeline &pipeline_compute, VkPipelineLayout &pipelineLayout_compute, std::vector<VkDescriptorSet> &descriptorSets_compute);
+    void recordComputeCommandBuffer(VkPipeline &pipeline_compute, VkPipelineLayout &pipelineLayout_compute, std::vector<VkDescriptorSet> &descriptorSets_compute);
+
     std::vector<VkSemaphore> imageAvailableSemaphores;
 	std::vector<VkSemaphore> renderFinishedSemaphores;
     std::vector<VkFence> inFlightFences;

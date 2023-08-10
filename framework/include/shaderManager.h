@@ -11,9 +11,11 @@ public:
 
     VkShaderModule vertShaderModule;
 	VkShaderModule fragShaderModule;
+    VkShaderModule computeShaderModule;
 
     void InitVertexShader(const std::string shaderName);
     void InitFragmentShader(const std::string shaderName);
+    void InitComputeShader(const std::string shaderName);
 
     //bool bEnablePushConstant;
     VkPushConstantRange pushConstantRange;

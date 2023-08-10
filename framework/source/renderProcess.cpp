@@ -148,6 +148,36 @@ VkFormat CRenderProcess::findDepthFormat() {
     );
 }
 
+void CRenderProcess::createComputePipeline(VkShaderModule &computeShaderModule, VkDescriptorSetLayout &computeDescriptorSetLayout){
+	VkPipelineShaderStageCreateInfo computeShaderStageInfo{};
+	computeShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
+	computeShaderStageInfo.stage = VK_SHADER_STAGE_COMPUTE_BIT;
+	computeShaderStageInfo.module = computeShaderModule;
+	computeShaderStageInfo.pName = "main";
+
+	VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
+	pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+	pipelineLayoutInfo.setLayoutCount = 1;
+	pipelineLayoutInfo.pSetLayouts = &computeDescriptorSetLayout;
+
+	if (vkCreatePipelineLayout(CContext::GetHandle().GetLogicalDevice(), &pipelineLayoutInfo, nullptr, &pipelineLayout_compute) != VK_SUCCESS) {
+		throw std::runtime_error("failed to create compute pipeline layout!");
+	}
+
+	VkComputePipelineCreateInfo pipelineInfo{};
+	pipelineInfo.sType = VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO;
+	pipelineInfo.layout = pipelineLayout_compute;
+	pipelineInfo.stage = computeShaderStageInfo;
+
+	if (vkCreateComputePipelines(CContext::GetHandle().GetLogicalDevice(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &pipeline_compute) != VK_SUCCESS) {
+		throw std::runtime_error("failed to create compute pipeline!");
+	}
+
+	vkDestroyShaderModule(CContext::GetHandle().GetLogicalDevice(), computeShaderModule, nullptr);
+}
+
+
+
 void CRenderProcess::createLayout(VkDescriptorSetLayout &descriptorSetLayout){
 	VkPushConstantRange dummyPushConstantRange;
 	createLayout(descriptorSetLayout, dummyPushConstantRange, false);
@@ -179,6 +209,12 @@ void CRenderProcess::createLayout(VkDescriptorSetLayout &descriptorSetLayout, Vk
 void CRenderProcess::Cleanup(){
 	vkDestroyRenderPass(CContext::GetHandle().GetLogicalDevice(), renderPass, nullptr);
 
-	vkDestroyPipeline(CContext::GetHandle().GetLogicalDevice(), graphicsPipeline, nullptr);
-    vkDestroyPipelineLayout(CContext::GetHandle().GetLogicalDevice(), pipelineLayout, nullptr);
+//TODO:
+	// if(graphicsPipeline != VK_NULL_HANDLE)
+	// 	vkDestroyPipeline(CContext::GetHandle().GetLogicalDevice(), graphicsPipeline, nullptr);
+	// if(pipelineLayout != VK_NULL_HANDLE)
+    // 	vkDestroyPipelineLayout(CContext::GetHandle().GetLogicalDevice(), pipelineLayout, nullptr);
+
+	vkDestroyPipeline(CContext::GetHandle().GetLogicalDevice(), pipeline_compute, nullptr);
+    vkDestroyPipelineLayout(CContext::GetHandle().GetLogicalDevice(), pipelineLayout_compute, nullptr);
 }

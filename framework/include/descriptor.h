@@ -40,15 +40,23 @@ public:
     VPUniformBufferObject vpUBO{};
     void updateVPUniformBuffer(uint32_t currentFrame, float durationTime, Camera &mainCamera);
 
-
     bool bUseSampler;
     VkSampler textureSampler;
     void addImageSamplerUniformBuffer(uint32_t mipLevels);
 
+    bool bUseComputeStorage;
+    void addComputeStorageUniformBuffer();
+    //std::vector<CWxjBuffer> uniformBuffers_compute; //用来创建delta t的uniform
+	//std::vector<void*> uniformBuffersMapped_compute; //用来更新delta t的uniform
+	std::vector<CWxjBuffer> shaderStorageBuffers_compute; //用来把particle initial数据(pos, color, velocity)upload到gpu
+    //CWxjBuffer shaderStorageBuffers_compute;
+    void createShaderStorageBuffers();
+
+
     int getDescriptorSize();
 
     void createDescriptorPool(VkDescriptorType    type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER);
-    void createDescriptorSetLayout(VkDescriptorSetLayoutBinding *customBinding = nullptr);//
+    void createDescriptorSetLayout(VkDescriptorSetLayoutBinding *customBinding = nullptr);
         //VkDescriptorType      descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
         //VkShaderStageFlags    stageFlags = VK_SHADER_STAGE_VERTEX_BIT,
         //uint32_t              descriptorCount = 1,

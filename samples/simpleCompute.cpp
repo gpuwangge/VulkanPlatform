@@ -6,15 +6,17 @@ public:
 	std::vector<VkClearValue> clearValues{ {  0.0f, 1.0f, 0.0f, 1.0f  } };
 
 	void initialize(){
-		//0. prepare compute shader
-		//1. need a physical device with compute, and pick Queue Family with compute
-		//2. create layouts for compute shader
-		//3. create storage buffer
-		//4. create compute pipeline (with shader and layout information)
-		//5. record command (bind compute shader and dispatch)
+		//0. prepare compute shader(spv)*
+		//1. need a physical device with compute, and pick Queue Family with compute*
+		//2. create compute command buffer*
+		//3. create storage buffer*
+		//4. create layouts for compute shader*
+		//5. create compute pipeline (with shader and layout information)*
+		//6. record command (bind compute shader and dispatch)*
 		
 		renderer.CreateCommandPool(surface);
-		renderer.CreateCommandBuffers();
+		//renderer.CreateCommandBuffers();
+		renderer.CreateComputeCommandBuffers();
 
 		renderProcess.addColorAttachment(swapchain.swapChainImageFormat); //add this function will enable color attachment (bUseColorAttachment = true)
 		renderProcess.createSubpass();
@@ -23,18 +25,22 @@ public:
 
 		swapchain.CreateFramebuffers(renderProcess.renderPass);
 
-		shaderManager.InitVertexShader("../shaders/simpleTriangle/vert.spv");
-		shaderManager.InitFragmentShader("../shaders/simpleTriangle/frag.spv");
+		//shaderManager.InitVertexShader("../shaders/simpleTriangle/vert.spv");
+		//shaderManager.InitFragmentShader("../shaders/simpleTriangle/frag.spv");
+		shaderManager.InitComputeShader("../shaders/simpleCompute/comp.spv");
 
+		descriptor.addComputeStorageUniformBuffer();
+		descriptor.createShaderStorageBuffers();
 		descriptor.createDescriptorPool();
 		descriptor.createDescriptorSetLayout();
 		descriptor.createDescriptorSets();
 
-		renderProcess.createLayout(descriptor.descriptorSetLayout);
-		renderProcess.createGraphicsPipeline(
-			VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
-			shaderManager.vertShaderModule, 
-			shaderManager.fragShaderModule);
+		// renderProcess.createLayout(descriptor.descriptorSetLayout);
+		// renderProcess.createGraphicsPipeline(
+		// 	VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
+		// 	shaderManager.vertShaderModule, 
+		// 	shaderManager.fragShaderModule);
+		renderProcess.createComputePipeline(shaderManager.computeShaderModule, descriptor.descriptorSetLayout);
 
 		CApplication::initialize();
 	}
@@ -44,12 +50,13 @@ public:
 	}
 
 	void recordCommandBuffer(){
-		RENDER_START
+		//RENDER_START
 		//actually this sample doesn't need BindDescriptorSets
 
-		renderer.Draw(3);
+		//renderer.Draw(3);
+		renderer.drawComputeFrame(renderProcess.pipeline_compute, renderProcess.pipelineLayout_compute, descriptor.descriptorSets);
 		
-		RENDER_END
+		//RENDER_END
 	}
 };
 

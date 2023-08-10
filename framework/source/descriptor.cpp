@@ -8,6 +8,7 @@ CDescriptor::CDescriptor(){
     bUseMVP = false;
     bUseVP = false;
     bUseSampler = false;
+    bUseComputeStorage = false;
 	m_customUniformBufferSize = 0;
 	mvpUBO.model = glm::mat4(1.0f);
     textureSampler = NULL;
@@ -88,9 +89,13 @@ void CDescriptor::addImageSamplerUniformBuffer(uint32_t mipLevels){
 	REPORT("vkCreateSampler");
 }
 
+void CDescriptor::addComputeStorageUniformBuffer(){
+    bUseComputeStorage = true;
+    
+}
 
 void CDescriptor::createDescriptorPool(VkDescriptorType type){
-	HERE_I_AM("wxjCreateDescriptorPool");
+	HERE_I_AM("CreateDescriptorPool");
 
 	poolSizes.resize(getDescriptorSize());
 	int counter = 0;
@@ -111,6 +116,12 @@ void CDescriptor::createDescriptorPool(VkDescriptorType type){
         poolSizes[counter].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 	 	poolSizes[counter].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
 		counter++;
+    }
+
+    if(bUseComputeStorage){
+        poolSizes[counter].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+	    poolSizes[counter].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT); 
+        counter++;
     }
 
 	//std::vector<VkDescriptorPoolSize> poolSizes;
@@ -153,7 +164,7 @@ void CDescriptor::createDescriptorPool(VkDescriptorType type){
 
 void CDescriptor::createDescriptorSetLayout(VkDescriptorSetLayoutBinding *customBinding){
     //VkDescriptorType descriptorType, VkShaderStageFlags stageFlags, uint32_t descriptorCount, const VkSampler*  pImmutableSamplers){
-	HERE_I_AM("wxjCreateDescriptorSetLayout");
+	HERE_I_AM("CreateDescriptorSetLayout");
 
 	// switch (pt) {
 	// case PIPELINE_BASIC:
@@ -212,6 +223,24 @@ void CDescriptor::createDescriptorSetLayout(VkDescriptorSetLayoutBinding *custom
         bindings[counter].stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
         counter++;
     }
+
+    if(bUseComputeStorage){
+        bindings[counter].binding = counter;
+        bindings[counter].descriptorCount = 1;
+        bindings[counter].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+        bindings[counter].pImmutableSamplers = nullptr;
+        bindings[counter].stageFlags = VK_SHADER_STAGE_COMPUTE_BIT;
+        counter++;
+
+        // bindings[counter].binding = counter;
+        // bindings[counter].descriptorCount = 1;
+        // bindings[counter].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+        // bindings[counter].pImmutableSamplers = nullptr;
+        // bindings[counter].stageFlags = VK_SHADER_STAGE_COMPUTE_BIT;       
+        // counter++;
+    }
+
+
 	VkDescriptorSetLayoutCreateInfo layoutInfo{};
 	layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
 	layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
@@ -307,6 +336,22 @@ void CDescriptor::createDescriptorSets(VkImageView *textureImageView){
                 descriptorWrites[counter].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
                 descriptorWrites[counter].descriptorCount = 1;
                 descriptorWrites[counter].pImageInfo = &imageInfo;
+                counter++;
+            }
+
+            VkDescriptorBufferInfo storageBufferInfo{};
+            if(bUseComputeStorage){
+                storageBufferInfo.buffer = shaderStorageBuffers_compute[i].buffer;//shaderStorageBuffers_compute[i].buffer;
+                storageBufferInfo.offset = 0;
+                storageBufferInfo.range =sizeof(uint32_t) * 4;//sizeof(Particle) * PARTICLE_COUNT;
+
+                descriptorWrites[counter].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+                descriptorWrites[counter].dstSet = descriptorSets[i];
+                descriptorWrites[counter].dstBinding = counter;
+                descriptorWrites[counter].dstArrayElement = 0;
+                descriptorWrites[counter].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+                descriptorWrites[counter].descriptorCount = 1;
+                descriptorWrites[counter].pBufferInfo = &storageBufferInfo;
                 counter++;
             }
 
@@ -442,7 +487,19 @@ int CDescriptor::getDescriptorSize(){
 	descriptorSize += bUseCustomUniformBuffer ? 1:0;
 	descriptorSize += (bUseMVP||bUseVP) ? 1:0;
 	descriptorSize += bUseSampler ? 1:0;
+    descriptorSize += bUseComputeStorage ? 1:0;
 	return descriptorSize;
+}
+
+void CDescriptor::createShaderStorageBuffers(){
+    VkDeviceSize bufferSize = sizeof(uint32_t) * 4;
+    shaderStorageBuffers_compute.resize(MAX_FRAMES_IN_FLIGHT);
+    for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+		//VkResult result = InitDataBufferHelper(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, &shaderStorageBuffers_compute[i]);// Create a staging buffer used to upload data to the gpu
+		//FillDataBufferHelper(shaderStorageBuffers_compute[i], (void *)(particles.data()));// Copy initial particle data to all storage buffers
+        //shaderStorageBuffers_compute[i].init(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
+        shaderStorageBuffers_compute[i].init(bufferSize, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT );
+	}
 }
 
 void CDescriptor::DestroyAndFree(){
@@ -458,6 +515,10 @@ void CDescriptor::DestroyAndFree(){
 
     for (size_t i = 0; i < vpUniformBuffers.size(); i++) {
         vpUniformBuffers[i].DestroyAndFree();
+    }
+
+    for (size_t i = 0; i < shaderStorageBuffers_compute.size(); i++) {
+        shaderStorageBuffers_compute[i].DestroyAndFree();
     }
 
     //no need to destroy descriptorSets, because they are from descriptorPool
