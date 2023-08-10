@@ -42,7 +42,7 @@ public:
     //void setInstance(CInstance *instance);
 
 
-    QueueFamilyIndices findQueueFamilies(VkSurfaceKHR surface);
+    QueueFamilyIndices findQueueFamilies(VkSurfaceKHR surface, std::string s);
     bool checkDeviceExtensionSupport(const std::vector<const char*>  requireDeviceExtensions);
     SwapChainSupportDetails querySwapChainSupport(VkSurfaceKHR surface);
 

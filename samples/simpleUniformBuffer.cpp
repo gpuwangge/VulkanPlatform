@@ -22,8 +22,8 @@ public:
 
 	void initialize(){
 		//Create bufferss
-		renderer.InitCreateCommandPool(surface);
-		renderer.InitCreateCommandBuffers();
+		renderer.CreateCommandPool(surface);
+		renderer.CreateCommandBuffers();
 
 		//Create Renderpass
 		renderProcess.addColorAttachment(swapchain.swapChainImageFormat); //add this function will enable color attachment (bUseColorAttachment = true)

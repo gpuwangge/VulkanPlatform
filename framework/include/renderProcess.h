@@ -54,7 +54,7 @@ public:
 
     void createLayout(VkDescriptorSetLayout &descriptorSetLayout);
     void createLayout(VkDescriptorSetLayout &descriptorSetLayout, VkPushConstantRange &pushConstantRange, bool bUsePushConstant = true);
-    
+
     struct DummyVertex {
         static VkVertexInputBindingDescription getBindingDescription() {
             VkVertexInputBindingDescription bindingDescription{};
@@ -198,6 +198,7 @@ public:
         
 
         /*********8**********/
+        //tell gpu which part will be changed, so need update these for each frame
         std::vector<VkDynamicState> dynamicStates = {
             VK_DYNAMIC_STATE_VIEWPORT,
             VK_DYNAMIC_STATE_SCISSOR

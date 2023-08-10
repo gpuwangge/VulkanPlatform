@@ -26,13 +26,13 @@ void CRenderer::CreateIndexBuffer(std::vector<uint32_t> &indices3D){
 	indexDataBuffer.fill((void *)(indices3D.data()));
 }
 
-void CRenderer::InitCreateCommandPool(VkSurfaceKHR &surface) {
+void CRenderer::CreateCommandPool(VkSurfaceKHR &surface) {
     HERE_I_AM("Init06CommandPools");
 
     VkResult result = VK_SUCCESS;
 
     //QueueFamilyIndices queueFamilyIndices = instance->pickedPhysicalDevice->get()->findQueueFamilies(surface);
-    QueueFamilyIndices queueFamilyIndices = CContext::GetHandle().physicalDevice->get()->findQueueFamilies(surface);
+    QueueFamilyIndices queueFamilyIndices = CContext::GetHandle().physicalDevice->get()->findQueueFamilies(surface, "Find Queue Families when creating command pool");
 
     VkCommandPoolCreateInfo poolInfo{};
     poolInfo.sType = VK_STRUCTURE_TYPE_COMMAND_POOL_CREATE_INFO;
@@ -45,7 +45,7 @@ void CRenderer::InitCreateCommandPool(VkSurfaceKHR &surface) {
     REPORT("vkCreateCommandPool -- Graphics");
 }
 
-void CRenderer::InitCreateCommandBuffers() {
+void CRenderer::CreateCommandBuffers() {
     HERE_I_AM("Init06CommandBuffers");
 
     VkResult result = VK_SUCCESS;

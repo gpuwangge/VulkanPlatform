@@ -171,8 +171,9 @@ std::unique_ptr<CPhysicalDevice>* CInstance::pickSuitablePhysicalDevice(VkSurfac
     }
 
     for ( auto& phy_device : physicalDevices) {
+        
         //Test Queue Families
-        QueueFamilyIndices indices = phy_device->findQueueFamilies(surface);
+        QueueFamilyIndices indices = phy_device->findQueueFamilies(surface, "Find Queue Families when picking physical device");
 
         //Test Extension
         bool extensionsSupported = phy_device->checkDeviceExtensionSupport(requireDeviceExtensions);
@@ -202,7 +203,7 @@ std::unique_ptr<CPhysicalDevice>* CInstance::pickSuitablePhysicalDevice(VkSurfac
             }
 
             //pickedPhysicalDevice = &phy_device;
-            return &phy_device;
+            return &phy_device;  
         }
     }
 

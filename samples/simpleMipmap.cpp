@@ -23,8 +23,8 @@ public:
 		//Create buffers
 		renderer.CreateVertexBuffer<Vertex3D>(vertices3D);
 		renderer.CreateIndexBuffer(indices3D);
-		renderer.InitCreateCommandPool(surface);
-		renderer.InitCreateCommandBuffers();
+		renderer.CreateCommandPool(surface);
+		renderer.CreateCommandBuffers();
 
 		//Create texture resource
 		VkImageUsageFlags usage_texture = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;

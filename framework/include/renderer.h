@@ -26,8 +26,8 @@ public:
     }
 
     void CreateIndexBuffer(std::vector<uint32_t> &indices3D);
-    void InitCreateCommandPool(VkSurfaceKHR &surface);
-    void InitCreateCommandBuffers();
+    void CreateCommandPool(VkSurfaceKHR &surface);
+    void CreateCommandBuffers();
     void CreateSyncObjects();
 
     //Create start() and end() to make sample command recording simple

@@ -15,8 +15,8 @@ CPhysicalDevice::~CPhysicalDevice(){
     if (!debugger) delete debugger;
 }
 
-QueueFamilyIndices CPhysicalDevice::findQueueFamilies(VkSurfaceKHR surface) {
-    HERE_I_AM("findQueueFamilies");
+QueueFamilyIndices CPhysicalDevice::findQueueFamilies(VkSurfaceKHR surface, std::string s) {
+    HERE_I_AM(s);
 
     QueueFamilyIndices indices;
 
@@ -40,6 +40,7 @@ QueueFamilyIndices CPhysicalDevice::findQueueFamilies(VkSurfaceKHR surface) {
     }
 
     i = 0;
+    bool selected = false;
     for (const auto& queueFamilyProperty : queueFamilyProperties) {
         if (queueFamilyProperty.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
             indices.graphicsFamily = i;
@@ -63,11 +64,15 @@ QueueFamilyIndices CPhysicalDevice::findQueueFamilies(VkSurfaceKHR surface) {
         }
         else debugger->writeMSG("This Surface is not supported by the Present Queue\n");
 
-        if (indices.isComplete()) break; //select the first suitable indices (which has graphics and present family)
-
+        if (indices.isComplete()) {
+            selected = true;
+            debugger->writeMSG("Complete: selected queue family %d that support Graphics, Present and Compute command.\n", i);
+            break; //select the first suitable indices (which has graphics and present family)
+        }
         i++;
     }
-
+    
+    if(!selected) debugger->writeMSG("Can NOT find proper queue family!\n");
     return indices;
 }
 
@@ -118,8 +123,7 @@ void CPhysicalDevice::createLogicalDevices(VkSurfaceKHR surface, const std::vect
 
     VkResult result = VK_SUCCESS;
 
-    //QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
-    QueueFamilyIndices indices = findQueueFamilies(surface);
+    QueueFamilyIndices indices = findQueueFamilies(surface, "Find Queue Families when creating logical device");
 
     std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
     std::set<uint32_t> uniqueQueueFamilies = { indices.graphicsFamily.value(), indices.presentFamily.value() };

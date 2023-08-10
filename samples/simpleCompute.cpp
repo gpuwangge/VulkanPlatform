@@ -1,42 +1,37 @@
 #include "..\\framework\\include\\application.h"
 
-#define TEST_CLASS_NAME CSimpleVertexBuffer
+#define TEST_CLASS_NAME CSimpleCompute
 class TEST_CLASS_NAME: public CApplication{
 public:
-	std::vector<Vertex2D> vertices = {
-		{ { 0.0f, -0.5f},{ 1.0f, 0.0f, 0.0f }},
-		{ { 0.5f, 0.5f},{ 0.0f, 1.0f, 0.0f }},
-		{ { -0.5f, 0.5f},{ 0.0f, 0.0f, 1.0f }}		
-	};
-
-	std::vector<VkClearValue> clearValues{ {  0.0f, 0.0f, 0.0f, 1.0f  } };
+	std::vector<VkClearValue> clearValues{ {  0.0f, 1.0f, 0.0f, 1.0f  } };
 
 	void initialize(){
-		//Create bufferss
-		renderer.CreateVertexBuffer<Vertex2D>(vertices);
+		//0. prepare compute shader
+		//1. need a physical device with compute, and pick Queue Family with compute
+		//2. create layouts for compute shader
+		//3. create storage buffer
+		//4. create compute pipeline (with shader and layout information)
+		//5. record command (bind compute shader and dispatch)
+		
 		renderer.CreateCommandPool(surface);
 		renderer.CreateCommandBuffers();
 
-		//Create Renderpass
 		renderProcess.addColorAttachment(swapchain.swapChainImageFormat); //add this function will enable color attachment (bUseColorAttachment = true)
 		renderProcess.createSubpass();
 		renderProcess.createDependency();
 		renderProcess.createRenderPass();
 
-		//wxjCreateFramebuffers();
 		swapchain.CreateFramebuffers(renderProcess.renderPass);
 
-		//Create shader resource
-		shaderManager.InitVertexShader("../shaders/simpleVertexBuffer/vert.spv");
-		shaderManager.InitFragmentShader("../shaders/simpleVertexBuffer/frag.spv");
+		shaderManager.InitVertexShader("../shaders/simpleTriangle/vert.spv");
+		shaderManager.InitFragmentShader("../shaders/simpleTriangle/frag.spv");
 
-		//Create Descriptors
 		descriptor.createDescriptorPool();
 		descriptor.createDescriptorSetLayout();
 		descriptor.createDescriptorSets();
 
 		renderProcess.createLayout(descriptor.descriptorSetLayout);
-		renderProcess.createGraphicsPipeline<Vertex2D>(
+		renderProcess.createGraphicsPipeline(
 			VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
 			shaderManager.vertShaderModule, 
 			shaderManager.fragShaderModule);
@@ -50,10 +45,10 @@ public:
 
 	void recordCommandBuffer(){
 		RENDER_START
+		//actually this sample doesn't need BindDescriptorSets
 
-		renderer.BindVertexBuffer();
 		renderer.Draw(3);
-
+		
 		RENDER_END
 	}
 };
