@@ -95,8 +95,8 @@ public:
 
 		// Matrix from light's point of view
 		float lightFOV = 10.0f; //45.0f;
-		float zNear = 0.0f;//1.0f
-		float zFar = 5.0f;//96.0f
+		float zNear = 0.0f; //1.0f
+		float zFar = 5.0f; //96.0f
 		glm::mat4 depthProjectionMatrix = glm::perspective(glm::radians(lightFOV), 1.0f, zNear, zFar);
 		glm::mat4 depthViewMatrix = glm::lookAt(customUBO.lightPos, glm::vec3(0.0f), glm::vec3(0, 1, 0));
 		glm::mat4 depthModelMatrix = glm::mat4(1.0f);

@@ -10,27 +10,22 @@ public:
     void initialize(){
 		swapchain.bEnableDepthTest = true; 
 		
-		//Create vertex resource
 		modelManager.LoadObjModel("../models/viking_room.obj", vertices3D, indices3D);
 
-		//Create buffers
 		renderer.CreateVertexBuffer<Vertex3D>(vertices3D);
 		renderer.CreateIndexBuffer(indices3D);
 		renderer.CreateCommandPool(surface);
 		renderer.CreateCommandBuffers();
 
-		//Create texture resource
 		VkImageUsageFlags usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
 		textureImage.CreateTextureImage("../textures/viking_room.png", usage, renderer.commandPool);
 		textureImage.CreateImageView(VK_IMAGE_ASPECT_COLOR_BIT);
 
-		//Create depth resource
 		VkFormat depthFormat = renderProcess.findDepthFormat();
 		usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
 		swapchain.createDepthImages(depthFormat, VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 		swapchain.createDepthImageViews(depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT);
 
-		//Create Renderpass
 		renderProcess.addColorAttachment(swapchain.swapChainImageFormat); //add this function will enable color attachment (bUseColorAttachment = true)
 		renderProcess.addDepthAttachment(); //add this function will enable depth attachment(bUseDepthAttachment = true)
 		renderProcess.createSubpass();
@@ -41,11 +36,9 @@ public:
 
 		swapchain.CreateFramebuffers(renderProcess.renderPass);
 
-		//Create shader resource
-		shaderManager.InitVertexShader("../shaders/model/vert_model.spv");
-		shaderManager.InitFragmentShader("../shaders/model/frag_model.spv");
+		shaderManager.InitVertexShader("../shaders/model/vert.spv");
+		shaderManager.InitFragmentShader("../shaders/model/frag.spv");
 
-		//Create Descriptors
 		descriptor.addMVPUniformBuffer();
 		descriptor.addImageSamplerUniformBuffer(textureImage.mipLevels);
 		descriptor.createDescriptorPool();

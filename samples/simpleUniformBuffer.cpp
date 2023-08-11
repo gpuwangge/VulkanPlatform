@@ -21,24 +21,19 @@ public:
 	std::vector<VkClearValue> clearValues{ {  0.0f, 0.0f, 0.0f, 1.0f  } };
 
 	void initialize(){
-		//Create bufferss
 		renderer.CreateCommandPool(surface);
 		renderer.CreateCommandBuffers();
 
-		//Create Renderpass
 		renderProcess.addColorAttachment(swapchain.swapChainImageFormat); //add this function will enable color attachment (bUseColorAttachment = true)
 		renderProcess.createSubpass();
 		renderProcess.createDependency();
 		renderProcess.createRenderPass();
 
-		//wxjCreateFramebuffers();
 		swapchain.CreateFramebuffers(renderProcess.renderPass);
 
-		//Create shader resources
 		shaderManager.InitVertexShader("../shaders/simpleUniformBuffer/vert.spv");
 		shaderManager.InitFragmentShader("../shaders/simpleUniformBuffer/frag.spv");
 
-		//Create Descriptors
 		descriptor.addCustomUniformBuffer(sizeof(CustomUniformBufferObject));
 		descriptor.createDescriptorPool();
 		VkDescriptorSetLayoutBinding customBinding = CustomUniformBufferObject::GetBinding();

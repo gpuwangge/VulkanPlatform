@@ -12,25 +12,20 @@ public:
 	std::vector<VkClearValue> clearValues{ {  0.0f, 0.0f, 0.0f, 1.0f  } };
 
 	void initialize(){
-		//Create bufferss
 		renderer.CreateVertexBuffer<Vertex2D>(vertices);
 		renderer.CreateCommandPool(surface);
 		renderer.CreateCommandBuffers();
 
-		//Create Renderpass
 		renderProcess.addColorAttachment(swapchain.swapChainImageFormat); //add this function will enable color attachment (bUseColorAttachment = true)
 		renderProcess.createSubpass();
 		renderProcess.createDependency();
 		renderProcess.createRenderPass();
 
-		//wxjCreateFramebuffers();
 		swapchain.CreateFramebuffers(renderProcess.renderPass);
 
-		//Create shader resource
 		shaderManager.InitVertexShader("../shaders/simpleVertexBuffer/vert.spv");
 		shaderManager.InitFragmentShader("../shaders/simpleVertexBuffer/frag.spv");
 
-		//Create Descriptors
 		descriptor.createDescriptorPool();
 		descriptor.createDescriptorSetLayout();
 		descriptor.createDescriptorSets();
