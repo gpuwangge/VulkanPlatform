@@ -51,6 +51,7 @@ public:
     VkPipelineLayout pipelineLayout;
 	VkPipeline graphicsPipeline;
 
+    bool bCreateComputePipeline = false;
     VkPipelineLayout pipelineLayout_compute;
 	VkPipeline pipeline_compute;
 
@@ -82,7 +83,7 @@ public:
     //this function is for samples that are  using vertex shader
     template <typename T>
     void createGraphicsPipeline(VkPrimitiveTopology topology, VkShaderModule &vertShaderModule, VkShaderModule &fragShaderModule, bool bUseVertexBuffer = true){
-        HERE_I_AM("wxjCreateGraphicsPipeline");
+        HERE_I_AM("CreateGraphicsPipeline");
 
         VkResult result = VK_SUCCESS;
 
@@ -106,7 +107,7 @@ public:
         VkPipelineShaderStageCreateInfo shaderStages[] = { vertShaderStageInfo, fragShaderStageInfo };
         pipelineInfo.stageCount = 2;
         pipelineInfo.pStages = shaderStages;
-
+        
         /*********2 Asemble Vertex Info**********/
         VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
         auto bindingDescription = T::getBindingDescription();

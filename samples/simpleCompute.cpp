@@ -9,10 +9,11 @@ public:
 		//0. prepare compute shader(spv)*
 		//1. need a physical device with compute, and pick Queue Family with compute*
 		//2. create compute command buffer*
-		//3. create storage buffer*
+		//3. create storage buffer* (initial data with fill())
 		//4. create layouts for compute shader*
 		//5. create compute pipeline (with shader and layout information)*
 		//6. record command (bind compute shader and dispatch)*
+		//Question: If I edit storage buffer in shader, will it reflect?
 		
 		renderer.CreateCommandPool(surface);
 		//renderer.CreateCommandBuffers();

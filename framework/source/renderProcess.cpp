@@ -149,6 +149,8 @@ VkFormat CRenderProcess::findDepthFormat() {
 }
 
 void CRenderProcess::createComputePipeline(VkShaderModule &computeShaderModule, VkDescriptorSetLayout &computeDescriptorSetLayout){
+	bCreateComputePipeline = true;
+	
 	VkPipelineShaderStageCreateInfo computeShaderStageInfo{};
 	computeShaderStageInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_SHADER_STAGE_CREATE_INFO;
 	computeShaderStageInfo.stage = VK_SHADER_STAGE_COMPUTE_BIT;
@@ -209,12 +211,14 @@ void CRenderProcess::createLayout(VkDescriptorSetLayout &descriptorSetLayout, Vk
 void CRenderProcess::Cleanup(){
 	vkDestroyRenderPass(CContext::GetHandle().GetLogicalDevice(), renderPass, nullptr);
 
-//TODO:
+	if(bCreateComputePipeline){
+		vkDestroyPipeline(CContext::GetHandle().GetLogicalDevice(), pipeline_compute, nullptr);
+    	vkDestroyPipelineLayout(CContext::GetHandle().GetLogicalDevice(), pipelineLayout_compute, nullptr);
+	}else{
+		//TODO:
 	// if(graphicsPipeline != VK_NULL_HANDLE)
-	// 	vkDestroyPipeline(CContext::GetHandle().GetLogicalDevice(), graphicsPipeline, nullptr);
+	 	vkDestroyPipeline(CContext::GetHandle().GetLogicalDevice(), graphicsPipeline, nullptr);
 	// if(pipelineLayout != VK_NULL_HANDLE)
-    // 	vkDestroyPipelineLayout(CContext::GetHandle().GetLogicalDevice(), pipelineLayout, nullptr);
-
-	vkDestroyPipeline(CContext::GetHandle().GetLogicalDevice(), pipeline_compute, nullptr);
-    vkDestroyPipelineLayout(CContext::GetHandle().GetLogicalDevice(), pipelineLayout_compute, nullptr);
+     	vkDestroyPipelineLayout(CContext::GetHandle().GetLogicalDevice(), pipelineLayout, nullptr);
+	}
 }

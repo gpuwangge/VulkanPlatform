@@ -21,7 +21,7 @@ void CModelManager::LoadObjModel(IN const std::string modelName, OUT std::vector
 
 	//vertices3D.clear();
 	//indices3D.clear();
-
+	
 	for (const auto& shape : shapes) {
 		for (const auto& index : shape.mesh.indices) {
 			Vertex3D vertex{};
@@ -32,12 +32,18 @@ void CModelManager::LoadObjModel(IN const std::string modelName, OUT std::vector
 				attrib.vertices[3 * index.vertex_index + 2]
 			};
 
+			vertex.color = { 1.0f, 1.0f, 1.0f };
+
 			vertex.texCoord = {
 				attrib.texcoords[2 * index.texcoord_index + 0],
 				1.0f - attrib.texcoords[2 * index.texcoord_index + 1]
 			};
 
-			vertex.color = { 1.0f, 1.0f, 1.0f };
+			vertex.normal = {
+				attrib.normals[3 * index.normal_index + 0],
+				attrib.normals[3 * index.normal_index + 1],
+				attrib.normals[3 * index.normal_index + 2]
+			};
 
 			if (uniqueVertices.count(vertex) == 0) {
 				uniqueVertices[vertex] = static_cast<uint32_t>(vertices3D.size());
