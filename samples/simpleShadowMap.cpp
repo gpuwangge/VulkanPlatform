@@ -1,5 +1,5 @@
 #include "..\\framework\\include\\application.h"
-#define TEST_CLASS_NAME CSimplePhongLighting
+#define TEST_CLASS_NAME CSimpleShadowMap
 class TEST_CLASS_NAME: public CApplication{
 public:
 	struct CustomUniformBufferObject {
@@ -62,8 +62,8 @@ public:
 
 		swapchain.CreateFramebuffers(renderProcess.renderPass);
 
-		shaderManager.InitVertexShader("../shaders/simplePhoneLighting/vert.spv");
-		shaderManager.InitFragmentShader("../shaders/simplePhoneLighting/frag.spv"); 
+		shaderManager.InitVertexShader("../shaders/simpleShadowMap/vert.spv");
+		shaderManager.InitFragmentShader("../shaders/simpleShadowMap/frag.spv"); 
        
 		descriptor.addImageSamplerUniformBuffer(textureImage.mipLevels);
 		descriptor.addMVPUniformBuffer();
