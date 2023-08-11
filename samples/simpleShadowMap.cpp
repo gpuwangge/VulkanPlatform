@@ -4,6 +4,7 @@ class TEST_CLASS_NAME: public CApplication{
 public:
 	struct CustomUniformBufferObject {
 		glm::vec3 lightPos;
+		glm::mat4 lightSpace;
 
 		static VkDescriptorSetLayoutBinding GetBinding(){
 			VkDescriptorSetLayoutBinding binding;
@@ -63,27 +64,45 @@ public:
 		swapchain.CreateFramebuffers(renderProcess.renderPass);
 
 		shaderManager.InitVertexShader("../shaders/simpleShadowMap/vert.spv");
-		shaderManager.InitFragmentShader("../shaders/simpleShadowMap/frag.spv"); 
+		shaderManager.InitFragmentShader("../shaders/simpleShadowMap/frag.spv");  
        
 		descriptor.addImageSamplerUniformBuffer(textureImage.mipLevels);
 		descriptor.addMVPUniformBuffer();
 		descriptor.addCustomUniformBuffer(sizeof(CustomUniformBufferObject));
 		descriptor.createDescriptorPool();
 		VkDescriptorSetLayoutBinding customBinding = CustomUniformBufferObject::GetBinding();
-		descriptor.createDescriptorSetLayout(&customBinding); 
+		descriptor.createDescriptorSetLayout(&customBinding);  
 		descriptor.createDescriptorSets(&textureImage.textureImageBuffer.view);
-
+    
 		renderProcess.createLayout(descriptor.descriptorSetLayout);
 		renderProcess.createGraphicsPipeline<Vertex3D>(
 			VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
 			shaderManager.vertShaderModule,  
-			shaderManager.fragShaderModule);
+			shaderManager.fragShaderModule); 
 
 		CApplication::initialize();
 	} 
 
 	void update(){
+		// float near_plane = 1.0f, far_plane = 7.5f;
+		// glm::mat4 lightProjection = glm::ortho(-10.0f, 10.0f, -10.0f, 10.0f, near_plane, far_plane); 
+		// glm::mat4 lightView = glm::lookAt(
+		// 	glm::vec3(-2.0f, 4.0f, -1.0f), 
+		// 	glm::vec3( 0.0f, 0.0f,  0.0f),  
+		// 	glm::vec3( 0.0f, 1.0f,  0.0f));  
+ 
 		customUBO.lightPos = glm::vec3(0.75f * sin(durationTime * 3), 0.75f * sin(durationTime * 2), 0.75f * sin(durationTime * 1));
+
+		// Matrix from light's point of view
+		float lightFOV = 10.0f; //45.0f;
+		float zNear = 0.0f;//1.0f
+		float zFar = 5.0f;//96.0f
+		glm::mat4 depthProjectionMatrix = glm::perspective(glm::radians(lightFOV), 1.0f, zNear, zFar);
+		glm::mat4 depthViewMatrix = glm::lookAt(customUBO.lightPos, glm::vec3(0.0f), glm::vec3(0, 1, 0));
+		glm::mat4 depthModelMatrix = glm::mat4(1.0f);
+
+		customUBO.lightSpace = depthProjectionMatrix * depthViewMatrix * depthModelMatrix;
+		
 		descriptor.updateCustomUniformBuffer<CustomUniformBufferObject>(renderer.currentFrame, durationTime, customUBO);
 
 		descriptor.mvpUBO.model = glm::rotate(glm::mat4(1.0f),  glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
