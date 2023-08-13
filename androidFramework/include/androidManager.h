@@ -9,6 +9,10 @@ public:
     ~CAndroidManager();
 
     AAssetManager *assetManager;
+
+    VkShaderModule InitVertexShader();
+    VkShaderModule InitFragmentShader();
+private:
     std::vector<uint8_t> LoadBinaryFileToVector(const char *file_path, AAssetManager *assetManager);
     VkShaderModule createShaderModule(const std::vector<uint8_t> &code);
 };

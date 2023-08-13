@@ -8,14 +8,16 @@ include_directories(
     $ENV{VULKAN_SDK}/Include
     C:/VulkanSDK/GLFW/include
     C:/VulkanSDK/GLM
-    ${PROJECT_SOURCE_DIR}/framework/include)
+    ${PROJECT_SOURCE_DIR}/framework/include
+    ${PROJECT_SOURCE_DIR}/windowsFramework/include)
 
 link_directories(
     $ENV{VULKAN_SDK}/Lib
     C:/VulkanSDK/GLFW/lib-static-ucrt)
 
+add_subdirectory(windowsFramework)
 add_subdirectory(framework)
-link_libraries(wxj-vulkan-framework vulkan-1 glfw3dll)
+link_libraries(vulkan-framework windows-vulkan-framework vulkan-1 glfw3dll)
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 

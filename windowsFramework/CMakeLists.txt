@@ -5,5 +5,5 @@ set(CMAKE_BUILD_TYPE "Debug")
 
 aux_source_directory(${PROJECT_SOURCE_DIR}/source SRC)
 set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../build)
-add_library(vulkan-framework STATIC ${SRC})
+add_library(windows-vulkan-framework STATIC ${SRC})
 

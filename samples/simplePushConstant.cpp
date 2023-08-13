@@ -28,8 +28,13 @@ public:
 
 		swapchain.CreateFramebuffers(renderProcess.renderPass);
 
+#ifndef ANDROID
 		shaderManager.InitVertexShader("../shaders/simplePushConstant/vert.spv");
 		shaderManager.InitFragmentShader("../shaders/simplePushConstant/frag.spv");
+#else
+        shaderManager.vertShaderModule = androidManager.InitVertexShader();
+        shaderManager.fragShaderModule = androidManager.InitFragmentShader();
+#endif
 		shaderManager.CreatePushConstantRange<ModelPushConstants>(VK_SHADER_STAGE_VERTEX_BIT, 0);
 
 		descriptor.addVPUniformBuffer();
@@ -70,4 +75,6 @@ public:
 	}
 };
 
-#include "..\\framework\\include\\main.hpp"
+#ifndef ANDROID
+#include "..\\windowsFramework\\include\\main.hpp"
+#endif

@@ -5,11 +5,22 @@ CAndroidManager::CAndroidManager(){}
 CAndroidManager::~CAndroidManager(){}
 
 
+
 /**********
  * 
  * Android Shader Help Functions
  * 
 */
+VkShaderModule CAndroidManager::InitVertexShader(){
+    auto vertShaderCode = LoadBinaryFileToVector("shaders/shader.vert.spv", assetManager);
+    return createShaderModule(vertShaderCode);
+}
+
+VkShaderModule CAndroidManager::InitFragmentShader(){
+    auto fragShaderCode = LoadBinaryFileToVector("shaders/shader.frag.spv", assetManager);
+    return createShaderModule(fragShaderCode);
+}
+
 std::vector<uint8_t> CAndroidManager::LoadBinaryFileToVector(const char *file_path,
                                             AAssetManager *assetManager) {
     std::vector<uint8_t> file_content;

@@ -23,8 +23,13 @@ public:
 
 		swapchain.CreateFramebuffers(renderProcess.renderPass);
 
+#ifndef ANDROID
 		shaderManager.InitVertexShader("../shaders/simpleVertexBuffer/vert.spv");
 		shaderManager.InitFragmentShader("../shaders/simpleVertexBuffer/frag.spv");
+#else
+        shaderManager.vertShaderModule = androidManager.InitVertexShader();
+        shaderManager.fragShaderModule = androidManager.InitFragmentShader();
+#endif
 
 		descriptor.createDescriptorPool();
 		descriptor.createDescriptorSetLayout();
@@ -53,6 +58,7 @@ public:
 	}
 };
 
-#include "..\\framework\\include\\main.hpp"
-
+#ifndef ANDROID
+#include "..\\windowsFramework\\include\\main.hpp"
+#endif
 

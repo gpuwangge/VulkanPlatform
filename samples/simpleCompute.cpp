@@ -26,9 +26,15 @@ public:
 
 		swapchain.CreateFramebuffers(renderProcess.renderPass);
 
+#ifndef ANDROID
 		//shaderManager.InitVertexShader("../shaders/simpleTriangle/vert.spv");
 		//shaderManager.InitFragmentShader("../shaders/simpleTriangle/frag.spv");
 		shaderManager.InitComputeShader("../shaders/simpleCompute/comp.spv");
+#else
+        shaderManager.vertShaderModule = androidManager.InitVertexShader();
+        shaderManager.fragShaderModule = androidManager.InitFragmentShader();
+#endif
+
 
 		descriptor.addComputeStorageUniformBuffer();
 		descriptor.createShaderStorageBuffers();
@@ -61,6 +67,7 @@ public:
 	}
 };
 
-#include "..\\framework\\include\\main.hpp"
-
+#ifndef ANDROID
+#include "..\\windowsFramework\\include\\main.hpp"
+#endif
 

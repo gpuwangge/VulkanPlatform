@@ -15,9 +15,9 @@
 #include "modelManager.h"
 
 #ifndef ANDROID
-#include "glfwManager.h"
+#include "..\\..\\windowsFramework\\include\\glfwManager.h"
 #else
-#include "androidManager.h"
+#include "..\\androidFramework\\include\\androidManager.h"
 #endif
 
 #define RENDER_START { \
@@ -59,6 +59,8 @@ public:
 #ifndef ANDROID
     void run();
     void mainLoop();
+#else
+    CAndroidManager androidManager;
 #endif
 
     //for static class member. But can not define and init them in the header file!

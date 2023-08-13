@@ -5,7 +5,7 @@
 #include "physicalDevice.h"
 
 #ifndef ANDROID
-#include "logManager.h"
+#include "..\\..\\windowsFramework\\include\\logManager.h"
 #endif
 
 //CContext is to store some commonly used static variables(physical device, logical device in the current context)
