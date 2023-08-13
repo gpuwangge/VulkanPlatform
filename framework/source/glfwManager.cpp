@@ -1,6 +1,6 @@
-#include "controller.h"
+#include "glfwManager.h"
 #include "application.h"
-//#include <math.h>
+
 #ifndef M_PI
 #define M_PI  3.14159265f
 #endif
@@ -25,10 +25,18 @@ const float MINSCALE = { 0.05f };
 // bool NeedToExit = false;
 // Camera mainCamera;
 
-CController::CController(){}
-CController::~CController(){}
 
-void CController::GLFWKeyboard(GLFWwindow * window, int key, int scancode, int action, int mods) {
+
+CGLFWManager::CGLFWManager(){
+	windowWidth = 0;
+    windowHeight = 0;
+}
+CGLFWManager::~CGLFWManager(){
+	glfwDestroyWindow(window);
+    glfwTerminate();
+}
+
+void CGLFWManager::GLFWKeyboard(GLFWwindow * window, int key, int scancode, int action, int mods) {
 	//printf("controller!\n");
 
 	static bool				UseIndexBuffer;			// true = use both vertex and index buffer, false = just use vertex buffer
@@ -152,7 +160,7 @@ void CController::GLFWKeyboard(GLFWwindow * window, int key, int scancode, int a
 
 }
 
-void CController::GLFWMouseMotion(GLFWwindow *window, double xpos, double ypos){
+void CGLFWManager::GLFWMouseMotion(GLFWwindow *window, double xpos, double ypos){
 	static int				Xmouse, Ymouse;			// mouse values
 	static float				Xrot, Yrot;			// rotation angles in degrees
 	static int				ActiveButton;			// current button that is down
@@ -182,7 +190,7 @@ void CController::GLFWMouseMotion(GLFWwindow *window, double xpos, double ypos){
 	Ymouse = (int)ypos;
 }
 
-void CController::GLFWMouseButton(GLFWwindow *window, int button, int action, int mods) {
+void CGLFWManager::GLFWMouseButton(GLFWwindow *window, int button, int action, int mods) {
 	static int				Xmouse, Ymouse;			// mouse values
 	static int				ActiveButton;			// current button that is down
 
@@ -224,4 +232,41 @@ void CController::GLFWMouseButton(GLFWwindow *window, int button, int action, in
 	{
 		ActiveButton &= ~b;		// clear the proper bit
 	}
+}
+
+static void framebufferResizeCallback(GLFWwindow* window, int width, int height) {
+	auto app = reinterpret_cast<CApplication*>(glfwGetWindowUserPointer(window));
+	app->framebufferResized = true;
+}
+
+void CGLFWManager::prepareGLFW(){
+		glfwInit();
+
+		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+
+		window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "GLFW Appliciation", nullptr, nullptr);
+		glfwSetWindowUserPointer(window, this);
+		glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
+
+		glfwGetFramebufferSize(window, &windowWidth, &windowHeight);
+
+		glfwSetKeyCallback(window, GLFWKeyboard);
+		glfwSetCursorPosCallback(window, GLFWMouseMotion);
+		glfwSetMouseButtonCallback(window, GLFWMouseButton);
+}
+
+void CGLFWManager::createGLFWSurface(std::unique_ptr<CInstance> &instance, VkSurfaceKHR &surface) {
+    if (glfwCreateWindowSurface(instance->getHandle(), window, nullptr, &surface) != VK_SUCCESS) {
+        throw std::runtime_error("failed to create window surface!");
+    }
+}
+
+void CGLFWManager::getGLFWRequiredInstanceExtensions(std::vector<const char*> &requiredInstanceExtensions){
+    uint32_t glfwExtensionCount = 0;
+    const char** glfwExtensions;
+    glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+    //requiredInstanceExtensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
+	requiredInstanceExtensions.resize(glfwExtensionCount);
+	for(int i = 0; i < glfwExtensionCount; i++)
+		requiredInstanceExtensions[i] = glfwExtensions[i];
 }

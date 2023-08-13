@@ -1,6 +1,6 @@
 #include "instance.h"
 
-CInstance::CInstance(const std::vector<const char*> requiredValidationLayers){
+CInstance::CInstance(const std::vector<const char*> &requiredValidationLayers, std::vector<const char*> &requiredExtensions){
     debugger = new CDebugger("../logs/instance.log");
 
     HERE_I_AM("CInstance Constructor");
@@ -63,10 +63,10 @@ CInstance::CInstance(const std::vector<const char*> requiredValidationLayers){
         createInfo.pNext = nullptr;
     }
 
-    auto extensions = getRequiredExtensions();
-    createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
-    createInfo.ppEnabledExtensionNames = extensions.data();
-    DisplayExtensions(extensions);
+    //auto extensions = getRequiredExtensions();
+    createInfo.enabledExtensionCount = static_cast<uint32_t>(requiredExtensions.size());
+    createInfo.ppEnabledExtensionNames = requiredExtensions.data();
+    DisplayExtensions(requiredExtensions);
 
     //Third create instance
     result = vkCreateInstance(&createInfo, nullptr, &handle);
@@ -91,19 +91,19 @@ void CInstance::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfo
     createInfo.pfnUserCallback = debugCallback;
 }
 
-std::vector<const char*> CInstance::getRequiredExtensions() {
-    uint32_t glfwExtensionCount = 0;
-    const char** glfwExtensions;
-    glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+// std::vector<const char*> CInstance::getRequiredExtensions(const char** requiredExtensions, uint32_t requiredExtensionCount) {
+//     uint32_t glfwExtensionCount = 0;
+//     const char** glfwExtensions;
+//     glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
 
-    std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
+//     std::vector<const char*> extensions(requiredExtensions, requiredExtensions + requiredExtensionCount);
 
-    if (enableValidationLayers) {
-        extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
-    }
+//     if (enableValidationLayers) {
+//         extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+//     }
 
-    return extensions;
-}
+//     return extensions;
+// }
 
 VkResult CInstance::CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger) {
     auto func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");

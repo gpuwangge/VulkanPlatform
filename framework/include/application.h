@@ -1,9 +1,6 @@
 #ifndef H_APPLICATION
 #define H_APPLICATION
 
-#define GLFW_INCLUDE_VULKAN
-#include <GLFW/glfw3.h>
-
 #include "common.h"
 #include "camera.hpp"
 #include "instance.h"
@@ -14,10 +11,10 @@
 #include "renderProcess.h"
 #include "shaderManager.h"
 #include "renderer.h"
-//#include "imageManager.h" 
 #include "texture.h" //this includes imageManager.h
 #include "modelManager.h"
-#include "controller.h"
+#include "glfwManager.h"
+
 
 #define RENDER_START { \
     renderer.Start(renderProcess.graphicsPipeline, renderProcess.pipelineLayout, \
@@ -32,14 +29,10 @@ public:
     CApplication();
     ~CApplication();
 
-    GLFWwindow * window;
-    int windowWidth, windowHeight;
-
     //VkInstance instance;//01
     std::unique_ptr<CInstance> instance{nullptr};
 
     VkSurfaceKHR surface;//03
-    
     
     bool framebufferResized = false;
 
@@ -52,21 +45,17 @@ public:
     CRenderer renderer;
     CTextureImage textureImage;
     CModelManager modelManager;
-    CController controller;
+    CGLFWManager glfwManager;
 
     //std::chrono::_V2::system_clock::time_point lastTime;
 
     void run();
 
-    void prepareGLFW();
-    void createGLFWSurface();
-    void prepareVulkanDevices();
-
     void mainLoop();
-    
-    static Camera mainCamera; //declare static class member. But can not define and init them in the header file!
-    static bool NeedToExit;
 
+    //for static class member. But can not define and init them in the header file!
+    static Camera mainCamera; 
+    static bool NeedToExit;
 
     /*Clean up Functions*/
     void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator);

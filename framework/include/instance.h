@@ -1,15 +1,12 @@
 #ifndef H_INSTANCE
 #define H_INSTANCE
 
-#define GLFW_INCLUDE_VULKAN
-#include <GLFW/glfw3.h>
-
 #include "common.h"
 #include "physicalDevice.h"
 
 class CInstance{
 public:
-    CInstance(const std::vector<const char*> requiredValidationLayers);
+    CInstance(const std::vector<const char*> &requiredValidationLayers, std::vector<const char*> &requiredExtensions);
 
     ~CInstance();
 
@@ -30,7 +27,7 @@ public:
         return VK_FALSE;
     }
     void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
-    std::vector<const char*> getRequiredExtensions();
+    //std::vector<const char*> getRequiredExtensions();
     VkResult CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger);
     void Init02SetupDebugMessenger();
 
