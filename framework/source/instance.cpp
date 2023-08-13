@@ -15,6 +15,7 @@ CInstance::CInstance(const std::vector<const char*> &requiredValidationLayers, s
     appInfo.engineVersion = VK_MAKE_VERSION(1, 0, 0);
     appInfo.apiVersion = VK_API_VERSION_1_0;
 
+#ifndef ANDROID
     //First make sure required layer(s) are available
     if (enableValidationLayers) {
         uint32_t layerCount;
@@ -38,6 +39,7 @@ CInstance::CInstance(const std::vector<const char*> &requiredValidationLayers, s
 
         if (result != VK_SUCCESS) throw std::runtime_error("validation layers requested, but not available!");
     }
+#endif
 
     //Second set required extension(s)
     uint32_t extensionCount;
@@ -51,6 +53,7 @@ CInstance::CInstance(const std::vector<const char*> &requiredValidationLayers, s
     createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
     createInfo.pApplicationInfo = &appInfo;
     VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{};
+#ifndef ANDROID    
     if (enableValidationLayers) {
         createInfo.enabledLayerCount = static_cast<uint32_t>(requiredValidationLayers.size());
         createInfo.ppEnabledLayerNames = requiredValidationLayers.data();
@@ -59,9 +62,12 @@ CInstance::CInstance(const std::vector<const char*> &requiredValidationLayers, s
         createInfo.pNext = (VkDebugUtilsMessengerCreateInfoEXT*)&debugCreateInfo;
     }
     else {
+#endif
         createInfo.enabledLayerCount = 0;
         createInfo.pNext = nullptr;
+#ifndef ANDROID        
     }
+#endif
 
     //auto extensions = getRequiredExtensions();
     createInfo.enabledExtensionCount = static_cast<uint32_t>(requiredExtensions.size());
@@ -82,7 +88,7 @@ CInstance::~CInstance(){
     //if (handle != VK_NULL_HANDLE) vkDestroyInstance(handle, nullptr);
 }
 
-
+#ifndef ANDROID  
 void CInstance::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo) {
     createInfo = {};
     createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
@@ -90,21 +96,9 @@ void CInstance::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfo
     createInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
     createInfo.pfnUserCallback = debugCallback;
 }
+#endif
 
-// std::vector<const char*> CInstance::getRequiredExtensions(const char** requiredExtensions, uint32_t requiredExtensionCount) {
-//     uint32_t glfwExtensionCount = 0;
-//     const char** glfwExtensions;
-//     glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
-
-//     std::vector<const char*> extensions(requiredExtensions, requiredExtensions + requiredExtensionCount);
-
-//     if (enableValidationLayers) {
-//         extensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
-//     }
-
-//     return extensions;
-// }
-
+#ifndef ANDROID  
 VkResult CInstance::CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUtilsMessengerCreateInfoEXT* pCreateInfo, const VkAllocationCallbacks* pAllocator, VkDebugUtilsMessengerEXT* pDebugMessenger) {
     auto func = (PFN_vkCreateDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkCreateDebugUtilsMessengerEXT");
     if (func != nullptr) {
@@ -114,7 +108,9 @@ VkResult CInstance::CreateDebugUtilsMessengerEXT(VkInstance instance, const VkDe
         return VK_ERROR_EXTENSION_NOT_PRESENT;
     }
 }
+#endif
 
+#ifndef ANDROID
 void CInstance::Init02SetupDebugMessenger() {
     //HERE_I_AM("Init02CreateDebugMessenger");
 
@@ -130,6 +126,7 @@ void CInstance::Init02SetupDebugMessenger() {
 
     //REPORT("CreateDebugUtilsMessengerEXT");
 }
+#endif
 
 void CInstance::findAllPhysicalDevices(){
     //HERE_I_AM("findAllPhysicalDevices");

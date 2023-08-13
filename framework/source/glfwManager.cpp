@@ -28,8 +28,8 @@ const float MINSCALE = { 0.05f };
 
 
 CGLFWManager::CGLFWManager(){
-	windowWidth = 0;
-    windowHeight = 0;
+	m_windowHeight = 0;
+    m_windowHeight = 0;
 }
 CGLFWManager::~CGLFWManager(){
 	glfwDestroyWindow(window);
@@ -239,7 +239,7 @@ static void framebufferResizeCallback(GLFWwindow* window, int width, int height)
 	app->framebufferResized = true;
 }
 
-void CGLFWManager::prepareGLFW(){
+void CGLFWManager::createWindow(int &windowWidth, int &windowHeight){
 		glfwInit();
 
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
@@ -248,14 +248,17 @@ void CGLFWManager::prepareGLFW(){
 		glfwSetWindowUserPointer(window, this);
 		glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
 
-		glfwGetFramebufferSize(window, &windowWidth, &windowHeight);
+		glfwGetFramebufferSize(window, &m_windowHeight, &m_windowHeight);
 
 		glfwSetKeyCallback(window, GLFWKeyboard);
 		glfwSetCursorPosCallback(window, GLFWMouseMotion);
 		glfwSetMouseButtonCallback(window, GLFWMouseButton);
+
+		windowWidth = m_windowWidth;
+		windowHeight = m_windowHeight;
 }
 
-void CGLFWManager::createGLFWSurface(std::unique_ptr<CInstance> &instance, VkSurfaceKHR &surface) {
+void CGLFWManager::createSurface(std::unique_ptr<CInstance> &instance, VkSurfaceKHR &surface) {
     if (glfwCreateWindowSurface(instance->getHandle(), window, nullptr, &surface) != VK_SUCCESS) {
         throw std::runtime_error("failed to create window surface!");
     }

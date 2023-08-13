@@ -1,18 +1,6 @@
 #ifndef H_MAIN
 #define H_MAIN
 
-// class CObjectFactory{
-// public:
-// 	CObjectFactory(){
-
-// 	}
-
-// 	void createObject(std::string ObjName){
-
-// 	}
-// };
-
-
 int main(){
 	TEST_CLASS_NAME app;
 

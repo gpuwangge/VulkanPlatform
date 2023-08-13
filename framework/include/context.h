@@ -3,7 +3,10 @@
 
 #include "common.h"
 #include "physicalDevice.h"
+
+#ifndef ANDROID
 #include "logManager.h"
+#endif
 
 //CContext is to store some commonly used static variables(physical device, logical device in the current context)
 
@@ -29,8 +32,10 @@ public:
     VkQueue GetGraphicsQueue();
     VkQueue GetPresentQueue();
     VkQueue GetComputeQueue();
-    
+
+#ifndef ANDROID
     CLogManager *logManager;
+#endif
 private:
     CContext();//set construct to private so no one can instanize this class.
 

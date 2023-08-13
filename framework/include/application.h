@@ -13,8 +13,10 @@
 #include "renderer.h"
 #include "texture.h" //this includes imageManager.h
 #include "modelManager.h"
-#include "glfwManager.h"
 
+#ifndef ANDROID
+#include "glfwManager.h"
+#endif
 
 #define RENDER_START { \
     renderer.Start(renderProcess.graphicsPipeline, renderProcess.pipelineLayout, \
@@ -32,6 +34,7 @@ public:
     //VkInstance instance;//01
     std::unique_ptr<CInstance> instance{nullptr};
 
+    int windowWidth, windowHeight;
     VkSurfaceKHR surface;//03
     
     bool framebufferResized = false;
@@ -49,9 +52,10 @@ public:
 
     //std::chrono::_V2::system_clock::time_point lastTime;
 
+#ifndef ANDROID
     void run();
-
     void mainLoop();
+#endif
 
     //for static class member. But can not define and init them in the header file!
     static Camera mainCamera; 

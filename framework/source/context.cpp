@@ -24,8 +24,12 @@ VkQueue CContext::GetComputeQueue(){
 
 
 CContext::CContext(){
+#ifndef ANDROID
     logManager = new CLogManager("../logs/context.log");
+#endif
 }
 CContext::~CContext(){
+#ifndef ANDROID 
     if (!logManager) delete logManager;
+#endif
 }

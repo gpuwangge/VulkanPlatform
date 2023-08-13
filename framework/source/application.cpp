@@ -14,10 +14,13 @@ CApplication::CApplication(){
     mainCamera.rotationSpeed = 200.0f;
 
     //NeedToExit = false;
+    windowWidth = 0;
+    windowHeight = 0;
 }
 
-void CApplication::run(){
-    glfwManager.prepareGLFW();
+#ifndef ANDROID
+void CApplication::run(){ //Entrance Function
+    glfwManager.createWindow(windowWidth, windowHeight);
     CContext::Init();
 
     const std::vector<const char*> requiredValidationLayers = {"VK_LAYER_KHRONOS_validation"};
@@ -27,30 +30,29 @@ void CApplication::run(){
     VkQueueFlagBits requiredQueueFamilies = VK_QUEUE_GRAPHICS_BIT; //& VK_QUEUE_COMPUTE_BIT
     const std::vector<const char*>  requireDeviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
 
-    
     //prepareVulkanDevices();
     instance = std::make_unique<CInstance>(requiredValidationLayers,requiredInstanceExtensions);
     //need instance. Surface is to store view format information for creating swapchain. 
     //Only GLFW knows what kind of surface can be attached to its window.
-    glfwManager.createGLFWSurface(instance, surface);
+    glfwManager.createSurface(instance, surface);
+
     instance->findAllPhysicalDevices();
     CContext::GetHandle().logManager->writeMSG("Surface created!\n");
-
     CContext::GetHandle().physicalDevice = instance->pickSuitablePhysicalDevice(surface, requireDeviceExtensions, requiredQueueFamilies);
-
     //App dev can only query properties from physical device, but can not directly operate it
     //App dev operates logical device, can logical device communicate with physical device by command queues
     //App dev will fill command buffer with commands later
     //instance->pickedPhysicalDevice->get()->createLogicalDevices(surface, requiredValidationLayers, requireDeviceExtensions);
     CContext::GetHandle().physicalDevice->get()->createLogicalDevices(surface, requiredValidationLayers, requireDeviceExtensions);
 
-    swapchain.createSwapchainImages(surface, glfwManager.windowWidth, glfwManager.windowHeight);
+    swapchain.createSwapchainImages(surface, windowWidth, windowHeight);
 	swapchain.createImageViews(VK_IMAGE_ASPECT_COLOR_BIT);
 
     initialize();
 
     mainLoop();
 }
+#endif
 
 void CApplication::initialize(){
     renderer.CreateSyncObjects();
@@ -76,6 +78,7 @@ void CApplication::update(){
     renderer.Update();
 }
 
+#ifndef ANDROID
 void CApplication::mainLoop(){
 		while (!glfwWindowShouldClose(glfwManager.window)) {
 			glfwPollEvents();
@@ -88,13 +91,16 @@ void CApplication::mainLoop(){
 
 		vkDeviceWaitIdle(CContext::GetHandle().GetLogicalDevice());//Wait GPU to complete all jobs before CPU destroy resources
 }
+#endif
 
+#ifndef ANDROID
 void CApplication::DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator) {
     auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
     if (func != nullptr) {
         func(instance, debugMessenger, pAllocator);
     }
 }
+#endif
 
 
 CApplication::~CApplication(){
@@ -109,8 +115,10 @@ CApplication::~CApplication(){
 
     vkDestroyDevice(CContext::GetHandle().GetLogicalDevice(), nullptr);
 
+#ifndef ANDROID
     if (enableValidationLayers) 
         DestroyDebugUtilsMessengerEXT(instance->getHandle(), instance->debugMessenger, nullptr);
+#endif
 
     vkDestroySurfaceKHR(instance->getHandle(), surface, nullptr);
     vkDestroyInstance(instance->getHandle(), nullptr);

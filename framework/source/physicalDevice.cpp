@@ -153,13 +153,15 @@ void CPhysicalDevice::createLogicalDevices(VkSurfaceKHR surface, const std::vect
     createInfo.enabledExtensionCount = static_cast<uint32_t>(requireDeviceExtensions.size());
     createInfo.ppEnabledExtensionNames = requireDeviceExtensions.data();
 
+#ifndef ANDROID
     if (enableValidationLayers) {
         createInfo.enabledLayerCount = static_cast<uint32_t>(requiredValidationLayers.size());
         createInfo.ppEnabledLayerNames = requiredValidationLayers.data();
     }
-    else {
+    else
+#endif 
         createInfo.enabledLayerCount = 0;
-    }
+    
 
     //create logicalDevice
     result = vkCreateDevice(handle, &createInfo, nullptr, &(logicalDevices.back().get()->logicalDevice));

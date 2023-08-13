@@ -15,10 +15,10 @@ public:
     ~CGLFWManager();
 
     GLFWwindow * window;
-    int windowWidth, windowHeight;
+    int m_windowWidth, m_windowHeight;
 
-    void prepareGLFW();
-    void createGLFWSurface(std::unique_ptr<CInstance> &instance, VkSurfaceKHR &surface);
+    void createWindow(int &windowWidth, int &windowHeight);
+    void createSurface(std::unique_ptr<CInstance> &instance, VkSurfaceKHR &surface);
     void getGLFWRequiredInstanceExtensions(std::vector<const char*> &requiredInstanceExtensions);
 
     static void GLFWKeyboard(GLFWwindow * window, int key, int scancode, int action, int mods);
