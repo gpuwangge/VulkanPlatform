@@ -1,7 +1,8 @@
-#include "modelManager.h"
+#include "../include/modelManager.h"
 
 #define TINYOBJLOADER_IMPLEMENTATION
-#include <tiny_obj_loader.h>
+//#include <tiny_obj_loader.h>
+#include "../../thirdparty/tiny_obj_loader.h"
 
 CModelManager::CModelManager(){}
 CModelManager::~CModelManager(){}
@@ -17,6 +18,9 @@ void CModelManager::LoadObjModel(IN const std::string modelName, OUT std::vector
 		throw std::runtime_error(warn + err);
 	}
 
+	//if use unordered_map, need to implement size_t operator()(Vertex3D const& vertex) const. 
+	//for some reason(c++ 11 stl not recognized in GLM) android version doesn't support <glm/gtx/hash.hpp>
+	//implment custom hash function instead, checkout dataBuffer.hpp
 	std::unordered_map<Vertex3D, uint32_t> uniqueVertices{};
 
 	//vertices3D.clear();

@@ -1,4 +1,4 @@
-#include "application.h"
+#include "../include/application.h"
 
 Camera CApplication::mainCamera;  //define static class members
 bool CApplication::NeedToExit = false; 

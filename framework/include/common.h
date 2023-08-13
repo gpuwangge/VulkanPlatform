@@ -1,13 +1,22 @@
 #ifndef H_COMMON
 #define H_COMMON
 
+
+//#define ANDROID
+
 #define GLM_FORCE_RADIANS
+#ifndef ANDROID
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
+#else
+#include "../../thirdparty/GLM/glm/glm.hpp"
+#include "../../thirdparty/glm/gtc/matrix_transform.hpp"
+#endif
 
-#define GLM_FORCE_DEPTH_ZERO_TO_ONE
-#define GLM_ENABLE_EXPERIMENTAL
-#include <glm/gtx/hash.hpp>
+// #define GLM_FORCE_DEPTH_ZERO_TO_ONE
+// #define GLM_ENABLE_EXPERIMENTAL
+//#include <glm/gtx/hash.hpp>
+#include <unordered_map>
 
 #include <stdio.h>
 #include <iostream>

@@ -1,4 +1,4 @@
-#include "swapchain.h"
+#include "../include/swapchain.h"
 
 CSwapchain::CSwapchain(){
     //debugger = new CDebugger("../logs/swapchain.log");

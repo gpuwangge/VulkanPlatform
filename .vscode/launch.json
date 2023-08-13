@@ -9,7 +9,7 @@
       "stopAtEntry": false,
       "externalConsole": true,
       "cwd": "${workspaceFolder}/bin",
-      "program": "${cwd}/bin/simpleCompute.exe",
+      "program": "${cwd}/bin/simpleObjLoader.exe",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [

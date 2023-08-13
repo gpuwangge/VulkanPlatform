@@ -1,6 +1,5 @@
-#include "physicalDevice.h"
-
-#include "instance.h"
+#include "../include/physicalDevice.h"
+//#include "../include/instance.h"
 
 CPhysicalDevice::CPhysicalDevice(VkPhysicalDevice physical_device) : handle(physical_device) {
     //CPhysicalDevice(CInstance *instance, VkPhysicalDevice physical_device){

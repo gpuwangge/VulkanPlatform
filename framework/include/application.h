@@ -17,7 +17,7 @@
 #ifndef ANDROID
 #include "..\\..\\windowsFramework\\include\\glfwManager.h"
 #else
-#include "..\\androidFramework\\include\\androidManager.h"
+#include "..\\..\\androidFramework\\include\\androidManager.h"
 #endif
 
 #define RENDER_START { \
@@ -50,13 +50,13 @@ public:
     CRenderer renderer;
     CTextureImage textureImage;
     CModelManager modelManager;
-    CGLFWManager glfwManager;
-
+    
     //std::chrono::_V2::system_clock::time_point lastTime;
 
     void CleanUp();
 
 #ifndef ANDROID
+    CGLFWManager glfwManager;
     void run();
     void mainLoop();
 #else

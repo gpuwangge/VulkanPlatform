@@ -1,8 +1,8 @@
-#include "texture.h"
+#include "../include/texture.h"
 
 #define STB_IMAGE_IMPLEMENTATION
-#include <stb_image.h>
-
+//#include <stb_image.h>
+#include "../../thirdparty/stb_image.h"
 
 CTextureImage::CTextureImage(){
     imageFormat = VK_FORMAT_R8G8B8A8_SRGB;

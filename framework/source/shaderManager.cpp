@@ -1,4 +1,4 @@
-#include "shaderManager.h"
+#include "../include/shaderManager.h"
 
 CShaderManager::CShaderManager(){
     //debugger = new CDebugger("../logs/shaderManager.log");

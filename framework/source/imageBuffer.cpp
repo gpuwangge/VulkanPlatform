@@ -1,4 +1,4 @@
-#include "imageBuffer.h"
+#include "../include/imageBuffer.h"
 
 CWxjImageBuffer::CWxjImageBuffer(){
     //debugger = new CDebugger("../logs/imageBuffer.log");

@@ -48,10 +48,43 @@ struct Vertex3D {
 		return pos == other.pos && color == other.color && texCoord == other.texCoord && normal == other.normal;
 	}
 };
+// namespace std {
+// 	template<> struct hash<Vertex3D> { //TODO for normal
+// 		size_t operator()(Vertex3D const& vertex) const {
+// 			return ((hash<glm::vec3>()(vertex.pos) ^ (hash<glm::vec3>()(vertex.color) << 1)) >> 1) ^ (hash<glm::vec2>()(vertex.texCoord) << 1);
+// 		}
+// 	};
+// }
+
 namespace std {
+	//Custom hash function operator() for Vertex3D
+	//operator(): input is Vertex3D type hash key, output is std::size_t hash value
+	//There are different ways to implement this, choose a method for high quality hash function
+	void inline custom_hash_combine(size_t &seed, size_t hash){
+		hash += 0x9e3779b9 + (seed << 6) + (seed >> 2);
+		seed ^= hash;
+	}
 	template<> struct hash<Vertex3D> { //TODO for normal
 		size_t operator()(Vertex3D const& vertex) const {
-			return ((hash<glm::vec3>()(vertex.pos) ^ (hash<glm::vec3>()(vertex.color) << 1)) >> 1) ^ (hash<glm::vec2>()(vertex.texCoord) << 1);
+            //code from vulkan tutorial, removed this because of android compitability issue
+			//return ((hash<glm::vec3>()(vertex.pos) ^ (hash<glm::vec3>()(vertex.color) << 1)) >> 1) ^ (hash<glm::vec2>()(vertex.texCoord) << 1);
+            
+			//return 0; 
+			//explain: this will disable hash algorithm. code still works, but not optimized
+
+			size_t seed = 0;
+			custom_hash_combine(seed, hash<float>()(vertex.pos.x));
+			custom_hash_combine(seed, hash<float>()(vertex.pos.y));
+			custom_hash_combine(seed, hash<float>()(vertex.pos.z));
+			custom_hash_combine(seed, hash<float>()(vertex.color.x));
+			custom_hash_combine(seed, hash<float>()(vertex.color.y));
+			custom_hash_combine(seed, hash<float>()(vertex.color.z));
+			custom_hash_combine(seed, hash<float>()(vertex.texCoord.x));
+			custom_hash_combine(seed, hash<float>()(vertex.texCoord.y));
+			custom_hash_combine(seed, hash<float>()(vertex.normal.x));
+			custom_hash_combine(seed, hash<float>()(vertex.normal.y));
+			custom_hash_combine(seed, hash<float>()(vertex.normal.z));
+			return seed;
 		}
 	};
 }

@@ -1,4 +1,4 @@
-#include "instance.h"
+#include "../include/instance.h"
 
 CInstance::CInstance(const std::vector<const char*> &requiredValidationLayers, std::vector<const char*> &requiredExtensions){
     //debugger = new CDebugger("../logs/instance.log");
@@ -80,7 +80,9 @@ CInstance::CInstance(const std::vector<const char*> &requiredValidationLayers, s
 
     //REPORT("vkCreateInstance");
 
+#ifndef ANDROID
     Init02SetupDebugMessenger();
+#endif
 }
 
 CInstance::~CInstance(){

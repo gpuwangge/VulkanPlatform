@@ -1,4 +1,4 @@
-#include "descriptor.h"
+#include "../include/descriptor.h"
 
 //Camera CApplication::mainCamera;
 

@@ -1,4 +1,4 @@
-#include "renderProcess.h"
+#include "../include/renderProcess.h"
 
 CRenderProcess::CRenderProcess(){
     //debugger = new CDebugger("../logs/renderProcess.log");
