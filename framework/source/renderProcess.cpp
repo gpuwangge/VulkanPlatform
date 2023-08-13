@@ -1,7 +1,7 @@
 #include "renderProcess.h"
 
 CRenderProcess::CRenderProcess(){
-    debugger = new CDebugger("../logs/renderProcess.log");
+    //debugger = new CDebugger("../logs/renderProcess.log");
     
     bUseColorAttachment = false;
     bUseDepthAttachment = false;
@@ -11,7 +11,9 @@ CRenderProcess::CRenderProcess(){
     m_swapChainImageFormat = VK_FORMAT_UNDEFINED;
 
 }
-CRenderProcess::~CRenderProcess(){if (!debugger) delete debugger;}
+CRenderProcess::~CRenderProcess(){
+	//if (!debugger) delete debugger;
+}
 
 
 
@@ -51,7 +53,7 @@ void CRenderProcess::createDependency(VkPipelineStageFlags srcPipelineStageFlag,
 }
 
 void CRenderProcess::createRenderPass(){ 
-	HERE_I_AM("wxjCreateRenderPass");
+	//HERE_I_AM("wxjCreateRenderPass");
 
 	VkResult result = VK_SUCCESS;
 
@@ -71,7 +73,7 @@ void CRenderProcess::createRenderPass(){
 
 	result = vkCreateRenderPass(CContext::GetHandle().GetLogicalDevice(), &renderPassInfo, nullptr, &renderPass);
 	if (result != VK_SUCCESS) throw std::runtime_error("failed to create render pass!");
-	REPORT("vkCreateRenderPass");
+	//REPORT("vkCreateRenderPass");
 		 
 }
 
@@ -205,7 +207,7 @@ void CRenderProcess::createLayout(VkDescriptorSetLayout &descriptorSetLayout, Vk
 	//Create Graphics Pipeline Layout
 	result = vkCreatePipelineLayout(CContext::GetHandle().GetLogicalDevice(), &pipelineLayoutInfo, nullptr, &pipelineLayout);
 	if (result != VK_SUCCESS) throw std::runtime_error("failed to create pipeline layout!");
-	REPORT("vkCreatePipelineLayout");
+	//REPORT("vkCreatePipelineLayout");
 }
 
 void CRenderProcess::Cleanup(){

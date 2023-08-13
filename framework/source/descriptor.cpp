@@ -3,7 +3,7 @@
 //Camera CApplication::mainCamera;
 
 CDescriptor::CDescriptor(){
-    debugger = new CDebugger("../logs/descriptor.log");
+    //debugger = new CDebugger("../logs/descriptor.log");
 	bUseCustomUniformBuffer = false;
     bUseMVP = false;
     bUseVP = false;
@@ -14,7 +14,9 @@ CDescriptor::CDescriptor(){
     textureSampler = NULL;
 }
 
-CDescriptor::~CDescriptor(){if (!debugger) delete debugger;}
+CDescriptor::~CDescriptor(){
+    //if (!debugger) delete debugger;
+}
 
 void CDescriptor::addCustomUniformBuffer(VkDeviceSize customUniformBufferSize){
 	bUseCustomUniformBuffer = true;
@@ -38,7 +40,7 @@ void CDescriptor::addMVPUniformBuffer(){
 
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
         VkResult result = mvpUniformBuffers[i].init(sizeof(MVPUniformBufferObject), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
-        REPORT("InitDataBufferHelper");
+        //REPORT("InitDataBufferHelper");
 
         vkMapMemory(CContext::GetHandle().GetLogicalDevice(), mvpUniformBuffers[i].deviceMemory, 0, sizeof(MVPUniformBufferObject), 0, &mvpUniformBuffersMapped[i]);
     }
@@ -52,7 +54,7 @@ void CDescriptor::addVPUniformBuffer(){
 
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
         VkResult result = vpUniformBuffers[i].init(sizeof(VPUniformBufferObject), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
-        REPORT("InitDataBufferHelper");
+        //REPORT("InitDataBufferHelper");
 
         vkMapMemory(CContext::GetHandle().GetLogicalDevice(), vpUniformBuffers[i].deviceMemory, 0, sizeof(VPUniformBufferObject), 0, &vpUniformBuffersMapped[i]);
     }
@@ -86,7 +88,7 @@ void CDescriptor::addImageSamplerUniformBuffer(uint32_t mipLevels){
 	}
 
 	VkResult result = vkCreateSampler(CContext::GetHandle().GetLogicalDevice(), &samplerInfo, nullptr, &textureSampler);
-	REPORT("vkCreateSampler");
+	//REPORT("vkCreateSampler");
 }
 
 void CDescriptor::addComputeStorageUniformBuffer(){
@@ -95,7 +97,7 @@ void CDescriptor::addComputeStorageUniformBuffer(){
 }
 
 void CDescriptor::createDescriptorPool(VkDescriptorType type){
-	HERE_I_AM("CreateDescriptorPool");
+	//HERE_I_AM("CreateDescriptorPool");
 
 	poolSizes.resize(getDescriptorSize());
 	int counter = 0;
@@ -159,12 +161,12 @@ void CDescriptor::createDescriptorPool(VkDescriptorType type){
 
 	VkResult result = vkCreateDescriptorPool(CContext::GetHandle().GetLogicalDevice(), &poolInfo, nullptr, &descriptorPool);
 	if (result != VK_SUCCESS) throw std::runtime_error("failed to create descriptor pool!");
-	REPORT("vkCreateDescriptorPool");
+	//REPORT("vkCreateDescriptorPool");
 }
 
 void CDescriptor::createDescriptorSetLayout(VkDescriptorSetLayoutBinding *customBinding){
     //VkDescriptorType descriptorType, VkShaderStageFlags stageFlags, uint32_t descriptorCount, const VkSampler*  pImmutableSamplers){
-	HERE_I_AM("CreateDescriptorSetLayout");
+	//HERE_I_AM("CreateDescriptorSetLayout");
 
 	// switch (pt) {
 	// case PIPELINE_BASIC:
@@ -248,11 +250,11 @@ void CDescriptor::createDescriptorSetLayout(VkDescriptorSetLayoutBinding *custom
 
 	VkResult result = vkCreateDescriptorSetLayout(CContext::GetHandle().GetLogicalDevice(), &layoutInfo, nullptr, OUT &descriptorSetLayout);
 	if (result != VK_SUCCESS) throw std::runtime_error("failed to create descriptor set layout!");
-	REPORT("vkCreateDescriptorSetLayout");
+	//REPORT("vkCreateDescriptorSetLayout");
 }
 
 void CDescriptor::createDescriptorSets(VkImageView *textureImageView){
-        HERE_I_AM("wxjCreateDescriptorSets");
+        //HERE_I_AM("wxjCreateDescriptorSets");
 
         int descriptorSize = getDescriptorSize();
 
@@ -269,7 +271,7 @@ void CDescriptor::createDescriptorSets(VkImageView *textureImageView){
         //Step 3
         result = vkAllocateDescriptorSets(CContext::GetHandle().GetLogicalDevice(), &allocInfo, descriptorSets.data());
         if (result != VK_SUCCESS) throw std::runtime_error("failed to allocate descriptor sets!");
-        REPORT("vkAllocateDescriptorSets");
+        //REPORT("vkAllocateDescriptorSets");
 
         for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
             std::vector<VkWriteDescriptorSet> descriptorWrites;

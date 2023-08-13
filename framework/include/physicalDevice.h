@@ -37,7 +37,7 @@ public:
     VkPhysicalDevice handle{VK_NULL_HANDLE};
     VkPhysicalDevice getHandle() const{ return handle;}
 
-    CDebugger * debugger;
+    //CDebugger * debugger;
 
     //void setInstance(CInstance *instance);
 

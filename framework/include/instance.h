@@ -13,7 +13,7 @@ public:
     VkInstance handle{VK_NULL_HANDLE};
     VkInstance getHandle() const{ return handle;}
 
-    CDebugger * debugger;
+    //CDebugger * debugger;
 
     void DisplayLayers(std::vector<VkLayerProperties> &availableLayers);
     void DisplayExtensions(std::vector<VkExtensionProperties> &availableExtensions);

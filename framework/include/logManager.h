@@ -1,5 +1,5 @@
-#ifndef H_DEBUGGER
-#define H_DEBUGGER
+#ifndef H_LOGMANAGER
+#define H_LOGMANAGER
 
 //#pragma once
 #define HERE_I_AM(s) { debugger->writeMSG("\n***** %s *****\n", s); debugger->flush(); }
@@ -7,7 +7,7 @@
 
 #include "common.h"
 
-#include <vulkan/vulkan.h>
+//#include <vulkan/vulkan.h>
 
 struct errorcode
 {
@@ -45,12 +45,12 @@ static errorcode ErrorCodes[] =
 	{ VK_ERROR_INVALID_EXTERNAL_HANDLE,	"Invalid External Handle" },
 };
 
-class CDebugger {
+class CLogManager {
 	bool Verbose;			// true = write messages into a file
 public:
 	FILE * FpDebug;			// where to send debugging messages
 
-	CDebugger(const std::string&  debugFilename);
+	CLogManager(const std::string&  debugFilename);
 
 	void setVerbose(bool b) { Verbose = b; }
 	bool getVerbose() {return Verbose; }

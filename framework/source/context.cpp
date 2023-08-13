@@ -23,5 +23,9 @@ VkQueue CContext::GetComputeQueue(){
 }
 
 
-CContext::CContext(){}
-CContext::~CContext(){}
+CContext::CContext(){
+    logManager = new CLogManager("../logs/context.log");
+}
+CContext::~CContext(){
+    if (!logManager) delete logManager;
+}

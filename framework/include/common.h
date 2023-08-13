@@ -52,7 +52,7 @@ const bool enableValidationLayers = true;
 
 #define PALLOCATOR		(VkAllocationCallbacks *)nullptr
 
-#include "debugger.h"
-
+//#include "debugger.h"
+#include <vulkan/vulkan.h>
 
 #endif

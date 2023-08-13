@@ -83,7 +83,7 @@ public:
     //this function is for samples that are  using vertex shader
     template <typename T>
     void createGraphicsPipeline(VkPrimitiveTopology topology, VkShaderModule &vertShaderModule, VkShaderModule &fragShaderModule, bool bUseVertexBuffer = true){
-        HERE_I_AM("CreateGraphicsPipeline");
+        //HERE_I_AM("CreateGraphicsPipeline");
 
         VkResult result = VK_SUCCESS;
 
@@ -239,20 +239,20 @@ public:
         /*********Create Graphics Pipeline**********/
         result = vkCreateGraphicsPipelines(CContext::GetHandle().GetLogicalDevice(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline);
         if (result != VK_SUCCESS) throw std::runtime_error("failed to create graphics pipeline!");
-        REPORT("vkCreateGraphicsPipelines");
+        //REPORT("vkCreateGraphicsPipelines");
 
 
         /*********Clean up**********/
         
 
-        HERE_I_AM("DrawFrame() will begin");
+        //HERE_I_AM("DrawFrame() will begin");
     }
 
 
     void createComputePipeline(VkShaderModule &computeShaderModule, VkDescriptorSetLayout &computeDescriptorSetLayout);
 
 
-    CDebugger * debugger;
+    //CDebugger * debugger;
 };
 
 

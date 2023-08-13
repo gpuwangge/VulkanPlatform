@@ -3,9 +3,11 @@
 CRenderer::CRenderer(){
     currentFrame = 1;
     imageIndex = 0;
-    debugger = new CDebugger("../logs/renderer.log");
+    //debugger = new CDebugger("../logs/renderer.log");
 }
-CRenderer::~CRenderer(){if (!debugger) delete debugger;}
+CRenderer::~CRenderer(){
+    //if (!debugger) delete debugger;
+}
 
 void CRenderer::Update(){
     currentFrame = (currentFrame + 1) % MAX_FRAMES_IN_FLIGHT;
@@ -14,20 +16,20 @@ void CRenderer::Update(){
 void CRenderer::CreateIndexBuffer(std::vector<uint32_t> &indices3D){
     //Init05CreateIndexBuffer();
 
-	HERE_I_AM("wxjCreateIndexBuffer");
+	//HERE_I_AM("wxjCreateIndexBuffer");
     VkDeviceSize bufferSize = sizeof(indices3D[0]) * indices3D.size();
 
     //VK_BUFFER_USAGE_TRANSFER_SRC_BIT
     //VkResult result = InitDataBufferHelper(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, &indexDataBuffer);
     VkResult result = indexDataBuffer.init(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
  
-	REPORT("InitIndexDataBuffer");
+	//REPORT("InitIndexDataBuffer");
     //FillDataBufferHelper(indexDataBuffer, (void *)(indices3D.data()));
 	indexDataBuffer.fill((void *)(indices3D.data()));
 }
 
 void CRenderer::CreateCommandPool(VkSurfaceKHR &surface) {
-    HERE_I_AM("Init06CommandPools");
+    //HERE_I_AM("Init06CommandPools");
 
     VkResult result = VK_SUCCESS;
 
@@ -42,11 +44,11 @@ void CRenderer::CreateCommandPool(VkSurfaceKHR &surface) {
 
     result = vkCreateCommandPool(CContext::GetHandle().GetLogicalDevice(), &poolInfo, nullptr, &commandPool);
     if (result != VK_SUCCESS) throw std::runtime_error("failed to create graphics command pool!");
-    REPORT("vkCreateCommandPool -- Graphics");
+    //REPORT("vkCreateCommandPool -- Graphics");
 }
 
 void CRenderer::CreateCommandBuffers() {
-    HERE_I_AM("Init06CommandBuffers");
+    //HERE_I_AM("Init06CommandBuffers");
 
     VkResult result = VK_SUCCESS;
 
@@ -61,7 +63,7 @@ void CRenderer::CreateCommandBuffers() {
     result = vkAllocateCommandBuffers(CContext::GetHandle().GetLogicalDevice(), &allocInfo, commandBuffers.data());
 
     if (result != VK_SUCCESS) throw std::runtime_error("failed to allocate command buffers!");
-    REPORT("vkAllocateCommandBuffers");
+    //REPORT("vkAllocateCommandBuffers");
 }
 
 void CRenderer::CreateComputeCommandBuffers() {
@@ -127,7 +129,7 @@ void CRenderer::drawFrame(CSwapchain &swapchain) {
     
     //GPU read recorded command buffer and execute
     if (vkQueueSubmit(CContext::GetHandle().GetGraphicsQueue(), 1, &submitInfo, inFlightFences[currentFrame]) != VK_SUCCESS) {
-        debugger->writeMSG("Failed to submit draw command buffer! CurrentFrame: %d\n", currentFrame);
+        //debugger->writeMSG("Failed to submit draw command buffer! CurrentFrame: %d\n", currentFrame);
         throw std::runtime_error("failed to submit draw command buffer!");
     }
 

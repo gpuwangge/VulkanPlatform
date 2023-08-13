@@ -3,8 +3,8 @@
 #include "instance.h"
 
 CPhysicalDevice::CPhysicalDevice(VkPhysicalDevice physical_device) : handle(physical_device) {
-//CPhysicalDevice(CInstance *instance, VkPhysicalDevice physical_device){
-    debugger = new CDebugger("../logs/physicalDevice.log");
+    //CPhysicalDevice(CInstance *instance, VkPhysicalDevice physical_device){
+    //debugger = new CDebugger("../logs/physicalDevice.log");
 }
 
  //void CPhysicalDevice::setInstance(CInstance *instance){
@@ -12,21 +12,22 @@ CPhysicalDevice::CPhysicalDevice(VkPhysicalDevice physical_device) : handle(phys
  //}
 
 CPhysicalDevice::~CPhysicalDevice(){
-    if (!debugger) delete debugger;
+    //if (!debugger) delete debugger;
 }
 
 QueueFamilyIndices CPhysicalDevice::findQueueFamilies(VkSurfaceKHR surface, std::string s) {
-    HERE_I_AM(s);
+    //HERE_I_AM(s);
 
     QueueFamilyIndices indices;
 
     uint32_t queueFamilyCount = 0;
     vkGetPhysicalDeviceQueueFamilyProperties(handle, &queueFamilyCount, nullptr);
-    debugger->writeMSG("Found %d Queue Families:\n", queueFamilyCount);
+    //debugger->writeMSG("Found %d Queue Families:\n", queueFamilyCount);
 
     std::vector<VkQueueFamilyProperties> queueFamilyProperties(queueFamilyCount);
     vkGetPhysicalDeviceQueueFamilyProperties(handle, &queueFamilyCount, queueFamilyProperties.data());
 
+    /*
     int i = 0;
     if(debugger->getVerbose()){
         for (const auto& queueFamilyProperty : queueFamilyProperties) {
@@ -37,9 +38,9 @@ QueueFamilyIndices CPhysicalDevice::findQueueFamilies(VkSurfaceKHR surface, std:
             fprintf(debugger->FpDebug, "\n");
             i++;
         }
-    }
+    }*/
 
-    i = 0;
+    int i = 0;
     bool selected = false;
     for (const auto& queueFamilyProperty : queueFamilyProperties) {
         if (queueFamilyProperty.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
@@ -56,23 +57,23 @@ QueueFamilyIndices CPhysicalDevice::findQueueFamilies(VkSurfaceKHR surface, std:
 
         VkBool32 presentSupport = false;
         VkResult result = vkGetPhysicalDeviceSurfaceSupportKHR(handle, i, surface, OUT &presentSupport);
-        REPORT("vkGetPhysicalDeviceSurfaceSupportKHR");
+        //REPORT("vkGetPhysicalDeviceSurfaceSupportKHR");
 
         if (presentSupport) {
             indices.presentFamily = i;
-            debugger->writeMSG("This Surface is supported by the Present Queue\n");
+            //debugger->writeMSG("This Surface is supported by the Present Queue\n");
         }
-        else debugger->writeMSG("This Surface is not supported by the Present Queue\n");
+        //else debugger->writeMSG("This Surface is not supported by the Present Queue\n");
 
         if (indices.isComplete()) {
             selected = true;
-            debugger->writeMSG("Complete: selected queue family %d that support Graphics, Present and Compute command.\n", i);
+            //debugger->writeMSG("Complete: selected queue family %d that support Graphics, Present and Compute command.\n", i);
             break; //select the first suitable indices (which has graphics and present family)
         }
         i++;
     }
     
-    if(!selected) debugger->writeMSG("Can NOT find proper queue family!\n");
+    //if(!selected) debugger->writeMSG("Can NOT find proper queue family!\n");
     return indices;
 }
 
@@ -116,7 +117,7 @@ SwapChainSupportDetails CPhysicalDevice::querySwapChainSupport(VkSurfaceKHR surf
 }
 
 void CPhysicalDevice::createLogicalDevices(VkSurfaceKHR surface, const std::vector<const char*> requiredValidationLayers, const std::vector<const char*>  requireDeviceExtensions){
-    HERE_I_AM("createLogicalDevices");
+    //HERE_I_AM("createLogicalDevices");
     
     //physicalDevices.push_back(std::make_unique<CPhysicalDevice>(physical_device));
     logicalDevices.push_back(std::make_unique<CLogicalDevice>());//create one logicalDevice for each invocation of this function
@@ -163,7 +164,7 @@ void CPhysicalDevice::createLogicalDevices(VkSurfaceKHR surface, const std::vect
     //create logicalDevice
     result = vkCreateDevice(handle, &createInfo, nullptr, &(logicalDevices.back().get()->logicalDevice));
     if (result != VK_SUCCESS) throw std::runtime_error("failed to create logical device!");
-    REPORT("vkCreateLogicalDevice");
+    //REPORT("vkCreateLogicalDevice");
 
     //set PhysicalDevice's Queue Familily property to logicalDevice's queue
     vkGetDeviceQueue(logicalDevices.back().get()->logicalDevice, indices.graphicsFamily.value(), 0, &(logicalDevices.back().get()->graphicsQueue)); //graphics queue use physical device's family 0 
@@ -189,6 +190,7 @@ VkSampleCountFlagBits CPhysicalDevice::getMaxUsableSampleCount() {
 }
 
 void CPhysicalDevice::displayPhysicalDevices(){
+    /*
     HERE_I_AM("displayPhysicalDevices");
 
     VkPhysicalDeviceProperties	PhysicalDeviceProperties;
@@ -299,6 +301,6 @@ void CPhysicalDevice::displayPhysicalDevices(){
         fprintf(debugger->FpDebug, "\n");
     }
     delete[] deviceLayers;
-    debugger->flush();
+    debugger->flush();*/
 }
     

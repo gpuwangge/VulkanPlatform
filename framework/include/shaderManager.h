@@ -33,7 +33,7 @@ private:
     std::vector<char> readFile(const std::string& filename);
     void InitSpirVShader(const std::string shaderName, VkShaderModule *pShaderModule);
 
-    CDebugger * debugger;
+    //CDebugger * debugger;
 };
 
 #endif

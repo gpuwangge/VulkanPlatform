@@ -13,14 +13,14 @@ public:
 
     template <typename T>
     void CreateVertexBuffer(IN std::vector<T> &input){
-        HERE_I_AM("Init05CreateVertexBuffer");
+        //HERE_I_AM("Init05CreateVertexBuffer");
         VkDeviceSize bufferSize = sizeof(input[0]) * input.size();
 
         //VK_BUFFER_USAGE_TRANSFER_SRC_BIT
         //VkResult result = InitDataBufferHelper(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT, &vertexDataBuffer);//allocate vertexDataBuffer bufferSize(decided by vertices3D) memory
         VkResult result = vertexDataBuffer.init(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
 
-        REPORT("InitVertexDataBuffer");
+        //REPORT("InitVertexDataBuffer");
         //FillDataBufferHelper(vertexDataBuffer, (void *)(input.data()));//copy vertices3D to vertexDataBuffer
         vertexDataBuffer.fill((void *)(input.data()));
     }
@@ -84,7 +84,7 @@ public:
     std::vector<VkFence> inFlightFences;
 
 private:
-    CDebugger * debugger;
+    //CDebugger * debugger;
 };
 
 #endif

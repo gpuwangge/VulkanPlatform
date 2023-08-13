@@ -3,6 +3,7 @@
 
 #include "common.h"
 #include "physicalDevice.h"
+#include "logManager.h"
 
 //CContext is to store some commonly used static variables(physical device, logical device in the current context)
 
@@ -28,6 +29,8 @@ public:
     VkQueue GetGraphicsQueue();
     VkQueue GetPresentQueue();
     VkQueue GetComputeQueue();
+    
+    CLogManager *logManager;
 private:
     CContext();//set construct to private so no one can instanize this class.
 

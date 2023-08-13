@@ -59,7 +59,7 @@ public:
     void CreateFramebuffers(VkRenderPass &renderPass);
 
     void displaySwapchainInfo(SwapChainSupportDetails swapChainSupport);
-    CDebugger * debugger;
+    //CDebugger * debugger;
 };
 
 #endif

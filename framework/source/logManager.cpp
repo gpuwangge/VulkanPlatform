@@ -1,6 +1,6 @@
-#include "debugger.h"
+#include "logManager.h"
 
-	CDebugger::CDebugger(const std::string&  debugFilename) {
+	CLogManager::CLogManager(const std::string&  debugFilename) {
 		Verbose = true;
 
 #ifdef _WIN32
@@ -22,19 +22,19 @@
 
 	}
 
-	void CDebugger::writeMSG(std::string s) {
+	void CLogManager::writeMSG(std::string s) {
 		if(Verbose) fprintf(FpDebug, "%s", s.c_str());
 	}
 
-	void CDebugger::writeMSG(std::string s0, std::string s1) {
+	void CLogManager::writeMSG(std::string s0, std::string s1) {
 		if (Verbose) fprintf(FpDebug, s0.c_str(), s1.c_str());
 	}
 
-	void CDebugger::writeMSG(std::string s, uint32_t n) {
+	void CLogManager::writeMSG(std::string s, uint32_t n) {
 		if (Verbose) fprintf(FpDebug, s.c_str(), n);
 	}
 
-	void CDebugger::printVkError(VkResult result, std::string prefix){
+	void CLogManager::printVkError(VkResult result, std::string prefix){
 		if (Verbose  &&  result == VK_SUCCESS)
 		{
 			fprintf(FpDebug, "%s: %s\n", prefix.c_str(), "Successful");
@@ -58,6 +58,6 @@
 	}
 
 
-	void CDebugger::flush() {
+	void CLogManager::flush() {
 		fflush(FpDebug);
 	}

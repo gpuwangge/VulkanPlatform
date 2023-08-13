@@ -1,10 +1,12 @@
 #include "shaderManager.h"
 
 CShaderManager::CShaderManager(){
-    debugger = new CDebugger("../logs/shaderManager.log");
+    //debugger = new CDebugger("../logs/shaderManager.log");
     //bEnablePushConstant = false;
 }
-CShaderManager::~CShaderManager(){if (!debugger) delete debugger;}
+CShaderManager::~CShaderManager(){
+    //if (!debugger) delete debugger;
+}
 
 void CShaderManager::InitVertexShader(const std::string shaderName){
     InitSpirVShader(shaderName, &vertShaderModule);
@@ -18,7 +20,7 @@ void CShaderManager::InitComputeShader(const std::string shaderName){
 
 
 void CShaderManager::InitSpirVShader(const std::string shaderName, VkShaderModule *pShaderModule){
-    HERE_I_AM("InitSpirVShader");
+    //HERE_I_AM("InitSpirVShader");
 
     auto shaderCode = readFile(shaderName.c_str());
 
@@ -28,8 +30,8 @@ void CShaderManager::InitSpirVShader(const std::string shaderName, VkShaderModul
     createInfo.pCode = reinterpret_cast<const uint32_t*>(shaderCode.data());
 
     VkResult result = vkCreateShaderModule(CContext::GetHandle().GetLogicalDevice(), &createInfo, PALLOCATOR, pShaderModule);
-    REPORT("vkCreateShaderModule");
-    debugger->writeMSG("Shader Module '%s' successfully loaded\n", shaderName.c_str());
+    //REPORT("vkCreateShaderModule");
+    //debugger->writeMSG("Shader Module '%s' successfully loaded\n", shaderName.c_str());
 }
 
 std::vector<char> CShaderManager::readFile(const std::string& filename) {

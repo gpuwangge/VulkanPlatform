@@ -69,7 +69,7 @@ public:
     VkDescriptorSetLayout descriptorSetLayout;
     std::vector<VkDescriptorSet> descriptorSets;
 
-    CDebugger * debugger;
+    //CDebugger * debugger;
 };
 
 

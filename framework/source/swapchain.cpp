@@ -1,14 +1,14 @@
 #include "swapchain.h"
 
 CSwapchain::CSwapchain(){
-    debugger = new CDebugger("../logs/swapchain.log");
+    //debugger = new CDebugger("../logs/swapchain.log");
 
     imageSize = 0;
     bEnableMSAA = false;
     msaaSamples = VK_SAMPLE_COUNT_1_BIT;
 }
 CSwapchain::~CSwapchain(){
-    if (!debugger) delete debugger;
+    //if (!debugger) delete debugger;
 }
 
 // void CSwapchain::GetPhysicalDevice(CPhysicalDevice *physical_device){
@@ -71,13 +71,13 @@ void CSwapchain::createSwapchainImages(VkSurfaceKHR surface, int width, int heig
     //result = vkCreateSwapchainKHR(LOGICAL_DEVICE, &createInfo, nullptr, &swapChain);
     result = vkCreateSwapchainKHR(CContext::GetHandle().GetLogicalDevice(), &createInfo, nullptr, &handle);
     if (result != VK_SUCCESS) throw std::runtime_error("failed to create swap chain!");
-    REPORT("vkCreateSwapchainKHR");
+    //REPORT("vkCreateSwapchainKHR");
 
     result = vkGetSwapchainImagesKHR(CContext::GetHandle().GetLogicalDevice(), handle, &imageSize, nullptr);
-    REPORT("vkGetSwapchainImagesKHR(Get imageCount)");
+    //REPORT("vkGetSwapchainImagesKHR(Get imageCount)");
     images.resize(imageSize);
     result = vkGetSwapchainImagesKHR(CContext::GetHandle().GetLogicalDevice(), handle, &imageSize, images.data());
-    REPORT("vkGetSwapchainImagesKHR");
+    //REPORT("vkGetSwapchainImagesKHR");
 
     swapChainImageFormat = surfaceFormat.format;
     swapChainExtent = extent;
@@ -94,7 +94,7 @@ void CSwapchain::createImageViews(VkImageAspectFlags aspectFlags){
 }
 
 void CSwapchain::displaySwapchainInfo(SwapChainSupportDetails details){
-    HERE_I_AM("querySwapChainSupport");
+    /*
 
     fprintf(debugger->FpDebug, "vkGetPhysicalDeviceSurfaceCapabilitiesKHR:\n");
     fprintf(debugger->FpDebug, "\tminImageCount = %d ; maxImageCount = %d\n", details.capabilities.minImageCount, details.capabilities.maxImageCount);
@@ -139,7 +139,7 @@ void CSwapchain::displaySwapchainInfo(SwapChainSupportDetails details){
 
     debugger->writeMSG("\n");
 
-    //fprintf(stderr, "\n");
+    //fprintf(stderr, "\n");*/
 }
 
 VkSurfaceFormatKHR CSwapchain::chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats) {
@@ -188,7 +188,7 @@ void CSwapchain::createDepthImageViews(VkFormat format, VkImageAspectFlags aspec
 }
 
 void CSwapchain::CreateFramebuffers(VkRenderPass &renderPass){
-	HERE_I_AM("CreateFramebuffers");
+	//HERE_I_AM("CreateFramebuffers");
 
 	VkResult result = VK_SUCCESS;
 
@@ -218,7 +218,7 @@ void CSwapchain::CreateFramebuffers(VkRenderPass &renderPass){
 
 		result = vkCreateFramebuffer(CContext::GetHandle().GetLogicalDevice(), &framebufferInfo, nullptr, &swapChainFramebuffers[i]);
 		if (result != VK_SUCCESS) throw std::runtime_error("failed to create framebuffer!");
-		REPORT("vkCreateFrameBuffer");
+		//REPORT("vkCreateFrameBuffer");
 	}	
 }
 

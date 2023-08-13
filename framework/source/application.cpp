@@ -4,7 +4,7 @@ Camera CApplication::mainCamera;  //define static class members
 bool CApplication::NeedToExit = false; 
 
 CApplication::CApplication(){
-    debugger = new CDebugger("../logs/application.log");
+    //debugger = new CDebugger("../logs/application.log");
 
     mainCamera.type = Camera::CameraType::firstperson;
     mainCamera.setPosition(glm::vec3(0.0f, -2.5f, -2.5f));
@@ -18,6 +18,7 @@ CApplication::CApplication(){
 
 void CApplication::run(){
     glfwManager.prepareGLFW();
+    CContext::Init();
 
     const std::vector<const char*> requiredValidationLayers = {"VK_LAYER_KHRONOS_validation"};
     std::vector<const char*> requiredInstanceExtensions;
@@ -33,8 +34,8 @@ void CApplication::run(){
     //Only GLFW knows what kind of surface can be attached to its window.
     glfwManager.createGLFWSurface(instance, surface);
     instance->findAllPhysicalDevices();
+    CContext::GetHandle().logManager->writeMSG("Surface created!\n");
 
-    CContext::Init();
     CContext::GetHandle().physicalDevice = instance->pickSuitablePhysicalDevice(surface, requireDeviceExtensions, requiredQueueFamilies);
 
     //App dev can only query properties from physical device, but can not directly operate it
@@ -98,7 +99,7 @@ void CApplication::DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUti
 
 CApplication::~CApplication(){
     //clean up
-    HERE_I_AM("Clean up application");
+    //HERE_I_AM("Clean up application");
 
     swapchain.CleanUp();
     renderProcess.Cleanup();
@@ -115,7 +116,7 @@ CApplication::~CApplication(){
     vkDestroyInstance(instance->getHandle(), nullptr);
     
 
-    delete debugger;
+    //delete debugger;
 
     CContext::Quit();
 }

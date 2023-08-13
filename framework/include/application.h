@@ -36,7 +36,7 @@ public:
     
     bool framebufferResized = false;
 
-    CDebugger * debugger;
+    //CDebugger * debugger;
 
 	CSwapchain swapchain;
     CRenderProcess renderProcess;
