@@ -16,6 +16,8 @@
 
 #ifndef ANDROID
 #include "glfwManager.h"
+#else
+#include "androidManager.h"
 #endif
 
 #define RENDER_START { \
@@ -51,6 +53,8 @@ public:
     CGLFWManager glfwManager;
 
     //std::chrono::_V2::system_clock::time_point lastTime;
+
+    void CleanUp();
 
 #ifndef ANDROID
     void run();

@@ -1,0 +1,16 @@
+#ifndef H_ANDROIDMANAGER
+#define H_ANDROIDMANAGER
+
+#include <android/asset_manager.h>
+
+class CAndroidManager final{
+public:
+    CAndroidManager();
+    ~CAndroidManager();
+
+    AAssetManager *assetManager;
+    std::vector<uint8_t> LoadBinaryFileToVector(const char *file_path, AAssetManager *assetManager);
+    VkShaderModule createShaderModule(const std::vector<uint8_t> &code);
+};
+
+#endif

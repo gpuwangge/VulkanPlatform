@@ -102,11 +102,7 @@ void CApplication::DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUti
 }
 #endif
 
-
-CApplication::~CApplication(){
-    //clean up
-    //HERE_I_AM("Clean up application");
-
+void CApplication::CleanUp(){
     swapchain.CleanUp();
     renderProcess.Cleanup();
     descriptor.DestroyAndFree();
@@ -123,9 +119,10 @@ CApplication::~CApplication(){
     vkDestroySurfaceKHR(instance->getHandle(), surface, nullptr);
     vkDestroyInstance(instance->getHandle(), nullptr);
     
-
-    //delete debugger;
-
     CContext::Quit();
+}
+
+CApplication::~CApplication(){
+    CleanUp();
 }
 
