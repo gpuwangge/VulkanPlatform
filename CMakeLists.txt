@@ -1,19 +1,20 @@
 cmake_minimum_required(VERSION 3.20)
-project(myVulkanPlatform)
+project(VulkanPlatform)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_BUILD_TYPE "Debug")
 
 include_directories(
-    C:/VulkanSDK
     $ENV{VULKAN_SDK}/Include
-    C:/VulkanSDK/GLFW/include
-    C:/VulkanSDK/GLM
+    $ENV{INCLUDE}
+    #C:/VulkanSDK/GLFW/include      Put this in environment INCLUDE
+    #C:/VulkanSDK/GLM               Put this in environment INCLUDE
     ${PROJECT_SOURCE_DIR}/framework/include
     ${PROJECT_SOURCE_DIR}/windowsFramework/include)
 
 link_directories(
     $ENV{VULKAN_SDK}/Lib
-    C:/VulkanSDK/GLFW/lib-static-ucrt)
+    #C:/VulkanSDK/GLFW/lib-static-ucrt  Put this in environment LIB
+    $ENV{LIB})
 
 add_subdirectory(windowsFramework)
 add_subdirectory(framework)
