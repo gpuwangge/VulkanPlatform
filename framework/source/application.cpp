@@ -82,11 +82,13 @@ void CApplication::update(){
 void CApplication::mainLoop(){
 		while (!glfwWindowShouldClose(glfwManager.window)) {
 			glfwPollEvents();
+
             update();
             if(!descriptor.bUseComputeStorage) renderer.prepareCurrentFrameAndAcquireImageIndex(swapchain);//TODO for test compute shader 
             recordCommandBuffer();
             if(!descriptor.bUseComputeStorage) renderer.drawFrame(swapchain);//TODO for test compute shader
-			if (NeedToExit) break;
+			
+            if (NeedToExit) break;
 		}
 
 		vkDeviceWaitIdle(CContext::GetHandle().GetLogicalDevice());//Wait GPU to complete all jobs before CPU destroy resources

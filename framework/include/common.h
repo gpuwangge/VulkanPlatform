@@ -1,7 +1,7 @@
 #ifndef H_COMMON
 #define H_COMMON
 
-
+//this macro is already defined somewhere in Android
 //#define ANDROID
 
 #define GLM_FORCE_RADIANS
@@ -9,8 +9,8 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 #else
-#include "../../thirdparty/GLM/glm/glm.hpp"
-#include "../../thirdparty/glm/gtc/matrix_transform.hpp"
+#include "../../thirdParty/GLM/glm/glm.hpp"
+#include "../../thirdParty/GLM/glm/gtc/matrix_transform.hpp"
 #endif
 
 // #define GLM_FORCE_DEPTH_ZERO_TO_ONE
@@ -61,7 +61,6 @@ const bool enableValidationLayers = true;
 
 #define PALLOCATOR		(VkAllocationCallbacks *)nullptr
 
-//#include "debugger.h"
 #include <vulkan/vulkan.h>
 
 #endif

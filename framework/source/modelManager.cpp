@@ -1,8 +1,7 @@
 #include "../include/modelManager.h"
 
 #define TINYOBJLOADER_IMPLEMENTATION
-//#include <tiny_obj_loader.h>
-#include "../../thirdparty/tiny_obj_loader.h"
+#include "../../thirdParty/tiny_obj_loader.h"
 
 CModelManager::CModelManager(){}
 CModelManager::~CModelManager(){}

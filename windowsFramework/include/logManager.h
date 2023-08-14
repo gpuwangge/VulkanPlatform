@@ -7,8 +7,6 @@
 
 #include "common.h"
 
-//#include <vulkan/vulkan.h>
-
 struct errorcode
 {
 	VkResult	resultCode;

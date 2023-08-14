@@ -1,4 +1,4 @@
-#include "androidManager.h"
+#include "../include/androidManager.h"
  
 CAndroidManager::CAndroidManager(){}
 
