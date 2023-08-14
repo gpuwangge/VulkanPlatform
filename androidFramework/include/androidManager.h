@@ -13,6 +13,8 @@ public:
 
     VkShaderModule InitVertexShader();
     VkShaderModule InitFragmentShader();
+
+    bool AssetReadFile(std::string& assetName, std::vector<uint8_t>& buf);
 private:
     std::vector<uint8_t> LoadBinaryFileToVector(const char *file_path, AAssetManager *assetManager);
     VkShaderModule createShaderModule(const std::vector<uint8_t> &code);

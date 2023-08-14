@@ -10,7 +10,7 @@ CAndroidManager::~CAndroidManager(){}
  * 
  * Android Shader Help Functions
  * 
-*/
+*********/
 VkShaderModule CAndroidManager::InitVertexShader(){
     auto vertShaderCode = LoadBinaryFileToVector("shaders/shader.vert.spv", assetManager);
     return createShaderModule(vertShaderCode);
@@ -51,4 +51,20 @@ VkShaderModule CAndroidManager::createShaderModule(const std::vector<uint8_t> &c
     return shaderModule;
 }
 
+/**********
+ * 
+ * Android Texture Help Functions
+ * 
+*********/
+bool CAndroidManager::AssetReadFile(std::string& assetName, std::vector<uint8_t>& buf) {
+    if (!assetName.length()) return false;
+    AAsset* assetDescriptor = AAssetManager_open(assetManager, assetName.c_str(), AASSET_MODE_BUFFER);
+    //ASSERT(assetDescriptor, "%s does not exist in %s", assetName.c_str(), __FUNCTION__);
+    size_t fileLength = AAsset_getLength(assetDescriptor);
 
+    buf.resize(fileLength);
+    int64_t readSize = AAsset_read(assetDescriptor, buf.data(), buf.size());
+
+    AAsset_close(assetDescriptor);
+    return (readSize == buf.size());
+}

@@ -14,8 +14,12 @@ public:
     VkCommandBuffer beginSingleTimeCommands();
     void endSingleTimeCommands(VkCommandBuffer commandBuffer);
     void transitionImageLayout(VkImage image, VkImageLayout oldLayout, VkImageLayout newLayout);
+#ifndef ANDROID
     void CreateTextureImage(const std::string texturePath, VkImageUsageFlags usage, VkCommandPool &commandPool);
-    void CreateTextureImage(const std::string texturePath, VkImageUsageFlags usage, CWxjImageBuffer &imageBuffer, VkCommandPool &commandPool);
+#else
+    void CreateTextureImage(std::vector<uint8_t>& fileBits, VkImageUsageFlags usage, VkCommandPool &commandPool);
+#endif
+    void CreateTextureImage(uint8_t* pixels, VkImageUsageFlags usage, CWxjImageBuffer &imageBuffer);
     void CreateImageView(VkImageAspectFlags aspectFlags);
 
     void generateMipmaps();

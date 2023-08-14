@@ -11,17 +11,31 @@ CTextureImage::~CTextureImage(){
 	//if (!debugger) delete debugger;
 }
 
+#ifndef ANDROID
 void CTextureImage::CreateTextureImage(const std::string texturePath, VkImageUsageFlags usage, VkCommandPool &commandPool) {
     pCommandPool = &commandPool;
-    CreateTextureImage(texturePath, usage, textureImageBuffer, commandPool);
-}
-
-void CTextureImage::CreateTextureImage(const std::string texturePath, VkImageUsageFlags usage, CWxjImageBuffer &imageBuffer, VkCommandPool &commandPool) {
-	//HERE_I_AM("CreateImage");
 
 	//Step 1: prepare staging buffer with texture pixels inside
 	int texChannels;
-	stbi_uc* pixels = stbi_load(texturePath.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+	uint8_t* pixels = stbi_load(texturePath.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+
+	CreateTextureImage(pixels, usage, textureImageBuffer);
+}
+#else
+void CTextureImage::CreateTextureImage(std::vector<uint8_t>& fileBits, VkImageUsageFlags usage, VkCommandPool &commandPool) {
+    pCommandPool = &commandPool;
+
+	//Step 1: prepare staging buffer with texture pixels inside
+	int texChannels;
+	uint8_t* pixels =stbi_load_from_memory(fileBits.data(), fileBits.size(), &texWidth, &texHeight, &texChannels, 4);//stbi_uc
+	
+	CreateTextureImage(pixels, usage, textureImageBuffer);
+}
+#endif
+
+
+
+void CTextureImage::CreateTextureImage(uint8_t* pixels, VkImageUsageFlags usage, CWxjImageBuffer &imageBuffer) {
 	VkDeviceSize imageSize = texWidth * texHeight * 4;
 
 	mipLevels = bEnableMipMap ? (static_cast<uint32_t>(std::floor(std::log2(std::max(texWidth, texHeight)))) + 1) : 1;
@@ -51,8 +65,6 @@ void CTextureImage::CreateTextureImage(const std::string texturePath, VkImageUsa
 	}
 
 	stagingBuffer.DestroyAndFree();
-	//vkDestroyBuffer(CContext::GetHandle().GetLogicalDevice(), stagingBuffer.buffer, nullptr);
-	//vkFreeMemory(CContext::GetHandle().GetLogicalDevice(), stagingBuffer.deviceMemory, nullptr);
 }
 
 void CTextureImage::CreateImageView(VkImageAspectFlags aspectFlags){
@@ -276,27 +288,21 @@ void CTextureImage::generateMipmaps(std::string rainbowCheckerboardTexturePath, 
 
 	std::array<CWxjImageBuffer, MIPMAP_TEXTURE_COUNT> tmpTextureBufferForRainbowMipmaps;//create temp mipmaps
 	for (int i = 0; i < MIPMAP_TEXTURE_COUNT; i++) {//fill temp mipmaps
-		//wxjCreateImage_texture(rainbowCheckerboardTexturePath + std::to_string(i) + ".png", usage, tmpTextureBufferForRainbowMipmaps[i], texWidth, texHeight);
-        //CreateImage_texture(rainbowCheckerboardTexturePath + std::to_string(i) + ".png", usage, tmpTextureBufferForRainbowMipmaps[i], texWidth, texHeight, commandPool);
-		CreateTextureImage(rainbowCheckerboardTexturePath + std::to_string(i) + ".png", usage, tmpTextureBufferForRainbowMipmaps[i], *pCommandPool);
+		int texChannels;
+		std::string s = rainbowCheckerboardTexturePath + std::to_string(i) + ".png";
+		uint8_t* pixels = stbi_load(s.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+		CreateTextureImage(pixels, usage, tmpTextureBufferForRainbowMipmaps[i]);
         generateMipmaps(tmpTextureBufferForRainbowMipmaps[i].image);
 	}
 	//Generate mipmaps for image, using tmpTextureBufferForRainbowMipmaps
 	generateMipmaps(textureImageBuffer.image, true, &tmpTextureBufferForRainbowMipmaps);
 	//Clean up
 	for (int i = 0; i < MIPMAP_TEXTURE_COUNT; i++) {
-		//vkDestroyImage(CContext::GetHandle().GetLogicalDevice(), tmpTextureBufferForRainbowMipmaps[i].image, nullptr);
-		//vkFreeMemory(CContext::GetHandle().GetLogicalDevice(), tmpTextureBufferForRainbowMipmaps[i].deviceMemory, nullptr);
         tmpTextureBufferForRainbowMipmaps[i].destroy();
 	}
 }
 
 void CTextureImage::Destroy(){
     textureImageBuffer.destroy();
-    // if(textureImageBuffer.size != (VkDeviceSize)0){
-    //     vkDestroyImage(CContext::GetHandle().GetLogicalDevice(), textureImageBuffer.image, nullptr);
-    //     vkFreeMemory(CContext::GetHandle().GetLogicalDevice(), textureImageBuffer.deviceMemory, nullptr);
-    //     vkDestroyImageView(CContext::GetHandle().GetLogicalDevice(), textureImageBuffer.view, nullptr);
-    // }
 }
 

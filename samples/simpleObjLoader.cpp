@@ -10,7 +10,10 @@ public:
     void initialize(){
 		swapchain.bEnableDepthTest = true; 
 		
+#ifndef ANDROID			
 		modelManager.LoadObjModel("../models/viking_room.obj", vertices3D, indices3D);
+#else
+#endif
 
 		renderer.CreateVertexBuffer<Vertex3D>(vertices3D);
 		renderer.CreateIndexBuffer(indices3D);
@@ -18,7 +21,14 @@ public:
 		renderer.CreateCommandBuffers();
 
 		VkImageUsageFlags usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+#ifndef ANDROID		
 		textureImage.CreateTextureImage("../textures/viking_room.png", usage, renderer.commandPool);
+#else
+		std::vector<uint8_t> fileBits;
+        std::string fileName = "textures/viking_room.jpg";
+        androidManager.AssetReadFile(fileName, fileBits);
+		textureImage.CreateTextureImage(fileBits, usage, renderer.commandPool);
+#endif		
 		textureImage.CreateImageView(VK_IMAGE_ASPECT_COLOR_BIT);
 
 		VkFormat depthFormat = renderProcess.findDepthFormat();
