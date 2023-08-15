@@ -47,13 +47,8 @@ public:
 
 		swapchain.CreateFramebuffers(renderProcess.renderPass);
 
-#ifndef ANDROID
 		shaderManager.InitVertexShader("../shaders/model/vert.spv");
 		shaderManager.InitFragmentShader("../shaders/model/frag.spv");
-#else
-        shaderManager.vertShaderModule = androidManager.InitVertexShader();
-        shaderManager.fragShaderModule = androidManager.InitFragmentShader();
-#endif
 
 		descriptor.addMVPUniformBuffer();
 		descriptor.addImageSamplerUniformBuffer(textureImage.mipLevels);

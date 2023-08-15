@@ -4,6 +4,9 @@
 #include "common.h"
 #include "context.h"
 
+#ifdef ANDROID
+#include "..\\..\\androidFramework\\include\\androidManager.h"
+#endif
 class CShaderManager final{
 public:
     CShaderManager();
@@ -29,11 +32,12 @@ public:
 
     void Destroy();
 
+#ifdef ANDROID
+    CAndroidManager androidManager;
+#endif
 private:
     std::vector<char> readFile(const std::string& filename);
     void InitSpirVShader(const std::string shaderName, VkShaderModule *pShaderModule);
-
-    //CDebugger * debugger;
 };
 
 #endif

@@ -4,6 +4,10 @@
 #include "imageBuffer.h"
 #include "renderer.h"
 
+#ifdef ANDROID
+#include "..\\..\\androidFramework\\include\\androidManager.h"
+#endif
+
 class CTextureImage final{
 public:
     CTextureImage();
@@ -14,11 +18,8 @@ public:
     VkCommandBuffer beginSingleTimeCommands();
     void endSingleTimeCommands(VkCommandBuffer commandBuffer);
     void transitionImageLayout(VkImage image, VkImageLayout oldLayout, VkImageLayout newLayout);
-#ifndef ANDROID
+
     void CreateTextureImage(const std::string texturePath, VkImageUsageFlags usage, VkCommandPool &commandPool);
-#else
-    void CreateTextureImage(std::vector<uint8_t>& fileBits, VkImageUsageFlags usage, VkCommandPool &commandPool);
-#endif
     void CreateTextureImage(uint8_t* pixels, VkImageUsageFlags usage, CWxjImageBuffer &imageBuffer);
     void CreateImageView(VkImageAspectFlags aspectFlags);
 
@@ -39,7 +40,9 @@ public:
     uint32_t mipLevels = 1; //1 means no mipmap
     bool bEnableMipMap = false;
 
-    //CDebugger * debugger;
+#ifdef ANDROID
+    CAndroidManager androidManager;
+#endif
 };
 
 #endif

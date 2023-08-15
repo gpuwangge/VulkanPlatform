@@ -16,8 +16,6 @@
 
 #ifndef ANDROID
 #include "..\\..\\windowsFramework\\include\\glfwManager.h"
-#else
-#include "..\\..\\androidFramework\\include\\androidManager.h"
 #endif
 
 #define RENDER_START { \
@@ -41,8 +39,6 @@ public:
     
     bool framebufferResized = false;
 
-    //CDebugger * debugger;
-
 	CSwapchain swapchain;
     CRenderProcess renderProcess;
     CShaderManager shaderManager;
@@ -59,8 +55,6 @@ public:
     CGLFWManager glfwManager;
     void run();
     void mainLoop();
-#else
-    CAndroidManager androidManager;
 #endif
 
     //for static class member. But can not define and init them in the header file!

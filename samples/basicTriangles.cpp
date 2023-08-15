@@ -36,14 +36,7 @@ public:
 		renderer.CreateCommandBuffers();
 
 		VkImageUsageFlags usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
-#ifndef ANDROID			
-		textureImage.CreateTextureImage("../textures/texture.jpg", usage, renderer.commandPool);
-#else
-		std::vector<uint8_t> fileBits;
-        std::string fileName = "textures/texture.jpg";
-        androidManager.AssetReadFile(fileName, fileBits);
-		textureImage.CreateTextureImage(fileBits, usage, renderer.commandPool);
-#endif				
+		textureImage.CreateTextureImage("../textures/texture.jpg", usage, renderer.commandPool);	
 		textureImage.CreateImageView(VK_IMAGE_ASPECT_COLOR_BIT);
 
 		renderProcess.addColorAttachment(swapchain.swapChainImageFormat); //add this function will enable color attachment (bUseColorAttachment = true)
@@ -53,13 +46,8 @@ public:
 
 		swapchain.CreateFramebuffers(renderProcess.renderPass);
 
-#ifndef ANDROID
 		shaderManager.InitVertexShader("../shaders/basicTriangles/vert.spv");
 		shaderManager.InitFragmentShader("../shaders/basicTriangles/frag.spv");
-#else
-        shaderManager.vertShaderModule = androidManager.InitVertexShader();
-        shaderManager.fragShaderModule = androidManager.InitFragmentShader();
-#endif
 
 		descriptor.addImageSamplerUniformBuffer(textureImage.mipLevels);
 		descriptor.addMVPUniformBuffer();

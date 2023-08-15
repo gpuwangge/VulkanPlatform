@@ -9,10 +9,22 @@ CShaderManager::~CShaderManager(){
 }
 
 void CShaderManager::InitVertexShader(const std::string shaderName){
+#ifndef ANDROID
     InitSpirVShader(shaderName, &vertShaderModule);
+#else
+    std::vector<uint8_t> fileBits;
+    androidManager.AssetReadFile("shaders/shader.vert.spv", fileBits);
+    vertShaderModule = androidManager.createShaderModule(fileBits);
+#endif    
 }
 void CShaderManager::InitFragmentShader(const std::string shaderName){
+#ifndef ANDROID
     InitSpirVShader(shaderName, &fragShaderModule);
+#else
+    std::vector<uint8_t> fileBits;
+    androidManager.AssetReadFile("shaders/shader.frag.spv", fileBits);
+    fragShaderModule = androidManager.createShaderModule(fileBits);
+#endif      
 }
 void CShaderManager::InitComputeShader(const std::string shaderName){
     InitSpirVShader(shaderName, &computeShaderModule);

@@ -11,29 +11,20 @@ CTextureImage::~CTextureImage(){
 	//if (!debugger) delete debugger;
 }
 
-#ifndef ANDROID
+
 void CTextureImage::CreateTextureImage(const std::string texturePath, VkImageUsageFlags usage, VkCommandPool &commandPool) {
-    pCommandPool = &commandPool;
-
+	pCommandPool = &commandPool;
 	//Step 1: prepare staging buffer with texture pixels inside
 	int texChannels;
+#ifndef ANDROID
 	uint8_t* pixels = stbi_load(texturePath.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
-
-	CreateTextureImage(pixels, usage, textureImageBuffer);
-}
 #else
-void CTextureImage::CreateTextureImage(std::vector<uint8_t>& fileBits, VkImageUsageFlags usage, VkCommandPool &commandPool) {
-    pCommandPool = &commandPool;
-
-	//Step 1: prepare staging buffer with texture pixels inside
-	int texChannels;
+	std::vector<uint8_t> fileBits;
+    androidManager.AssetReadFile("textures/texture.jpg", fileBits);
 	uint8_t* pixels =stbi_load_from_memory(fileBits.data(), fileBits.size(), &texWidth, &texHeight, &texChannels, 4);//stbi_uc
-	
+#endif
 	CreateTextureImage(pixels, usage, textureImageBuffer);
 }
-#endif
-
-
 
 void CTextureImage::CreateTextureImage(uint8_t* pixels, VkImageUsageFlags usage, CWxjImageBuffer &imageBuffer) {
 	VkDeviceSize imageSize = texWidth * texHeight * 4;
