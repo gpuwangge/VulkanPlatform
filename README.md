@@ -1,13 +1,14 @@
 # Object-oriented Vulkan Platform for Windows/Android
+This project creates a universal Vulkan platform that can easily develop Vulkan sample tests and compile them for both Windows&Android platforms.  
 
 ## How to compile to Windows exe binary
-### generate makefile that build all samples
+### for all samples
 mkdir build  
 cd build  
 cmake -G "MinGW Makefiles" ..   
 make  
 
-### generate makefile that build one sample(SimpleTriangle)
+### for one sample(SimpleTriangle)
 mkdir buildS  
 cd buildS  
 cmake -G "MinGW Makefiles" -D SINGLE=true ..  
