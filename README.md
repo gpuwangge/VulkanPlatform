@@ -17,7 +17,7 @@ make
 1. Install Android Studio: https://developer.android.com/  
 1. Install NDK: https://developer.android.com/studio/projects/install-ndk  
    You only need to install&setup NDK. You should already installed and configured CMake when installing Vulkan.  
-1. To verify setup sucess, make sure to run these tests: https://github.com/android/ndk-samples  
+1. To verify setup success or not, make sure to run these tests: https://github.com/android/ndk-samples  
    Especially the "hello-vulkan" project.  
   
 
