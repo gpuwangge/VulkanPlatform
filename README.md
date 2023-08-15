@@ -1,11 +1,13 @@
-# How to compile
-## generate makefile that build all samples
+# Object-oriented Vulkan Platform for Windows/Android
+
+## How to compile
+### generate makefile that build all samples
 mkdir build  
 cd build  
 cmake -G "MinGW Makefiles" ..   
 make  
 
-## generate makefile that build one sample(SimpleTriangle)
+### generate makefile that build one sample(SimpleTriangle)
 mkdir buildS  
 cd buildS  
 cmake -G "MinGW Makefiles" -D SINGLE=true ..  
@@ -14,7 +16,7 @@ make
 
 
 
-# Construction
+## Construction
 =========Concet of InFlight========  
 InFlight: means fast
 
