@@ -1,7 +1,7 @@
 # Object-oriented Vulkan Platform for Windows/Android
 This project creates a universal Vulkan platform that can be used to develop Vulkan sample tests, and compile them to binaries that run on both Windows&Android.  
 The samples are written in object-oriented ways so readers can easily understand.  
-Therefore this platform is an ideal learning&reaserch project for Vulkan beginners&researchers.   
+Therefore this platform is an ideal learning&research material for Vulkan beginners&researchers.   
 
 ## How to compile to Windows EXE
 ### for all samples
