@@ -47,8 +47,8 @@ public:
 
 		swapchain.CreateFramebuffers(renderProcess.renderPass);
 
-		shaderManager.CreateVertexShader("model/vert.spv");
-		shaderManager.CreateFragmentShader("model/frag.spv");
+		shaderManager.CreateVertexShader("simpleObjLoader/vert.spv");
+		shaderManager.CreateFragmentShader("simpleObjLoader/frag.spv");
 
 		descriptor.addMVPUniformBuffer();
 		descriptor.addImageSamplerUniformBuffer(textureImage.mipLevels);

@@ -31,7 +31,7 @@ public:
 		
 		renderer.CreateVertexBuffer<Vertex3D>(vertices3D);
 		renderer.CreateIndexBuffer(indices3D);
-		renderer.CreateCommandPool(surface);
+		renderer.CreateCommandPool(surface); 
 		renderer.CreateCommandBuffers();
 
 		VkImageUsageFlags usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
