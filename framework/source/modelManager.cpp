@@ -13,10 +13,17 @@ void CModelManager::LoadObjModel(IN const std::string modelName, OUT std::vector
 	std::vector<tinyobj::material_t> materials;
 	std::string warn, err;
 
-	if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, modelName.c_str())) {
+#ifndef ANDROID
+	if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, modelName.c_str())) 
 		throw std::runtime_error(warn + err);
-	}
-
+#else
+	std::vector<uint8_t> fileBits;
+	androidManager.AssetReadFile("models/viking_room.obj", fileBits);
+	std::istringstream in_stream(std::string(fileBits.begin(), fileBits.end()));
+   	if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, &in_stream))
+		throw std::runtime_error(warn + err);
+#endif
+	
 	//if use unordered_map, need to implement size_t operator()(Vertex3D const& vertex) const. 
 	//for some reason(c++ 11 stl not recognized in GLM) android version doesn't support <glm/gtx/hash.hpp>
 	//implment custom hash function instead, checkout dataBuffer.hpp

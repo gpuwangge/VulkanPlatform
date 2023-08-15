@@ -10,10 +10,7 @@ public:
     void initialize(){
 		swapchain.bEnableDepthTest = true; 
 		
-#ifndef ANDROID			
 		modelManager.LoadObjModel("../models/viking_room.obj", vertices3D, indices3D);
-#else
-#endif
 
 		renderer.CreateVertexBuffer<Vertex3D>(vertices3D);
 		renderer.CreateIndexBuffer(indices3D);

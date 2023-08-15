@@ -44,7 +44,7 @@ public:
 			VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
 			shaderManager.vertShaderModule, 
 			shaderManager.fragShaderModule);
-		printf("done!!!\n");
+		
 		CApplication::initialize();
 	}
 
