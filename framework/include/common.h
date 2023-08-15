@@ -51,6 +51,13 @@ const int MIPMAP_TEXTURE_COUNT = 7;
 #define OUT
 #define INOUT
 
+#define TEXTURE_PATH "../textures/"
+#define MODEL_PATH "../models/"
+#define SHADER_PATH "../shaders/"
+#define ANDROID_TEXTURE_PATH "textures/"
+#define ANDROID_MODEL_PATH "models/"
+#define ANDROID_SHADER_PATH "shaders/"
+
 
 //#define NDEBUG
 #ifdef NDEBUG

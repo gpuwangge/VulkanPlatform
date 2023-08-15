@@ -8,32 +8,48 @@ CShaderManager::~CShaderManager(){
     //if (!debugger) delete debugger;
 }
 
-void CShaderManager::InitVertexShader(const std::string shaderName){
+void CShaderManager::CreateVertexShader(const std::string shaderName){
 #ifndef ANDROID
-    InitSpirVShader(shaderName, &vertShaderModule);
+    InitSpirVShader(SHADER_PATH + shaderName, &vertShaderModule);
 #else
     std::vector<uint8_t> fileBits;
-    androidManager.AssetReadFile("shaders/shader.vert.spv", fileBits);
+    std::string tmp = ANDROID_SHADER_PATH + shaderName;
+    std::string fullShaderName;
+    for(int i = 0, j = 0; i < tmp.size(); i++){ //convert sample/vert.spv into sample/shader.vert.spv
+        fullShaderName[j++] = tmp[i];
+        if(tmp[i] == '/'){
+            fullShaderName = fullShaderName + "shader.";
+            j += 7;
+        }
+    }
+    androidManager.AssetReadFile(fullShaderName.c_str(), fileBits);
     vertShaderModule = androidManager.createShaderModule(fileBits);
 #endif    
 }
-void CShaderManager::InitFragmentShader(const std::string shaderName){
+void CShaderManager::CreateFragmentShader(const std::string shaderName){
 #ifndef ANDROID
-    InitSpirVShader(shaderName, &fragShaderModule);
+    InitSpirVShader(SHADER_PATH + shaderName, &fragShaderModule);
 #else
     std::vector<uint8_t> fileBits;
-    androidManager.AssetReadFile("shaders/shader.frag.spv", fileBits);
+    std::string tmp = ANDROID_SHADER_PATH + shaderName;
+    std::string fullShaderName;
+    for(int i = 0, j = 0; i < tmp.size(); i++){ 
+        fullShaderName[j++] = tmp[i];
+        if(tmp[i] == '/'){
+            fullShaderName = fullShaderName + "shader.";
+            j += 7;
+        }
+    }
+    androidManager.AssetReadFile(fullShaderName.c_str(), fileBits);
     fragShaderModule = androidManager.createShaderModule(fileBits);
 #endif      
 }
-void CShaderManager::InitComputeShader(const std::string shaderName){
-    InitSpirVShader(shaderName, &computeShaderModule);
+void CShaderManager::CreateComputeShader(const std::string shaderName){
+    InitSpirVShader(SHADER_PATH + shaderName, &computeShaderModule);
 }
 
 
 void CShaderManager::InitSpirVShader(const std::string shaderName, VkShaderModule *pShaderModule){
-    //HERE_I_AM("InitSpirVShader");
-
     auto shaderCode = readFile(shaderName.c_str());
 
     VkShaderModuleCreateInfo createInfo{};

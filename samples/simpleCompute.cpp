@@ -28,7 +28,7 @@ public:
 
 		//shaderManager.InitVertexShader("../shaders/simpleTriangle/vert.spv");
 		//shaderManager.InitFragmentShader("../shaders/simpleTriangle/frag.spv");
-		shaderManager.InitComputeShader("../shaders/simpleCompute/comp.spv");
+		shaderManager.CreateComputeShader("simpleCompute/comp.spv");
 
 
 		descriptor.addComputeStorageUniformBuffer();

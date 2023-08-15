@@ -11,7 +11,7 @@ public:
 		swapchain.bEnableMSAA = true;//!To enable MSAA, make sure it has depth test (call addDepthAttachment())
 		swapchain.bEnableDepthTest = true; 
 
-		modelManager.LoadObjModel("../models/viking_room.obj", vertices3D, indices3D);
+		modelManager.LoadObjModel("viking_room.obj", vertices3D, indices3D);
 		
 		renderer.CreateVertexBuffer<Vertex3D>(vertices3D);
 		renderer.CreateIndexBuffer(indices3D);
@@ -19,7 +19,7 @@ public:
 		renderer.CreateCommandBuffers();
 
 		VkImageUsageFlags usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
-		textureImage.CreateTextureImage("../textures/viking_room.png", usage, renderer.commandPool);
+		textureImage.CreateTextureImage("viking_room.png", usage, renderer.commandPool);
 		textureImage.CreateImageView(VK_IMAGE_ASPECT_COLOR_BIT);
 
 		if(swapchain.bEnableMSAA){
@@ -47,8 +47,8 @@ public:
 
 		swapchain.CreateFramebuffers(renderProcess.renderPass);
 
-		shaderManager.InitVertexShader("../shaders/model/vert.spv");
-		shaderManager.InitFragmentShader("../shaders/model/frag.spv");
+		shaderManager.CreateVertexShader("model/vert.spv");
+		shaderManager.CreateFragmentShader("model/frag.spv");
 
 		descriptor.addMVPUniformBuffer();
 		descriptor.addImageSamplerUniformBuffer(textureImage.mipLevels);

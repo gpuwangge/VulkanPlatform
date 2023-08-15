@@ -14,11 +14,13 @@ void CModelManager::LoadObjModel(IN const std::string modelName, OUT std::vector
 	std::string warn, err;
 
 #ifndef ANDROID
-	if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, modelName.c_str())) 
+	std::string fullModelPath = MODEL_PATH + modelName;
+	if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, fullModelPath.c_str())) 
 		throw std::runtime_error(warn + err);
 #else
 	std::vector<uint8_t> fileBits;
-	androidManager.AssetReadFile("models/viking_room.obj", fileBits);
+	std::string fullModelPath = ANDROID_MODEL_PATH + modelName;
+	androidManager.AssetReadFile(fullModelPath.c_str(), fileBits);
 	std::istringstream in_stream(std::string(fileBits.begin(), fileBits.end()));
    	if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, &in_stream))
 		throw std::runtime_error(warn + err);

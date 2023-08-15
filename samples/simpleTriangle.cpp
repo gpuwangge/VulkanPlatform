@@ -16,8 +16,8 @@ public:
 
 		swapchain.CreateFramebuffers(renderProcess.renderPass);
 
-		shaderManager.InitVertexShader("../shaders/simpleTriangle/vert.spv");
-		shaderManager.InitFragmentShader("../shaders/simpleTriangle/frag.spv");
+		shaderManager.CreateVertexShader("simpleTriangle/vert.spv");
+		shaderManager.CreateFragmentShader("simpleTriangle/frag.spv");
 
 		descriptor.createDescriptorPool();
 		descriptor.createDescriptorSetLayout();

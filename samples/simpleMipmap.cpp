@@ -17,7 +17,7 @@ public:
 		mainCamera.setRotation(glm::vec3(0.0f, 90.00001f, 0.0f));
 		mainCamera.setPerspective(60.0f, (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 256.0f);
 
-		modelManager.LoadObjModel("../models/hallway.obj", vertices3D, indices3D);
+		modelManager.LoadObjModel("hallway.obj", vertices3D, indices3D);
 
 		renderer.CreateVertexBuffer<Vertex3D>(vertices3D);
 		renderer.CreateIndexBuffer(indices3D);
@@ -25,10 +25,10 @@ public:
 		renderer.CreateCommandBuffers();
 
 		VkImageUsageFlags usage_texture = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
-		textureImage.CreateTextureImage("../textures/checkerboard_marble.jpg", usage_texture, renderer.commandPool);
+		textureImage.CreateTextureImage("checkerboard_marble.jpg", usage_texture, renderer.commandPool);
 		textureImage.CreateImageView(VK_IMAGE_ASPECT_COLOR_BIT);
 
-		textureImage.generateMipmaps("../textures/checkerboard", usage_texture);
+		textureImage.generateMipmaps("checkerboard", usage_texture);
 		
 		VkImageUsageFlags usage;
 		if(swapchain.bEnableMSAA){
@@ -56,8 +56,8 @@ public:
 
 		swapchain.CreateFramebuffers(renderProcess.renderPass);
 
-		shaderManager.InitVertexShader("../shaders/model/vert.spv");
-		shaderManager.InitFragmentShader("../shaders/model/frag.spv");
+		shaderManager.CreateVertexShader("model/vert.spv");
+		shaderManager.CreateFragmentShader("model/frag.spv");
 
 		descriptor.addMVPUniformBuffer();
 		descriptor.addImageSamplerUniformBuffer(textureImage.mipLevels);
