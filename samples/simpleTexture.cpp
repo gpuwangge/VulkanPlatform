@@ -20,8 +20,8 @@ public:
 		renderer.CreateCommandBuffers();
 
 		VkImageUsageFlags usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
-		textureImage.CreateTextureImage("texture.jpg", usage, renderer.commandPool);
-		textureImage.CreateImageView(VK_IMAGE_ASPECT_COLOR_BIT);
+		textureImages[0].CreateTextureImage("texture.jpg", usage, renderer.commandPool);
+		textureImages[0].CreateImageView(VK_IMAGE_ASPECT_COLOR_BIT);
 
 		renderProcess.addColorAttachment(swapchain.swapChainImageFormat); //add this function will enable color attachment (bUseColorAttachment = true)
 		renderProcess.createSubpass();
@@ -34,10 +34,10 @@ public:
 		shaderManager.CreateFragmentShader("simpleTexture/frag.spv");
 
 		descriptor.addMVPUniformBuffer();
-		descriptor.addImageSamplerUniformBuffer(textureImage.mipLevels);
+		descriptor.addImageSamplerUniformBuffer(textureImages[0].mipLevels);
 		descriptor.createDescriptorPool();
 		descriptor.createDescriptorSetLayout();
-		descriptor.createDescriptorSets(&textureImage.textureImageBuffer.view);
+		descriptor.createDescriptorSets(textureImages);
 		
 		renderProcess.createLayout(descriptor.descriptorSetLayout);
 		renderProcess.createGraphicsPipeline<Vertex3D>(

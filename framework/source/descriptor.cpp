@@ -11,7 +11,9 @@ CDescriptor::CDescriptor(){
     bUseComputeStorage = false;
 	m_customUniformBufferSize = 0;
 	mvpUBO.model = glm::mat4(1.0f);
-    textureSampler = NULL;
+    //textureSampler = NULL;
+    textureSamplers.resize(1);
+    textureSamplerCount = 0;
 }
 
 CDescriptor::~CDescriptor(){
@@ -87,7 +89,7 @@ void CDescriptor::addImageSamplerUniformBuffer(uint32_t mipLevels){
 	 	samplerInfo.mipLodBias = 0.0f;
 	}
 
-	VkResult result = vkCreateSampler(CContext::GetHandle().GetLogicalDevice(), &samplerInfo, nullptr, &textureSampler);
+	VkResult result = vkCreateSampler(CContext::GetHandle().GetLogicalDevice(), &samplerInfo, nullptr, &textureSamplers[textureSamplerCount++]);
 	//REPORT("vkCreateSampler");
 }
 
@@ -218,12 +220,14 @@ void CDescriptor::createDescriptorSetLayout(VkDescriptorSetLayoutBinding *custom
     }
 
     if(bUseSampler){
-        bindings[counter].binding = counter;
-        bindings[counter].descriptorCount = 1;
-        bindings[counter].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-        bindings[counter].pImmutableSamplers = nullptr;
-        bindings[counter].stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-        counter++;
+        for(int i = 0; i < textureSamplers.size(); i++){
+            bindings[counter].binding = counter;
+            bindings[counter].descriptorCount = 1;
+            bindings[counter].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+            bindings[counter].pImmutableSamplers = nullptr;
+            bindings[counter].stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+            counter++;
+        }
     }
 
     if(bUseComputeStorage){
@@ -253,7 +257,7 @@ void CDescriptor::createDescriptorSetLayout(VkDescriptorSetLayoutBinding *custom
 	//REPORT("vkCreateDescriptorSetLayout");
 }
 
-void CDescriptor::createDescriptorSets(VkImageView *textureImageView){
+void CDescriptor::createDescriptorSets(std::vector<CTextureImage> &textureImages){
         //HERE_I_AM("wxjCreateDescriptorSets");
 
         int descriptorSize = getDescriptorSize();
@@ -328,17 +332,19 @@ void CDescriptor::createDescriptorSets(VkImageView *textureImageView){
 
             VkDescriptorImageInfo imageInfo{}; //for texture sampler
             if(bUseSampler){
-                imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-                imageInfo.imageView = *textureImageView;
-                imageInfo.sampler = textureSampler;
-                descriptorWrites[counter].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                descriptorWrites[counter].dstSet = descriptorSets[i];
-                descriptorWrites[counter].dstBinding = counter;
-                descriptorWrites[counter].dstArrayElement = 0;
-                descriptorWrites[counter].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-                descriptorWrites[counter].descriptorCount = 1;
-                descriptorWrites[counter].pImageInfo = &imageInfo;
-                counter++;
+                for(int j = 0; j < textureSamplers.size(); j++){
+                    imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+                    imageInfo.imageView = textureImages[j].textureImageBuffer.view;
+                    imageInfo.sampler = textureSamplers[j];
+                    descriptorWrites[counter].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+                    descriptorWrites[counter].dstSet = descriptorSets[i];
+                    descriptorWrites[counter].dstBinding = counter;
+                    descriptorWrites[counter].dstArrayElement = 0;
+                    descriptorWrites[counter].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+                    descriptorWrites[counter].descriptorCount = 1;
+                    descriptorWrites[counter].pImageInfo = &imageInfo;
+                    counter++;
+                }
             }
 
             VkDescriptorBufferInfo storageBufferInfo{};
@@ -488,7 +494,7 @@ int CDescriptor::getDescriptorSize(){
 	int descriptorSize = 0;
 	descriptorSize += bUseCustomUniformBuffer ? 1:0;
 	descriptorSize += (bUseMVP||bUseVP) ? 1:0;
-	descriptorSize += bUseSampler ? 1:0;
+	descriptorSize += bUseSampler ? textureSamplers.size():0;
     descriptorSize += bUseComputeStorage ? 1:0;
 	return descriptorSize;
 }
@@ -505,8 +511,10 @@ void CDescriptor::createShaderStorageBuffers(){
 }
 
 void CDescriptor::DestroyAndFree(){
-    if(textureSampler) vkDestroySampler(CContext::GetHandle().GetLogicalDevice(), textureSampler, nullptr);
-
+    for(int i = 0; i < textureSamplers.size(); i++){
+    //if(textureSampler) 
+        vkDestroySampler(CContext::GetHandle().GetLogicalDevice(), textureSamplers[i], nullptr);
+    }
     for (size_t i = 0; i < customUniformBuffers.size(); i++) {
         customUniformBuffers[i].DestroyAndFree();
     }

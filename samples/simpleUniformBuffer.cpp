@@ -38,7 +38,7 @@ public:
 		descriptor.createDescriptorPool();
 		VkDescriptorSetLayoutBinding customBinding = CustomUniformBufferObject::GetBinding();
 		descriptor.createDescriptorSetLayout(&customBinding);
-		descriptor.createDescriptorSets();
+		descriptor.createDescriptorSets(textureImages);
 
 		renderProcess.createLayout(descriptor.descriptorSetLayout);
 		renderProcess.createGraphicsPipeline(

@@ -4,6 +4,7 @@
 #include "context.h"
 #include "dataBuffer.hpp"
 #include "camera.hpp"
+#include "../include/texture.h"
 
 class CDescriptor final{
 
@@ -41,7 +42,8 @@ public:
     void updateVPUniformBuffer(uint32_t currentFrame, float durationTime, Camera &mainCamera);
 
     bool bUseSampler;
-    VkSampler textureSampler;
+    int textureSamplerCount;
+    std::vector<VkSampler> textureSamplers;
     void addImageSamplerUniformBuffer(uint32_t mipLevels);
 
     bool bUseComputeStorage;
@@ -61,7 +63,7 @@ public:
         //VkShaderStageFlags    stageFlags = VK_SHADER_STAGE_VERTEX_BIT,
         //uint32_t              descriptorCount = 1,
         //const VkSampler*      pImmutableSamplers = nullptr);
-    void createDescriptorSets(VkImageView *textureImageView = nullptr);
+    void createDescriptorSets(std::vector<CTextureImage> &textureImages);
 
     void DestroyAndFree();
 

@@ -44,7 +44,7 @@ public:
     CShaderManager shaderManager;
     CDescriptor descriptor;
     CRenderer renderer;
-    CTextureImage textureImage;
+    std::vector<CTextureImage> textureImages;
     CModelManager modelManager;
     
     //std::chrono::_V2::system_clock::time_point lastTime;

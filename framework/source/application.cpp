@@ -6,6 +6,8 @@ bool CApplication::NeedToExit = false;
 CApplication::CApplication(){
     //debugger = new CDebugger("../logs/application.log");
 
+    textureImages.resize(1);
+
     mainCamera.type = Camera::CameraType::firstperson;
     mainCamera.setPosition(glm::vec3(0.0f, -2.5f, -2.5f));
     mainCamera.setRotation(glm::vec3(45.0f, 0.0f, 0.0f));
@@ -108,7 +110,8 @@ void CApplication::CleanUp(){
     swapchain.CleanUp();
     renderProcess.Cleanup();
     descriptor.DestroyAndFree();
-    textureImage.Destroy();
+    for(int i = 0; i < textureImages.size(); i++)
+        textureImages[i].Destroy();
     renderer.Destroy();
 
     vkDestroyDevice(CContext::GetHandle().GetLogicalDevice(), nullptr);

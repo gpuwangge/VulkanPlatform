@@ -10,7 +10,7 @@ public:
     void initialize(){
 		swapchain.bEnableDepthTest = true;
 		swapchain.bEnableMSAA = true; //!To enable MSAA, make sure it has depth test first (call wxjCreateDepthAttachment())
-		textureImage.bEnableMipMap = true;
+		textureImages[0].bEnableMipMap = true;
 
 		mainCamera.type = Camera::CameraType::firstperson;
 		mainCamera.setPosition(glm::vec3(0.0f, -0.8f, 0.0f));
@@ -25,10 +25,10 @@ public:
 		renderer.CreateCommandBuffers();
 
 		VkImageUsageFlags usage_texture = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
-		textureImage.CreateTextureImage("checkerboard_marble.jpg", usage_texture, renderer.commandPool);
-		textureImage.CreateImageView(VK_IMAGE_ASPECT_COLOR_BIT);
+		textureImages[0].CreateTextureImage("checkerboard_marble.jpg", usage_texture, renderer.commandPool);
+		textureImages[0].CreateImageView(VK_IMAGE_ASPECT_COLOR_BIT);
 
-		textureImage.generateMipmaps("checkerboard", usage_texture);
+		textureImages[0].generateMipmaps("checkerboard", usage_texture);
 		
 		VkImageUsageFlags usage;
 		if(swapchain.bEnableMSAA){
@@ -60,10 +60,10 @@ public:
 		shaderManager.CreateFragmentShader("simpleObjLoader/frag.spv");
 
 		descriptor.addMVPUniformBuffer();
-		descriptor.addImageSamplerUniformBuffer(textureImage.mipLevels);
+		descriptor.addImageSamplerUniformBuffer(textureImages[0].mipLevels);
 		descriptor.createDescriptorPool();
 		descriptor.createDescriptorSetLayout();
-		descriptor.createDescriptorSets(&textureImage.textureImageBuffer.view);
+		descriptor.createDescriptorSets(textureImages);
 
 		renderProcess.createLayout(descriptor.descriptorSetLayout);
 		renderProcess.createGraphicsPipeline<Vertex3D>(

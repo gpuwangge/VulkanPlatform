@@ -1,13 +1,13 @@
 #include "..\\framework\\include\\application.h"
 
-#define TEST_CLASS_NAME CBasicTriangles
+#define TEST_CLASS_NAME CFurMark
 class TEST_CLASS_NAME: public CApplication{
 public:
 	std::vector<Vertex3D> vertices3D = {
-		{ { -0.5f, -0.5f, 0.0f },{ 1.0f, 0.0f, 0.0f },{ 1.0f, 0.0f } ,{ 0.0f, 0.0f, 1.0f }},
-		{ { 0.5f, -0.5f, 0.0f },{ 0.0f, 1.0f, 0.0f },{ 0.0f, 0.0f } ,{ 0.0f, 0.0f, 1.0f }},
-		{ { 0.5f, 0.5f, 0.0f },{ 0.0f, 0.0f, 1.0f },{ 0.0f, 1.0f } ,{ 0.0f, 0.0f, 1.0f }},
-		{ { -0.5f, 0.5f, 0.0f },{ 1.0f, 1.0f, 1.0f },{ 1.0f, 1.0f } ,{ 0.0f, 0.0f, 1.0f }}
+		{ { -1.0f, -1.0f, 0.0f },{ 1.0f, 0.0f, 0.0f },{ 1.0f, 0.0f } ,{ 0.0f, 0.0f, 1.0f }},
+		{ { 1.0f, -1.0f, 0.0f },{ 0.0f, 1.0f, 0.0f },{ 0.0f, 0.0f } ,{ 0.0f, 0.0f, 1.0f }},
+		{ { 1.0f, 1.0f, 0.0f },{ 0.0f, 0.0f, 1.0f },{ 0.0f, 1.0f } ,{ 0.0f, 0.0f, 1.0f }},
+		{ { -1.0f, 1.0f, 0.0f },{ 1.0f, 1.0f, 1.0f },{ 1.0f, 1.0f } ,{ 0.0f, 0.0f, 1.0f }}
 	};
 
 	std::vector<uint32_t> indices3D = { 0, 1, 2, 2, 3, 0};
@@ -15,7 +15,9 @@ public:
 	std::vector<VkClearValue> clearValues{ {  0.0f, 0.0f, 0.0f, 1.0f  } };
  
 	struct CustomUniformBufferObject {
-		glm::vec3 color;
+		//glm::vec3 color;
+        glm::vec2 u_resolution;
+	    float u_time;
 
 		static VkDescriptorSetLayoutBinding GetBinding(){
 			VkDescriptorSetLayoutBinding binding;
@@ -23,7 +25,7 @@ public:
 			binding.descriptorCount = 1;
 			binding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 			binding.pImmutableSamplers = nullptr;
-			binding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+			binding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
 			return binding;
 		}
 	};
@@ -35,9 +37,14 @@ public:
 		renderer.CreateCommandPool(surface);
 		renderer.CreateCommandBuffers();
 
+        textureImages.resize(3);
 		VkImageUsageFlags usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
-		textureImages[0].CreateTextureImage("texture.jpg", usage, renderer.commandPool);	
+		textureImages[0].CreateTextureImage("fur.jpg", usage, renderer.commandPool);	
 		textureImages[0].CreateImageView(VK_IMAGE_ASPECT_COLOR_BIT);
+        textureImages[1].CreateTextureImage("noise.png", usage, renderer.commandPool);	
+		textureImages[1].CreateImageView(VK_IMAGE_ASPECT_COLOR_BIT);
+        textureImages[2].CreateTextureImage("wall.jpg", usage, renderer.commandPool);	
+		textureImages[2].CreateImageView(VK_IMAGE_ASPECT_COLOR_BIT);
 
 		renderProcess.addColorAttachment(swapchain.swapChainImageFormat); //add this function will enable color attachment (bUseColorAttachment = true)
 		renderProcess.createSubpass();
@@ -46,16 +53,21 @@ public:
 
 		swapchain.CreateFramebuffers(renderProcess.renderPass);
 
-		shaderManager.CreateVertexShader("basicTriangles/vert.spv");
-		shaderManager.CreateFragmentShader("basicTriangles/frag.spv");
+		shaderManager.CreateVertexShader("furMark/vert.spv");
+		shaderManager.CreateFragmentShader("furMark/frag.spv");
 
+        descriptor.textureSamplers.resize(3);
 		descriptor.addImageSamplerUniformBuffer(textureImages[0].mipLevels);
-		descriptor.addMVPUniformBuffer();
+        descriptor.addImageSamplerUniformBuffer(textureImages[1].mipLevels);
+        descriptor.addImageSamplerUniformBuffer(textureImages[2].mipLevels);
+		//descriptor.addMVPUniformBuffer();
 		descriptor.addCustomUniformBuffer(sizeof(CustomUniformBufferObject));
 		descriptor.createDescriptorPool();
 		VkDescriptorSetLayoutBinding customBinding = CustomUniformBufferObject::GetBinding();
 		descriptor.createDescriptorSetLayout(&customBinding);
 		descriptor.createDescriptorSets(textureImages);
+        //descriptor.createDescriptorSets(&textureImages[1].textureImageBuffer.view);
+        //descriptor.createDescriptorSets(&textureImages[2].textureImageBuffer.view);
 
 		renderProcess.createLayout(descriptor.descriptorSetLayout);
 		renderProcess.createGraphicsPipeline<Vertex3D>(
@@ -67,10 +79,12 @@ public:
 	}
 
 	void update(){
-		customUBO.color = {(sin(durationTime) + 1.0f) / 2.0f, 0.0f, (cos(durationTime) + 1.0f) / 2.0f};
+		//customUBO.color = {(sin(durationTime) + 1.0f) / 2.0f, 0.0f, (cos(durationTime) + 1.0f) / 2.0f};
+        customUBO.u_time = durationTime;
+        customUBO.u_resolution = glm::vec2(windowWidth, windowHeight);
 		descriptor.updateCustomUniformBuffer<CustomUniformBufferObject>(renderer.currentFrame, durationTime, customUBO);
 
-		descriptor.mvpUBO.model = glm::rotate(glm::mat4(1.0f), durationTime * glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		//descriptor.mvpUBO.model = glm::rotate(glm::mat4(1.0f), durationTime * glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 		CApplication::update();
 	}
 

@@ -28,7 +28,7 @@ public:
 
 		descriptor.createDescriptorPool();
 		descriptor.createDescriptorSetLayout();
-		descriptor.createDescriptorSets();
+		descriptor.createDescriptorSets(textureImages);
 
 		renderProcess.createLayout(descriptor.descriptorSetLayout);
 		renderProcess.createGraphicsPipeline<Vertex2D>(

@@ -19,8 +19,8 @@ public:
 		renderer.CreateCommandBuffers();
 
 		VkImageUsageFlags usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
-		textureImage.CreateTextureImage("viking_room.png", usage, renderer.commandPool);
-		textureImage.CreateImageView(VK_IMAGE_ASPECT_COLOR_BIT);
+		textureImages[0].CreateTextureImage("viking_room.png", usage, renderer.commandPool);
+		textureImages[0].CreateImageView(VK_IMAGE_ASPECT_COLOR_BIT);
 
 		if(swapchain.bEnableMSAA){
 			swapchain.GetMaxUsableSampleCount();
@@ -51,10 +51,10 @@ public:
 		shaderManager.CreateFragmentShader("simpleObjLoader/frag.spv");
 
 		descriptor.addMVPUniformBuffer();
-		descriptor.addImageSamplerUniformBuffer(textureImage.mipLevels);
+		descriptor.addImageSamplerUniformBuffer(textureImages[0].mipLevels);
 		descriptor.createDescriptorPool();
 		descriptor.createDescriptorSetLayout();
-		descriptor.createDescriptorSets(&textureImage.textureImageBuffer.view);
+		descriptor.createDescriptorSets(textureImages);
 
 		renderProcess.createLayout(descriptor.descriptorSetLayout);
 		renderProcess.createGraphicsPipeline<Vertex3D>(

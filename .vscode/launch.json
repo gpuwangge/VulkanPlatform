@@ -9,7 +9,7 @@
       "stopAtEntry": false,
       "externalConsole": true,
       "cwd": "${workspaceFolder}/bin",
-      "program": "${cwd}/bin/simpleObjLoader.exe",
+      "program": "${cwd}/bin/furMark.exe",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [
