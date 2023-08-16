@@ -5,13 +5,15 @@
 //#define ANDROID
 
 #define GLM_FORCE_RADIANS
-#ifndef ANDROID
+//#ifndef ANDROID
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-#else
-#include "../../thirdParty/GLM/glm/glm.hpp"
-#include "../../thirdParty/GLM/glm/gtc/matrix_transform.hpp"
-#endif
+//#else
+//#include "../../thirdParty/GLM/glm/glm.hpp"
+//#include "../../thirdParty/GLM/glm/gtc/matrix_transform.hpp"
+//#include "C:/VulkanSDK/GLM/glm/glm.hpp"
+//#include "C:/VulkanSDK/GLM/glm/gtc/matrix_transform.hpp"
+//#endif
 
 // #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 // #define GLM_ENABLE_EXPERIMENTAL

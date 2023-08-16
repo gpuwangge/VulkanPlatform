@@ -30,22 +30,26 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -Wall")
 
 add_definitions(-DVK_USE_PLATFORM_ANDROID_KHR=1)
 
+include_directories(
+    $ENV{VULKAN_SDK}/Include
+    $ENV{INCLUDE}) 
+
 add_library(${PROJECT_NAME} SHARED
     vk_main.cpp
-        framework/source/application.cpp
-        framework/source/context.cpp
-        framework/source/descriptor.cpp
-        framework/source/imageBuffer.cpp
-        framework/source/instance.cpp
-        framework/source/logicalDevice.cpp
-        framework/source/modelManager.cpp
-        framework/source/physicalDevice.cpp
-        framework/source/renderer.cpp
-        framework/source/renderProcess.cpp
-        framework/source/shaderManager.cpp
-        framework/source/swapchain.cpp
-        framework/source/texture.cpp
-        androidFramework/source/androidManager.cpp)
+        ../../../../../framework/source/application.cpp
+        ../../../../../framework/source/context.cpp
+        ../../../../../framework/source/descriptor.cpp
+        ../../../../../framework/source/imageBuffer.cpp
+        ../../../../../framework/source/instance.cpp
+        ../../../../../framework/source/logicalDevice.cpp
+        ../../../../../framework/source/modelManager.cpp
+        ../../../../../framework/source/physicalDevice.cpp
+        ../../../../../framework/source/renderer.cpp
+        ../../../../../framework/source/renderProcess.cpp
+        ../../../../../framework/source/shaderManager.cpp
+        ../../../../../framework/source/swapchain.cpp
+        ../../../../../framework/source/texture.cpp
+        ../../../../../androidFramework/source/androidManager.cpp)
 
 # add lib dependencies
 target_link_libraries(${PROJECT_NAME} PUBLIC

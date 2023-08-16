@@ -1,9 +1,9 @@
+#include "..\\..\\..\\..\\..\\samples\\simplePushConstant.cpp"
+
 #include <android/asset_manager.h>
 #include <android/log.h>
 #include <android/native_window.h>
 #include <android/native_window_jni.h>
-
-#include "samples/sample.h"
 
 /**
  * HelloVK contains the core of Vulkan pipeline setup. It includes recording
@@ -82,14 +82,6 @@ void HelloVK::initVulkan() {
 
 void HelloVK::reset(ANativeWindow *newWindow, AAssetManager *newManager) {
     window.reset(newWindow);
-    //sample.androidManager.assetManager = newManager;
-    //sample.modelManager.androidManager.assetManager = newManager;
-    // sample.textureImages.resize(3);
-    // sample.textureImages[0].androidManager.assetManager = newManager;
-    // sample.textureImages[1].androidManager.assetManager = newManager;
-    // sample.textureImages[2].androidManager.assetManager = newManager;
-    //sample.shaderManager.androidManager.assetManager = newManager;
-
     CContext::Init();
     CContext::GetHandle().androidManager.assetManager = newManager;
   //if (initialized) {
