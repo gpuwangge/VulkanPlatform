@@ -117,9 +117,11 @@ void CDescriptor::createDescriptorPool(VkDescriptorType type){
     }
 
     if(bUseSampler){
-        poolSizes[counter].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-	 	poolSizes[counter].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
-		counter++;
+        for(int i = 0; i < textureSamplers.size(); i++){
+            poolSizes[counter].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+	 	    poolSizes[counter].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
+		    counter++;
+        }
     }
 
     if(bUseComputeStorage){
@@ -330,19 +332,20 @@ void CDescriptor::createDescriptorSets(std::vector<CTextureImage> &textureImages
                 counter++;
             }
 
-            VkDescriptorImageInfo imageInfo{}; //for texture sampler
+            std::vector<VkDescriptorImageInfo> imageInfo{}; //for texture sampler
             if(bUseSampler){
+                imageInfo.resize(textureSamplers.size());
                 for(int j = 0; j < textureSamplers.size(); j++){
-                    imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-                    imageInfo.imageView = textureImages[j].textureImageBuffer.view;
-                    imageInfo.sampler = textureSamplers[j];
+                    imageInfo[j].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+                    imageInfo[j].imageView = textureImages[j].textureImageBuffer.view;
+                    imageInfo[j].sampler = textureSamplers[j];
                     descriptorWrites[counter].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
                     descriptorWrites[counter].dstSet = descriptorSets[i];
                     descriptorWrites[counter].dstBinding = counter;
                     descriptorWrites[counter].dstArrayElement = 0;
                     descriptorWrites[counter].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
                     descriptorWrites[counter].descriptorCount = 1;
-                    descriptorWrites[counter].pImageInfo = &imageInfo;
+                    descriptorWrites[counter].pImageInfo = &imageInfo[j];
                     counter++;
                 }
             }

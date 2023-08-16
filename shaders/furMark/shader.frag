@@ -81,7 +81,8 @@ vec3 triPlanar(sampler2D tex, vec3 p, vec3 normal) {
 
 
 vec3 render(vec2 offset) {
-    vec2 uv = (2.0 * (gl_FragCoord.xy + offset) - customUBO.u_resolution.xy) / customUBO.u_resolution.y;
+    //vec2 uv = (2.0 * (gl_FragCoord.xy + offset) - customUBO.u_resolution.xy) / customUBO.u_resolution.y;
+    vec2 uv = (2.0 * (gl_FragCoord.xy + offset) - customUBO.u_resolution.xy * 0.5) / (customUBO.u_resolution.y * 0.5) + vec2(-1.1,-1.1);
     vec3 col = vec3(0);
 
     vec3 ro = vec3(0, 0, -1.0);
