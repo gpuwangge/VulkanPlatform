@@ -46,7 +46,7 @@ class HelloVK {
 
 void HelloVK::initVulkan() {
     initialized = true;
-    CContext::Init();
+    //CContext::Init();
     const std::vector<const char*> requiredValidationLayers = {"VK_LAYER_KHRONOS_validation"};
     std::vector<const char*> requiredInstanceExtensions;
     requiredInstanceExtensions.push_back("VK_KHR_surface");
@@ -83,12 +83,15 @@ void HelloVK::initVulkan() {
 void HelloVK::reset(ANativeWindow *newWindow, AAssetManager *newManager) {
     window.reset(newWindow);
     //sample.androidManager.assetManager = newManager;
-    sample.modelManager.androidManager.assetManager = newManager;
-    sample.textureImages.resize(3);
-    sample.textureImages[0].androidManager.assetManager = newManager;
-    sample.textureImages[1].androidManager.assetManager = newManager;
-    sample.textureImages[2].androidManager.assetManager = newManager;
-    sample.shaderManager.androidManager.assetManager = newManager;
+    //sample.modelManager.androidManager.assetManager = newManager;
+    // sample.textureImages.resize(3);
+    // sample.textureImages[0].androidManager.assetManager = newManager;
+    // sample.textureImages[1].androidManager.assetManager = newManager;
+    // sample.textureImages[2].androidManager.assetManager = newManager;
+    //sample.shaderManager.androidManager.assetManager = newManager;
+
+    CContext::Init();
+    CContext::GetHandle().androidManager.assetManager = newManager;
   //if (initialized) {
   //    app.createSurface();
   //  recreateSwapChain();

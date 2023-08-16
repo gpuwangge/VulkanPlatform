@@ -29,7 +29,7 @@ void CShaderManager::CreateVertexShader(const std::string shaderName){
 #else
     std::vector<uint8_t> fileBits;
     std::string fullShaderName = ANDROID_SHADER_PATH + InsertString(shaderName, "shader.", '/');
-    androidManager.AssetReadFile(fullShaderName.c_str(), fileBits);
+    CContext::GetHandle().androidManager.AssetReadFile(fullShaderName.c_str(), fileBits);
     vertShaderModule = androidManager.createShaderModule(fileBits);
 #endif    
 }
@@ -39,7 +39,7 @@ void CShaderManager::CreateFragmentShader(const std::string shaderName){
 #else
     std::vector<uint8_t> fileBits;
     std::string fullShaderName = ANDROID_SHADER_PATH + InsertString(shaderName, "shader.", '/');
-    androidManager.AssetReadFile(fullShaderName.c_str(), fileBits);
+    CContext::GetHandle().androidManager.AssetReadFile(fullShaderName.c_str(), fileBits);
     fragShaderModule = androidManager.createShaderModule(fileBits);
 #endif      
 }

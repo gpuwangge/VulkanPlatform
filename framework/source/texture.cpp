@@ -22,7 +22,8 @@ void CTextureImage::CreateTextureImage(const std::string texturePath, VkImageUsa
 #else
 	std::vector<uint8_t> fileBits;
 	std::string fullTexturePath = ANDROID_TEXTURE_PATH + texturePath;
-    androidManager.AssetReadFile(fullTexturePath.c_str(), fileBits);
+    //androidManager.AssetReadFile(fullTexturePath.c_str(), fileBits);
+	CContext::GetHandle().androidManager.AssetReadFile(fullTexturePath.c_str(), fileBits);
 	uint8_t* pixels =stbi_load_from_memory(fileBits.data(), fileBits.size(), &texWidth, &texHeight, &texChannels, 4);//stbi_uc
 #endif
 	CreateTextureImage(pixels, usage, textureImageBuffer);

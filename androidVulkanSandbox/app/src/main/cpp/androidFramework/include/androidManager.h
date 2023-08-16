@@ -1,7 +1,7 @@
 #ifndef H_ANDROIDMANAGER
 #define H_ANDROIDMANAGER
 
-#include "..\\..\\framework\\include\\context.h"
+#include "..\\..\\framework\\include\\common.h"
 #include <android/asset_manager.h>
 
 class CAndroidManager final{

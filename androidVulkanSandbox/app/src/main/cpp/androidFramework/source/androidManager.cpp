@@ -1,5 +1,6 @@
 #include "../include/androidManager.h"
- 
+#include "..\\..\\framework\\include\\context.h"
+
 CAndroidManager::CAndroidManager(){}
 CAndroidManager::~CAndroidManager(){}
 

@@ -6,6 +6,8 @@
 
 #ifndef ANDROID
 #include "..\\..\\windowsFramework\\include\\logManager.h"
+#else
+#include "..\\..\\androidFramework\\include\\androidManager.h"
 #endif
 
 //CContext is to store some commonly used static variables(physical device, logical device in the current context)
@@ -35,7 +37,10 @@ public:
 
 #ifndef ANDROID
     CLogManager *logManager;
+#else
+    CAndroidManager androidManager;
 #endif
+    
 private:
     CContext();//set construct to private so no one can instanize this class.
 

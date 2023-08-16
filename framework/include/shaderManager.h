@@ -4,9 +4,9 @@
 #include "common.h"
 #include "context.h"
 
-#ifdef ANDROID
-#include "..\\..\\androidFramework\\include\\androidManager.h"
-#endif
+ //#ifdef ANDROID
+// #include "..\\..\\androidFramework\\include\\androidManager.h"
+ //#endif
 class CShaderManager final{
 public:
     CShaderManager();
@@ -33,7 +33,7 @@ public:
     void Destroy();
 
 #ifdef ANDROID
-    CAndroidManager androidManager;
+    //CAndroidManager androidManager;
     //insert a string after separator: "ab/c","wxj",'/'=>ab/wxjc"
     std::string InsertString(std::string originalString, std::string insertString, char separator);
 #endif
