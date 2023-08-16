@@ -8,20 +8,27 @@ CShaderManager::~CShaderManager(){
     //if (!debugger) delete debugger;
 }
 
+#ifdef ANDROID
+std::string CShaderManager::InsertString(std::string originalString, std::string insertString, char separator){
+    std::string str1;
+    std::string str2;
+    for(int i = 0, j = 0; i < originalString.size(); i++){
+        if(originalString[i] == separator) {
+            str1.append(originalString, 0, i+1);
+            str2.append(originalString, i+1, originalString.size() - i - 1);
+        }
+    }
+    str1 = str1 + insertString + str2;
+    return str1;
+}
+#endif
+
 void CShaderManager::CreateVertexShader(const std::string shaderName){
 #ifndef ANDROID
     InitSpirVShader(SHADER_PATH + shaderName, &vertShaderModule);
 #else
     std::vector<uint8_t> fileBits;
-    std::string tmp = ANDROID_SHADER_PATH + shaderName;
-    std::string fullShaderName;
-    for(int i = 0, j = 0; i < tmp.size(); i++){ //convert sample/vert.spv into sample/shader.vert.spv
-        fullShaderName[j++] = tmp[i];
-        if(tmp[i] == '/'){
-            fullShaderName = fullShaderName + "shader.";
-            j += 7;
-        }
-    }
+    std::string fullShaderName = ANDROID_SHADER_PATH + InsertString(shaderName, "shader.", '/');
     androidManager.AssetReadFile(fullShaderName.c_str(), fileBits);
     vertShaderModule = androidManager.createShaderModule(fileBits);
 #endif    
@@ -31,15 +38,7 @@ void CShaderManager::CreateFragmentShader(const std::string shaderName){
     InitSpirVShader(SHADER_PATH + shaderName, &fragShaderModule);
 #else
     std::vector<uint8_t> fileBits;
-    std::string tmp = ANDROID_SHADER_PATH + shaderName;
-    std::string fullShaderName;
-    for(int i = 0, j = 0; i < tmp.size(); i++){ 
-        fullShaderName[j++] = tmp[i];
-        if(tmp[i] == '/'){
-            fullShaderName = fullShaderName + "shader.";
-            j += 7;
-        }
-    }
+    std::string fullShaderName = ANDROID_SHADER_PATH + InsertString(shaderName, "shader.", '/');
     androidManager.AssetReadFile(fullShaderName.c_str(), fileBits);
     fragShaderModule = androidManager.createShaderModule(fileBits);
 #endif      

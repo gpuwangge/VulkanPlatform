@@ -34,6 +34,8 @@ public:
 
 #ifdef ANDROID
     CAndroidManager androidManager;
+    //insert a string after separator: "ab/c","wxj",'/'=>ab/wxjc"
+    std::string InsertString(std::string originalString, std::string insertString, char separator);
 #endif
 private:
     std::vector<char> readFile(const std::string& filename);

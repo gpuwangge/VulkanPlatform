@@ -27,6 +27,6 @@ bool CAndroidManager::AssetReadFile(const char *assetName, std::vector<uint8_t>&
     buf.resize(fileLength);
     int64_t readSize = AAsset_read(file, buf.data(), buf.size());
 
-    AAsset_close(assetDescriptor);
+    AAsset_close(file);
     return (readSize == buf.size());
 }
