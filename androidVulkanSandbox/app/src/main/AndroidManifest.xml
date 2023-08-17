@@ -3,7 +3,7 @@
 
   <application
       android:icon="@mipmap/ic_launcher"
-      android:label="@string/hellovk_activity">
+      android:label="@string/vkbackend_activity">
     <activity android:name="VulkanActivity"
               android:theme="@style/Application.Fullscreen"
               android:launchMode="singleTask"

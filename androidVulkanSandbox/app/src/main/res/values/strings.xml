@@ -23,7 +23,7 @@
 
 <resources>
     <!-- Simple strings. -->
-    <string name="hellovk_activity">HelloVk</string>
+    <string name="vkbackend_activity">VulkanSimulator</string>
 
 </resources>
 

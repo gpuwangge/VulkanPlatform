@@ -1,3 +1,3 @@
 #ifdef ANDROID
-#include "simplePhongLighting.cpp"
+#include "furMark.cpp"
 #endif

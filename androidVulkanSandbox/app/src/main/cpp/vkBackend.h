@@ -6,7 +6,7 @@
 #include <android/native_window_jni.h>
 
 /**
- * HelloVK contains the core of Vulkan pipeline setup. It includes recording
+ * VKBackend contains the core of Vulkan pipeline setup. It includes recording
  * draw commands as well as screen clearing during the render pass.
  *
  * Please refer to: https://vulkan-tutorial.com/ for a gentle Vulkan
@@ -14,7 +14,7 @@
  */
 
 namespace vkt {
-#define LOG_TAG "hellovkjni"
+#define LOG_TAG "VKBackendjni"
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 
@@ -31,7 +31,7 @@ struct ANativeWindowDeleter {
   void operator()(ANativeWindow *window) { ANativeWindow_release(window); }
 };
 
-class HelloVK {
+class VKBackend {
  public:
   void initVulkan();
   void render();
@@ -44,7 +44,7 @@ class HelloVK {
     std::unique_ptr<ANativeWindow, ANativeWindowDeleter> window;
 };
 
-void HelloVK::initVulkan() {
+void VKBackend::initVulkan() {
     initialized = true;
     //CContext::Init();
     const std::vector<const char*> requiredValidationLayers = {"VK_LAYER_KHRONOS_validation"};
@@ -80,7 +80,7 @@ void HelloVK::initVulkan() {
 }
 
 
-void HelloVK::reset(ANativeWindow *newWindow, AAssetManager *newManager) {
+void VKBackend::reset(ANativeWindow *newWindow, AAssetManager *newManager) {
     window.reset(newWindow);
     CContext::Init();
     CContext::GetHandle().androidManager.assetManager = newManager;
@@ -90,14 +90,14 @@ void HelloVK::reset(ANativeWindow *newWindow, AAssetManager *newManager) {
   //}
 }
 
-void HelloVK::render() {
+void VKBackend::render() {
     sample.update();
     sample.renderer.prepareCurrentFrameAndAcquireImageIndex(sample.swapchain);//TODO for test compute shader
     sample.recordCommandBuffer();
     sample.renderer.drawFrame(sample.swapchain);//TODO for test compute shader
 }
 
-void HelloVK::cleanup() {
+void VKBackend::cleanup() {
     vkDeviceWaitIdle(CContext::GetHandle().GetLogicalDevice());
     sample.CleanUp();
     initialized = false;
