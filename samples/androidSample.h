@@ -1,1 +1,3 @@
-#include "simpleMipmap.cpp"
+#ifdef ANDROID
+#include "simplePhongLighting.cpp"
+#endif

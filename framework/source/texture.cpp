@@ -4,7 +4,11 @@
 #include "../../thirdParty/stb_image.h"
 
 CTextureImage::CTextureImage(){
+#ifndef ANDROID
     imageFormat = VK_FORMAT_R8G8B8A8_SRGB;
+#else
+	imageFormat = VK_FORMAT_R8G8B8A8_UNORM;
+#endif
 	//debugger = new CDebugger("../logs/texture.log");
 }
 CTextureImage::~CTextureImage(){

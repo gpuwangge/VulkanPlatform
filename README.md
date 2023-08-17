@@ -42,9 +42,11 @@ ray tracing
 better documents  
 android makefile  
 android rename  
-fps setting
+fps setting, and show fps
 android screen fliping(Mipmap, furMark)
 android controller
+android color not good(furMark)
+resize window
 
 
 =========Concet of InFlight========  
