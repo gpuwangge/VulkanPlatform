@@ -1,4 +1,4 @@
-#include "..\\..\\..\\..\\..\\samples\\simplePushConstant.cpp"
+#include "..\\..\\..\\..\\..\\samples\\androidSample.h"
 
 #include <android/asset_manager.h>
 #include <android/log.h>

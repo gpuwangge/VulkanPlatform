@@ -5,15 +5,10 @@
 //#define ANDROID
 
 #define GLM_FORCE_RADIANS
-//#ifndef ANDROID
+
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-//#else
-//#include "../../thirdParty/GLM/glm/glm.hpp"
-//#include "../../thirdParty/GLM/glm/gtc/matrix_transform.hpp"
-//#include "C:/VulkanSDK/GLM/glm/glm.hpp"
-//#include "C:/VulkanSDK/GLM/glm/gtc/matrix_transform.hpp"
-//#endif
+
 
 // #define GLM_FORCE_DEPTH_ZERO_TO_ONE
 // #define GLM_ENABLE_EXPERIMENTAL
@@ -43,8 +38,8 @@
 // #include <cstdint>
 // #include <limits>
 
-const uint32_t WINDOW_WIDTH = 720;
-const uint32_t WINDOW_HEIGHT = 1280;
+const uint32_t WINDOW_WIDTH = 640;
+const uint32_t WINDOW_HEIGHT = 1136;
 const int MAX_FRAMES_IN_FLIGHT = 2;
 
 const int MIPMAP_TEXTURE_COUNT = 7;
