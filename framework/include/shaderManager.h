@@ -4,9 +4,6 @@
 #include "common.h"
 #include "context.h"
 
- //#ifdef ANDROID
-// #include "..\\..\\androidFramework\\include\\androidManager.h"
- //#endif
 class CShaderManager final{
 public:
     CShaderManager();
@@ -32,14 +29,15 @@ public:
 
     void Destroy();
 
-#ifdef ANDROID
-    //CAndroidManager androidManager;
+#ifndef ANDROID
+    void InitSpirVShader(const std::string shaderName, VkShaderModule *pShaderModule);
+#else
     //insert a string after separator: "ab/c","wxj",'/'=>ab/wxjc"
     std::string InsertString(std::string originalString, std::string insertString, char separator);
+    VkShaderModule createShaderModule(const std::vector<uint8_t> &code);
 #endif
 private:
     std::vector<char> readFile(const std::string& filename);
-    void InitSpirVShader(const std::string shaderName, VkShaderModule *pShaderModule);
 };
 
 #endif

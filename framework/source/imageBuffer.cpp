@@ -3,6 +3,7 @@
 CWxjImageBuffer::CWxjImageBuffer(){
     //debugger = new CDebugger("../logs/imageBuffer.log");
     size = 0;
+    view = NULL;
 }
 
 CWxjImageBuffer::~CWxjImageBuffer(){
@@ -102,6 +103,7 @@ void CWxjImageBuffer::destroy(){
     if(size != (VkDeviceSize)0){
         vkDestroyImage(CContext::GetHandle().GetLogicalDevice(), image, nullptr);
         vkFreeMemory(CContext::GetHandle().GetLogicalDevice(), deviceMemory, nullptr);
-        vkDestroyImageView(CContext::GetHandle().GetLogicalDevice(), view, nullptr);
+        if(view != NULL)
+            vkDestroyImageView(CContext::GetHandle().GetLogicalDevice(), view, nullptr);
     }
 }

@@ -9,7 +9,7 @@
       "stopAtEntry": false,
       "externalConsole": true,
       "cwd": "${workspaceFolder}/bin",
-      "program": "${cwd}/bin/furMark.exe",
+      "program": "${cwd}/bin/simpleMipmap.exe",
       "MIMode": "gdb",
       "miDebuggerPath": "gdb",
       "setupCommands": [

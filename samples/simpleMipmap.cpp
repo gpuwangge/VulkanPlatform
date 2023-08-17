@@ -28,7 +28,7 @@ public:
 		textureImages[0].CreateTextureImage("checkerboard_marble.jpg", usage_texture, renderer.commandPool);
 		textureImages[0].CreateImageView(VK_IMAGE_ASPECT_COLOR_BIT);
 
-		textureImages[0].generateMipmaps("checkerboard", usage_texture);
+		textureImages[0].generateMipmaps("checkerboard", usage_texture); //"checkerboard", usage_texture
 		
 		VkImageUsageFlags usage;
 		if(swapchain.bEnableMSAA){

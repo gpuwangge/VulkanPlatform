@@ -15,10 +15,6 @@ public:
     CModelManager();
     ~CModelManager();
 
-// #ifdef ANDROID
-//     CAndroidManager androidManager;
-// #endif
-
     void LoadObjModel(IN const std::string modelName, OUT std::vector<Vertex3D> &vertices3D, OUT std::vector<uint32_t> &indices3D);
 };
 

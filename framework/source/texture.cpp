@@ -22,9 +22,8 @@ void CTextureImage::CreateTextureImage(const std::string texturePath, VkImageUsa
 #else
 	std::vector<uint8_t> fileBits;
 	std::string fullTexturePath = ANDROID_TEXTURE_PATH + texturePath;
-    //androidManager.AssetReadFile(fullTexturePath.c_str(), fileBits);
 	CContext::GetHandle().androidManager.AssetReadFile(fullTexturePath.c_str(), fileBits);
-	uint8_t* pixels =stbi_load_from_memory(fileBits.data(), fileBits.size(), &texWidth, &texHeight, &texChannels, 4);//stbi_uc
+	uint8_t* pixels = stbi_load_from_memory(fileBits.data(), fileBits.size(), &texWidth, &texHeight, &texChannels, 4);//stbi_uc
 #endif
 	CreateTextureImage(pixels, usage, textureImageBuffer);
 }
@@ -283,8 +282,15 @@ void CTextureImage::generateMipmaps(std::string rainbowCheckerboardTexturePath, 
 	std::array<CWxjImageBuffer, MIPMAP_TEXTURE_COUNT> tmpTextureBufferForRainbowMipmaps;//create temp mipmaps
 	for (int i = 0; i < MIPMAP_TEXTURE_COUNT; i++) {//fill temp mipmaps
 		int texChannels;
-		std::string fullPath = TEXTURE_PATH + rainbowCheckerboardTexturePath + std::to_string(i) + ".png";
-		uint8_t* pixels = stbi_load(fullPath.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+#ifndef ANDROID
+		std::string fullTexturePath = TEXTURE_PATH + rainbowCheckerboardTexturePath + std::to_string(i) + ".png";
+		uint8_t* pixels = stbi_load(fullTexturePath.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+#else
+		std::vector<uint8_t> fileBits;
+		std::string fullTexturePath = ANDROID_TEXTURE_PATH + rainbowCheckerboardTexturePath + std::to_string(i) + ".png";
+		CContext::GetHandle().androidManager.AssetReadFile(fullTexturePath.c_str(), fileBits);
+		uint8_t* pixels = stbi_load_from_memory(fileBits.data(), fileBits.size(), &texWidth, &texHeight, &texChannels, 4);
+#endif
 		CreateTextureImage(pixels, usage, tmpTextureBufferForRainbowMipmaps[i]);
         generateMipmaps(tmpTextureBufferForRainbowMipmaps[i].image);
 	}

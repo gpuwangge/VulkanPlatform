@@ -8,7 +8,35 @@ CShaderManager::~CShaderManager(){
     //if (!debugger) delete debugger;
 }
 
-#ifdef ANDROID
+#ifndef ANDROID
+void CShaderManager::InitSpirVShader(const std::string shaderName, VkShaderModule *pShaderModule){
+    auto shaderCode = readFile(shaderName.c_str());
+
+    VkShaderModuleCreateInfo createInfo{};
+    createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+    createInfo.codeSize = shaderCode.size();
+    createInfo.pCode = reinterpret_cast<const uint32_t*>(shaderCode.data());
+
+    VkResult result = vkCreateShaderModule(CContext::GetHandle().GetLogicalDevice(), &createInfo, PALLOCATOR, pShaderModule);
+    //REPORT("vkCreateShaderModule");
+    //debugger->writeMSG("Shader Module '%s' successfully loaded\n", shaderName.c_str());
+}
+#else
+VkShaderModule CShaderManager::createShaderModule(const std::vector<uint8_t> &code) {
+    VkShaderModuleCreateInfo createInfo{};
+    createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+    createInfo.codeSize = code.size();
+
+    // Satisifies alignment requirements since the allocator
+    // in vector ensures worst case requirements
+    createInfo.pCode = reinterpret_cast<const uint32_t *>(code.data());
+    VkShaderModule shaderModule;
+    vkCreateShaderModule( CContext::GetHandle().GetLogicalDevice(), &createInfo, nullptr, &shaderModule);
+    //VkResult result = vkCreateShaderModule(CContext::GetHandle().GetLogicalDevice(), &createInfo, PALLOCATOR, pShaderModule);
+
+    return shaderModule;
+}
+
 std::string CShaderManager::InsertString(std::string originalString, std::string insertString, char separator){
     std::string str1;
     std::string str2;
@@ -30,7 +58,7 @@ void CShaderManager::CreateVertexShader(const std::string shaderName){
     std::vector<uint8_t> fileBits;
     std::string fullShaderName = ANDROID_SHADER_PATH + InsertString(shaderName, "shader.", '/');
     CContext::GetHandle().androidManager.AssetReadFile(fullShaderName.c_str(), fileBits);
-    vertShaderModule = CContext::GetHandle().androidManager.createShaderModule(fileBits);
+    vertShaderModule = createShaderModule(fileBits);
 #endif    
 }
 void CShaderManager::CreateFragmentShader(const std::string shaderName){
@@ -40,25 +68,13 @@ void CShaderManager::CreateFragmentShader(const std::string shaderName){
     std::vector<uint8_t> fileBits;
     std::string fullShaderName = ANDROID_SHADER_PATH + InsertString(shaderName, "shader.", '/');
     CContext::GetHandle().androidManager.AssetReadFile(fullShaderName.c_str(), fileBits);
-    fragShaderModule = CContext::GetHandle().androidManager.createShaderModule(fileBits);
+    fragShaderModule = createShaderModule(fileBits);
 #endif      
 }
 void CShaderManager::CreateComputeShader(const std::string shaderName){
+#ifndef ANDROID
     InitSpirVShader(SHADER_PATH + shaderName, &computeShaderModule);
-}
-
-
-void CShaderManager::InitSpirVShader(const std::string shaderName, VkShaderModule *pShaderModule){
-    auto shaderCode = readFile(shaderName.c_str());
-
-    VkShaderModuleCreateInfo createInfo{};
-    createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-    createInfo.codeSize = shaderCode.size();
-    createInfo.pCode = reinterpret_cast<const uint32_t*>(shaderCode.data());
-
-    VkResult result = vkCreateShaderModule(CContext::GetHandle().GetLogicalDevice(), &createInfo, PALLOCATOR, pShaderModule);
-    //REPORT("vkCreateShaderModule");
-    //debugger->writeMSG("Shader Module '%s' successfully loaded\n", shaderName.c_str());
+#endif
 }
 
 std::vector<char> CShaderManager::readFile(const std::string& filename) {

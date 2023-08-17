@@ -1,9 +1,14 @@
 # Object-oriented Vulkan Platform for Windows/Android
 This project creates a universal Vulkan platform that can be used to develop Vulkan sample tests, and compile them to binaries that run on both Windows&Android.  
 The samples are written in object-oriented ways so readers can easily understand.  
-This platform is an ideal learning&research material for Vulkan beginners&researchers.   
-
+ 
 ## How to compile to Windows EXE
+Prepare:  
+1. Install Vulkan  
+1. Install CMake  
+1. Setup GLFW  
+1. Setup GLM  
+1. Download other thirdparty libraries: stb_image.h and tiny_obj_loader.h  
 ### for all samples
 mkdir build  
 cd build  
@@ -22,11 +27,26 @@ make
    You only need to install&setup NDK. You should already installed and configured CMake when installing Vulkan.  
 1. To verify setup success or not, make sure to run these tests: https://github.com/android/ndk-samples  
    Especially the "hello-vulkan" test.  
-  
+1. Edit samples/androidSample.h will tell Android Studio which sample to compile    
+1. Launch Android Studio, open "androidVulkanSandbox" folder.   Select "Build" > "Build Bundle(s) / APK(s) > Build APK(s)"  
+1. If you want to run sample on AVD(Android Virtual Device), click the green button on the top right corner.  
 
 
 
 ## Construction
+Todo:  
+android resolution    
+compute shader  
+multi object sample  
+ray tracing  
+better documents  
+android makefile  
+android rename  
+fps setting
+android screen fliping(Mipmap, furMark)
+android controller
+
+
 =========Concet of InFlight========  
 InFlight: means fast
 

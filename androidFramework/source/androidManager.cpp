@@ -1,23 +1,7 @@
 #include "../include/androidManager.h"
-#include "..\\..\\framework\\include\\context.h"
 
 CAndroidManager::CAndroidManager(){}
 CAndroidManager::~CAndroidManager(){}
-
-VkShaderModule CAndroidManager::createShaderModule(const std::vector<uint8_t> &code) {
-    VkShaderModuleCreateInfo createInfo{};
-    createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
-    createInfo.codeSize = code.size();
-
-    // Satisifies alignment requirements since the allocator
-    // in vector ensures worst case requirements
-    createInfo.pCode = reinterpret_cast<const uint32_t *>(code.data());
-    VkShaderModule shaderModule;
-    vkCreateShaderModule( CContext::GetHandle().GetLogicalDevice(), &createInfo, nullptr, &shaderModule);
-    //VkResult result = vkCreateShaderModule(CContext::GetHandle().GetLogicalDevice(), &createInfo, PALLOCATOR, pShaderModule);
-
-    return shaderModule;
-}
 
 bool CAndroidManager::AssetReadFile(const char *assetName, std::vector<uint8_t>& buf) {
     //if (!assetName.length()) return false;

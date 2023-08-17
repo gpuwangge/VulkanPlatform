@@ -11,8 +11,6 @@ public:
 
     AAssetManager *assetManager;
     bool AssetReadFile(const char *assetName, std::vector<uint8_t>& buf); //std::string& assetName
-
-    VkShaderModule createShaderModule(const std::vector<uint8_t> &code);
 };
 
 #endif

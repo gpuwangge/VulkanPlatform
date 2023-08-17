@@ -5,10 +5,6 @@
 #include "renderer.h"
 #include "context.h"
 
-//#ifdef ANDROID
-//#include "..\\..\\androidFramework\\include\\androidManager.h"
-//#endif
-
 class CTextureImage final{
 public:
     CTextureImage();
@@ -40,10 +36,6 @@ public:
 
     uint32_t mipLevels = 1; //1 means no mipmap
     bool bEnableMipMap = false;
-
-// #ifdef ANDROID
-//     CAndroidManager androidManager;
-// #endif
 };
 
 #endif
