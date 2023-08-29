@@ -31,7 +31,7 @@ make
 1. If you want to run sample on AVD(Android Virtual Device), click the green button on the top right corner.  
 
 ## Distribution
-1. For Android, you can distribute the single .apk file, it contains every resources.  
+1. For Android, you can distribute the single .apk file, it contains all resources.  
 1. For Windows, it is more complicated. Besides the .exe binary, you should include the following resources(if use any):  
 models/  
 shaders/  
@@ -42,7 +42,7 @@ libgcc_s_seh-1.dll
 libstdc++-6.dll  
 vulkan-1.dll  
 
-## Credit
+## Credits
 https://github.com/StanislavPetrovV/FurMark  
 https://github.com/SaschaWillems/Vulkan  
 https://github.com/KhronosGroup/Vulkan-Samples  
