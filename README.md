@@ -46,6 +46,10 @@ vulkan-1.dll
 https://github.com/StanislavPetrovV/FurMark  
 https://github.com/SaschaWillems/Vulkan  
 https://github.com/KhronosGroup/Vulkan-Samples  
+https://github.com/nothings/stb/tree/master  
+https://github.com/tinyobjloader/tinyobjloader  
+https://vulkan-tutorial.com/  
+https://web.engr.oregonstate.edu/~mjb/vulkan/  
 
 ## Troubleshooting
 1. Windows binary can not run because missing vulkan-1.dll  
