@@ -7,7 +7,7 @@ Prepare:
 1. Install CMake  
 1. Setup GLFW  
 1. Setup GLM  
-1. Download other thirdparty libraries: stb_image.h and tiny_obj_loader.h  
+1. Download other thirdparty libraries: stb_image.h and tiny_obj_loader.h (I already put both files in the "thirdparty" folder in this repo)  
 ### for all samples
 mkdir build  
 cd build  
