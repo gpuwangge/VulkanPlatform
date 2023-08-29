@@ -55,7 +55,10 @@ If you only want to distribute the binary, only download Vulkan Runtime, unzip a
 1. Windows binary can not run because missing libstdc++-6.dll or/and libgcc_s_seh-1.dll  
 This is because MinGW is not installed. Install MinGW will solve this issue.  
 If you only want to distribute the binary, copy libstdc++-6.dll or/and libgcc_s_seh-1.dll from C:\mingw64\bin (or where you install MinGW) to the binary folder  
-
+1. Windows binary has no error message but nothing shows up or it simply CTD(crash to desktop)  
+Most likely hardware(GPU) does not support Vulkan; or you are using virtual machine that has no GPU support.  
+You can verify this by installing Vulkan SDK, and runing the test under Bin/vkcube.exe.  
+Solution is to not use virtual machine, and buy a real physical graphics card(that supports Vulkan, which most will do) at https://www.amazon.com/ (or whatever e-commerce website)  
 
 ## Construction
 Todo:  
