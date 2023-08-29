@@ -66,8 +66,6 @@ public:
 		VkDescriptorSetLayoutBinding customBinding = CustomUniformBufferObject::GetBinding();
 		descriptor.createDescriptorSetLayout(&customBinding);
 		descriptor.createDescriptorSets(textureImages);
-        //descriptor.createDescriptorSets(&textureImages[1].textureImageBuffer.view);
-        //descriptor.createDescriptorSets(&textureImages[2].textureImageBuffer.view);
 
 		renderProcess.createLayout(descriptor.descriptorSetLayout);
 		renderProcess.createGraphicsPipeline<Vertex3D>(

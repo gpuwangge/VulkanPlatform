@@ -9,8 +9,10 @@ CShaderManager::~CShaderManager(){
 }
 
 #ifndef ANDROID
-void CShaderManager::InitSpirVShader(const std::string shaderName, VkShaderModule *pShaderModule){
-    auto shaderCode = readFile(shaderName.c_str());
+bool CShaderManager::InitSpirVShader(const std::string shaderName, VkShaderModule *pShaderModule){
+    std::vector<char> shaderCode;
+    bool bOpen = readFile(shaderName.c_str(), shaderCode);
+    if(!bOpen) return false;
 
     VkShaderModuleCreateInfo createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
@@ -20,6 +22,8 @@ void CShaderManager::InitSpirVShader(const std::string shaderName, VkShaderModul
     VkResult result = vkCreateShaderModule(CContext::GetHandle().GetLogicalDevice(), &createInfo, PALLOCATOR, pShaderModule);
     //REPORT("vkCreateShaderModule");
     //debugger->writeMSG("Shader Module '%s' successfully loaded\n", shaderName.c_str());
+
+    return true;
 }
 #else
 VkShaderModule CShaderManager::createShaderModule(const std::vector<uint8_t> &code) {
@@ -53,7 +57,9 @@ std::string CShaderManager::InsertString(std::string originalString, std::string
 
 void CShaderManager::CreateVertexShader(const std::string shaderName){
 #ifndef ANDROID
-    InitSpirVShader(SHADER_PATH + shaderName, &vertShaderModule);
+    bool bopen = InitSpirVShader(SHADER_PATH + shaderName, &vertShaderModule);
+    if(!bopen) bopen = InitSpirVShader("shaders/" + shaderName, &vertShaderModule);
+    if(!bopen) throw std::runtime_error("failed to open vertex shader!");
 #else
     std::vector<uint8_t> fileBits;
     std::string fullShaderName = ANDROID_SHADER_PATH + InsertString(shaderName, "shader.", '/');
@@ -63,7 +69,9 @@ void CShaderManager::CreateVertexShader(const std::string shaderName){
 }
 void CShaderManager::CreateFragmentShader(const std::string shaderName){
 #ifndef ANDROID
-    InitSpirVShader(SHADER_PATH + shaderName, &fragShaderModule);
+    bool bopen = InitSpirVShader(SHADER_PATH + shaderName, &fragShaderModule);
+    if(!bopen) bopen = InitSpirVShader("shaders/" + shaderName, &fragShaderModule);
+    if(!bopen) throw std::runtime_error("failed to open fragment shader!");
 #else
     std::vector<uint8_t> fileBits;
     std::string fullShaderName = ANDROID_SHADER_PATH + InsertString(shaderName, "shader.", '/');
@@ -77,22 +85,24 @@ void CShaderManager::CreateComputeShader(const std::string shaderName){
 #endif
 }
 
-std::vector<char> CShaderManager::readFile(const std::string& filename) {
+ bool CShaderManager::readFile(const std::string& filename, std::vector<char> &buffer) {
     std::ifstream file(filename, std::ios::ate | std::ios::binary);
 
     if (!file.is_open()) {
-        throw std::runtime_error("failed to open file!");
+        return false;
+        //throw std::runtime_error("failed to open file!");
     }
 
     size_t fileSize = (size_t)file.tellg();
-    std::vector<char> buffer(fileSize);
+    //std::vector<char> buffer(fileSize);
+    buffer.resize(fileSize);
 
     file.seekg(0);
     file.read(buffer.data(), fileSize);
 
     file.close();
 
-    return buffer;
+    return true;
 }
 
 void CShaderManager::Destroy(){

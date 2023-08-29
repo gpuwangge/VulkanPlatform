@@ -23,6 +23,11 @@ void CTextureImage::CreateTextureImage(const std::string texturePath, VkImageUsa
 #ifndef ANDROID
 	std::string fullTexturePath = TEXTURE_PATH + texturePath;
 	uint8_t* pixels = stbi_load(fullTexturePath.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+	if(!pixels){
+		fullTexturePath = "textures/" + texturePath; 
+		pixels = stbi_load(fullTexturePath.c_str(), &texWidth, &texHeight, &texChannels, STBI_rgb_alpha);
+		if (!pixels) throw std::runtime_error("failed to load texture image!");
+	}
 #else
 	std::vector<uint8_t> fileBits;
 	std::string fullTexturePath = ANDROID_TEXTURE_PATH + texturePath;
@@ -36,8 +41,6 @@ void CTextureImage::CreateTextureImage(uint8_t* pixels, VkImageUsageFlags usage,
 	VkDeviceSize imageSize = texWidth * texHeight * 4;
 
 	mipLevels = bEnableMipMap ? (static_cast<uint32_t>(std::floor(std::log2(std::max(texWidth, texHeight)))) + 1) : 1;
-
-	if (!pixels) throw std::runtime_error("failed to load texture image!");
 
 	CWxjBuffer stagingBuffer;
 	VkResult result = stagingBuffer.init(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);

@@ -1,8 +1,7 @@
 # Object-oriented Vulkan Platform for Windows/Android
-This project creates a universal Vulkan platform that can be used to develop Vulkan sample tests, and compile them to binaries that run on both Windows&Android.  
-The samples are written in object-oriented ways so readers can easily understand.  
+This project creates a universal Vulkan platform that can be used to develop Vulkan sample tests, and compile them to binaries that run on both Windows&Android.     
  
-## How to compile to Windows EXE
+## How to compile to Windows binary(.exe)
 Prepare:  
 1. Install Vulkan  
 1. Install CMake  
@@ -21,7 +20,7 @@ cd buildS
 cmake -G "MinGW Makefiles" -D SINGLE=true ..  
 make  
 
-## How to compile to Android APK
+## How to compile to Android binary(.apk)
 1. Install Android Studio: https://developer.android.com/  
 1. Install NDK: https://developer.android.com/studio/projects/install-ndk  
    You only need to install&setup NDK. You should already installed and configured CMake when installing Vulkan.  
@@ -31,6 +30,10 @@ make
 1. Launch Android Studio, open "androidVulkanSandbox" folder.   Select "Build" > "Build Bundle(s) / APK(s) > Build APK(s)"  
 1. If you want to run sample on AVD(Android Virtual Device), click the green button on the top right corner.  
 
+## Credit
+https://github.com/StanislavPetrovV/FurMark  
+https://github.com/SaschaWillems/Vulkan  
+https://github.com/KhronosGroup/Vulkan-Samples  
 
 
 ## Construction

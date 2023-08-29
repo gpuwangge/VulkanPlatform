@@ -15,8 +15,12 @@ void CModelManager::LoadObjModel(IN const std::string modelName, OUT std::vector
 
 #ifndef ANDROID
 	std::string fullModelPath = MODEL_PATH + modelName;
-	if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, fullModelPath.c_str())) 
-		throw std::runtime_error(warn + err);
+	if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, fullModelPath.c_str())) {
+		fullModelPath = "models/" + modelName;
+		if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, fullModelPath.c_str())) 
+			throw std::runtime_error(warn + err);
+	}
+		
 #else
 	std::vector<uint8_t> fileBits;
 	std::string fullModelPath = ANDROID_MODEL_PATH + modelName;

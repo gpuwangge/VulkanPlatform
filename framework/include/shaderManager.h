@@ -30,14 +30,14 @@ public:
     void Destroy();
 
 #ifndef ANDROID
-    void InitSpirVShader(const std::string shaderName, VkShaderModule *pShaderModule);
+    bool InitSpirVShader(const std::string shaderName, VkShaderModule *pShaderModule);
 #else
     //insert a string after separator: "ab/c","wxj",'/'=>ab/wxjc"
     std::string InsertString(std::string originalString, std::string insertString, char separator);
     VkShaderModule createShaderModule(const std::vector<uint8_t> &code);
 #endif
 private:
-    std::vector<char> readFile(const std::string& filename);
+    bool readFile(const std::string& filename, std::vector<char> &buffer);
 };
 
 #endif
