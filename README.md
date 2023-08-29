@@ -38,11 +38,11 @@ https://github.com/KhronosGroup/Vulkan-Samples
 ## Troubleshooting
 1. Windows binary can not run because missing vulkan-1.dll  
 This is because Vulkan SDK or Vulkan Runtime is not installed.  
-Go to https://vulkan.lunarg.com/sdk/home#windows  
-and download Vulkan Runtime, unzip and copy vulkan-1.dll to the binary folder  
+Solution is to install Vulkan SDK(https://vulkan.lunarg.com/sdk/home#windows)  
+If you only want to distribute the binary, only download Vulkan Runtime, unzip and copy vulkan-1.dll to the binary folder  
 1. Windows binary can not run because missing libstdc++-6.dll or/and libgcc_s_seh-1.dll  
-This is because MinGW is not installed.  
-Install MinGW and copy libstdc++-6.dll or/and libgcc_s_seh-1.dll from C:\mingw64\bin (or where you install MinGW) to the binary folder  
+This is because MinGW is not installed. Install MinGW will solve this issue.  
+If you only want to distribute the binary, copy libstdc++-6.dll or/and libgcc_s_seh-1.dll from C:\mingw64\bin (or where you install MinGW) to the binary folder  
 
 
 ## Construction
