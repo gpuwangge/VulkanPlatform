@@ -50,6 +50,7 @@ https://github.com/nothings/stb/tree/master
 https://github.com/tinyobjloader/tinyobjloader  
 https://vulkan-tutorial.com/  
 https://web.engr.oregonstate.edu/~mjb/vulkan/  
+https://github.com/android/ndk-samples  
 
 ## Troubleshooting
 1. Windows binary can not run because missing vulkan-1.dll  
