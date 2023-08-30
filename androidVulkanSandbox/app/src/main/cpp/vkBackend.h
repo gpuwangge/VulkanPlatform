@@ -14,7 +14,7 @@
  */
 
 namespace vkt {
-#define LOG_TAG "VKBackendjni"
+#define LOG_TAG "VKBackend"
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 
@@ -45,6 +45,7 @@ class VKBackend {
 };
 
 void VKBackend::initVulkan() {
+    //__android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "The value of 1 + 1 is %d", 1+1);
     initialized = true;
     //CContext::Init();
     const std::vector<const char*> requiredValidationLayers = {"VK_LAYER_KHRONOS_validation"};
@@ -90,7 +91,26 @@ void VKBackend::reset(ANativeWindow *newWindow, AAssetManager *newManager) {
   //}
 }
 
+// from android samples
+/* return current time in milliseconds */
+static double now_ms(void) {
+    struct timespec res;
+    clock_gettime(CLOCK_REALTIME, &res);
+    return 1000.0 * res.tv_sec + (double) res.tv_nsec / 1e6;
+}
+
 void VKBackend::render() {
+    //Count FPS
+    static double startTime = now_ms(); // start time
+    static int frameCount = 0;
+    double currentTime = now_ms(); // finish time
+    double elapseTime = currentTime - startTime; // time your code took to exec in ms
+    if(elapseTime > 1000) {
+        __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "VKBackend::render() elapseTime: %fms, frameCount %d", elapseTime, frameCount);
+        frameCount = 0;
+        startTime = currentTime;
+    }else frameCount++;
+
     sample.update();
     sample.renderer.prepareCurrentFrameAndAcquireImageIndex(sample.swapchain);//TODO for test compute shader
     sample.recordCommandBuffer();

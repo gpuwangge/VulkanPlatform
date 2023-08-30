@@ -25,7 +25,7 @@ android {
         shaders {
             glslcArgs.addAll(['-c'])
         }
-        applicationId 'com.android.hellovk'
+        applicationId 'com.wangge.simulator'
         minSdk 30
         targetSdk 33
         externalNativeBuild {
@@ -51,7 +51,7 @@ android {
         prefab true
     }
     
-    namespace 'com.android.hellovk'
+    namespace 'com.wangge.simulator'
 }
 
 dependencies {
