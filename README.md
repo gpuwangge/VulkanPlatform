@@ -27,12 +27,11 @@ cmake -G "MinGW Makefiles" ..
 make  
 
 ### for one sample  
-- [Optional] Edit CMakeLists.txt to tell compiler which sample to build   
-
 mkdir build  
 cd build  
 cmake -G "MinGW Makefiles" -D SINGLE=true ..  
 make  
+- [Optional] Edit CMakeLists.txt to tell compiler which sample to build   
 
 ## How to build to Android binary(.apk)
 Prepare:  
