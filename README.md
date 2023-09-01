@@ -35,12 +35,16 @@ make
 ## How to compile to Android binary(.apk)
 1. Install Android Studio: https://developer.android.com/  
 1. Install NDK: https://developer.android.com/studio/projects/install-ndk  
-   You only need to install&setup NDK. You should already installed and configured CMake when installing Vulkan.  
+   You only need to install&setup NDK. You should already installed and configured CMake when installing Vulkan. 
+<span style="color:blue"> 
 1. [Optional] To verify setup success or not, make sure to run these tests: https://github.com/android/ndk-samples  
    Especially the "hello-vulkan" test.  
 1. [Optional] Edit samples/androidSample.h will tell Android Studio which sample to compile    
+</span>
 1. Launch Android Studio, open "androidVulkanSandbox" folder.   Select "Build" > "Build Bundle(s) / APK(s) > Build APK(s)"  
+<span style="color:blue"> 
 1. [Optional] If you want to run sample on AVD(Android Virtual Device), in the Android Studio, click the green button on the top right corner.  
+</span>
 
 ## Distribution
 - For Android, just distribute the single .apk file, it contains all resources.  
@@ -55,14 +59,14 @@ libstdc++-6.dll
 vulkan-1.dll  
 
 ## Troubleshooting
-1. Windows binary can not run because missing vulkan-1.dll  
+- Windows binary can not run because missing vulkan-1.dll  
 This is because Vulkan SDK or Vulkan Runtime is not installed.  
 Solution is to install Vulkan SDK(https://vulkan.lunarg.com/sdk/home#windows)  
 If you only want to distribute the binary, only download Vulkan Runtime, unzip and copy vulkan-1.dll to the binary folder  
-1. Windows binary can not run because missing libstdc++-6.dll or/and libgcc_s_seh-1.dll  
+- Windows binary can not run because missing libstdc++-6.dll or/and libgcc_s_seh-1.dll  
 This is because MinGW is not installed. Install MinGW will solve this issue.  
 If you only want to distribute the binary, copy libstdc++-6.dll or/and libgcc_s_seh-1.dll from C:\mingw64\bin (or where you install MinGW) to the binary folder  
-1. Windows binary has no error message but nothing shows up or it simply CTD(crash to desktop)  
+- Windows binary has no error message but nothing shows up or it simply CTD(crash to desktop)  
 Most likely hardware(GPU) does not support Vulkan; or you are using virtual machine that has no GPU support.  
 You can verify this by installing Vulkan SDK, and runing the test under Bin/vkcube.exe.  
 Solution is to not use virtual machine, and buy a real physical graphics card(that supports Vulkan, which most will do) at https://www.amazon.com/ (or whatever e-commerce website)  
