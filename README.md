@@ -26,7 +26,8 @@ cd build
 cmake -G "MinGW Makefiles" ..   
 make  
 
-### for one sample(SimpleTriangle)
+### for one sample
+- [Optional] Edit CMakeLists.txt to tell compiler which sample to build  
 mkdir build  
 cd build  
 cmake -G "MinGW Makefiles" -D SINGLE=true ..  
@@ -41,7 +42,7 @@ Prepare:
    Especially the "hello-vulkan" test.  
 ### for one sample    
 Launch Android Studio, open "androidVulkanSandbox" folder.   Select "Build" > "Build Bundle(s) / APK(s) > Build APK(s)"  
-- [Optional] Edit samples/androidSample.h will tell Android Studio which sample to compile
+- [Optional] Edit samples/androidSample.h to tell Android Studio which sample to build  
 - [Optional] If you want to run sample on AVD(Android Virtual Device), in the Android Studio, click the green button on the top right corner.  
 
 ## Distribution
