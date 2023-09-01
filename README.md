@@ -39,9 +39,9 @@ Prepare:
    You only need to install&setup NDK. You should already installed and configured CMake when installing Vulkan. 
 - [Optional] To verify setup success or not, make sure to run these tests: https://github.com/android/ndk-samples  
    Especially the "hello-vulkan" test.  
-- [Optional] Edit samples/androidSample.h will tell Android Studio which sample to compile
 ### for one sample    
 Launch Android Studio, open "androidVulkanSandbox" folder.   Select "Build" > "Build Bundle(s) / APK(s) > Build APK(s)"  
+- [Optional] Edit samples/androidSample.h will tell Android Studio which sample to compile
 - [Optional] If you want to run sample on AVD(Android Virtual Device), in the Android Studio, click the green button on the top right corner.  
 
 ## Distribution
