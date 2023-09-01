@@ -1,11 +1,15 @@
-<img src="https://github.com/gpuwangge/VulkanPlatform/blob/main/images/vulkanLogo.png" alt="alt text" width="300" height="150">
-<img src="https://github.com/gpuwangge/VulkanPlatform/blob/main/images/androidLogo.png" alt="alt text" width="300" height="150">
+<p float="left">
+  <img src="https://github.com/gpuwangge/VulkanPlatform/blob/main/images/vulkanLogo.png" alt="alt text" width="300" height="150">  
+  <img src="https://github.com/gpuwangge/VulkanPlatform/blob/main/images/androidLogo.png" alt="alt text" width="300" height="150">  
+</p>
+
+
 # Object-oriented Vulkan Platform for Windows/Android
 This project creates a universal Vulkan platform which can be used to develop Vulkan sample tests, and compile them to binary that runs on hybrid environment.     
 - Native Vulkan is too hard to use, this wrapper is easy to understand and experiment new stuffs
 - Build windows and android binary at the same time, no extra coding! Save some time for dates! (and no need to have Android Java/Kotlin/Gradle knowledge!)
  
-<img src="https://github.com/gpuwangge/VulkanPlatform/blob/main/images/shadowMapAVDDemo.png" alt="alt text" width="150" height="300">
+<img src="https://github.com/gpuwangge/VulkanPlatform/blob/main/images/shadowMapAVDDemo.png" alt="alt text" width="150" height="300">  
 
 
 ## How to compile to Windows binary(.exe)
