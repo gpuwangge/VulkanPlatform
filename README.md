@@ -1,7 +1,7 @@
 # Object-oriented Vulkan Platform for Windows/Android
-This project creates a universal Vulkan platform that can be used to develop Vulkan sample tests, and compile them to binaries that run on both Windows&Android.     
-- Easy to understand and experiment new stuffs
-- Can build windows and android binary at the same time, no extra coding! (no need to have android Java/Kotlin/Gradle knowledge)
+This project creates a universal Vulkan platform that can be used to develop Vulkan sample tests, and compile them to binary that run on both Windows&Android.     
+- Native Vulkan is too hard to use, this wrapper is easy to understand and experiment new stuffs
+- Build windows and android binary at the same time, no extra coding! Save some time for dates! (and no need to have Android Java/Kotlin/Gradle knowledge!)
  
 ## How to compile to Windows binary(.exe)
 Prepare:  
