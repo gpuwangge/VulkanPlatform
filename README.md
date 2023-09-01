@@ -5,6 +5,7 @@ This project creates a universal Vulkan platform which can be used to develop Vu
 - Native Vulkan is too hard to use, this wrapper is easy to understand and experiment new stuffs
 - Build windows and android binary at the same time, no extra coding! Save some time for dates! (and no need to have Android Java/Kotlin/Gradle knowledge!)
  
+  <img src="https://github.com/gpuwangge/VulkanPlatform/blob/main/images/shadowMapAVDDemo.png" alt="alt text" width="100" height="100">
 <br>![shadowMap](https://github.com/gpuwangge/VulkanPlatform/blob/main/images/shadowMapAVDDemo.png | width=100)
 
 ## How to compile to Windows binary(.exe)
