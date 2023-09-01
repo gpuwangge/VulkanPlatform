@@ -7,8 +7,9 @@
 
 # Object-oriented Vulkan Platform for Windows/Android
 This project creates a universal Vulkan platform which can be used to develop Vulkan sample tests, and compile them to binary that runs on hybrid environment.     
-- Native Vulkan is too hard to use, this wrapper is easy to understand and experiment new stuffs
-- Build windows and android binary at the same time, no extra coding! Save some time for dates! (and no need to have Android Java/Kotlin/Gradle knowledge!)
+- Native Vulkan is too hard to use, this wrapper project is easy to experiment new stuffs
+- Build windows and android binary at the same time(with no Android Java/Kotlin/Gradle knowledge)! Save some time for dates!
+- I made this project to develop my own mobile game
  
 <img src="https://github.com/gpuwangge/VulkanPlatform/blob/main/images/shadowMapAVDDemo.png" alt="alt text" width="150" height="330">  
 
