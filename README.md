@@ -1,7 +1,7 @@
 <p float="left">
   <img src="https://github.com/gpuwangge/VulkanPlatform/blob/main/images/vulkanLogo.png" alt="alt text" width="200" height="150">  
+  <img src="https://github.com/gpuwangge/VulkanPlatform/blob/main/images/windowsLogo.png" alt="alt text" width="200" height="150">  
   <img src="https://github.com/gpuwangge/VulkanPlatform/blob/main/images/androidLogo.png" alt="alt text" width="300" height="150">  
-  <img src="https://github.com/gpuwangge/VulkanPlatform/blob/main/images/w1indowsLogo.png" alt="alt text" width="200" height="150">
 </p>
 
 
