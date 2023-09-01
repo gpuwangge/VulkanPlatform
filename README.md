@@ -7,9 +7,9 @@
 
 # Object-oriented Vulkan Platform for Windows/Android
 This project is a Vulkan cross-platform solution which can be used to develop Vulkan sample tests, and build them to binary that runs on Windows and Android. I originally made this tool to develop my own mobile game.      
-- Native Vulkan API is too hard to use! This wrapper is easy to experiment new stuffs with.
+- Native Vulkan API is too hard to use! This wrapper can be used for education and easy to experiment new stuffs.
 - The platform is a real-time, interactive game-like engine.
-- Build windows and android binary at the same time(with no Android Java/Kotlin/Gradle knowledge)! Save some time for dates!
+- Build windows and android binary at the same time (with no Android Java/Kotlin/Gradle knowledge needed)! Save some time for dates!
  
 <img src="https://github.com/gpuwangge/VulkanPlatform/blob/main/images/shadowMapAVDDemo.png" alt="alt text" width="150" height="330">  
 
