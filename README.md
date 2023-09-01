@@ -6,7 +6,7 @@
 
 
 # Object-oriented Vulkan Platform for Windows/Android
-This project creates a universal Vulkan platform which can be used to develop Vulkan sample tests, and compile them to binary that runs on hybrid environment. I originally made this tool to develop my own mobile game.      
+This project creates a universal Vulkan platform which can be used to develop Vulkan sample tests, and compile them to binary that runs on hybrid environment. I originally made this tool to develop my own mobile game, so it has initialize, update and draw functions like a game engine.      
 - Native Vulkan is too hard to use, this wrapper project is easy to experiment new stuffs
 - Build windows and android binary at the same time(with no Android Java/Kotlin/Gradle knowledge)! Save some time for dates!
  
