@@ -27,8 +27,8 @@ cmake -G "MinGW Makefiles" ..
 make  
 
 ### for one sample(SimpleTriangle)
-mkdir buildS  
-cd buildS  
+mkdir build  
+cd build  
 cmake -G "MinGW Makefiles" -D SINGLE=true ..  
 make  
 
