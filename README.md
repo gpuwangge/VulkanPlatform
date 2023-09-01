@@ -7,9 +7,9 @@ This project creates a universal Vulkan platform which can be used to develop Vu
 Prepare:  
 1. Install Vulkan  
 1. Install CMake  
-1. Setup GLFW  
+1. Setup GLFW (Or use SDL at your preference)  
 1. Setup GLM  
-1. Download other thirdparty headers: stb_image.h and tiny_obj_loader.h (I already put both files in the "thirdparty" folder in this repo)  
+1. [Optional] Download other thirdparty headers: stb_image.h and tiny_obj_loader.h (I already put both files in the "thirdparty" folder in this repo)  
 ### for all samples
 mkdir build  
 cd build  
@@ -26,15 +26,15 @@ make
 1. Install Android Studio: https://developer.android.com/  
 1. Install NDK: https://developer.android.com/studio/projects/install-ndk  
    You only need to install&setup NDK. You should already installed and configured CMake when installing Vulkan.  
-1. To verify setup success or not, make sure to run these tests: https://github.com/android/ndk-samples  
+1. [Optinal] To verify setup success or not, make sure to run these tests: https://github.com/android/ndk-samples  
    Especially the "hello-vulkan" test.  
-1. Edit samples/androidSample.h will tell Android Studio which sample to compile    
+1. [Optional] Edit samples/androidSample.h will tell Android Studio which sample to compile    
 1. Launch Android Studio, open "androidVulkanSandbox" folder.   Select "Build" > "Build Bundle(s) / APK(s) > Build APK(s)"  
-1. If you want to run sample on AVD(Android Virtual Device), click the green button on the top right corner.  
+1. [Optional] If you want to run sample on AVD(Android Virtual Device), click the green button on the top right corner.  
 
 ## Distribution
-1. For Android, you can distribute the single .apk file, it contains all resources.  
-1. For Windows, it is more complicated. Besides the .exe binary, you should include the following resources(if use any):  
+1. For Android, just distribute the single .apk file, it contains all resources.  
+1. For Windows, it is more complicated. Besides the .exe binary, you should include the following resources(if the sample use any):  
 models/  
 shaders/  
 textures/  
