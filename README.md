@@ -26,8 +26,8 @@ cd build
 cmake -G "MinGW Makefiles" ..   
 make  
 
-### for one sample
-- [Optional] Edit CMakeLists.txt to tell compiler which sample to build  
+### for one sample  
+- [Optional] Edit CMakeLists.txt to tell compiler which sample to build   
 mkdir build  
 cd build  
 cmake -G "MinGW Makefiles" -D SINGLE=true ..  
