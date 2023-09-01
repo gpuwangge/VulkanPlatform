@@ -43,8 +43,8 @@ make
 1. [Optional] If you want to run sample on AVD(Android Virtual Device), in the Android Studio, click the green button on the top right corner.  
 
 ## Distribution
-1. For Android, just distribute the single .apk file, it contains all resources.  
-1. For Windows, it is more complicated. Besides the .exe binary, you should include the following resources(if the sample use any):  
+- For Android, just distribute the single .apk file, it contains all resources.  
+- For Windows, it is more complicated. Besides the .exe binary, you should include the following resources(if the sample use any):  
 models/  
 shaders/  
 textures/  
@@ -53,16 +53,6 @@ glfw3.dll
 libgcc_s_seh-1.dll  
 libstdc++-6.dll  
 vulkan-1.dll  
-
-## Credits
-https://github.com/StanislavPetrovV/FurMark  
-https://github.com/SaschaWillems/Vulkan  
-https://github.com/KhronosGroup/Vulkan-Samples  
-https://github.com/nothings/stb/tree/master  
-https://github.com/tinyobjloader/tinyobjloader  
-https://vulkan-tutorial.com/  
-https://web.engr.oregonstate.edu/~mjb/vulkan/  
-https://github.com/android/ndk-samples  
 
 ## Troubleshooting
 1. Windows binary can not run because missing vulkan-1.dll  
@@ -76,4 +66,14 @@ If you only want to distribute the binary, copy libstdc++-6.dll or/and libgcc_s_
 Most likely hardware(GPU) does not support Vulkan; or you are using virtual machine that has no GPU support.  
 You can verify this by installing Vulkan SDK, and runing the test under Bin/vkcube.exe.  
 Solution is to not use virtual machine, and buy a real physical graphics card(that supports Vulkan, which most will do) at https://www.amazon.com/ (or whatever e-commerce website)  
+
+## Credits
+https://github.com/StanislavPetrovV/FurMark  
+https://github.com/SaschaWillems/Vulkan  
+https://github.com/KhronosGroup/Vulkan-Samples  
+https://github.com/nothings/stb/tree/master  
+https://github.com/tinyobjloader/tinyobjloader  
+https://vulkan-tutorial.com/  
+https://web.engr.oregonstate.edu/~mjb/vulkan/  
+https://github.com/android/ndk-samples  
 
