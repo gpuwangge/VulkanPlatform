@@ -3,8 +3,9 @@ This project creates a universal Vulkan platform which can be used to develop Vu
 - Native Vulkan is too hard to use, this wrapper is easy to understand and experiment new stuffs
 - Build windows and android binary at the same time, no extra coding! Save some time for dates! (and no need to have Android Java/Kotlin/Gradle knowledge!)
  
-<br>![Khronos Vulkan logo](https://.png)
-
+<br>![Khronos Vulkan logo](https://https://github.com/gpuwangge/VulkanPlatform/blob/main/images/vulkanLogo.png)
+<br>![Khronos Vulkan logo](https://https://github.com/gpuwangge/VulkanPlatform/blob/main/images/androidLogo.png)
+<br>![Khronos Vulkan logo](https://https://github.com/gpuwangge/VulkanPlatform/blob/main/images/shadowMapAVDDemo.png)
 
 ## How to compile to Windows binary(.exe)
 Prepare:  
