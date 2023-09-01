@@ -19,7 +19,7 @@ Prepare:
 1. Install CMake  
 1. Setup GLFW (Or use SDL at your preference)  
 1. Setup GLM  
-1. [Optional] Download other thirdparty headers: stb_image.h and tiny_obj_loader.h (I already put both files in the "thirdparty" folder in this repo)  
+- [Optional] Download other thirdparty headers: stb_image.h and tiny_obj_loader.h (I already put both files in the "thirdparty" folder in this repo)  
 ### for all samples
 mkdir build  
 cd build  
@@ -36,11 +36,11 @@ make
 1. Install Android Studio: https://developer.android.com/  
 1. Install NDK: https://developer.android.com/studio/projects/install-ndk  
    You only need to install&setup NDK. You should already installed and configured CMake when installing Vulkan. 
-1. [Optional] To verify setup success or not, make sure to run these tests: https://github.com/android/ndk-samples  
+- [Optional] To verify setup success or not, make sure to run these tests: https://github.com/android/ndk-samples  
    Especially the "hello-vulkan" test.  
-1. [Optional] Edit samples/androidSample.h will tell Android Studio which sample to compile    
+- [Optional] Edit samples/androidSample.h will tell Android Studio which sample to compile    
 1. Launch Android Studio, open "androidVulkanSandbox" folder.   Select "Build" > "Build Bundle(s) / APK(s) > Build APK(s)"  
-1. <span style="color:blue"> [Optional] If you want to run sample on AVD(Android Virtual Device), in the Android Studio, click the green button on the top right corner. </span>
+- [Optional] If you want to run sample on AVD(Android Virtual Device), in the Android Studio, click the green button on the top right corner. 
 
 ## Distribution
 - For Android, just distribute the single .apk file, it contains all resources.  
