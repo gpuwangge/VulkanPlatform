@@ -62,7 +62,7 @@ class CActivity : GameActivity() {
     // call to onBackPressed()/finish() at the end of the KEYCODE_BACK
     // processing.
     override fun onKeyDown(keyCode: Int, event: KeyEvent?): Boolean {
-        var processed = super.onKeyDown(keyCode, event);
+        var processed = super.onKeyDown(keyCode, event)
         if (keyCode == KeyEvent.KEYCODE_BACK) {
             onBackPressed()
             processed = true
