@@ -6,19 +6,20 @@
 
 
 # Object-oriented Vulkan Platform for Windows/Android
-This project creates a universal Vulkan platform which can be used to develop Vulkan sample tests, and compile them to binary that runs on hybrid environment.     
-- Native Vulkan is too hard to use, this wrapper is easy to understand and experiment new stuffs
-- Build windows and android binary at the same time, no extra coding! Save some time for dates! (and no need to have Android Java/Kotlin/Gradle knowledge!)
+This project is a Vulkan cross-platform solution to develop Vulkan sample tests, and to build them into binary that runs on Windows or Android. I originally made this tool to develop mobile games.      
+- Native Vulkan API is too hard to use! This wrapper can be used for education and test new experiments.
+- The platform is a real-time, interactive game engine.
+- Build windows and android binary at the same time (with no Android Java/Kotlin/Gradle knowledge needed)! Save some time for dates!
  
 <img src="https://github.com/gpuwangge/VulkanPlatform/blob/main/images/shadowMapAVDDemo.png" alt="alt text" width="150" height="330">  
 
-
-## How to compile to Windows binary(.exe)
+## How to build to Windows binary(.exe)
 Prepare:  
 1. Install Vulkan  
 1. Install CMake  
 1. Setup GLFW (Or use SDL at your preference)  
-1. Setup GLM  
+1. Setup GLM
+1. git clone this repo 
 - [Optional] Download other thirdparty headers: stb_image.h and tiny_obj_loader.h (I already put both files in the "thirdparty" folder in this repo)  
 ### for all samples
 mkdir build  
@@ -26,21 +27,24 @@ cd build
 cmake -G "MinGW Makefiles" ..   
 make  
 
-### for one sample(SimpleTriangle)
-mkdir buildS  
-cd buildS  
+### for one sample  
+mkdir build  
+cd build  
 cmake -G "MinGW Makefiles" -D SINGLE=true ..  
 make  
+- [Optional] Edit CMakeLists.txt to tell compiler which sample to build   
 
-## How to compile to Android binary(.apk)
+## How to build to Android binary(.apk)
+Prepare:  
 1. Install Android Studio: https://developer.android.com/  
 2. Install NDK: https://developer.android.com/studio/projects/install-ndk  
    You only need to install&setup NDK. You should already installed and configured CMake when installing Vulkan. 
 - [Optional] To verify setup success or not, make sure to run these tests: https://github.com/android/ndk-samples  
    Especially the "hello-vulkan" test.  
-- [Optional] Edit samples/androidSample.h will tell Android Studio which sample to compile    
-3. Launch Android Studio, open "androidVulkanSandbox" folder.   Select "Build" > "Build Bundle(s) / APK(s) > Build APK(s)"  
-- [Optional] If you want to run sample on AVD(Android Virtual Device), in the Android Studio, click the green button on the top right corner. 
+### for one sample    
+Launch Android Studio, open "androidVulkanSandbox" folder.   Select "Build" > "Build Bundle(s) / APK(s) > Build APK(s)"  
+- [Optional] Edit samples/androidSample.h to tell Android Studio which sample to build  
+- [Optional] If you want to run sample on AVD(Android Virtual Device), in the Android Studio, click the green button on the top right corner.  
 
 ## Distribution
 - For Android, just distribute the single .apk file, it contains all resources.  
