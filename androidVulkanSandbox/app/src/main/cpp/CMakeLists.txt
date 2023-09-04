@@ -15,7 +15,7 @@
 #]]
 
 cmake_minimum_required(VERSION 3.18.1)
-project(vkbackendjni)
+project(jniBackend)
 
 # Include the GameActivity static lib to the project.
 find_package(game-activity REQUIRED CONFIG)
@@ -38,24 +38,11 @@ include_directories(
 aux_source_directory(${PROJECT_SOURCE_DIR}/../../../../../framework/source SRC)
 aux_source_directory(${PROJECT_SOURCE_DIR}/../../../../../androidFramework/source SRCA)
 #set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/../build)
-add_library(${PROJECT_NAME} SHARED vk_main.cpp ${SRC} ${SRCA})
+add_library(${PROJECT_NAME} SHARED jni_main.cpp ${SRC} ${SRCA})
 
 #add_library(${PROJECT_NAME} SHARED
 #    vk_main.cpp
-#       ../../../../../framework/source/application.cpp
-#       ../../../../../framework/source/context.cpp
-#       ../../../../../framework/source/descriptor.cpp
-#       ../../../../../framework/source/imageBuffer.cpp
-#        ../../../../../framework/source/instance.cpp
-#        ../../../../../framework/source/logicalDevice.cpp
-#        ../../../../../framework/source/modelManager.cpp
-#        ../../../../../framework/source/physicalDevice.cpp
-#        ../../../../../framework/source/renderer.cpp
-#        ../../../../../framework/source/renderProcess.cpp
-#        ../../../../../framework/source/shaderManager.cpp
-#        ../../../../../framework/source/swapchain.cpp
-#        ../../../../../framework/source/texture.cpp
-#        ../../../../../androidFramework/source/androidManager.cpp)
+#       ../../../../../framework/source/application.cpp)
 
 # add lib dependencies
 target_link_libraries(${PROJECT_NAME} PUBLIC

@@ -26,9 +26,10 @@ import android.view.WindowManager.LayoutParams
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.google.androidgamesdk.GameActivity
+import kotlin.system.exitProcess
 
 
-class VulkanActivity : GameActivity() {
+class CActivity : GameActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         hideSystemUI()
@@ -71,12 +72,12 @@ class VulkanActivity : GameActivity() {
 
     override fun onBackPressed() {
         System.gc()
-        System.exit(0)
+        exitProcess(0)//System.exit(0)
     }
 
     companion object {
         init {
-            System.loadLibrary("vkbackendjni")
+            System.loadLibrary("jniBackend")
         }
     }
 }

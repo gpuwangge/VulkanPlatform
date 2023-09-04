@@ -5,24 +5,16 @@
 #include <android/native_window.h>
 #include <android/native_window_jni.h>
 
-/**
- * VKBackend contains the core of Vulkan pipeline setup. It includes recording
- * draw commands as well as screen clearing during the render pass.
- *
- * Please refer to: https://vulkan-tutorial.com/ for a gentle Vulkan
- * introduction.
- */
-
-namespace vkt {
-#define LOG_TAG "VKBackend"
+namespace c_backend {
+#define LOG_TAG "CBackend"
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
 #define LOGE(...) __android_log_print(ANDROID_LOG_ERROR, LOG_TAG, __VA_ARGS__)
 
-#define VK_CHECK(x)                           \
+#define C_CHECK(x)                           \
   do {                                        \
     VkResult err = x;                         \
     if (err) {                                \
-      LOGE("Detected Vulkan error: %d", err); \
+      LOGE("Detected C error: %d", err); \
       abort();                                \
     }                                         \
   } while (0)
@@ -31,9 +23,9 @@ struct ANativeWindowDeleter {
   void operator()(ANativeWindow *window) { ANativeWindow_release(window); }
 };
 
-class VKBackend {
+class CBackend {
  public:
-  void initVulkan();
+  void init();
   void render();
   void cleanup();
   void reset(ANativeWindow *newWindow, AAssetManager *newManager);
@@ -44,7 +36,7 @@ class VKBackend {
     std::unique_ptr<ANativeWindow, ANativeWindowDeleter> window;
 };
 
-void VKBackend::initVulkan() {
+void CBackend::init() {
     //__android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "The value of 1 + 1 is %d", 1+1);
     initialized = true;
     //CContext::Init();
@@ -60,7 +52,7 @@ void VKBackend::initVulkan() {
             .pNext = nullptr,
             .flags = 0,
             .window = window.get()};
-    VK_CHECK(vkCreateAndroidSurfaceKHR(sample.instance->getHandle(), &create_info,nullptr /* pAllocator */, &sample.surface));
+    C_CHECK(vkCreateAndroidSurfaceKHR(sample.instance->getHandle(), &create_info,nullptr /* pAllocator */, &sample.surface));
 
     VkQueueFlagBits requiredQueueFamilies = VK_QUEUE_GRAPHICS_BIT; //& VK_QUEUE_COMPUTE_BIT
     const std::vector<const char*>  requireDeviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
@@ -81,7 +73,7 @@ void VKBackend::initVulkan() {
 }
 
 
-void VKBackend::reset(ANativeWindow *newWindow, AAssetManager *newManager) {
+void CBackend::reset(ANativeWindow *newWindow, AAssetManager *newManager) {
     window.reset(newWindow);
     CContext::Init();
     CContext::GetHandle().androidManager.assetManager = newManager;
@@ -99,14 +91,14 @@ static double now_ms(void) {
     return 1000.0 * res.tv_sec + (double) res.tv_nsec / 1e6;
 }
 
-void VKBackend::render() {
+void CBackend::render() {
     //Count FPS
     static double startTime = now_ms(); // start time
     static int frameCount = 0;
     double currentTime = now_ms(); // finish time
     double elapseTime = currentTime - startTime; // time your code took to exec in ms
     if(elapseTime > 1000) {
-        __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "VKBackend::render() elapseTime: %fms, frameCount %d", elapseTime, frameCount);
+        __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "ElapseTime: %fms, frameCount %d", elapseTime, frameCount);
         frameCount = 0;
         startTime = currentTime;
     }else frameCount++;
@@ -117,10 +109,10 @@ void VKBackend::render() {
     sample.renderer.drawFrame(sample.swapchain);//TODO for test compute shader
 }
 
-void VKBackend::cleanup() {
+void CBackend::cleanup() {
     vkDeviceWaitIdle(CContext::GetHandle().GetLogicalDevice());
     sample.CleanUp();
     initialized = false;
 }
 
-}  // namespace vkt
+}  // namespace c_backend

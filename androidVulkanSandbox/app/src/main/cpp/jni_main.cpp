@@ -17,13 +17,13 @@
 #include <android/asset_manager_jni.h>
 #include <android/native_window_jni.h>
 #include <game-activity/native_app_glue/android_native_app_glue.h>
-#include <math.h>
-#include <stdio.h>
-#include <stdlib.h>
+//#include <math.h>
+//#include <stdio.h>
+//#include <stdlib.h>
 
 #include <iostream>
 
-#include "vkBackend.h"
+#include "CBackend.h"
 
 /*
  * Shared state for the app. This will be accessed within lifecycle callbacks
@@ -32,16 +32,16 @@
  * We store:
  * struct android_app - a pointer to the Android application handle
  *
- * vkt::VKBackend - a pointer to our (this) Vulkan application in order to call
+ * c_backend::VKBackend - a pointer to our (this) Vulkan application in order to call
  *  the rendering logic
  *
  * bool canRender - a flag which signals that we are ready to call the vulkan
  * rendering logic
  *
  */
-struct VulkanEngine {
-  struct android_app *app;
-  vkt::VKBackend *app_backend;
+struct UserEngine {
+  struct android_app *app = nullptr;
+  c_backend::CBackend *app_backend = nullptr;
   bool canRender = false;
 };
 
@@ -50,12 +50,12 @@ struct VulkanEngine {
  * app can react to it.
  */
 static void HandleCmd(struct android_app *app, int32_t cmd) {
-  auto *engine = (VulkanEngine *)app->userData;
+  auto *engine = (UserEngine *)app->userData;
   switch (cmd) {
     case APP_CMD_START:
       if (engine->app->window != nullptr) {
         engine->app_backend->reset(app->window, app->activity->assetManager);
-        engine->app_backend->initVulkan();
+        engine->app_backend->init();
         engine->canRender = true;
       }
     case APP_CMD_INIT_WINDOW:
@@ -66,7 +66,7 @@ static void HandleCmd(struct android_app *app, int32_t cmd) {
         engine->app_backend->reset(app->window, app->activity->assetManager);
         if (!engine->app_backend->initialized) {
           LOGI("Starting application");
-          engine->app_backend->initVulkan();
+          engine->app_backend->init();
         }
         engine->canRender = true;
       }
@@ -89,12 +89,14 @@ static void HandleCmd(struct android_app *app, int32_t cmd) {
  * not use/process any input events, return false for all input events so system
  * can still process them.
  */
+/*
 extern "C" bool VulkanKeyEventFilter(const GameActivityKeyEvent *event) {
   return false;
 }
 extern "C" bool VulkanMotionEventFilter(const GameActivityMotionEvent *event) {
   return false;
 }
+*/
 
 /*
  * Process user touch and key events. GameActivity double buffers those events,
@@ -122,16 +124,16 @@ static void HandleInputEvents(struct android_app *app) {
  * and calling them from the Android application layer.
  */
 void android_main(struct android_app *state) {
-  VulkanEngine engine{};
-  vkt::VKBackend vulkanBackend{};
+  UserEngine engine{};
+  c_backend::CBackend cBackend{};
 
   engine.app = state;
-  engine.app_backend = &vulkanBackend;
+  engine.app_backend = &cBackend;
   state->userData = &engine;
   state->onAppCmd = HandleCmd;
 
-  android_app_set_key_event_filter(state, VulkanKeyEventFilter);
-  android_app_set_motion_event_filter(state, VulkanMotionEventFilter);
+  //android_app_set_key_event_filter(state, VulkanKeyEventFilter);
+  //android_app_set_motion_event_filter(state, VulkanMotionEventFilter);
 
   while (true) {
     int ident;
