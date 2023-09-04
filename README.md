@@ -42,7 +42,7 @@ Prepare:
 - [Optional] To verify setup success or not, make sure to run these tests: https://github.com/android/ndk-samples  
    Especially the "hello-vulkan" test.  
 ### for one sample    
-Launch Android Studio, open "androidVulkanSandbox" folder.   Select "Build" > "Build Bundle(s) / APK(s) > Build APK(s)"  
+Launch Android Studio, open "androidSandbox" folder.   Select "Build" > "Build Bundle(s) / APK(s) > Build APK(s)"  
 - [Optional] Edit samples/androidSample.h to tell Android Studio which sample to build  
 - [Optional] If you want to run sample on AVD(Android Virtual Device), in the Android Studio, click the green button on the top right corner.  
 

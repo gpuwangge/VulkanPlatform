@@ -49,11 +49,11 @@ const int MIPMAP_TEXTURE_COUNT = 7;
 #define INOUT
 
 //#define TEXTURE_PATH "../textures/"
-#define TEXTURE_PATH "../androidVulkanSandbox/app/src/main/assets/textures/"
+#define TEXTURE_PATH "../androidSandbox/app/src/main/assets/textures/"
 //#define MODEL_PATH "../models/"
-#define MODEL_PATH "../androidVulkanSandbox/app/src/main/assets/models/"
+#define MODEL_PATH "../androidSandbox/app/src/main/assets/models/"
 //#define SHADER_PATH "../shaders/"
-#define SHADER_PATH "../androidVulkanSandbox/app/src/main/shaders/"
+#define SHADER_PATH "../androidSandbox/app/src/main/shaders/"
 #define ANDROID_TEXTURE_PATH "textures/"
 #define ANDROID_MODEL_PATH "models/"
 #define ANDROID_SHADER_PATH "shaders/"
