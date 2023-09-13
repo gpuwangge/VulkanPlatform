@@ -14,7 +14,7 @@ This project is a Vulkan cross-platform solution to develop Vulkan sample tests,
 - The platform is a real-time, interactive game engine.
 - Build windows and android binary at the same time (with no Android Java/Kotlin/Gradle knowledge needed)! Save some time for dates!
 
-<img src="https://github.com/gpuwangge/VulkanPlatform/blob/main/images/shadowMapAVDDemo.png" alt="alt text" width="150" height="330">  
+<img src="https://github.com/gpuwangge/VulkanPlatform/blob/main/images/shadowMapAVDDemo.png" alt="alt text" width="160" height="330">  
 
 ## How to build to Windows binary(.exe)
 Prepare:  
