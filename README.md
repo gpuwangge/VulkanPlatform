@@ -7,7 +7,7 @@
 
 # Object-oriented Vulkan Platform for Windows/Android
 ![Windows](https://img.shields.io/badge/Windows-passing-brightgreen)
-![Android](https://img.shields.io/badge/Android-passing-green)
+![Android](https://img.shields.io/badge/Android-passing-brightgreen)
 
 This project is a Vulkan cross-platform solution to develop Vulkan sample tests, and to build them into binary that runs on Windows or Android. I originally made this tool to develop mobile games.      
 - Native Vulkan API is too hard to use! This wrapper can be used for education and test new experiments.
