@@ -79,6 +79,25 @@ https://www.youtube.com/watch?v=GiKbGWI4M-Y
 https://zhuanlan.zhihu.com/p/449222522  
 
 
+## 如何添加Texture支持
+贴图三要素：  
+1、图片Texture Image(需要Texture Image View支持-用来显示图像资源，信息打包进Sampler Descriptor)  
+2、采样方法Sampler(需要Sampler Descriptor支持)  
+3、UV坐标TexCoord(需要改输入数据和Shaders)  
+
+## 如何添加深度测试
+Setup阶段：  
+1.创建render pass的时候，同时创建depth attachment。同时设定是否early-Z(在PS之前进行一次深度测试)  
+2.创建深度图createDepthResources()：depthImageBuffer and depthImageView  
+3.每个swapChainFramebuffers都需要指定views,把depthImageView添加上去   
+4.创建graphics pipeline的时候，添加pipelineInfo.pDepthStencilState组件  
+Run阶段  
+1.begin renderpass(recordCommandBuffer())的时候，设定renderPassInfo的时候，设置depthStencil  
+
+### Links
+https://learnopengl-cn.github.io/04%20Advanced%20OpenGL/01%20Depth%20testing/  
+https://developer.aliyun.com/article/325636  
+
 ## Todo  
 android resolution    
 compute shader  
