@@ -9,8 +9,9 @@ You can have many workgroups, but workgroups can not run parallel
 同步的目的是什么：最大化使用CPU和GPU的资源，减少两者等待的时间。  
 
 同步机制有两种  
-I、单队列(queue)内同步(采用barriers, events and subpass dependencies实现)  
-II、多队列同步机制(Fence, Semaphore)  
+1. 单队列(queue)内同步(采用barriers, events and subpass dependencies实现)  
+2. 多队列同步机制(Fence, Semaphore)
+
 Semaphore：用于同步GPU间的任务。比如有两个Queue都有command batch(同时submit的一些cmd组成一个batch)。  
 Queue1 signals Semaphore，并且Queue2 waits on Semaphore。  
 结果就是Queue1的command batch执行完毕后，Queue2的command才开始execute。  
@@ -81,16 +82,17 @@ https://zhuanlan.zhihu.com/p/449222522
 
 ## 如何添加Texture支持
 贴图三要素：  
-1、图片Texture Image(需要Texture Image View支持-用来显示图像资源，信息打包进Sampler Descriptor)  
-2、采样方法Sampler(需要Sampler Descriptor支持)  
-3、UV坐标TexCoord(需要改输入数据和Shaders)  
+1. 图片Texture Image(需要Texture Image View支持-用来显示图像资源，信息打包进Sampler Descriptor)  
+2. 采样方法Sampler(需要Sampler Descriptor支持)  
+3. UV坐标TexCoord(需要改输入数据和Shaders)  
 
 ## 如何添加深度测试
 Setup阶段：  
 1. 创建render pass的时候，同时创建depth attachment。同时设定是否early-Z(在PS之前进行一次深度测试)  
 2. 创建深度图createDepthResources()：depthImageBuffer and depthImageView  
 3. 每个swapChainFramebuffers都需要指定views,把depthImageView添加上去   
-4. 创建graphics pipeline的时候，添加pipelineInfo.pDepthStencilState组件  
+4. 创建graphics pipeline的时候，添加pipelineInfo.pDepthStencilState组件
+
 Run阶段  
 1. begin renderpass(recordCommandBuffer())的时候，设定renderPassInfo的时候，设置depthStencil  
 
