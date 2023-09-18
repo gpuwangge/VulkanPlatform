@@ -14,11 +14,17 @@
 ...
 ```
 
++ C +
+- O -
+! L !
+@@ O @@
+# R #
+S
 
 
-::: warning  
+
 *git init*  
-:::  
+
 (這一步完成後，全部文件轉Changes區)  
 3.Add所有文件
 **git add -A**  
