@@ -1,14 +1,11 @@
-# Tools Tutorial
-
-## GitHub
-
-### 基础知识
+# GitHub Tutorial
+## 基础知识
 GitHub有三个状态区  
 - **`工作区`**(Working Directory，也叫Changes区)-直接编辑的地方，比如记事本打开的文件，肉眼可见，直接操作。add可以把文件增添到暂存区。  
 - **`暂存区`**(Stage/Index，也叫Stages Change区)-数据暂时存放的区域。暂存区的数据可以commit到版本区。  
 - **`版本区`**(Commit History)-存放已经commit的数据的区域。push的时候就是把这里的数发到remote repo。   
 
-### 从init开始(本地有一个工作中待上传的文件夹)  
+## 从init开始(本地有一个工作中待上传的文件夹)  
 **`1.网站上新建一个new remote repo`**  
 **`2.在本地文件夾打开VS Code, 进入terminal，使用如下指令`**   
 > git init
@@ -68,7 +65,7 @@ GitHub有三个状态区
 
 (网站上会看到结果)  
 
-### 在网站上修改了，或者换了一台机器，如何同步文件呢
+## 在网站上修改了，或者换了一台机器，如何同步文件呢
 > git pull  
 
 (如果remote repo跟local repo一致，会显示Already up to date)  
@@ -91,7 +88,7 @@ GitHub有三个状态区
 
 (local repo会看到更新的结果)  
 
-### Local Repo添加了一个新的文件，如何更新到Remote Repo呢 
+## Local Repo添加了一个新的文件，如何更新到Remote Repo呢 
 > git status  
 
 (这时候显示untracked files: newfile.txt)  
@@ -107,7 +104,7 @@ GitHub有三个状态区
 (会提示输入comments)  
 > git push  
 
-### 其他有用的GitHub指令
+## 其他有用的GitHub指令
 如果commit之後後悔了怎么回退：  
 > git reset --soft HEAD^1  
 
@@ -117,11 +114,6 @@ GitHub有三个状态区
 如果.git/objects太大了：  
 網上有些指令可以瘦身。但也可以重建一個repo（這樣會丟失所有的歷史記錄）  
 如果僅僅是把.git/objects裏面的大文件刪除，則會造成無法commit的結果  
-
-
-## VS Code
-
-## Cmake
 
 
 
