@@ -5,11 +5,11 @@
 1.网站上新建一个new remote repo  
 2.在本地文件夾打开vs code, 进入terminal，使用如下指令  
 ::: warning  
-**git init**  
+*git init*  
 :::  
 (這一步完成後，全部文件轉Changes區)  
 3.Add所有文件
-*git add -A*
+**git add -A**  
 (這一步完成後，全部文件轉入Staged Changes區)
 4.git commit -m "first commit"
 (git log --stat or git status可以查看branch name)
