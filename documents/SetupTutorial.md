@@ -9,8 +9,9 @@ git init
 ```
 (這一步完成後，全部文件轉Changes區)  
 3.Add所有文件
-**git add -A**  
-(這一步完成後，全部文件轉入Staged Changes區)
+{git add -A}   
+
+(這一步完成後，全部文件轉入Staged Changes區)  
 4.git commit -m "first commit"
 (git log --stat or git status可以查看branch name)
 (這一步完成後，staged區域清空)
