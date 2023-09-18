@@ -78,7 +78,7 @@ git commit
 (会提示输入comments)
 git push
 
-### 其他有用的github指令
+### 其他有用的GitHub指令
 如果commit之後後悔了怎么回退：  
 **`git reset --soft HEAD^1`**  
 查看项目仓库大小可以使用命令:  
