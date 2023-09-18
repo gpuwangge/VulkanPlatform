@@ -16,9 +16,11 @@ GitHub有三个状态区
 (這一步完成後，全部文件轉Changes區)  
 3.Add所有文件  
 > git add -A
+
 (這一步完成後，全部文件轉入Staged Changes區)  
 4.Commit所有文件  
-**`git commit -m "first commit"`**    
+> git commit -m "first commit"
+
 (`git log --stat` or `git status`可以查看branch name)  
 (這一步完成後，staged區域清空)  
 5.按照GitHub网站的操作做第一次Push，例如：  
