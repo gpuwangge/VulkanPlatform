@@ -8,7 +8,7 @@ GitHub有三个状态区
 - **`暂存区`**(Stage/Index，也叫Stages Change区)-数据暂时存放的区域。暂存区的数据可以commit到版本区。  
 - **`版本区`**(Commit History)-存放已经commit的数据的区域。push的时候就是把这里的数发到remote repo。   
 
-### 从init开始(本地有待上传的文件夹)  
+### 从init开始(本地有一个工作中待上传的文件夹)  
 **`1.网站上新建一个new remote repo`**  
 **`2.在本地文件夾打开VS Code, 进入terminal，使用如下指令`**   
 > git init
@@ -64,42 +64,56 @@ GitHub有三个状态区
 > git status  
 
 (这时候又会显示nothing to commit, working tree clean。但网站并没有更新)  
+> git push
 
-> git push  
 (网站上会看到结果)  
 
 ### 在网站上修改了，或者换了一台机器，如何同步文件呢
-git pull  
+> git pull  
+
 (如果remote repo跟local repo一致，会显示Already up to date)  
 (以下两条指令联合使用等同于git pull)  
-git fetch  
-git merge  
+> git fetch  
+
+> git merge  
+
 (如果local和remote repo是synced，那么git fetch不显示任何结果;否则会显示download信息)  
 (以下指令可以Fetch difference到临时branch)  
-git fetch origin main:temp  
-git diff temp  
+> git fetch origin main:temp  
+
+> git diff temp  
+
 (这时候会显示remote repo上与local repo上的不同的文件列表)  
-git branch  
+> git branch  
+
 (这时候会显示temp branch被创建了，但*还是指向main)  
-git merge temp  
+> git merge temp  
+
 (local repo会看到更新的结果)  
-------Local添加了一个新的文件，如何更新到repo呢------  
-git status  
+
+### Local repo添加了一个新的文件，如何更新到Remote repo呢 
+> git status  
+
 (这时候显示untracked files: newfile.txt)  
 (这时候git commit是提示有错误的)  
-git add <filename>  
-git status  
+> git add <filename>  
+
+> git status  
+
 (这时候显示changes to be committed: new file: <filename>)  
 (这个命令把文件从workspace推到stage)  
-git commit  
+> git commit  
+
 (会提示输入comments)  
-git push  
+> git push  
 
 ### 其他有用的GitHub指令
 如果commit之後後悔了怎么回退：  
-**`git reset --soft HEAD^1`**  
+> git reset --soft HEAD^1  
+
 查看项目仓库大小可以使用命令:  
-**`git count-objects -vH`**   
+> git count-objects -vH   
+
 如果.git/objects太大了：  
 網上有些指令可以瘦身。但也可以重建一個repo（這樣會丟失所有的歷史記錄）  
 如果僅僅是把.git/objects裏面的大文件刪除，則會造成無法commit的結果  
