@@ -12,6 +12,13 @@
 @@ Pink @@
 # Gray
 ...
+```
++ Green
+- Red
+! Orange
+@@ Pink @@
+# Gray
+
 
 ::: warning  
 *git init*  
