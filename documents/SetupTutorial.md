@@ -13,11 +13,7 @@
 # Gray
 ...
 ```
-+ Green
-- Red
-! Orange
-@@ Pink @@
-# Gray
+
 
 
 ::: warning  
