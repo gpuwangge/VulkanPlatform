@@ -109,7 +109,6 @@ MyImageBuffer colorImageBuffer_msaa;
 VkImageView colorImageView_msaa;  
 使用以下两个函数分别新的buffer：  
 createColorResources();  
-
 MSAA必须开DepthBuffer。  
 因为在model depthTest 也用到，因此不用重复  
 
