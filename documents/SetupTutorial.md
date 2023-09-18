@@ -33,23 +33,30 @@ GitHub有三个状态区
 > git push -u origin main
 
 如果之前没配置过name和email，则要通过如下指令配置：  
-**`git config --global user.name "Your Name"`**  
-**`git config --global user.email you@example.com`**  
+> git config --global user.name "Your Name"
+
+> git config --global user.email you@example.com
+
 (左侧的sync按钮，其实就是sync = pull & push)  
 (pull的时候会产生conflict)   
 (如果上傳文件大於50mb，是不推薦的。目前來看69.59 MB的文件還是能成功上傳。只是過程中有個warning)  
 
 ### 从clone开始(使用remote已存在的repo的情況)
-登录github账号，并建立一个repo，或选择一个repo。总之，准备好url。  
+登录GitHub账号，并建立一个repo，或选择一个repo。总之，准备好url。  
 (新建立的remote repo默认有一个main(而不是master)branch)  
-git clone url  
-(git pull url不能使用)  
-cd <folder>  
-git status  
+> git clone url
+  
+(第一次只能clone不能pull url)  
+> cd <folder>  
+
+> git status  
+
 (这时候会显示nothing to commit, working tree clean)  
-vim <filename>  
+> vim <filename>  
+
 (在vim里修改了文件)  
-git status  
+> git status  
+
 (显示Changes not staged for commit: modified: <filename>)  
 git commit <filename>  
 (会提示输入comments)  
