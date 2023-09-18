@@ -18,6 +18,9 @@ GitHub有三个状态区
 (這一步完成後，全部文件轉Changes區)  
 3.Add所有文件  
 **`git add -A`**  
+```diff
+! git add -A
+```
 (這一步完成後，全部文件轉入Staged Changes區)  
 4.Commit所有文件  
 **`git commit -m "first commit"`**    
