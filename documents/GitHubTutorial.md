@@ -117,8 +117,8 @@ GitHub有三个状态区
 如果僅僅是把.git/objects裏面的大文件刪除，則會造成無法commit的結果  
 
 
-
 ## MD Color Solution
+GitHub目前不支持颜色文字，下面是一个替代方案  
 ```diff
 + Green
 - Red
