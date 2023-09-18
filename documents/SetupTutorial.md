@@ -9,12 +9,12 @@ GitHub有三个状态区
 - **`版本区`**(Commit History)-存放已经commit的数据的区域。push的时候就是把这里的数发到remote repo。   
 
 ### 从init开始(本地有待上传的文件夹)  
-1.网站上新建一个new remote repo  
-2.在本地文件夾打开VS Code, 进入terminal，使用如下指令   
+**1.网站上新建一个new remote repo**  
+**2.在本地文件夾打开VS Code, 进入terminal，使用如下指令**   
 > git init
 
 (這一步完成後，全部文件轉Changes區)  
-3.Add所有文件  
+**`3.Add所有文件`**  
 > git add -A
 
 (這一步完成後，全部文件轉入Staged Changes區)  
@@ -27,10 +27,11 @@ GitHub有三个状态区
 > git remote add origin url
 
 > git branch -M main
->
+
 (`git pull --rebase origin main` 如果新建的remote repo不是空的就需要这一步)  
 (這一步完成後，remote repo上的readme.MD或LICENSE就會被同步到本地了)  
-**`git push -u origin main`**  
+> git push -u origin main
+
 如果之前没配置过name和email，则要通过如下指令配置：  
 **`git config --global user.name "Your Name"`**  
 **`git config --global user.email you@example.com`**  
