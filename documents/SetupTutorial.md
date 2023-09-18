@@ -4,9 +4,9 @@
 
 ### 基础知识
 GitHub有三个状态区  
-- 工作区(Working Directory，也叫Changes区)-直接编辑的地方，比如记事本打开的文件，肉眼可见，直接操作。add可以把文件增添到暂存区。  
-- 暂存区(Stage/Index，也叫Stages Change区)-数据暂时存放的区域。暂存区的数据可以commit到版本区。  
-- 版本区(Commit History)-存放已经commit的数据的区域。push的时候就是把这里的数发到remote repo。   
+- **`工作区`**(Working Directory，也叫Changes区)-直接编辑的地方，比如记事本打开的文件，肉眼可见，直接操作。add可以把文件增添到暂存区。  
+- **暂存区**(Stage/Index，也叫Stages Change区)-数据暂时存放的区域。暂存区的数据可以commit到版本区。  
+- **版本区**(Commit History)-存放已经commit的数据的区域。push的时候就是把这里的数发到remote repo。   
 
 ### 从init开始(本地有待上传的文件夹)  
 1.网站上新建一个new remote repo  
