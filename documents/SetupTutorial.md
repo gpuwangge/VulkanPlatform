@@ -4,11 +4,10 @@
 ### 从init开始(本地有待上传的文件夹)  
 1.网站上新建一个new remote repo  
 2.在本地文件夾打开vs code, 进入terminal，使用如下指令  
-```diff
-git init
-```
+`git init`
+
 (這一步完成後，全部文件轉Changes區)  
-3.Add所有文件
+3.Add所有文件  
 `git add -A` 
 
 (這一步完成後，全部文件轉入Staged Changes區)  
