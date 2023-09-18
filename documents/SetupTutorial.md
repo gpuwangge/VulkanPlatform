@@ -11,7 +11,6 @@ GitHub有三个状态区
 ### 从init开始(本地有待上传的文件夹)  
 1.网站上新建一个new remote repo  
 2.在本地文件夾打开VS Code, 进入terminal，使用如下指令   
-<h3 style="color:#ff0000">Danger</h3>
 **`git init`**  
 (這一步完成後，全部文件轉Changes區)  
 3.Add所有文件  
