@@ -94,6 +94,33 @@ Setup阶段：
 Run阶段  
 1.begin renderpass(recordCommandBuffer())的时候，设定renderPassInfo的时候，设置depthStencil  
 
+## 如何启用MSAA
+1. 确认Sample Count  
+(more samples lead to better results, however it is also more computationally expensive)  
+定义  
+VkSampleCountFlagBits msaaSamples = VK_SAMPLE_COUNT_1_BIT;  
+简单起见，选择使用(硬件支持的)最大available的sample count：getMaxUsableSampleCount()  
+(大部分GPU支持至少8 samples)  
+VK_SAMPLE_COUNT_1_BIT相当于没开MSAA  
+
+2. 设置Render Target (RT就是一个image buffer)  
+原本的image buffer一个像素只有一个sample，所以需要额外的color buffer。  
+MyImageBuffer colorImageBuffer_msaa;  
+VkImageView colorImageView_msaa;  
+使用以下两个函数分别新的buffer：  
+createColorResources();  
+
+MSAA必须开DepthBuffer。  
+因为在model depthTest 也用到，因此不用重复  
+
+3. 增添Attachment(colorAttachmentResolve到RenderPass)  
+并设置color/depth attachment的msaaSamples数量  
+
+4.createFramebuffers的时候swapChainFramebuffers带上colorImageView  
+
+5. GraphicsPipeline创建的时候设置msaaSamples数量  
+
+
 ### Links
 https://learnopengl-cn.github.io/04%20Advanced%20OpenGL/01%20Depth%20testing/  
 https://developer.aliyun.com/article/325636  
