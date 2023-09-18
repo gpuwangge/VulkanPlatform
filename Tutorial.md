@@ -87,12 +87,12 @@ https://zhuanlan.zhihu.com/p/449222522
 
 ## 如何添加深度测试
 Setup阶段：  
-1.创建render pass的时候，同时创建depth attachment。同时设定是否early-Z(在PS之前进行一次深度测试)  
-2.创建深度图createDepthResources()：depthImageBuffer and depthImageView  
-3.每个swapChainFramebuffers都需要指定views,把depthImageView添加上去   
-4.创建graphics pipeline的时候，添加pipelineInfo.pDepthStencilState组件  
+1. 创建render pass的时候，同时创建depth attachment。同时设定是否early-Z(在PS之前进行一次深度测试)  
+2. 创建深度图createDepthResources()：depthImageBuffer and depthImageView  
+3. 每个swapChainFramebuffers都需要指定views,把depthImageView添加上去   
+4. 创建graphics pipeline的时候，添加pipelineInfo.pDepthStencilState组件  
 Run阶段  
-1.begin renderpass(recordCommandBuffer())的时候，设定renderPassInfo的时候，设置depthStencil  
+1. begin renderpass(recordCommandBuffer())的时候，设定renderPassInfo的时候，设置depthStencil  
 
 ## 如何启用MSAA
 1. 确认Sample Count  
@@ -115,7 +115,7 @@ MSAA必须开DepthBuffer。
 3. 增添Attachment(colorAttachmentResolve到RenderPass)  
 并设置color/depth attachment的msaaSamples数量  
 
-4.createFramebuffers的时候swapChainFramebuffers带上colorImageView  
+4. createFramebuffers的时候swapChainFramebuffers带上colorImageView  
 
 5. GraphicsPipeline创建的时候设置msaaSamples数量  
 
