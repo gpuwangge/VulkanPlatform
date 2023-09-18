@@ -42,7 +42,59 @@ git push -u origin main
 (pull的时候会产生conflict)
 
 (如果上傳文件大於50mb，是不推薦的。目前來看69.59 MB的文件還是能成功上傳。只是過程中有個warning)
+### 从CLONE开始(使用remote已存在的repo的情況)
+登录github账号，并建立一个repo，或选择一个repo。总之，准备好url。
+(新建立的remote repo默认有一个main(而不是master)branch)
+git clone url
+(git pull url不能使用)
+cd <folder>
+git status
+(这时候会显示nothing to commit, working tree clean)
+vim <filename>
+(在vim里修改了文件)
+git status
+(显示Changes not staged for commit: modified: <filename>)
+git commit <filename>
+(会提示输入comments)
+git status
+(这时候又会显示nothing to commit, working tree clean。但网站并没有更新)
+git push
+(网站上会看到结果)
+---------在网站上修改了，或者换了一台机器，如何同步呢---------------------------------
+git pull
+(如果remote repo跟local repo一致，会显示Already up to date)
+(以下两条指令联合使用等同于git pull)
+git fetch
+git merge
+(如果local和remote repo是synced，那么git fetch不显示任何结果;否则会显示download信息)
+(以下指令可以Fetch difference到临时branch)
+git fetch origin main:temp
+git diff temp
+(这时候会显示remote repo上与local repo上的不同的文件列表)
+git branch
+(这时候会显示temp branch被创建了，但*还是指向main)
+git merge temp
+(local repo会看到更新的结果)
+------Local添加了一个新的文件，如何更新到repo呢------
+git status
+(这时候显示untracked files: newfile.txt)
+(这时候git commit是提示有错误的)
+git add <filename>
+git status
+(这时候显示changes to be committed: new file: <filename>)
+(这个命令把文件从workspace推到stage)
+git commit
+(会提示输入comments)
+git push
 
+### 其他有用的github指令
+如果commit之後後悔了怎么回退：  
+**`git reset --soft HEAD^1`**  
+查看项目仓库大小可以使用命令:  
+**`git count-objects -vH`**   
+如果.git/objects太大了：  
+網上有些指令可以瘦身。但也可以重建一個repo（這樣會丟失所有的歷史記錄）  
+如果僅僅是把.git/objects裏面的大文件刪除，則會造成無法commit的結果  
 
 
 ## VS Code
