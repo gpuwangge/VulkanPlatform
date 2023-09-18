@@ -47,24 +47,28 @@ GitHub有三个状态区
 > git clone url
   
 (第一次只能clone不能pull url)  
-> cd /<folder/>  
+> cd folderName  
 
 > git status  
 
 (这时候会显示nothing to commit, working tree clean)  
-> vim <filename>  
+> vim fileName  
 
 (在vim里修改了文件)  
 > git status  
 
 (显示Changes not staged for commit: modified: <filename>)  
-git commit <filename>  
+> git commit <filename>  
+
 (会提示输入comments)  
-git status  
+> git status  
+
 (这时候又会显示nothing to commit, working tree clean。但网站并没有更新)  
-git push  
+
+> git push  
 (网站上会看到结果)  
----------在网站上修改了，或者换了一台机器，如何同步呢---------------------------------  
+
+### 在网站上修改了，或者换了一台机器，如何同步文件呢
 git pull  
 (如果remote repo跟local repo一致，会显示Already up to date)  
 (以下两条指令联合使用等同于git pull)  
