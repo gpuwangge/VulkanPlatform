@@ -28,7 +28,7 @@ GitHub有三个状态区
 
 > git branch -M main
 
-(`git pull --rebase origin main` 如果新建的remote repo不是空的就需要这一步)  
+(如果新建的remote repo不是空的就需要这一步: `git pull --rebase origin main`)  
 (這一步完成後，remote repo上的readme.MD或LICENSE就會被同步到本地了)  
 > git push -u origin main
 
@@ -47,7 +47,7 @@ GitHub有三个状态区
 > git clone url
   
 (第一次只能clone不能pull url)  
-> cd <folder>  
+> cd /<folder/>  
 
 > git status  
 
