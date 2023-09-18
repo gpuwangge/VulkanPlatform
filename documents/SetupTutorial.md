@@ -4,6 +4,15 @@
 ### 从init开始(本地有待上传的文件夹)  
 1.网站上新建一个new remote repo  
 2.在本地文件夾打开vs code, 进入terminal，使用如下指令  
+
+```diff
++ Green
+- Red
+! Orange
+@@ Pink @@
+# Gray
+...
+
 ::: warning  
 *git init*  
 :::  
