@@ -23,12 +23,12 @@ GitHub有三个状态区
 5.按照GitHub网站的操作做第一次Push，例如：  
 **`git remote add origin url`**  
 **`git branch -M main`**  
-(`git pull --rebase origin main` 如果新建的remote repo不是空的就需要这一步)
-(這一步完成後，remote repo上的readme.MD或LICENSE就會被同步到本地了)
+(`git pull --rebase origin main` 如果新建的remote repo不是空的就需要这一步)  
+(這一步完成後，remote repo上的readme.MD或LICENSE就會被同步到本地了)  
 **`git push -u origin main`**  
 如果之前没配置过name和email，则要通过如下指令配置：  
-**`git config --global user.name "Your Name"`**
-**`git config --global user.email you@example.com`**
+**`git config --global user.name "Your Name"`**  
+**`git config --global user.email you@example.com`**  
 (左侧的sync按钮，其实就是sync = pull & push)  
 (pull的时候会产生conflict)   
 (如果上傳文件大於50mb，是不推薦的。目前來看69.59 MB的文件還是能成功上傳。只是過程中有個warning)  
