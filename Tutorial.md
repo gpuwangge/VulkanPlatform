@@ -1,9 +1,9 @@
 # Tutorial
 
 ## Compute Shader
-Workgroup: it is a 3d array matrix. one element in this matrix is called workitem
-Ex: 6x4x3=72 workitem parallel
-You can have many workgroups, but workgroups can not run parallel
+Workgroup: it is a 3d array matrix. one element in this matrix is called workitem  
+Ex: 6x4x3=72 workitem parallel  
+You can have many workgroups, but workgroups can not run parallel  
 
 ## Vulkan多队列同步机制： Fences and Semaphores
 同步的目的是什么：最大化使用CPU和GPU的资源，减少两者等待的时间。  
