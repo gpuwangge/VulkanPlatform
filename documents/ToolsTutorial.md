@@ -41,7 +41,7 @@ GitHub有三个状态区
 (pull的时候会产生conflict)   
 (如果上傳文件大於50mb，是不推薦的。目前來看69.59 MB的文件還是能成功上傳。只是過程中有個warning)  
 
-### 从clone开始(使用remote已存在的repo的情況)
+### 从clone开始(使用已存在的Remote Repo的情況)
 登录GitHub账号，并建立一个repo，或选择一个repo。总之，准备好url。  
 (新建立的remote repo默认有一个main(而不是master)branch)  
 > git clone url
@@ -91,7 +91,7 @@ GitHub有三个状态区
 
 (local repo会看到更新的结果)  
 
-### Local repo添加了一个新的文件，如何更新到Remote repo呢 
+### Local Repo添加了一个新的文件，如何更新到Remote Repo呢 
 > git status  
 
 (这时候显示untracked files: newfile.txt)  
