@@ -11,7 +11,7 @@ GitHub有三个状态区
 ### 从init开始(本地有待上传的文件夹)  
 1.网站上新建一个new remote repo  
 2.在本地文件夾打开VS Code, 进入terminal，使用如下指令   
-**`git init`**
+**`git init`**  
 (這一步完成後，全部文件轉Changes區)  
 3.Add所有文件  
 **`git add -A`**  
@@ -33,50 +33,50 @@ GitHub有三个状态区
 (pull的时候会产生conflict)   
 (如果上傳文件大於50mb，是不推薦的。目前來看69.59 MB的文件還是能成功上傳。只是過程中有個warning)  
 
-### 从CLONE开始(使用remote已存在的repo的情況)
-登录github账号，并建立一个repo，或选择一个repo。总之，准备好url。
-(新建立的remote repo默认有一个main(而不是master)branch)
-git clone url
-(git pull url不能使用)
-cd <folder>
-git status
-(这时候会显示nothing to commit, working tree clean)
-vim <filename>
-(在vim里修改了文件)
-git status
-(显示Changes not staged for commit: modified: <filename>)
-git commit <filename>
-(会提示输入comments)
-git status
-(这时候又会显示nothing to commit, working tree clean。但网站并没有更新)
-git push
-(网站上会看到结果)
----------在网站上修改了，或者换了一台机器，如何同步呢---------------------------------
-git pull
-(如果remote repo跟local repo一致，会显示Already up to date)
-(以下两条指令联合使用等同于git pull)
-git fetch
-git merge
-(如果local和remote repo是synced，那么git fetch不显示任何结果;否则会显示download信息)
-(以下指令可以Fetch difference到临时branch)
-git fetch origin main:temp
-git diff temp
-(这时候会显示remote repo上与local repo上的不同的文件列表)
-git branch
-(这时候会显示temp branch被创建了，但*还是指向main)
-git merge temp
-(local repo会看到更新的结果)
-------Local添加了一个新的文件，如何更新到repo呢------
-git status
-(这时候显示untracked files: newfile.txt)
-(这时候git commit是提示有错误的)
-git add <filename>
-git status
-(这时候显示changes to be committed: new file: <filename>)
-(这个命令把文件从workspace推到stage)
-git commit
-(会提示输入comments)
-git push
+### 从clone开始(使用remote已存在的repo的情況)
+登录github账号，并建立一个repo，或选择一个repo。总之，准备好url。  
+(新建立的remote repo默认有一个main(而不是master)branch)  
+git clone url  
+(git pull url不能使用)  
+cd <folder>  
+git status  
+(这时候会显示nothing to commit, working tree clean)  
+vim <filename>  
+(在vim里修改了文件)  
+git status  
+(显示Changes not staged for commit: modified: <filename>)  
+git commit <filename>  
+(会提示输入comments)  
+git status  
+(这时候又会显示nothing to commit, working tree clean。但网站并没有更新)  
+git push  
+(网站上会看到结果)  
+---------在网站上修改了，或者换了一台机器，如何同步呢---------------------------------  
+git pull  
+(如果remote repo跟local repo一致，会显示Already up to date)  
+(以下两条指令联合使用等同于git pull)  
+git fetch  
+git merge  
+(如果local和remote repo是synced，那么git fetch不显示任何结果;否则会显示download信息)  
+(以下指令可以Fetch difference到临时branch)  
+git fetch origin main:temp  
+git diff temp  
+(这时候会显示remote repo上与local repo上的不同的文件列表)  
+git branch  
+(这时候会显示temp branch被创建了，但*还是指向main)  
+git merge temp  
+(local repo会看到更新的结果)  
+------Local添加了一个新的文件，如何更新到repo呢------  
+git status  
+(这时候显示untracked files: newfile.txt)  
+(这时候git commit是提示有错误的)  
+git add <filename>  
+git status  
+(这时候显示changes to be committed: new file: <filename>)  
+(这个命令把文件从workspace推到stage)  
+git commit  
+(会提示输入comments)  
+git push  
 
 ### 其他有用的GitHub指令
 如果commit之後後悔了怎么回退：  
