@@ -1,6 +1,10 @@
 # VS Code Tutorial
 
-GitHub+VS Code安装方法
+## VS Code介绍
+VS Code是不带编译器的，需要下载一个C++编译器，比如MinGW, x86_64-win32-seh, 解压后剪切粘贴到c盘的根目录下。然后是配置环境变量——也就是告诉VS Code编译器在什么地方：把MinGW的bin路径粘贴到PATH环境变量里面。在command prompt里面输入"where gcc",就可以知道是否装好了。
+(如果安装过Visual Studio，也会有编译器了： cl.exe)
+
+## GitHub+VS Code安装方法
 要先安装vscode(安装时勾选允许添加入右键菜单)，再安装git(在Choosing the default editor used by Git这个选项里选择VS Code作为Git's default editor)。
 安装vscode后，再安装必要插件GitLens. 安装后，左侧出现GitLens和GitLens Inspect图标。
 建议安装如下Extensions:
@@ -9,12 +13,10 @@ Better Comments (optional)
 Shader languages support
 
 
-VS Code介绍
-VS Code是不带编译器的，需要下载一个C++编译器，比如MinGW, x86_64-win32-seh, 解压后剪切粘贴到c盘的根目录下。然后是配置环境变量——也就是告诉VS Code编译器在什么地方：把MinGW的bin路径粘贴到PATH环境变量里面。在command prompt里面输入"where gcc",就可以知道是否装好了。
-(如果安装过Visual Studio，也会有编译器了： cl.exe)
 
 
-VS Code使用说明
+
+## VS Code使用说明
 打开VS Code后，点击Open Folder，选择一个你希望保存code的文件夹。
 新建一个名字为xxx.c的文件，就会弹窗问你是否需要安装C/C++ Extension Pack，安装之。
 安装好了之后会提示你选择Default Compiler（gcc）。
@@ -34,11 +36,13 @@ Control+Shift+P
 
 
 
-VS Code设置环境变量
+## VS Code设置环境变量
 1、新建文件夹，打开VSCode后打开该文件夹。
-2、添加源文件和后缀（比如.cpp），VS Code会自动生成.vscode文件夹，内含配置文件
-配置这几个Json文件：
-===========settings.json======
+2、添加源文件和后缀（比如.cpp），VS Code会自动生成.vscode文件夹，内含配置文件  
+配置这几个Json文件：  
+tasks.json: 跟编译有关的文件设置
+launch.json: 跟运行有关的文件设置
+### settings.json
 说明：这个文件设置VS Code的compiler path and IntelliSense settings
 更新这个文件会自动更新c_cpp_properties.json。但有时候这个文件并不出现，这时候直接修改c_cpp_properties.json即可。
   "C_Cpp_Runner.includePaths": [
@@ -49,7 +53,7 @@ VS Code设置环境变量
     	"${VULKAN_SDK}/Include"
   ],
 (另一种方法是设置好环境变量，然后再json中使用%VULKAN_SDK%来代替地址)
-===========tasks.json==========
+### tasks.json
 说明：告诉Compiler build instructions。即使修改了settings.json，Compiler仍旧不知道includePaths在哪里。(注意VS Code不是IDE，因此VS Code和Compiler是独立存在的)，所以要一同修改task.json。
 (如果一开始没有这个文件，只要运行一次代码它就会出现)
 注意：不知为何，glfw的MingG64版本只能使用dll版，因此需要拷贝dll文件到开发目录下。
@@ -71,10 +75,10 @@ VS Code设置环境变量
                 "-o",
                 "${fileDirname}\\${fileBasenameNoExtension}.exe"
             ],
-========launch.json======
+### launch.json
 debugger settings。这个Json会自动生成不需要修改。
 这个文件也不一定会出现。
-========c_cpp_properties.json======
+### c_cpp_properties.json
 settings.json修改了之后，这个也会更新。
 如果cpp代码是c++17之后，需要手动把这个信息添加进这个文件。
 3、如果有需要的话，拷贝相应的资源(obj, png, dll…)到工作目录内。
@@ -85,7 +89,7 @@ settings.json修改了之后，这个也会更新。
 
 
 
-2.5 VS Code+MingW64安装设置
+## VS Code+MingW64安装设置
 —安装篇----
 安装MinGW:
 VS Code是不带编译器的，需要下载一个C++编译器，比如MinGW, x86_64-win32-seh, 解压后剪切粘贴到c盘的根目录下。然后是配置环境变量——也就是告诉VS Code编译器在什么地方：把MinGW的bin路径(c:\mingw64\bin)粘贴到PATH环境变量里面。在command prompt里面输入"where gcc",就可以知道是否装好了。
@@ -115,7 +119,7 @@ Better Comments (optional)
 Shader languages support
 
 
-—设置篇---
+## 设置篇
 ===09022023更新========
 如果不使用debugger，那不不需要设置.vscode。
 因为可以自己用gcc/g++/visual studio来编译。
