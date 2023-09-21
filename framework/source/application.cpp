@@ -9,9 +9,9 @@ CApplication::CApplication(){
     textureImages.resize(1);
 
     mainCamera.type = Camera::CameraType::firstperson;
-    mainCamera.setPosition(glm::vec3(0.0f, -2.5f, -2.5f));
-    mainCamera.setRotation(glm::vec3(45.0f, 0.0f, 0.0f));
-    mainCamera.setPerspective(60.0f, (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 256.0f);
+    mainCamera.setPosition(glm::vec3(0.0f, 0.0f, -2.0f));
+    mainCamera.setRotation(glm::vec3(0.0f, 0.0f, 0.0f));
+    mainCamera.setPerspective(90.0f, (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 256.0f);
     mainCamera.movementSpeed = 1.0f;
     mainCamera.rotationSpeed = 200.0f;
 

@@ -12,6 +12,8 @@ public:
 	std::vector<VkClearValue> clearValues{ {  1.0f, 1.0f, 1.0f, 1.0f  } };
  
     void initialize(){
+		mainCamera.setPosition(glm::vec3(0.0f, 0.0f, -1.5f));
+
 		renderer.CreateVertexBuffer<Vertex3D>(vertices3D);
 		renderer.CreateIndexBuffer(indices3D);
 		renderer.CreateCommandPool(surface);

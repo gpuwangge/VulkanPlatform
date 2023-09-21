@@ -8,6 +8,10 @@ public:
 	std::vector<VkClearValue> clearValues{ {  1.0f, 1.0f, 1.0f, 1.0f  },  { 1.0f, 0 } };
 
     void initialize(){
+		mainCamera.setPosition(glm::vec3(0.0f, -2.5f, -2.5f));
+    	mainCamera.setRotation(glm::vec3(45.0f, 0.0f, 0.0f));
+    	mainCamera.setPerspective(60.0f, (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 256.0f);
+		
 		swapchain.bEnableMSAA = true;//!To enable MSAA, make sure it has depth test (call addDepthAttachment())
 		swapchain.bEnableDepthTest = true; 
 
