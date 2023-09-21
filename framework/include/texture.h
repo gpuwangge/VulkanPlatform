@@ -16,8 +16,8 @@ public:
     void endSingleTimeCommands(VkCommandBuffer commandBuffer);
     void transitionImageLayout(VkImage image, VkImageLayout oldLayout, VkImageLayout newLayout);
 
-    void CreateTextureImage(const std::string texturePath, VkImageUsageFlags usage, VkCommandPool &commandPool);
-    void CreateTextureImage(uint8_t* pixels, VkImageUsageFlags usage, CWxjImageBuffer &imageBuffer);
+    void CreateTextureImage(const std::string texturePath, VkImageUsageFlags usage, VkCommandPool &commandPool, unsigned short bitPerTexelPerChannel = 8);
+    void CreateTextureImage(void* texels, VkImageUsageFlags usage, CWxjImageBuffer &imageBuffer, unsigned short texChannels, unsigned short texBptpc);
     void CreateImageView(VkImageAspectFlags aspectFlags);
 
     void generateMipmaps();
@@ -27,6 +27,7 @@ public:
     //Resource for Texture
     int32_t texWidth, texHeight;
     VkFormat imageFormat;
+    short dstTexChannels;
     //std::string texturePath = "";
 	//VkSampler textureSampler;
 	CWxjImageBuffer textureImageBuffer;
