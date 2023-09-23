@@ -23,6 +23,7 @@ public:
 		renderer.CreateCommandBuffers();
 
 		VkImageUsageFlags usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+		textureImages[0].imageFormat = VK_FORMAT_R16G16B16A16_UNORM;//VK_FORMAT_R16G16B16A16_UNORM or VK_FORMAT_R16G16B16A16_SFLOAT
 		textureImages[0].CreateTextureImage("48bpt.png", usage, renderer.commandPool, 16);
 		textureImages[0].CreateImageView(VK_IMAGE_ASPECT_COLOR_BIT);
 

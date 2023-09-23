@@ -8,6 +8,9 @@
 #include "..\\..\\windowsFramework\\include\\logManager.h"
 #else
 #include "..\\..\\androidFramework\\include\\androidManager.h"
+#include <android/log.h>
+#define LOG_TAG "VULKAN_PLATFORM"
+#define LOGI(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
 #endif
 
 //CContext is to store some commonly used static variables(physical device, logical device in the current context)

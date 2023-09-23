@@ -47,6 +47,12 @@ void CApplication::run(){ //Entrance Function
     //instance->pickedPhysicalDevice->get()->createLogicalDevices(surface, requiredValidationLayers, requireDeviceExtensions);
     CContext::GetHandle().physicalDevice->get()->createLogicalDevices(surface, requiredValidationLayers, requireDeviceExtensions);
 
+    //query  basic capabilities of surface
+    //VkSurfaceCapabilitiesKHR*                   pSurfaceCapabilities;
+    //std::cout<<vkGetPhysicalDeviceSurfaceCapabilitiesKHR(CContext::GetHandle().GetPhysicalDevice(), surface, pSurfaceCapabilities)<<std::endl;
+    //std::cout<<"Surface min extent: width="<<pSurfaceCapabilities->minImageExtent.width<<", Surface min extent: height="<<pSurfaceCapabilities->minImageExtent.height<<std::endl;
+    //std::cout<<"Surface max extent: width="<<pSurfaceCapabilities->maxImageExtent.width<<", Surface max extent: height="<<pSurfaceCapabilities->maxImageExtent.height<<std::endl;
+
     swapchain.createSwapchainImages(surface, windowWidth, windowHeight);
 	swapchain.createImageViews(VK_IMAGE_ASPECT_COLOR_BIT);
 

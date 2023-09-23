@@ -63,6 +63,8 @@ void CBackend::init() {
     CContext::GetHandle().physicalDevice->get()->createLogicalDevices(sample.surface, requiredValidationLayers, requireDeviceExtensions);
 
     //TODO: need acquire Android Screen Size
+    //LOGI("Windows width: %d", window.get());
+
     sample.windowWidth = 960;
     sample.windowHeight = 1440;
 
