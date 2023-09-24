@@ -92,9 +92,9 @@ void CApplication::mainLoop(){
 			glfwPollEvents();
 
             update();
-            if(!descriptor.bUseComputeStorage) renderer.prepareCurrentFrameAndAcquireImageIndex(swapchain);//TODO for test compute shader 
+            if(!descriptor.bUseStorage) renderer.prepareCurrentFrameAndAcquireImageIndex(swapchain);//TODO for test compute shader 
             recordCommandBuffer();
-            if(!descriptor.bUseComputeStorage) renderer.drawFrame(swapchain);//TODO for test compute shader
+            if(!descriptor.bUseStorage) renderer.drawFrame(swapchain);//TODO for test compute shader
 			
             if (NeedToExit) break;
 		}

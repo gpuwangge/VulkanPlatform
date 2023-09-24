@@ -8,7 +8,7 @@ CDescriptor::CDescriptor(){
     bUseMVP = false;
     bUseVP = false;
     bUseSampler = false;
-    bUseComputeStorage = false;
+    bUseStorage = false;
 	m_customUniformBufferSize = 0;
 	mvpUBO.model = glm::mat4(1.0f);
     //textureSampler = NULL;
@@ -93,9 +93,20 @@ void CDescriptor::addImageSamplerUniformBuffer(uint32_t mipLevels){
 	//REPORT("vkCreateSampler");
 }
 
-void CDescriptor::addComputeStorageUniformBuffer(){
-    bUseComputeStorage = true;
-    
+void CDescriptor::addStorageUniformBuffer(VkDeviceSize customStorageBufferSize){
+    bUseStorage = true;
+
+    //VkDeviceSize bufferSize = sizeof(uint32_t) * 4;
+    storageBuffers.resize(MAX_FRAMES_IN_FLIGHT);
+    storageBuffersMapped.resize(MAX_FRAMES_IN_FLIGHT);
+
+    for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+		//VkResult result = InitDataBufferHelper(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, &shaderStorageBuffers_compute[i]);// Create a staging buffer used to upload data to the gpu
+		//FillDataBufferHelper(shaderStorageBuffers_compute[i], (void *)(particles.data()));// Copy initial particle data to all storage buffers
+        //shaderStorageBuffers_compute[i].init(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
+        storageBuffers[i].init(customStorageBufferSize, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT );
+        vkMapMemory(CContext::GetHandle().GetLogicalDevice(), storageBuffers[i].deviceMemory, 0, customStorageBufferSize, 0, &storageBuffersMapped[i]);
+	}
 }
 
 void CDescriptor::createDescriptorPool(VkDescriptorType type){
@@ -124,7 +135,7 @@ void CDescriptor::createDescriptorPool(VkDescriptorType type){
         }
     }
 
-    if(bUseComputeStorage){
+    if(bUseStorage){
         poolSizes[counter].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
 	    poolSizes[counter].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT); 
         counter++;
@@ -232,7 +243,7 @@ void CDescriptor::createDescriptorSetLayout(VkDescriptorSetLayoutBinding *custom
         }
     }
 
-    if(bUseComputeStorage){
+    if(bUseStorage){
         bindings[counter].binding = counter;
         bindings[counter].descriptorCount = 1;
         bindings[counter].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
@@ -351,8 +362,8 @@ void CDescriptor::createDescriptorSets(std::vector<CTextureImage> &textureImages
             }
 
             VkDescriptorBufferInfo storageBufferInfo{};
-            if(bUseComputeStorage){
-                storageBufferInfo.buffer = shaderStorageBuffers_compute[i].buffer;//shaderStorageBuffers_compute[i].buffer;
+            if(bUseStorage){
+                storageBufferInfo.buffer = storageBuffers[i].buffer;
                 storageBufferInfo.offset = 0;
                 storageBufferInfo.range =sizeof(uint32_t) * 4;//sizeof(Particle) * PARTICLE_COUNT;
 
@@ -498,20 +509,10 @@ int CDescriptor::getDescriptorSize(){
 	descriptorSize += bUseCustomUniformBuffer ? 1:0;
 	descriptorSize += (bUseMVP||bUseVP) ? 1:0;
 	descriptorSize += bUseSampler ? textureSamplers.size():0;
-    descriptorSize += bUseComputeStorage ? 1:0;
+    descriptorSize += bUseStorage ? 1:0;
 	return descriptorSize;
 }
 
-void CDescriptor::createShaderStorageBuffers(){
-    VkDeviceSize bufferSize = sizeof(uint32_t) * 4;
-    shaderStorageBuffers_compute.resize(MAX_FRAMES_IN_FLIGHT);
-    for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-		//VkResult result = InitDataBufferHelper(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, &shaderStorageBuffers_compute[i]);// Create a staging buffer used to upload data to the gpu
-		//FillDataBufferHelper(shaderStorageBuffers_compute[i], (void *)(particles.data()));// Copy initial particle data to all storage buffers
-        //shaderStorageBuffers_compute[i].init(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
-        shaderStorageBuffers_compute[i].init(bufferSize, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT );
-	}
-}
 
 void CDescriptor::DestroyAndFree(){
     for(int i = 0; i < textureSamplers.size(); i++){
@@ -530,8 +531,8 @@ void CDescriptor::DestroyAndFree(){
         vpUniformBuffers[i].DestroyAndFree();
     }
 
-    for (size_t i = 0; i < shaderStorageBuffers_compute.size(); i++) {
-        shaderStorageBuffers_compute[i].DestroyAndFree();
+    for (size_t i = 0; i < storageBuffers.size(); i++) {
+        storageBuffers[i].DestroyAndFree();
     }
 
     //no need to destroy descriptorSets, because they are from descriptorPool

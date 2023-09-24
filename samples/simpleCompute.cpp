@@ -3,6 +3,11 @@
 #define TEST_CLASS_NAME CSimpleCompute
 class TEST_CLASS_NAME: public CApplication{
 public:
+	struct CustomStorageBufferObject {
+		glm::vec4 data;
+	};
+	CustomStorageBufferObject customSBO;
+
 	std::vector<VkClearValue> clearValues{ {  0.0f, 1.0f, 0.0f, 1.0f  } };
 
 	void initialize(){
@@ -31,8 +36,7 @@ public:
 		shaderManager.CreateComputeShader("simpleCompute/comp.spv");
 
 
-		descriptor.addComputeStorageUniformBuffer();
-		descriptor.createShaderStorageBuffers();
+		descriptor.addStorageUniformBuffer(sizeof(CustomStorageBufferObject));
 		descriptor.createDescriptorPool();
 		descriptor.createDescriptorSetLayout();
 		descriptor.createDescriptorSets(textureImages);
@@ -48,6 +52,9 @@ public:
 	}
 
 	void update(){
+		//Host >> Device
+		customSBO.data = {1.2, 2.3, 3.4, 4.5};
+		descriptor.updateCustomStorageBuffer<CustomStorageBufferObject>(renderer.currentFrame, durationTime, customSBO);
 		CApplication::update();
 	}
 
@@ -58,6 +65,13 @@ public:
 		//renderer.Draw(3);
 		renderer.drawComputeFrame(renderProcess.pipeline_compute, renderProcess.pipelineLayout_compute, descriptor.descriptorSets);
 		
+
+		//Device >> Host
+		float data[4] = {0};
+		std::cout<<"Current Frame = "<<renderer.currentFrame<<": ";
+		memcpy(data, descriptor.storageBuffersMapped[renderer.currentFrame], sizeof(data));
+		std::cout<<data[0]<<", "<<data[1]<<", "<<data[2]<<", "<<data[3]<<std::endl;
+
 		//RENDER_END
 	}
 };

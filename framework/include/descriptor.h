@@ -46,13 +46,18 @@ public:
     std::vector<VkSampler> textureSamplers;
     void addImageSamplerUniformBuffer(uint32_t mipLevels);
 
-    bool bUseComputeStorage;
-    void addComputeStorageUniformBuffer();
+    bool bUseStorage;
     //std::vector<CWxjBuffer> uniformBuffers_compute; //用来创建delta t的uniform
 	//std::vector<void*> uniformBuffersMapped_compute; //用来更新delta t的uniform
-	std::vector<CWxjBuffer> shaderStorageBuffers_compute; //用来把particle initial数据(pos, color, velocity)upload到gpu
-    //CWxjBuffer shaderStorageBuffers_compute;
-    void createShaderStorageBuffers();
+	std::vector<CWxjBuffer> storageBuffers; //用来把particle initial数据(pos, color, velocity)upload到gpu
+    std::vector<void*> storageBuffersMapped;
+    void addStorageUniformBuffer(VkDeviceSize customStorageBufferSize);
+    template <typename T>
+    void updateCustomStorageBuffer(uint32_t currentFrame, float durationTime, T customSBO){
+        if(bUseStorage)
+            memcpy(storageBuffersMapped[currentFrame], &customSBO, sizeof(customSBO));
+    }
+
 
 
     int getDescriptorSize();
