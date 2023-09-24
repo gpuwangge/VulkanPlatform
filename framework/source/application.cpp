@@ -22,7 +22,7 @@ CApplication::CApplication(){
 
 #ifndef ANDROID
 void CApplication::run(){ //Entrance Function
-    glfwManager.createWindow(windowWidth, windowHeight);
+    glfwManager.createWindow(OUT windowWidth, OUT windowHeight);
     CContext::Init();
 
     const std::vector<const char*> requiredValidationLayers = {"VK_LAYER_KHRONOS_validation"};

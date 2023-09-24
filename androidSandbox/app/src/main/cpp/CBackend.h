@@ -62,12 +62,12 @@ void CBackend::init() {
 
     CContext::GetHandle().physicalDevice->get()->createLogicalDevices(sample.surface, requiredValidationLayers, requireDeviceExtensions);
 
-    //TODO: need acquire Android Screen Size
-    //LOGI("Windows width: %d", window.get());
+    //Change this values will change fov if sample test sets perspective matrix
+    sample.windowWidth = 1080;
+    sample.windowHeight = 2400;
+    //TODO: how to get window size here
 
-    sample.windowWidth = 960;
-    sample.windowHeight = 1440;
-
+    //TODO: because app run in full-screen, this setting doesn't matter(confirm?)
     sample.swapchain.createSwapchainImages(sample.surface, sample.windowWidth, sample.windowHeight);
     sample.swapchain.createImageViews(VK_IMAGE_ASPECT_COLOR_BIT);
 

@@ -27,12 +27,29 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import com.google.androidgamesdk.GameActivity
 import kotlin.system.exitProcess
-
+import android.util.DisplayMetrics
+import android.util.Log
 
 class CActivity : GameActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         hideSystemUI()
+
+        val metrics_ = DisplayMetrics()
+        windowManager.defaultDisplay.getMetrics(metrics_)
+        Log.d("CActivity", "defaultDisplay widthPixels is " + metrics_.widthPixels);
+        Log.d("CActivity", "defaultDisplay heightPixels is " + metrics_.heightPixels);
+
+        var metrics = windowManager.currentWindowMetrics
+        Log.d("CActivity", "currentWindowMetrics width in px is " + metrics.bounds.width());
+        Log.d("CActivity", "currentWindowMetrics height in px is " + metrics.bounds.height());
+
+        val displayMetrics = resources.displayMetrics
+        val dpWidth = metrics.bounds.width()/displayMetrics.density
+        val dpHeight  = metrics.bounds.height()/displayMetrics.density
+        Log.d("CActivity", "currentWindowMetrics dpWidth is " + dpWidth);
+        Log.d("CActivity", "currentWindowMetrics dpHeight is " + dpHeight);
+
     }
 
     private fun hideSystemUI() {

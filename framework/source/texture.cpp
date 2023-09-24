@@ -54,7 +54,8 @@ void CTextureImage::CreateTextureImage(const std::string texturePath, VkImageUsa
 }
 
 static unsigned short frac_float16(unsigned short fp16){
-	return 0;
+	return fp16;
+
 }
 
 void CTextureImage::CreateTextureImage(void* texels, VkImageUsageFlags usage, CWxjImageBuffer &imageBuffer, unsigned short texChannels, unsigned short texBptpc) {
