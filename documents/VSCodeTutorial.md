@@ -37,11 +37,21 @@ Control+Shift+P
 
 
 ## VS Code设置环境变量
-1、新建文件夹，打开VSCode后打开该文件夹。
+1、新建文件夹，打开VSCode后打开该文件夹。  
 2、添加源文件和后缀（比如.cpp），VS Code会自动生成.vscode文件夹，内含配置文件  
-配置这几个Json文件：  
-tasks.json: 跟编译有关的文件设置
-launch.json: 跟运行有关的文件设置
+配置这几个Json文件：   
+tasks.json: 跟编译有关的文件设置  
+launch.json: 跟运行有关的文件设置  
+
+
+这两个地方设置编译器：  
+c_cpp_properties.json  
+"compilerPath": "C:\\mingw64\\bin\\gcc.exe",  
+settings.json  
+ "C_Cpp.default.compilerPath": "C:\\mingw64\\bin\\g++.exe"  
+
+
+
 ### settings.json
 说明：这个文件设置VS Code的compiler path and IntelliSense settings
 更新这个文件会自动更新c_cpp_properties.json。但有时候这个文件并不出现，这时候直接修改c_cpp_properties.json即可。
