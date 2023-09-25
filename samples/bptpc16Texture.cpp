@@ -81,7 +81,7 @@ public:
 		CApplication::update();
 	}
 
-	void recordCommandBuffer(){
+	void recordGraphicsCommandBuffer(){
 		RENDER_START
 
 		renderer.BindVertexBuffer();

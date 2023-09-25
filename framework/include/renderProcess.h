@@ -47,13 +47,13 @@ public:
     VkSampleCountFlagBits m_msaaSamples;
     VkFormat m_swapChainImageFormat;
 
-
-    VkPipelineLayout pipelineLayout;
+    bool bCreateGraphicsPipeline = false;
+    VkPipelineLayout graphicsPipelineLayout;
 	VkPipeline graphicsPipeline;
 
     bool bCreateComputePipeline = false;
-    VkPipelineLayout pipelineLayout_compute;
-	VkPipeline pipeline_compute;
+    VkPipelineLayout computePipelineLayout;
+	VkPipeline computePipeline;
 
     void createLayout(VkDescriptorSetLayout &descriptorSetLayout);
     void createLayout(VkDescriptorSetLayout &descriptorSetLayout, VkPushConstantRange &pushConstantRange, bool bUsePushConstant = true);
@@ -84,6 +84,7 @@ public:
     template <typename T>
     void createGraphicsPipeline(VkPrimitiveTopology topology, VkShaderModule &vertShaderModule, VkShaderModule &fragShaderModule, bool bUseVertexBuffer = true){
         //HERE_I_AM("CreateGraphicsPipeline");
+        bCreateGraphicsPipeline = true;
 
         VkResult result = VK_SUCCESS;
 
@@ -215,7 +216,7 @@ public:
 
         /*********9 Layout(Vulkan Special Concept)**********/
         //CreateLayout(descriptorSetLayout);
-        pipelineInfo.layout = pipelineLayout;	//9
+        pipelineInfo.layout = graphicsPipelineLayout;	//9
         
         /*********10 Renderpass Layout(Vulkan Special Concept)**********/
         //Renderpass is to specify what kind of data goes to graphics pipeline

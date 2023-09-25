@@ -164,16 +164,16 @@ void CRenderProcess::createComputePipeline(VkShaderModule &computeShaderModule, 
 	pipelineLayoutInfo.setLayoutCount = 1;
 	pipelineLayoutInfo.pSetLayouts = &computeDescriptorSetLayout;
 
-	if (vkCreatePipelineLayout(CContext::GetHandle().GetLogicalDevice(), &pipelineLayoutInfo, nullptr, &pipelineLayout_compute) != VK_SUCCESS) {
+	if (vkCreatePipelineLayout(CContext::GetHandle().GetLogicalDevice(), &pipelineLayoutInfo, nullptr, &computePipelineLayout) != VK_SUCCESS) {
 		throw std::runtime_error("failed to create compute pipeline layout!");
 	}
 
 	VkComputePipelineCreateInfo pipelineInfo{};
 	pipelineInfo.sType = VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO;
-	pipelineInfo.layout = pipelineLayout_compute;
+	pipelineInfo.layout = computePipelineLayout;
 	pipelineInfo.stage = computeShaderStageInfo;
 
-	if (vkCreateComputePipelines(CContext::GetHandle().GetLogicalDevice(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &pipeline_compute) != VK_SUCCESS) {
+	if (vkCreateComputePipelines(CContext::GetHandle().GetLogicalDevice(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &computePipeline) != VK_SUCCESS) {
 		throw std::runtime_error("failed to create compute pipeline!");
 	}
 
@@ -205,7 +205,7 @@ void CRenderProcess::createLayout(VkDescriptorSetLayout &descriptorSetLayout, Vk
 	}
 
 	//Create Graphics Pipeline Layout
-	result = vkCreatePipelineLayout(CContext::GetHandle().GetLogicalDevice(), &pipelineLayoutInfo, nullptr, &pipelineLayout);
+	result = vkCreatePipelineLayout(CContext::GetHandle().GetLogicalDevice(), &pipelineLayoutInfo, nullptr, &graphicsPipelineLayout);
 	if (result != VK_SUCCESS) throw std::runtime_error("failed to create pipeline layout!");
 	//REPORT("vkCreatePipelineLayout");
 }
@@ -213,14 +213,14 @@ void CRenderProcess::createLayout(VkDescriptorSetLayout &descriptorSetLayout, Vk
 void CRenderProcess::Cleanup(){
 	vkDestroyRenderPass(CContext::GetHandle().GetLogicalDevice(), renderPass, nullptr);
 
-	if(bCreateComputePipeline){
-		vkDestroyPipeline(CContext::GetHandle().GetLogicalDevice(), pipeline_compute, nullptr);
-    	vkDestroyPipelineLayout(CContext::GetHandle().GetLogicalDevice(), pipelineLayout_compute, nullptr);
-	}else{
-		//TODO:
-	// if(graphicsPipeline != VK_NULL_HANDLE)
+	if(bCreateGraphicsPipeline){
 	 	vkDestroyPipeline(CContext::GetHandle().GetLogicalDevice(), graphicsPipeline, nullptr);
-	// if(pipelineLayout != VK_NULL_HANDLE)
-     	vkDestroyPipelineLayout(CContext::GetHandle().GetLogicalDevice(), pipelineLayout, nullptr);
+     	vkDestroyPipelineLayout(CContext::GetHandle().GetLogicalDevice(), graphicsPipelineLayout, nullptr);
 	}
+
+	if(bCreateComputePipeline){
+		vkDestroyPipeline(CContext::GetHandle().GetLogicalDevice(), computePipeline, nullptr);
+    	vkDestroyPipelineLayout(CContext::GetHandle().GetLogicalDevice(), computePipelineLayout, nullptr);
+	}
+	
 }

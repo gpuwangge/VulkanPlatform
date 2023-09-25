@@ -36,7 +36,7 @@ public:
 		CApplication::update();
 	}
 
-	void recordCommandBuffer(){
+	void recordGraphicsCommandBuffer(){
 		RENDER_START
 		//actually this sample doesn't need BindDescriptorSets
 

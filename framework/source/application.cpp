@@ -86,16 +86,28 @@ void CApplication::update(){
     renderer.Update();
 }
 
+void CApplication::recordGraphicsCommandBuffer(){}
+
+void CApplication::recordComputeCommandBuffer(){}
+
 #ifndef ANDROID
 void CApplication::mainLoop(){
 		while (!glfwWindowShouldClose(glfwManager.window)) {
 			glfwPollEvents();
 
             update();
-            if(!(descriptor.uniformBufferUsageFlags & UNIFORM_BUFFER_STORAGE_BIT)) renderer.prepareCurrentFrameAndAcquireImageIndex(swapchain);//TODO for test compute shader 
-            recordCommandBuffer();
-            if(!(descriptor.uniformBufferUsageFlags & UNIFORM_BUFFER_STORAGE_BIT)) renderer.drawFrame(swapchain);//TODO for test compute shader
-			
+
+            if(renderProcess.bCreateGraphicsPipeline){
+                renderer.prepareCurrentFrameAndAcquireImageIndex(swapchain);
+                recordGraphicsCommandBuffer();
+                renderer.drawFrame(swapchain);
+            }
+
+            if(renderProcess.bCreateComputePipeline){
+                recordComputeCommandBuffer();
+            }
+
+
             if (NeedToExit) break;
 		}
 

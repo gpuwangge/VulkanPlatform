@@ -50,8 +50,8 @@ public:
 
     //Draw
     template <typename T>
-    void PushConstant(T &pc, VkPipelineLayout pipelineLayout, VkPushConstantRange &pushConstantRange){
-        vkCmdPushConstants(commandBuffers[currentFrame], pipelineLayout, pushConstantRange.stageFlags, pushConstantRange.offset, pushConstantRange.size, &pc);
+    void PushConstant(T &pc, VkPipelineLayout graphicsPipelineLayout, VkPushConstantRange &pushConstantRange){
+        vkCmdPushConstants(commandBuffers[currentFrame], graphicsPipelineLayout, pushConstantRange.stageFlags, pushConstantRange.offset, pushConstantRange.size, &pc);
     }
     void DrawIndexed(std::vector<uint32_t> &indices3D);
     void Draw(uint32_t n);
@@ -76,8 +76,8 @@ public:
 
     std::vector<VkCommandBuffer> commandBuffers_compute; //专门用于compute的command buffer
     void CreateComputeCommandBuffers();
-    void drawComputeFrame(VkPipeline &pipeline_compute, VkPipelineLayout &pipelineLayout_compute, std::vector<VkDescriptorSet> &descriptorSets_compute);
-    void recordComputeCommandBuffer(VkPipeline &pipeline_compute, VkPipelineLayout &pipelineLayout_compute, std::vector<VkDescriptorSet> &descriptorSets_compute);
+    void drawComputeFrame(VkPipeline &computePipeline, VkPipelineLayout &pipelineLayout_compute, std::vector<VkDescriptorSet> &descriptorSets_compute);
+    void recordComputeCommandBuffer(VkPipeline &computePipeline, VkPipelineLayout &pipelineLayout_compute, std::vector<VkDescriptorSet> &descriptorSets_compute);
 
     std::vector<VkSemaphore> imageAvailableSemaphores;
 	std::vector<VkSemaphore> renderFinishedSemaphores;

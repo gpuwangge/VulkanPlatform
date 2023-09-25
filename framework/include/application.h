@@ -19,7 +19,7 @@
 #endif
 
 #define RENDER_START { \
-    renderer.Start(renderProcess.graphicsPipeline, renderProcess.pipelineLayout, \
+    renderer.Start(renderProcess.graphicsPipeline, renderProcess.graphicsPipelineLayout, \
     renderProcess.renderPass,   \
     swapchain.swapChainFramebuffers,swapchain.swapChainExtent,   \
     descriptor.descriptorSets,  \
@@ -70,9 +70,11 @@ public:
     /*Virtual function: base and derived class will implement. If drived class not implement, call base's verson*/
     virtual void initialize(); //base: create sync object, destroy shader resource
     virtual void update(); //base: update time, frame id, camera and ubo
-    
+    virtual void recordGraphicsCommandBuffer();
+    virtual void recordComputeCommandBuffer();
+
     /*Pure virtual function(=0): base class not implment, derived class must implement*/
-    virtual void recordCommandBuffer() = 0;
+    //NA
 };
 
 #endif

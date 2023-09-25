@@ -58,21 +58,14 @@ public:
 		CApplication::update();
 	}
 
-	void recordCommandBuffer(){
-		//RENDER_START
-		//actually this sample doesn't need BindDescriptorSets
-
-		//renderer.Draw(3);
-		renderer.drawComputeFrame(renderProcess.pipeline_compute, renderProcess.pipelineLayout_compute, descriptor.descriptorSets);
+	void recordComputeCommandBuffer(){
+		renderer.drawComputeFrame(renderProcess.computePipeline, renderProcess.computePipelineLayout, descriptor.descriptorSets);
 		
-
 		//Device >> Host
 		float data[4] = {0};
 		std::cout<<"Current Frame = "<<renderer.currentFrame<<": ";
 		memcpy(data, descriptor.storageBuffersMapped[renderer.currentFrame], sizeof(data));
-		std::cout<<data[0]<<", "<<data[1]<<", "<<data[2]<<", "<<data[3]<<std::endl;
-
-		//RENDER_END
+		std::cout<<data[0]<<", "<<data[1]<<", "<<data[2]<<", "<<data[3]<<std::endl;	
 	}
 };
 

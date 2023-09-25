@@ -273,7 +273,7 @@ void CRenderer::EndCOmmandBuffer(){
 }
 
 
-void CRenderer::drawComputeFrame(VkPipeline &pipeline_compute, VkPipelineLayout &pipelineLayout_compute, std::vector<VkDescriptorSet> &descriptorSets_compute){
+void CRenderer::drawComputeFrame(VkPipeline &computePipeline, VkPipelineLayout &pipelineLayout_compute, std::vector<VkDescriptorSet> &descriptorSets_compute){
     VkSubmitInfo submitInfo{};
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
@@ -284,7 +284,7 @@ void CRenderer::drawComputeFrame(VkPipeline &pipeline_compute, VkPipelineLayout 
     vkResetFences(CContext::GetHandle().GetLogicalDevice(), 1, &inFlightFences[currentFrame]);
 
     vkResetCommandBuffer(commandBuffers_compute[currentFrame], /*VkCommandBufferResetFlagBits*/ 0);
-    recordComputeCommandBuffer(pipeline_compute, pipelineLayout_compute, descriptorSets_compute); //Dispatch in this function
+    recordComputeCommandBuffer(computePipeline, pipelineLayout_compute, descriptorSets_compute); //Dispatch in this function
 
     submitInfo.commandBufferCount = 1;
     submitInfo.pCommandBuffers = &commandBuffers_compute[currentFrame];
@@ -296,7 +296,7 @@ void CRenderer::drawComputeFrame(VkPipeline &pipeline_compute, VkPipelineLayout 
     };    
 }
 
-void CRenderer::recordComputeCommandBuffer(VkPipeline &pipeline_compute, VkPipelineLayout &pipelineLayout_compute, std::vector<VkDescriptorSet> &descriptorSets_compute) {
+void CRenderer::recordComputeCommandBuffer(VkPipeline &computePipeline, VkPipelineLayout &pipelineLayout_compute, std::vector<VkDescriptorSet> &descriptorSets_compute) {
     VkCommandBufferBeginInfo beginInfo{};
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
@@ -304,7 +304,7 @@ void CRenderer::recordComputeCommandBuffer(VkPipeline &pipeline_compute, VkPipel
         throw std::runtime_error("failed to begin recording compute command buffer!");
     }
 
-    vkCmdBindPipeline(commandBuffers_compute[currentFrame], VK_PIPELINE_BIND_POINT_COMPUTE, pipeline_compute);
+    vkCmdBindPipeline(commandBuffers_compute[currentFrame], VK_PIPELINE_BIND_POINT_COMPUTE, computePipeline);
 
     vkCmdBindDescriptorSets(commandBuffers_compute[currentFrame], VK_PIPELINE_BIND_POINT_COMPUTE, pipelineLayout_compute, 0, 1, &descriptorSets_compute[currentFrame], 0, nullptr);
 

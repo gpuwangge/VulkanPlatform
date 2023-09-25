@@ -81,7 +81,7 @@ public:
 		//counter++;
 	}
 
-	void recordCommandBuffer(){
+	void recordGraphicsCommandBuffer(){
 		RENDER_START
 
 		renderer.BindVertexBuffer();
