@@ -1,11 +1,17 @@
 #include "..\\framework\\include\\application.h"
 
-#define TEST_CLASS_NAME CSimpleCompute
+#define TEST_CLASS_NAME CGemmCompute
 class TEST_CLASS_NAME: public CApplication{
 public:
+	const int DIM_M = 2;
+	const int DIM_K = 2;
+	const int DIM_N = 2;
 	const int KernelRunNumber = 5;
+
 	struct StructStorageBuffer {
-		glm::vec4 data;
+		glm::vec4 A;
+		glm::vec4 B;
+		glm::vec4 C;
 	};
 	StructStorageBuffer storageBufferObject;
 
@@ -34,7 +40,7 @@ public:
 
 		//shaderManager.InitVertexShader("../shaders/simpleTriangle/vert.spv");
 		//shaderManager.InitFragmentShader("../shaders/simpleTriangle/frag.spv");
-		shaderManager.CreateComputeShader("simpleCompute/comp.spv");
+		shaderManager.CreateComputeShader("gemmCompute/comp.spv");
 
 		descriptor.addStorageBuffer(sizeof(StructStorageBuffer));
 		descriptor.createDescriptorPool();
@@ -55,8 +61,12 @@ public:
 		static int counter = 0;
 
 		//Host >> Device
-		std::cout<<"update(): write counter = "<<counter<<" to the device at frame="<<renderer.currentFrame<<std::endl;
-		storageBufferObject.data = {counter+0.0f, counter+0.1f, counter+0.2f, counter+0.3f};
+		//std::cout<<"update(): write counter = "<<counter<<" to the device at frame="<<renderer.currentFrame<<std::endl;
+		//storageBufferObject.data = {counter+0.0f, counter+0.1f, counter+0.2f, counter+0.3f};
+		storageBufferObject.A = glm::vec4(1.0f,1.0f,1.0f,1.0f);
+		storageBufferObject.B = glm::vec4(2.0f,2.0f,2.0f,2.0f);
+		storageBufferObject.C = glm::vec4(30.0f);
+
 		descriptor.updateStorageBuffer<StructStorageBuffer>(renderer.currentFrame, durationTime, storageBufferObject);
 		//std::cout<<"update(): Delta Time: "<<deltaTime<<", Duration Time: "<<durationTime<<std::endl;
 		
@@ -73,10 +83,12 @@ public:
 		renderer.drawComputeFrame(renderProcess.computePipeline, renderProcess.computePipelineLayout, descriptor.descriptorSets);
 		
 		//Device >> Host
-		float data[4] = {0};
+		float data[12] = {0};
 		//std::cout<<"compute(): Current Frame = "<<renderer.currentFrame<<": "<<std::endl;
 		memcpy(data, descriptor.storageBuffersMapped[renderer.currentFrame], sizeof(data));
-		std::cout<<"compute(): read data = {"<<data[0]<<", "<<data[1]<<", "<<data[2]<<", "<<data[3]<<"} from the device at frame="<<renderer.currentFrame<<std::endl;	
+		std::cout<<"compute(): read data = {"<<std::endl;	
+		for(int i = 0; i < 12; i++) std::cout<<data[i]<<", ";
+		std::cout<<"} from the device at frame="<<renderer.currentFrame<<std::endl;	
 	}
 };
 
