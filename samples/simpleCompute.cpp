@@ -3,10 +3,10 @@
 #define TEST_CLASS_NAME CSimpleCompute
 class TEST_CLASS_NAME: public CApplication{
 public:
-	struct CustomStorageBufferObject {
+	struct StructStorageBuffer {
 		glm::vec4 data;
 	};
-	CustomStorageBufferObject customSBO;
+	StructStorageBuffer storageBufferObject;
 
 	std::vector<VkClearValue> clearValues{ {  0.0f, 1.0f, 0.0f, 1.0f  } };
 
@@ -36,7 +36,7 @@ public:
 		shaderManager.CreateComputeShader("simpleCompute/comp.spv");
 
 
-		descriptor.addStorageUniformBuffer(sizeof(CustomStorageBufferObject));
+		descriptor.addStorageBuffer(sizeof(StructStorageBuffer));
 		descriptor.createDescriptorPool();
 		descriptor.createDescriptorSetLayout();
 		descriptor.createDescriptorSets(textureImages);
@@ -53,8 +53,8 @@ public:
 
 	void update(){
 		//Host >> Device
-		customSBO.data = {1.2, 2.3, 3.4, 4.5};
-		descriptor.updateCustomStorageBuffer<CustomStorageBufferObject>(renderer.currentFrame, durationTime, customSBO);
+		storageBufferObject.data = {1.2, 2.3, 3.4, 4.5};
+		descriptor.updateStorageBuffer<StructStorageBuffer>(renderer.currentFrame, durationTime, storageBufferObject);
 		CApplication::update();
 	}
 

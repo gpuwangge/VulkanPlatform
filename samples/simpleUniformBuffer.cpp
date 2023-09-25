@@ -3,7 +3,7 @@
 #define TEST_CLASS_NAME CSimpleUniformBuffer
 class TEST_CLASS_NAME: public CApplication{
 public:
-	struct CustomUniformBufferObject {
+	struct StructCustomUniformBuffer {
 		glm::vec4 color;
 
 		static VkDescriptorSetLayoutBinding GetBinding(){
@@ -16,7 +16,7 @@ public:
 			return binding;
 		}
 	};
-	CustomUniformBufferObject customUBO{};
+	StructCustomUniformBuffer customUniformBufferObject{};
 
 	std::vector<VkClearValue> clearValues{ {  0.0f, 0.0f, 0.0f, 1.0f  } };
 
@@ -34,9 +34,9 @@ public:
 		shaderManager.CreateVertexShader("simpleUniformBuffer/vert.spv");
 		shaderManager.CreateFragmentShader("simpleUniformBuffer/frag.spv");
 
-		descriptor.addCustomUniformBuffer(sizeof(CustomUniformBufferObject));
+		descriptor.addCustomUniformBuffer(sizeof(StructCustomUniformBuffer));
 		descriptor.createDescriptorPool();
-		VkDescriptorSetLayoutBinding customBinding = CustomUniformBufferObject::GetBinding();
+		VkDescriptorSetLayoutBinding customBinding = StructCustomUniformBuffer::GetBinding();
 		descriptor.createDescriptorSetLayout(&customBinding);
 		descriptor.createDescriptorSets(textureImages);
 
@@ -51,8 +51,8 @@ public:
 
 	void update(){
 		//printf("%f\n", durationTime);
-		customUBO.color = {(sin(durationTime*3) + 1.0f) / 2.0f, (cos(durationTime*3) + 1.0f) / 2.0f, 0.0f, 1.0f};
-		descriptor.updateCustomUniformBuffer<CustomUniformBufferObject>(renderer.currentFrame, durationTime, customUBO);
+		customUniformBufferObject.color = {(sin(durationTime*3) + 1.0f) / 2.0f, (cos(durationTime*3) + 1.0f) / 2.0f, 0.0f, 1.0f};
+		descriptor.updateCustomUniformBuffer<StructCustomUniformBuffer>(renderer.currentFrame, durationTime, customUniformBufferObject);
 		CApplication::update();
 	}
 

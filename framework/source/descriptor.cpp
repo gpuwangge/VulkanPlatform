@@ -4,16 +4,19 @@
 
 CDescriptor::CDescriptor(){
     //debugger = new CDebugger("../logs/descriptor.log");
-	bUseCustomUniformBuffer = false;
-    bUseMVP = false;
-    bUseVP = false;
-    bUseSampler = false;
-    bUseStorage = false;
+	//bUseCustomUniformBuffer = false;
+    //bUseMVP = false;
+    //bUseVP = false;
+    //bUseSampler = false;
+    //bUseStorageBuffer = false;
 	m_customUniformBufferSize = 0;
+    m_storageBufferSize = 0;
 	mvpUBO.model = glm::mat4(1.0f);
     //textureSampler = NULL;
     textureSamplers.resize(1);
     textureSamplerCount = 0;
+
+    uniformBufferUsageFlags = 0;
 }
 
 CDescriptor::~CDescriptor(){
@@ -21,7 +24,8 @@ CDescriptor::~CDescriptor(){
 }
 
 void CDescriptor::addCustomUniformBuffer(VkDeviceSize customUniformBufferSize){
-	bUseCustomUniformBuffer = true;
+	//bUseCustomUniformBuffer = true;
+    uniformBufferUsageFlags |= UNIFORM_BUFFER_CUSTOM_BIT;
 
 	customUniformBuffers.resize(MAX_FRAMES_IN_FLIGHT);
 	customUniformBuffersMapped.resize(MAX_FRAMES_IN_FLIGHT);
@@ -35,7 +39,8 @@ void CDescriptor::addCustomUniformBuffer(VkDeviceSize customUniformBufferSize){
 }
 
 void CDescriptor::addMVPUniformBuffer(){
-    bUseMVP = true;
+    //bUseMVP = true;
+    uniformBufferUsageFlags |= UNIFORM_BUFFER_MVP_BIT;
 	
     mvpUniformBuffers.resize(MAX_FRAMES_IN_FLIGHT);
     mvpUniformBuffersMapped.resize(MAX_FRAMES_IN_FLIGHT);
@@ -49,7 +54,8 @@ void CDescriptor::addMVPUniformBuffer(){
 }
 
 void CDescriptor::addVPUniformBuffer(){
-    bUseVP = true;
+    //bUseVP = true;
+    uniformBufferUsageFlags |= UNIFORM_BUFFER_VP_BIT;
 	
     vpUniformBuffers.resize(MAX_FRAMES_IN_FLIGHT);
     vpUniformBuffersMapped.resize(MAX_FRAMES_IN_FLIGHT);
@@ -63,7 +69,8 @@ void CDescriptor::addVPUniformBuffer(){
 }
 
 void CDescriptor::addImageSamplerUniformBuffer(uint32_t mipLevels){
-    bUseSampler = true;
+    //bUseSampler = true;
+    uniformBufferUsageFlags |= UNIFORM_BUFFER_SAMPLER_BIT;
 
 	VkPhysicalDeviceProperties properties{};
 	vkGetPhysicalDeviceProperties(CContext::GetHandle().GetPhysicalDevice(), &properties);
@@ -93,80 +100,54 @@ void CDescriptor::addImageSamplerUniformBuffer(uint32_t mipLevels){
 	//REPORT("vkCreateSampler");
 }
 
-void CDescriptor::addStorageUniformBuffer(VkDeviceSize customStorageBufferSize){
-    bUseStorage = true;
+void CDescriptor::addStorageBuffer(VkDeviceSize storageBufferSize){
+    //bUseStorageBuffer = true;
+    uniformBufferUsageFlags |= UNIFORM_BUFFER_STORAGE_BIT;
 
     //VkDeviceSize bufferSize = sizeof(uint32_t) * 4;
     storageBuffers.resize(MAX_FRAMES_IN_FLIGHT);
     storageBuffersMapped.resize(MAX_FRAMES_IN_FLIGHT);
 
+    m_storageBufferSize = storageBufferSize;
+
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
 		//VkResult result = InitDataBufferHelper(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, &shaderStorageBuffers_compute[i]);// Create a staging buffer used to upload data to the gpu
 		//FillDataBufferHelper(shaderStorageBuffers_compute[i], (void *)(particles.data()));// Copy initial particle data to all storage buffers
         //shaderStorageBuffers_compute[i].init(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
-        storageBuffers[i].init(customStorageBufferSize, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT );
-        vkMapMemory(CContext::GetHandle().GetLogicalDevice(), storageBuffers[i].deviceMemory, 0, customStorageBufferSize, 0, &storageBuffersMapped[i]);
+        storageBuffers[i].init(storageBufferSize, VK_BUFFER_USAGE_STORAGE_BUFFER_BIT );
+        vkMapMemory(CContext::GetHandle().GetLogicalDevice(), storageBuffers[i].deviceMemory, 0, storageBufferSize, 0, &storageBuffersMapped[i]);
 	}
 }
 
-void CDescriptor::createDescriptorPool(VkDescriptorType type){
+void CDescriptor::createDescriptorPool(){//VkDescriptorType type
+    //Descriptor Step 1/3
 	//HERE_I_AM("CreateDescriptorPool");
 
 	poolSizes.resize(getDescriptorSize());
 	int counter = 0;
 
-	if(bUseCustomUniformBuffer){
-        poolSizes[counter].type = type;
+	if(uniformBufferUsageFlags & UNIFORM_BUFFER_CUSTOM_BIT){
+        poolSizes[counter].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 	 	poolSizes[counter].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
 		counter++;
 	}
-	
-    if(bUseMVP || bUseVP){
+    if(uniformBufferUsageFlags & UNIFORM_BUFFER_MVP_BIT || uniformBufferUsageFlags & UNIFORM_BUFFER_VP_BIT){
         poolSizes[counter].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 	 	poolSizes[counter].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
 		counter++;
     }
-
-    if(bUseSampler){
+    if(uniformBufferUsageFlags & UNIFORM_BUFFER_SAMPLER_BIT){
         for(int i = 0; i < textureSamplers.size(); i++){
             poolSizes[counter].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 	 	    poolSizes[counter].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
 		    counter++;
         }
     }
-
-    if(bUseStorage){
+    if(uniformBufferUsageFlags & UNIFORM_BUFFER_STORAGE_BIT){
         poolSizes[counter].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
 	    poolSizes[counter].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT); 
         counter++;
     }
-
-	//std::vector<VkDescriptorPoolSize> poolSizes;
-	// switch (pt) {
-	// case PIPELINE_BASIC:
-	// 	poolSizes.resize(1);
-	// 	poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-	// 	poolSizes[0].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
-	// 	break;
-	// case PIPELINE_TEXTURE:
-	// case PIPELINE_MODEL:
-	// case PIPELINE_MIPMAP:
-	//     poolSizes.resize(2);
-	//     poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-	//     poolSizes[0].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
-	//     poolSizes[1].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-	//     poolSizes[1].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
-	//     break;
-	// case PIPELINE_COMPUTE:
-	//     poolSizes.resize(2);
-	//     poolSizes[0].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-	//     poolSizes[0].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
-	//     poolSizes[1].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-	//     poolSizes[1].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT) * 2;
-	//     break;
-	//default:
-	//	break;
-	//}
 
 	VkDescriptorPoolCreateInfo poolInfo{};
 	poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
@@ -180,30 +161,14 @@ void CDescriptor::createDescriptorPool(VkDescriptorType type){
 }
 
 void CDescriptor::createDescriptorSetLayout(VkDescriptorSetLayoutBinding *customBinding){
+    //Descriptor Step 2/3
     //VkDescriptorType descriptorType, VkShaderStageFlags stageFlags, uint32_t descriptorCount, const VkSampler*  pImmutableSamplers){
 	//HERE_I_AM("CreateDescriptorSetLayout");
-
-	// switch (pt) {
-	// case PIPELINE_BASIC:
-	//     break;
-	// case PIPELINE_TEXTURE:
-	// case PIPELINE_MODEL:
-	// case PIPELINE_MIPMAP:
-	//     samplerLayoutBinding.binding = 1;
-	//     samplerLayoutBinding.descriptorCount = 1;
-	//     samplerLayoutBinding.descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-	//     samplerLayoutBinding.pImmutableSamplers = nullptr;
-	//     samplerLayoutBinding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
-	//     bindings.push_back(samplerLayoutBinding);
-	//     break;
-	// default:
-	//     break;
-	// }
 
     bindings.resize(getDescriptorSize());
 	int counter = 0;
 
-	if(bUseCustomUniformBuffer){
+	if(uniformBufferUsageFlags & UNIFORM_BUFFER_CUSTOM_BIT){
         bindings[counter].binding = counter;
 		bindings[counter].descriptorCount = customBinding->descriptorCount;
 		bindings[counter].descriptorType = customBinding->descriptorType;
@@ -211,8 +176,7 @@ void CDescriptor::createDescriptorSetLayout(VkDescriptorSetLayoutBinding *custom
 		bindings[counter].stageFlags = customBinding->stageFlags;
 		counter++;
 	}
-
-    if(bUseMVP){
+    if(uniformBufferUsageFlags & UNIFORM_BUFFER_MVP_BIT){
         VkDescriptorSetLayoutBinding binding = MVPUniformBufferObject::GetBinding();
         bindings[counter].binding = counter;
 		bindings[counter].descriptorCount = binding.descriptorCount;
@@ -221,8 +185,7 @@ void CDescriptor::createDescriptorSetLayout(VkDescriptorSetLayoutBinding *custom
 		bindings[counter].stageFlags = binding.stageFlags;
 		counter++;
     }
-
-    if(bUseVP){
+    if(uniformBufferUsageFlags & UNIFORM_BUFFER_VP_BIT){
         VkDescriptorSetLayoutBinding binding = VPUniformBufferObject::GetBinding();
         bindings[counter].binding = counter;
 		bindings[counter].descriptorCount = binding.descriptorCount;
@@ -231,8 +194,7 @@ void CDescriptor::createDescriptorSetLayout(VkDescriptorSetLayoutBinding *custom
 		bindings[counter].stageFlags = binding.stageFlags;
 		counter++;
     }
-
-    if(bUseSampler){
+    if(uniformBufferUsageFlags & UNIFORM_BUFFER_SAMPLER_BIT){
         for(int i = 0; i < textureSamplers.size(); i++){
             bindings[counter].binding = counter;
             bindings[counter].descriptorCount = 1;
@@ -242,8 +204,7 @@ void CDescriptor::createDescriptorSetLayout(VkDescriptorSetLayoutBinding *custom
             counter++;
         }
     }
-
-    if(bUseStorage){
+    if(uniformBufferUsageFlags & UNIFORM_BUFFER_STORAGE_BIT){
         bindings[counter].binding = counter;
         bindings[counter].descriptorCount = 1;
         bindings[counter].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
@@ -271,210 +232,164 @@ void CDescriptor::createDescriptorSetLayout(VkDescriptorSetLayoutBinding *custom
 }
 
 void CDescriptor::createDescriptorSets(std::vector<CTextureImage> &textureImages){
-        //HERE_I_AM("wxjCreateDescriptorSets");
+    //Descriptor Step 3/3
+    //HERE_I_AM("wxjCreateDescriptorSets");
 
-        int descriptorSize = getDescriptorSize();
+    int descriptorSize = getDescriptorSize();
 
-        VkResult result = VK_SUCCESS;
+    VkResult result = VK_SUCCESS;
 
-        std::vector<VkDescriptorSetLayout> layouts(MAX_FRAMES_IN_FLIGHT, descriptorSetLayout);
-        VkDescriptorSetAllocateInfo allocInfo{};
-        allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-        allocInfo.descriptorPool = descriptorPool;
-        allocInfo.descriptorSetCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
-        allocInfo.pSetLayouts = layouts.data();
+    std::vector<VkDescriptorSetLayout> layouts(MAX_FRAMES_IN_FLIGHT, descriptorSetLayout);
+    VkDescriptorSetAllocateInfo allocInfo{};
+    allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+    allocInfo.descriptorPool = descriptorPool;
+    allocInfo.descriptorSetCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
+    allocInfo.pSetLayouts = layouts.data();
 
-        descriptorSets.resize(MAX_FRAMES_IN_FLIGHT);
-        //Step 3
-        result = vkAllocateDescriptorSets(CContext::GetHandle().GetLogicalDevice(), &allocInfo, descriptorSets.data());
-        if (result != VK_SUCCESS) throw std::runtime_error("failed to allocate descriptor sets!");
-        //REPORT("vkAllocateDescriptorSets");
+    descriptorSets.resize(MAX_FRAMES_IN_FLIGHT);
+    //Step 3
+    result = vkAllocateDescriptorSets(CContext::GetHandle().GetLogicalDevice(), &allocInfo, descriptorSets.data());
+    if (result != VK_SUCCESS) throw std::runtime_error("failed to allocate descriptor sets!");
+    //REPORT("vkAllocateDescriptorSets");
 
-        for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-            std::vector<VkWriteDescriptorSet> descriptorWrites;
-            //VkDescriptorBufferInfo storageBufferInfoLastFrame{}; //for compute shader
-            //VkDescriptorBufferInfo storageBufferInfoCurrentFrame{}; //for compute shader
+    for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+        std::vector<VkWriteDescriptorSet> descriptorWrites;
+        //VkDescriptorBufferInfo storageBufferInfoLastFrame{}; //for compute shader
+        //VkDescriptorBufferInfo storageBufferInfoCurrentFrame{}; //for compute shader
 
-            descriptorWrites.resize(descriptorSize);
-            int counter = 0;
+        descriptorWrites.resize(descriptorSize);
+        int counter = 0;
 
-            VkDescriptorBufferInfo customBufferInfo{}; //for custom uniform
-            if(bUseCustomUniformBuffer){
-                customBufferInfo.buffer = customUniformBuffers[i].buffer;
-                customBufferInfo.offset = 0;
-                customBufferInfo.range = m_customUniformBufferSize;
-                descriptorWrites[counter].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                descriptorWrites[counter].dstSet = descriptorSets[i];
-                descriptorWrites[counter].dstBinding = counter;
-                descriptorWrites[counter].dstArrayElement = 0;
-                descriptorWrites[counter].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-                descriptorWrites[counter].descriptorCount = 1;
-                descriptorWrites[counter].pBufferInfo = &customBufferInfo;
-                counter++;
-            }
-
-            VkDescriptorBufferInfo mvpBufferInfo{}; //for mvp
-            if(bUseMVP){
-                mvpBufferInfo.buffer = mvpUniformBuffers[i].buffer;
-                mvpBufferInfo.offset = 0;
-                mvpBufferInfo.range = sizeof(MVPUniformBufferObject);
-                descriptorWrites[counter].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                descriptorWrites[counter].dstSet = descriptorSets[i];
-                descriptorWrites[counter].dstBinding = counter;
-                descriptorWrites[counter].dstArrayElement = 0;
-                descriptorWrites[counter].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-                descriptorWrites[counter].descriptorCount = 1;
-                descriptorWrites[counter].pBufferInfo = &mvpBufferInfo;
-                counter++;
-            }
-
-            VkDescriptorBufferInfo vpBufferInfo{}; //for vp
-            if(bUseVP){
-                vpBufferInfo.buffer = vpUniformBuffers[i].buffer;
-                vpBufferInfo.offset = 0;
-                vpBufferInfo.range = sizeof(VPUniformBufferObject);
-                descriptorWrites[counter].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                descriptorWrites[counter].dstSet = descriptorSets[i];
-                descriptorWrites[counter].dstBinding = counter;
-                descriptorWrites[counter].dstArrayElement = 0;
-                descriptorWrites[counter].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-                descriptorWrites[counter].descriptorCount = 1;
-                descriptorWrites[counter].pBufferInfo = &vpBufferInfo;
-                counter++;
-            }
-
-            std::vector<VkDescriptorImageInfo> imageInfo{}; //for texture sampler
-            if(bUseSampler){
-                imageInfo.resize(textureSamplers.size());
-                for(int j = 0; j < textureSamplers.size(); j++){
-                    imageInfo[j].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-                    imageInfo[j].imageView = textureImages[j].textureImageBuffer.view;
-                    imageInfo[j].sampler = textureSamplers[j];
-                    descriptorWrites[counter].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                    descriptorWrites[counter].dstSet = descriptorSets[i];
-                    descriptorWrites[counter].dstBinding = counter;
-                    descriptorWrites[counter].dstArrayElement = 0;
-                    descriptorWrites[counter].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-                    descriptorWrites[counter].descriptorCount = 1;
-                    descriptorWrites[counter].pImageInfo = &imageInfo[j];
-                    counter++;
-                }
-            }
-
-            VkDescriptorBufferInfo storageBufferInfo{};
-            if(bUseStorage){
-                storageBufferInfo.buffer = storageBuffers[i].buffer;
-                storageBufferInfo.offset = 0;
-                storageBufferInfo.range =sizeof(uint32_t) * 4;//sizeof(Particle) * PARTICLE_COUNT;
-
-                descriptorWrites[counter].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                descriptorWrites[counter].dstSet = descriptorSets[i];
-                descriptorWrites[counter].dstBinding = counter;
-                descriptorWrites[counter].dstArrayElement = 0;
-                descriptorWrites[counter].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-                descriptorWrites[counter].descriptorCount = 1;
-                descriptorWrites[counter].pBufferInfo = &storageBufferInfo;
-                counter++;
-            }
-
-            /*switch (pt) {
-            case PIPELINE_BASIC:
-                descriptorWrites.resize(1);
-
-                bufferInfo.buffer = uniformBuffers[i].buffer;
-                bufferInfo.offset = 0;
-                bufferInfo.range = sizeof(UniformBufferObject);
-                descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-                descriptorWrites[0].dstSet = descriptorSets[i];
-                descriptorWrites[0].dstBinding = 0;
-                descriptorWrites[0].dstArrayElement = 0;
-                descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-                descriptorWrites[0].descriptorCount = 1;
-                descriptorWrites[0].pBufferInfo = &bufferInfo;
-                break;
-            // case PIPELINE_TEXTURE:
-            // case PIPELINE_MODEL:
-            // case PIPELINE_MIPMAP:
-            //     descriptorWrites.resize(2);
-
-            //     bufferInfo.buffer = uniformBuffers[i].buffer;
-            //     bufferInfo.offset = 0;
-            //     bufferInfo.range = sizeof(UniformBufferObject);
-            //     descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-            //     descriptorWrites[0].dstSet = descriptorSets[i];
-            //     descriptorWrites[0].dstBinding = 0;
-            //     descriptorWrites[0].dstArrayElement = 0;
-            //     descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-            //     descriptorWrites[0].descriptorCount = 1;
-            //     descriptorWrites[0].pBufferInfo = &bufferInfo;
-
-            //     imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-            //     imageInfo.imageView = textureImageView[pt];
-            //     imageInfo.sampler = textureSampler;
-            //     descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-            //     descriptorWrites[1].dstSet = descriptorSets[i];
-            //     descriptorWrites[1].dstBinding = 1;
-            //     descriptorWrites[1].dstArrayElement = 0;
-            //     descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-            //     descriptorWrites[1].descriptorCount = 1;
-            //     descriptorWrites[1].pImageInfo = &imageInfo;
-            //     break;
-            // case PIPELINE_COMPUTE:
-            //     descriptorWrites.resize(3);
-
-            //     //VkDescriptorBufferInfo uniformBufferInfo{};
-            //     bufferInfo.buffer = uniformBuffers_compute[i].buffer;
-            //     bufferInfo.offset = 0;
-            //     bufferInfo.range = sizeof(UniformBufferObject_compute);
-
-            //     //std::array<VkWriteDescriptorSet, 3> descriptorWrites{};
-            //     descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-            //     descriptorWrites[0].dstSet = descriptorSets[i];
-            //     descriptorWrites[0].dstBinding = 0;
-            //     descriptorWrites[0].dstArrayElement = 0;
-            //     descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-            //     descriptorWrites[0].descriptorCount = 1;
-            //     descriptorWrites[0].pBufferInfo = &bufferInfo;
-
-            //     //VkDescriptorBufferInfo storageBufferInfoLastFrame{};
-            //     storageBufferInfoLastFrame.buffer = shaderStorageBuffers_compute[(i - 1) % MAX_FRAMES_IN_FLIGHT].buffer;
-            //     storageBufferInfoLastFrame.offset = 0;
-            //     storageBufferInfoLastFrame.range = sizeof(Particle) * PARTICLE_COUNT;
-
-            //     descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-            //     descriptorWrites[1].dstSet = descriptorSets[i];
-            //     descriptorWrites[1].dstBinding = 1;
-            //     descriptorWrites[1].dstArrayElement = 0;
-            //     descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-            //     descriptorWrites[1].descriptorCount = 1;
-            //     descriptorWrites[1].pBufferInfo = &storageBufferInfoLastFrame;
-
-            //     //VkDescriptorBufferInfo storageBufferInfoCurrentFrame{};
-            //     storageBufferInfoCurrentFrame.buffer = shaderStorageBuffers_compute[i].buffer;
-            //     storageBufferInfoCurrentFrame.offset = 0;
-            //     storageBufferInfoCurrentFrame.range = sizeof(Particle) * PARTICLE_COUNT;
-
-            //     descriptorWrites[2].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-            //     descriptorWrites[2].dstSet = descriptorSets[i];
-            //     descriptorWrites[2].dstBinding = 2;
-            //     descriptorWrites[2].dstArrayElement = 0;
-            //     descriptorWrites[2].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-            //     descriptorWrites[2].descriptorCount = 1;
-            //     descriptorWrites[2].pBufferInfo = &storageBufferInfoCurrentFrame;
-            //     break;
-            default:
-                break;
-            }*/
-
-            //Step 4
-            vkUpdateDescriptorSets(CContext::GetHandle().GetLogicalDevice(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
-
+        VkDescriptorBufferInfo customBufferInfo{}; //for custom uniform
+        if(uniformBufferUsageFlags & UNIFORM_BUFFER_CUSTOM_BIT){
+            customBufferInfo.buffer = customUniformBuffers[i].buffer;
+            customBufferInfo.offset = 0;
+            customBufferInfo.range = m_customUniformBufferSize;
+            descriptorWrites[counter].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+            descriptorWrites[counter].dstSet = descriptorSets[i];
+            descriptorWrites[counter].dstBinding = counter;
+            descriptorWrites[counter].dstArrayElement = 0;
+            descriptorWrites[counter].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+            descriptorWrites[counter].descriptorCount = 1;
+            descriptorWrites[counter].pBufferInfo = &customBufferInfo;
+            counter++;
         }
+        VkDescriptorBufferInfo mvpBufferInfo{}; //for mvp
+        if(uniformBufferUsageFlags & UNIFORM_BUFFER_MVP_BIT){
+            mvpBufferInfo.buffer = mvpUniformBuffers[i].buffer;
+            mvpBufferInfo.offset = 0;
+            mvpBufferInfo.range = sizeof(MVPUniformBufferObject);
+            descriptorWrites[counter].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+            descriptorWrites[counter].dstSet = descriptorSets[i];
+            descriptorWrites[counter].dstBinding = counter;
+            descriptorWrites[counter].dstArrayElement = 0;
+            descriptorWrites[counter].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+            descriptorWrites[counter].descriptorCount = 1;
+            descriptorWrites[counter].pBufferInfo = &mvpBufferInfo;
+            counter++;
+        }
+        VkDescriptorBufferInfo vpBufferInfo{}; //for vp
+        if(uniformBufferUsageFlags & UNIFORM_BUFFER_VP_BIT){
+            vpBufferInfo.buffer = vpUniformBuffers[i].buffer;
+            vpBufferInfo.offset = 0;
+            vpBufferInfo.range = sizeof(VPUniformBufferObject);
+            descriptorWrites[counter].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+            descriptorWrites[counter].dstSet = descriptorSets[i];
+            descriptorWrites[counter].dstBinding = counter;
+            descriptorWrites[counter].dstArrayElement = 0;
+            descriptorWrites[counter].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+            descriptorWrites[counter].descriptorCount = 1;
+            descriptorWrites[counter].pBufferInfo = &vpBufferInfo;
+            counter++;
+        }
+        std::vector<VkDescriptorImageInfo> imageInfo{}; //for texture sampler
+        if(uniformBufferUsageFlags & UNIFORM_BUFFER_SAMPLER_BIT){
+            imageInfo.resize(textureSamplers.size());
+            for(int j = 0; j < textureSamplers.size(); j++){
+                imageInfo[j].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+                imageInfo[j].imageView = textureImages[j].textureImageBuffer.view;
+                imageInfo[j].sampler = textureSamplers[j];
+                descriptorWrites[counter].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+                descriptorWrites[counter].dstSet = descriptorSets[i];
+                descriptorWrites[counter].dstBinding = counter;
+                descriptorWrites[counter].dstArrayElement = 0;
+                descriptorWrites[counter].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+                descriptorWrites[counter].descriptorCount = 1;
+                descriptorWrites[counter].pImageInfo = &imageInfo[j];
+                counter++;
+            }
+        }
+        VkDescriptorBufferInfo storageBufferInfo{};
+        if(uniformBufferUsageFlags & UNIFORM_BUFFER_STORAGE_BIT){
+            storageBufferInfo.buffer = storageBuffers[i].buffer;
+            storageBufferInfo.offset = 0;
+            storageBufferInfo.range = m_storageBufferSize;//sizeof(uint32_t) * 4;//sizeof(Particle) * PARTICLE_COUNT;
+
+            descriptorWrites[counter].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+            descriptorWrites[counter].dstSet = descriptorSets[i];
+            descriptorWrites[counter].dstBinding = counter;
+            descriptorWrites[counter].dstArrayElement = 0;
+            descriptorWrites[counter].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+            descriptorWrites[counter].descriptorCount = 1;
+            descriptorWrites[counter].pBufferInfo = &storageBufferInfo;
+            counter++;
+        }
+
+        /*switch (pt) {
+        // case PIPELINE_COMPUTE:
+        //     descriptorWrites.resize(3);
+
+        //     //VkDescriptorBufferInfo uniformBufferInfo{};
+        //     bufferInfo.buffer = uniformBuffers_compute[i].buffer;
+        //     bufferInfo.offset = 0;
+        //     bufferInfo.range = sizeof(UniformBufferObject_compute);
+
+        //     //std::array<VkWriteDescriptorSet, 3> descriptorWrites{};
+        //     descriptorWrites[0].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+        //     descriptorWrites[0].dstSet = descriptorSets[i];
+        //     descriptorWrites[0].dstBinding = 0;
+        //     descriptorWrites[0].dstArrayElement = 0;
+        //     descriptorWrites[0].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        //     descriptorWrites[0].descriptorCount = 1;
+        //     descriptorWrites[0].pBufferInfo = &bufferInfo;
+
+        //     //VkDescriptorBufferInfo storageBufferInfoLastFrame{};
+        //     storageBufferInfoLastFrame.buffer = shaderStorageBuffers_compute[(i - 1) % MAX_FRAMES_IN_FLIGHT].buffer;
+        //     storageBufferInfoLastFrame.offset = 0;
+        //     storageBufferInfoLastFrame.range = sizeof(Particle) * PARTICLE_COUNT;
+
+        //     descriptorWrites[1].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+        //     descriptorWrites[1].dstSet = descriptorSets[i];
+        //     descriptorWrites[1].dstBinding = 1;
+        //     descriptorWrites[1].dstArrayElement = 0;
+        //     descriptorWrites[1].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+        //     descriptorWrites[1].descriptorCount = 1;
+        //     descriptorWrites[1].pBufferInfo = &storageBufferInfoLastFrame;
+
+        //     //VkDescriptorBufferInfo storageBufferInfoCurrentFrame{};
+        //     storageBufferInfoCurrentFrame.buffer = shaderStorageBuffers_compute[i].buffer;
+        //     storageBufferInfoCurrentFrame.offset = 0;
+        //     storageBufferInfoCurrentFrame.range = sizeof(Particle) * PARTICLE_COUNT;
+
+        //     descriptorWrites[2].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+        //     descriptorWrites[2].dstSet = descriptorSets[i];
+        //     descriptorWrites[2].dstBinding = 2;
+        //     descriptorWrites[2].dstArrayElement = 0;
+        //     descriptorWrites[2].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
+        //     descriptorWrites[2].descriptorCount = 1;
+        //     descriptorWrites[2].pBufferInfo = &storageBufferInfoCurrentFrame;
+        //     break;
+        }*/
+
+        //Step 4
+        vkUpdateDescriptorSets(CContext::GetHandle().GetLogicalDevice(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
+
     }
+}
 
 
 void CDescriptor::updateMVPUniformBuffer(uint32_t currentFrame, float durationTime, Camera &mainCamera) {
-    if(bUseMVP){
+    if(uniformBufferUsageFlags & UNIFORM_BUFFER_MVP_BIT){
         // UniformBufferObject ubo{};
         // ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
         // glm::mat4x4 m = glm::perspective(glm::radians(45.0f), WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 10.0f);
@@ -487,29 +402,25 @@ void CDescriptor::updateMVPUniformBuffer(uint32_t currentFrame, float durationTi
         mvpUBO.proj = mainCamera.matrices.perspective;
 
         memcpy(mvpUniformBuffersMapped[currentFrame], &mvpUBO, sizeof(mvpUBO));
-
-        //CApplication::updateUniformBuffer(currentFrame, durationTime);
     }
 }
 
 void CDescriptor::updateVPUniformBuffer(uint32_t currentFrame, float durationTime, Camera &mainCamera) {
-    if(bUseVP){
+    if(uniformBufferUsageFlags & UNIFORM_BUFFER_VP_BIT){
         //UniformBufferObject ubo{};
         vpUBO.view = mainCamera.matrices.view;
         vpUBO.proj = mainCamera.matrices.perspective;
 
         memcpy(vpUniformBuffersMapped[currentFrame], &vpUBO, sizeof(vpUBO));
-
-        //CApplication::updateUniformBuffer(currentFrame, durationTime);
     }
 }
 
 int CDescriptor::getDescriptorSize(){
 	int descriptorSize = 0;
-	descriptorSize += bUseCustomUniformBuffer ? 1:0;
-	descriptorSize += (bUseMVP||bUseVP) ? 1:0;
-	descriptorSize += bUseSampler ? textureSamplers.size():0;
-    descriptorSize += bUseStorage ? 1:0;
+	descriptorSize += uniformBufferUsageFlags & UNIFORM_BUFFER_CUSTOM_BIT ? 1:0;
+	descriptorSize += (uniformBufferUsageFlags & UNIFORM_BUFFER_MVP_BIT || uniformBufferUsageFlags & UNIFORM_BUFFER_VP_BIT) ? 1:0;
+	descriptorSize += uniformBufferUsageFlags & UNIFORM_BUFFER_SAMPLER_BIT ? textureSamplers.size():0;
+    descriptorSize += uniformBufferUsageFlags & UNIFORM_BUFFER_STORAGE_BIT ? 1:0;
 	return descriptorSize;
 }
 
