@@ -106,6 +106,10 @@ void CShaderManager::CreateComputeShader(const std::string shaderName){
 }
 
 void CShaderManager::Destroy(){
-    vkDestroyShaderModule(CContext::GetHandle().GetLogicalDevice(), fragShaderModule, nullptr);
-    vkDestroyShaderModule(CContext::GetHandle().GetLogicalDevice(), vertShaderModule, nullptr);
+    if(fragShaderModule)
+        vkDestroyShaderModule(CContext::GetHandle().GetLogicalDevice(), fragShaderModule, nullptr);
+    if(vertShaderModule)
+        vkDestroyShaderModule(CContext::GetHandle().GetLogicalDevice(), vertShaderModule, nullptr);
+    if(computeShaderModule)
+        vkDestroyShaderModule(CContext::GetHandle().GetLogicalDevice(), computeShaderModule, nullptr);
 }

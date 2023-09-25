@@ -1,7 +1,7 @@
 #include "../include/renderer.h"
 
 CRenderer::CRenderer(){
-    currentFrame = 1;
+    currentFrame = 0;
     imageIndex = 0;
     //debugger = new CDebugger("../logs/renderer.log");
 }
@@ -75,7 +75,7 @@ void CRenderer::CreateComputeCommandBuffers() {
 	allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
 	allocInfo.commandBufferCount = (uint32_t)commandBuffers_compute.size();
 
-	if (vkAllocateCommandBuffers(CContext::GetHandle().GetLogicalDevice(), &allocInfo, commandBuffers_compute.data()) != VK_SUCCESS) { //compute recordCommandBuffer需要用这个buffer： recordComputeCommandBuffer(commandBuffers_compute[currentFrame]);
+	if (vkAllocateCommandBuffers(CContext::GetHandle().GetLogicalDevice(), &allocInfo, commandBuffers_compute.data()) != VK_SUCCESS) { //compute recordCommandBuffer需要用这个buffer： recordCompute CommandBuffer(commandBuffers_compute[currentFrame]);
 		throw std::runtime_error("failed to allocate compute command buffers!");
 	}
 }
@@ -284,7 +284,7 @@ void CRenderer::drawComputeFrame(VkPipeline &computePipeline, VkPipelineLayout &
     vkResetFences(CContext::GetHandle().GetLogicalDevice(), 1, &inFlightFences[currentFrame]);
 
     vkResetCommandBuffer(commandBuffers_compute[currentFrame], /*VkCommandBufferResetFlagBits*/ 0);
-    recordComputeCommandBuffer(computePipeline, pipelineLayout_compute, descriptorSets_compute); //Dispatch in this function
+    recordComputeCommandBuffer0(computePipeline, pipelineLayout_compute, descriptorSets_compute); //Dispatch in this function
 
     submitInfo.commandBufferCount = 1;
     submitInfo.pCommandBuffers = &commandBuffers_compute[currentFrame];
@@ -294,9 +294,11 @@ void CRenderer::drawComputeFrame(VkPipeline &computePipeline, VkPipelineLayout &
     if (vkQueueSubmit(CContext::GetHandle().GetComputeQueue(), 1, &submitInfo, inFlightFences[currentFrame]) != VK_SUCCESS) {
         throw std::runtime_error("failed to submit compute command buffer!");
     };    
+
+    //vkDeviceWaitIdle(CContext::GetHandle().GetLogicalDevice());
 }
 
-void CRenderer::recordComputeCommandBuffer(VkPipeline &computePipeline, VkPipelineLayout &pipelineLayout_compute, std::vector<VkDescriptorSet> &descriptorSets_compute) {
+void CRenderer::recordComputeCommandBuffer0(VkPipeline &computePipeline, VkPipelineLayout &pipelineLayout_compute, std::vector<VkDescriptorSet> &descriptorSets_compute) {
     VkCommandBufferBeginInfo beginInfo{};
     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 
@@ -313,7 +315,6 @@ void CRenderer::recordComputeCommandBuffer(VkPipeline &computePipeline, VkPipeli
     if (vkEndCommandBuffer(commandBuffers_compute[currentFrame]) != VK_SUCCESS) {
         throw std::runtime_error("failed to record compute command buffer!");
     }
-
 }
 
 

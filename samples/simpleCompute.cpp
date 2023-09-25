@@ -10,6 +10,8 @@ public:
 
 	std::vector<VkClearValue> clearValues{ {  0.0f, 1.0f, 0.0f, 1.0f  } };
 
+	const int KernelRunNumber = 5;
+
 	void initialize(){
 		//0. prepare compute shader(spv)*
 		//1. need a physical device with compute, and pick Queue Family with compute*
@@ -35,7 +37,6 @@ public:
 		//shaderManager.InitFragmentShader("../shaders/simpleTriangle/frag.spv");
 		shaderManager.CreateComputeShader("simpleCompute/comp.spv");
 
-
 		descriptor.addStorageBuffer(sizeof(StructStorageBuffer));
 		descriptor.createDescriptorPool();
 		descriptor.createDescriptorSetLayout();
@@ -52,20 +53,31 @@ public:
 	}
 
 	void update(){
+		static int counter = 0;
+
 		//Host >> Device
-		storageBufferObject.data = {1.2, 2.3, 3.4, 4.5};
+		std::cout<<"update(): write counter = "<<counter<<" to the device at frame="<<renderer.currentFrame<<std::endl;
+		storageBufferObject.data = {counter+0.0f, counter+0.1f, counter+0.2f, counter+0.3f};
 		descriptor.updateStorageBuffer<StructStorageBuffer>(renderer.currentFrame, durationTime, storageBufferObject);
-		CApplication::update();
+		//std::cout<<"update(): Delta Time: "<<deltaTime<<", Duration Time: "<<durationTime<<std::endl;
+		
+    	//vkDeviceWaitIdle(CContext::GetHandle().GetLogicalDevice());
+
+		if(counter==KernelRunNumber) NeedToExit = true;
+		counter++;
+
+		CApplication::update(); //update time
 	}
 
 	void recordComputeCommandBuffer(){
+		std::cout<<"Dispatch Kernel. "<<std::endl;
 		renderer.drawComputeFrame(renderProcess.computePipeline, renderProcess.computePipelineLayout, descriptor.descriptorSets);
 		
 		//Device >> Host
 		float data[4] = {0};
-		std::cout<<"Current Frame = "<<renderer.currentFrame<<": ";
+		//std::cout<<"compute(): Current Frame = "<<renderer.currentFrame<<": "<<std::endl;
 		memcpy(data, descriptor.storageBuffersMapped[renderer.currentFrame], sizeof(data));
-		std::cout<<data[0]<<", "<<data[1]<<", "<<data[2]<<", "<<data[3]<<std::endl;	
+		std::cout<<"compute(): read data = {"<<data[0]<<", "<<data[1]<<", "<<data[2]<<", "<<data[3]<<"} from the device at frame="<<renderer.currentFrame<<std::endl;	
 	}
 };
 

@@ -82,8 +82,6 @@ void CApplication::update(){
 
     descriptor.updateMVPUniformBuffer(renderer.currentFrame, durationTime, mainCamera);
     descriptor.updateVPUniformBuffer(renderer.currentFrame, durationTime, mainCamera);
-
-    renderer.Update();
 }
 
 void CApplication::recordGraphicsCommandBuffer(){}
@@ -107,7 +105,7 @@ void CApplication::mainLoop(){
                 recordComputeCommandBuffer();
             }
 
-
+            renderer.Update(); //update currentFrame
             if (NeedToExit) break;
 		}
 

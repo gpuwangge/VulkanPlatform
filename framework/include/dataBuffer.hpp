@@ -205,7 +205,7 @@ private:
             VkMemoryType vmt = vpdmp.memoryTypes[i];
             VkMemoryPropertyFlags vmpf = vmt.propertyFlags;
             if ((memoryTypeBits & (1 << i)) != 0) {
-                if ((vmpf & memoryFlagBits) != 0){
+                if (((vmpf & memoryFlagBits) && (vmpf & VK_MEMORY_PROPERTY_HOST_COHERENT_BIT)) != 0){
                     //fprintf(debugger->FpDebug, "Found given memory flag (0x%08x) and type (0x%08x): i = %d\n", memoryFlagBits, memoryTypeBits, i);
                     return i;
                 }

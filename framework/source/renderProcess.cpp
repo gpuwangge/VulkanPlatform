@@ -176,8 +176,6 @@ void CRenderProcess::createComputePipeline(VkShaderModule &computeShaderModule, 
 	if (vkCreateComputePipelines(CContext::GetHandle().GetLogicalDevice(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &computePipeline) != VK_SUCCESS) {
 		throw std::runtime_error("failed to create compute pipeline!");
 	}
-
-	vkDestroyShaderModule(CContext::GetHandle().GetLogicalDevice(), computeShaderModule, nullptr);
 }
 
 
