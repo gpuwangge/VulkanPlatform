@@ -19,20 +19,16 @@ VSCode自带多文件编译系统，也就是task.json，但是用起来不够�
 运行cmake的命令:  
 > cmake ..  
 如果要指定编译器：  
-> cmake -G "MinGW Makefiles" ..
-
+> cmake -G "MinGW Makefiles" ..  
 (这一步会在build文件夹下生成makefile)  
 安装编译器(编译器bin目录会被放入环境变量)  
 验证安装了编译器的cmd命令： 
-> where gcc
-
+> where gcc  
 进入编译器bin目录，重命名mingw32-make.exe为make.exe  
 验证make设置好的cmd命令：
-> where make
-
+> where make  
 验证make安装好的另一个cmd命令:   
-> make -v
-
+> make -v  
 这时候在build目录下运行make，将生成exe文件。  
 以及在一些目录下生成obj文件。并且对每一个cpp文件都生成单独的obj文件
 自己写的.h文件不需要写在CMakeLists.txt里，也不必指定其目录  
@@ -46,8 +42,7 @@ VSCode自带多文件编译系统，也就是task.json，但是用起来不够�
 3. VS Code下的调试方法
 首先debug的工具也是跟着编译器MinGW安装的：gdb  
 验证安装了gdb的cmd命令:
-> where gdb
-
+> where gdb  
 调试器似乎必须结合VS Code, 毕竟，我们要在VS Code里面设置断点。  
 settings.json里面会记录使用的"C_Cpp_Runner.debuggerPath": "gdb"  
 launch.json里面也有"miDebuggerPath": "gdb"  
@@ -69,9 +64,8 @@ launch.json解析：
 
 4. 使用外部include和lib，比如vulkan  
 CMakeLists.txt下面添加如下代码  
-> include_directories(E:\\GitHubRepository\\cmakeTester)
-> link_directories("/home/server/third/lib")
-
+> include_directories(E:\\GitHubRepository\\cmakeTester)  
+> link_directories("/home/server/third/lib")  
 
 5. 如何给make传递参数
 CMakeLists.txt code:  
