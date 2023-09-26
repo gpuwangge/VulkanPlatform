@@ -8,8 +8,8 @@ VSCode自带多文件编译系统，也就是task.json，但是用起来不够�
 注意安装CMake的时候，选择下载解压包然后放到c盘下。如果选择安装包，似乎会自动指定MS的编译器。  
 
 ## CMake使用步骤
-1. 运行一个基本的编译命令生成exe  
-安装CMake。
+目标： 运行一个基本的编译命令生成exe   
+1. 安装CMake
 验证安装CMake的cmd命令:
 > where cmake
 
@@ -36,66 +36,59 @@ VSCode自带多文件编译系统，也就是task.json，但是用起来不够�
 
 这时候在build目录下运行make，将生成exe文件。  
 以及在一些目录下生成obj文件。并且对每一个cpp文件都生成单独的obj文件
-自己写的.h文件不需要写在CMakeLists.txt里，也不必指定其目录
+自己写的.h文件不需要写在CMakeLists.txt里，也不必指定其目录  
 如果只修改了某一些.cpp或.h文件，make就会只重新生成相关的.o文件，并连接成exe
 记得在make之前先保存所有文件。
 
-
 2. 修改源文件并重新编译
-修改了cpp文件后，只要文件夹架构没有改变，就不用重新运行cmake命令，而可以直接make。
-在main.cpp中加入了 #include<stdio.h>，也不用cmake，就可以默认找到这些头文件。
+修改了cpp文件后，只要文件夹架构没有改变，就不用重新运行cmake命令，而可以直接make。  
+在main.cpp中加入了 #include<stdio.h>，也不用cmake，就可以默认找到这些头文件。  
+
+3. VS Code下的调试方法
+首先debug的工具也是跟着编译器MinGW安装的：gdb  
+验证安装了gdb的cmd命令:
+> where gdb
+
+调试器似乎必须结合VS Code, 毕竟，我们要在VS Code里面设置断点。  
+settings.json里面会记录使用的"C_Cpp_Runner.debuggerPath": "gdb"  
+launch.json里面也有"miDebuggerPath": "gdb"  
+
+最后，有一点注意，右上角的button的调试运行跟左边launch/task没啥关系。  
+以下讨论都是关于launch/task的。要启动launch，按键盘上的F5!  
+首先，如何调出这两个文件：  
+VSCode界面下点击Add Debug Configuration会添加launch.json文件和tasks.json文件。  
+launch.json解析：  
+"preLaunchTask":     会在执行launch之前先执行这里后面的task。默认会调用task来build。但是我们使用make来编译，就不用这个了，所以把这一行注释掉。（tasks.json就没用了）  
+“program”: 想调试的程序，设置成我们通过make生成的那个exe程序。(cmake里面一定要设定Debug模式！)  
+如上，以后我们编译就通过make，然后调试就用F5。  
+"cwd":   current work directory  
+
+其他launch.json设置参数  
+"request" : "launch"   会启动program  
+"request": "attach"     会提示附着在一个已经运行中的program上  
+关于VSCode的Debug/Release版本问题(尚未验证)：编译的时候的参数, -g是debug模式，-O2是release模式。所以VSCode默认是开debug模式的。  
+
+4. 使用外部include和lib，比如vulkan  
+CMakeLists.txt下面添加如下代码  
+> include_directories(E:\\GitHubRepository\\cmakeTester)
+> link_directories("/home/server/third/lib")
 
 
+5. 如何给make传递参数
+CMakeLists.txt code:  
+> if(SINGLE)
+>     add_executable(simpleTriangle samples/simpleTriangle.cpp)
+> else()
+>     aux_source_directory(${PROJECT_SOURCE_DIR}/samples SRC)
+>     foreach(sampleFile IN LISTS SRC)
+>         get_filename_component(sampleName ${sampleFile} NAME_WE)
+>         add_executable(${sampleName} ${sampleFile})
+>     endforeach()
+> endif()
+Call CMakeLists.txt  
+> cmake -G "MinGW Makefiles" -D SINGLE=true ..
 
-
----3 VS Code下的调试方法---
-首先debug的工具也是跟着编译器MinGW安装的：gdb
-验证安装了gdb的cmd命令: where gdb
-
-
-第二，调试器似乎必须结合VS Code, 毕竟，我们要在VS Code里面设置断点。
-settings.json里面会记录使用的"C_Cpp_Runner.debuggerPath": "gdb"
-launch.json里面也有"miDebuggerPath": "gdb"
-
-
-第三，有一点注意，右上角的button的调试运行跟左边launch/task没啥关系。以下讨论都是关于launch/task的。要启动launch，按键盘上的F5!
-首先，如何调出这两个文件：
-VSCode界面下点击Add Debug Configuration会添加launch.json文件和tasks.json文件。
-launch.json解析：
-"preLaunchTask":     会在执行launch之前先执行这里后面的task。默认会调用task来build。但是我们使用make来编译，就不用这个了，所以把这一行注释掉。（tasks.json就没用了）
-“program”: 想调试的程序，设置成我们通过make生成的那个exe程序。(cmake里面一定要设定Debug模式！)
-如上，以后我们编译就通过make，然后调试就用F5。
-"cwd":   current work directory
-
-
-其他launch.json设置参数
-"request" : "launch"   会启动program
-"request": "attach"     会提示附着在一个已经运行中的program上
-关于VSCode的Debug/Release版本问题(尚未验证)：编译的时候的参数, -g是debug模式，-O2是release模式。所以VSCode默认是开debug模式的。
-
-
----4 使用外部include和lib，比如vulkan---
-CMakeLists.txt下面添加如下代码
-include_directories(E:\\GitHubRepository\\cmakeTester)
-link_directories("/home/server/third/lib")
-
-
----5 如何给make传递参数---
-CMakeLists.txt code:
-if(SINGLE)
-    add_executable(simpleTriangle samples/simpleTriangle.cpp)
-else()
-    aux_source_directory(${PROJECT_SOURCE_DIR}/samples SRC)
-    foreach(sampleFile IN LISTS SRC)
-        get_filename_component(sampleName ${sampleFile} NAME_WE)
-        add_executable(${sampleName} ${sampleFile})
-    endforeach()
-endif()
-Call CMakeLists.txt
-cmake -G "MinGW Makefiles" -D SINGLE=true ..
-
-
----6 其他---
+6. 其他
 目前有个问题是，同一段CMakeLists，在laptop Windows环境下生成name.lib，在desktop Windows环境下上生成libname.a。在VSCode terminal和windows command prompt里面都试过。编译器都是MinGW。
 另外，不管名字是什么，
 target_link_libraries(xxx name)
