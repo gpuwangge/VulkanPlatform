@@ -46,7 +46,7 @@ VSCode自带多文件编译系统，也就是task.json，但是用起来不够�
 修改了cpp文件后，只要文件夹架构没有改变，就不用重新运行cmake命令，而可以直接make。  
 在main.cpp中加入了 #include<stdio.h>，也不用cmake，就可以默认找到这些头文件。  
 
-**`3. VS Code下的调试方法`**
+**`3. VS Code下的调试方法`**  
 首先debug的工具也是跟着编译器MinGW安装的：gdb  
 验证安装了gdb的cmd命令:
 > where gdb
@@ -70,12 +70,12 @@ launch.json解析：
 "request": "attach"     会提示附着在一个已经运行中的program上  
 关于VSCode的Debug/Release版本问题(尚未验证)：编译的时候的参数, -g是debug模式，-O2是release模式。所以VSCode默认是开debug模式的。  
 
-**'4. 使用外部include和lib'**    
+**`4. 使用外部include和lib`**    
 CMakeLists.txt下面添加如下代码  
 > include_directories(E:\\GitHubRepository\\somefoldername)  
 > link_directories("/home/server/third/lib")  
 
-5. 如何给make传递参数
+**`5. 如何给make传递参数`**    
 CMakeLists.txt code:
 ```cmake
 if(SINGLE)  
@@ -91,7 +91,7 @@ endif()
 Call CMakeLists.txt  
 > cmake -G "MinGW Makefiles" -D SINGLE=true ..
 
-6. 其他
+**`6. 其他`**    
 目前有个问题是，同一段CMakeLists，在laptop Windows环境下生成name.lib，在desktop Windows环境下上生成libname.a。在VSCode terminal和windows command prompt里面都试过。编译器都是MinGW。  
 另外，不管名字是什么，  
 > target_link_libraries(xxx name)
@@ -103,41 +103,39 @@ target_link_libraries(A,B,C)里：
 A依赖B+C, B依赖C。  
 (A,C,B)会出现B链接失败的错误。  
 
-
-
 ## Makefile介绍
-https://www.bilibili.com/video/BV188411L7d2/?spm_id_from=333.337.search-card.all.click&vd_source=e9d9bc8892014008f20c4e4027b98036
-makefile的作用
-假设一个项目工程有如下源文件
-functions.h //内含数学函数和打印函数的定义; #ifndef防止重复include
-factorial.cpp //#include "functions.h"。内含数学函数的实现
-printhello.cpp //#include "functions.h"。内含打印函数的实现
-main.cpp  //#include "functions.h"。main函数里调用数学和打印函数
-该如何编译呢:
-g++ main.cpp factorial.cpp pringhello.cpp -o main
-现在问题是，在实际的项目中，往往不止三个源文件。使用这种原始的编译方法将导致编译命令无比坑长；并且如果只改动了其中一个源文件，重新编译的时候需要把所有源文件重新编译一次，浪费时间。
+https://www.bilibili.com/video/BV188411L7d2/?spm_id_from=333.337.search-card.all.click&vd_source=e9d9bc8892014008f20c4e4027b98036  
+### makefile的作用  
+假设一个项目工程有如下源文件  
+functions.h //内含数学函数和打印函数的定义; #ifndef防止重复include  
+factorial.cpp //#include "functions.h"。内含数学函数的实现  
+printhello.cpp //#include "functions.h"。内含打印函数的实现  
+main.cpp  //#include "functions.h"。main函数里调用数学和打印函数  
+该如何编译呢:  
+g++ main.cpp factorial.cpp pringhello.cpp -o main  
+现在问题是，在实际的项目中，往往不止三个源文件。使用这种原始的编译方法将导致编译命令无比坑长；并且如果只改动了其中一个源文件，重新编译的时候需要把所有源文件重新编译一次，浪费时间。  
 
-解决办法A：逐个编译
-g++ main.cpp -c
-这个命令只编译，不链接。结果是产生了main.o文件。同理：
-g++ main.cpp -c
-g++ main.cpp -c
-生成了三个.o文件，然后：
-g++ *.o -o main
-这样就把所有的.o文件链接到了一起。
-这样带来的问题是，手动输入这些命令非常麻烦。
+#### 解决办法A：逐个编译  
+g++ main.cpp -c  
+这个命令只编译，不链接。结果是产生了main.o文件。同理：  
+g++ main.cpp -c  
+g++ main.cpp -c  
+生成了三个.o文件，然后：  
+g++ *.o -o main  
+这样就把所有的.o文件链接到了一起。  
+这样带来的问题是，手动输入这些命令非常麻烦。  
 
-解决办法B：用脚本实现逐个编译
-建立一个Makefile文件，写下如下脚本：(hello目标依赖于三个源文件)
-hello: main.cpp printhello.cpp factorial.cpp
-    g++ -o hello main.cpp printhello.cpp factorial.cpp
-如何运行：
-在Makefile目录下，输入make加回车。
-这时候会寻找hello这个文件。如果它不存在，就编译生成它；如果hello存在，就比较hello生成的时间和依赖的三个源文件的生成时间：如果有任何源文件比hello更新，就重新编译hello，否则，啥也不做。
-这个方法的问题是编译时间依旧很长。
+#### 解决办法B：用脚本实现逐个编译  
+建立一个Makefile文件，写下如下脚本：(hello目标依赖于三个源文件)  
+hello: main.cpp printhello.cpp factorial.cpp  
+    g++ -o hello main.cpp printhello.cpp factorial.cpp  
+如何运行：  
+在Makefile目录下，输入make加回车。  
+这时候会寻找hello这个文件。如果它不存在，就编译生成它；如果hello存在，就比较hello生成的时间和依赖的三个源文件的生成时间：如果有任何源文件比hello更新，就重新编译hello，否则，啥也不做。  
+这个方法的问题是编译时间依旧很长。  
 
-解决办法C:
-在方案B的基础上，如果源文件更新了，单独编译这个源文件，生成新的目标文件(.o)，然后再链接生成新的hello。
+#### 解决办法C  
+在方案B的基础上，如果源文件更新了，单独编译这个源文件，生成新的目标文件(.o)，然后再链接生成新的hello。  
 
 
 CMake入门
