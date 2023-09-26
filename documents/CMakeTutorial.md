@@ -47,7 +47,8 @@ VSCode自带多文件编译系统，也就是task.json，但是用起来不够�
 3. VS Code下的调试方法
 首先debug的工具也是跟着编译器MinGW安装的：gdb  
 验证安装了gdb的cmd命令:
-> where gdb  
+> where gdb
+
 调试器似乎必须结合VS Code, 毕竟，我们要在VS Code里面设置断点。  
 settings.json里面会记录使用的"C_Cpp_Runner.debuggerPath": "gdb"  
 launch.json里面也有"miDebuggerPath": "gdb"  
@@ -73,7 +74,8 @@ CMakeLists.txt下面添加如下代码
 > link_directories("/home/server/third/lib")  
 
 5. 如何给make传递参数
-CMakeLists.txt code:  
+CMakeLists.txt code:
+```cmake
 > if(SINGLE)  
 >     add_executable(simpleTriangle samples/simpleTriangle.cpp)  
 > else()  
@@ -83,7 +85,7 @@ CMakeLists.txt code:
 >         add_executable(${sampleName} ${sampleFile})  
 >     endforeach()  
 > endif()
-
+```
 Call CMakeLists.txt  
 > cmake -G "MinGW Makefiles" -D SINGLE=true ..
 
