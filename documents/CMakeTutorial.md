@@ -9,7 +9,7 @@ VSCode自带多文件编译系统，也就是task.json，但是用起来不够�
 
 ## CMake使用步骤
 目标： 运行一个基本的编译命令生成exe   
-**`1. 安装CMake`**
+**`1. 安装CMake`**  
 验证安装CMake的cmd命令:
 > where cmake
 
@@ -34,17 +34,19 @@ VSCode自带多文件编译系统，也就是task.json，但是用起来不够�
 验证make安装好的另一个cmd命令:   
 > make -v
 
-这时候在build目录下运行make，将生成exe文件。  
+这时候在build目录下运行make，将编译生成exe文件。  
 以及在一些目录下生成obj文件。并且对每一个cpp文件都生成单独的obj文件
 自己写的.h文件不需要写在CMakeLists.txt里，也不必指定其目录  
 如果只修改了某一些.cpp或.h文件，make就会只重新生成相关的.o文件，并连接成exe
 记得在make之前先保存所有文件。
 
-2. 修改源文件并重新编译
+**`2. 编译`**  
+如上所述，使用make命令就可以编译  
+修改源文件后需要重新编译  
 修改了cpp文件后，只要文件夹架构没有改变，就不用重新运行cmake命令，而可以直接make。  
 在main.cpp中加入了 #include<stdio.h>，也不用cmake，就可以默认找到这些头文件。  
 
-3. VS Code下的调试方法
+**`3. VS Code下的调试方法`**
 首先debug的工具也是跟着编译器MinGW安装的：gdb  
 验证安装了gdb的cmd命令:
 > where gdb
@@ -68,9 +70,9 @@ launch.json解析：
 "request": "attach"     会提示附着在一个已经运行中的program上  
 关于VSCode的Debug/Release版本问题(尚未验证)：编译的时候的参数, -g是debug模式，-O2是release模式。所以VSCode默认是开debug模式的。  
 
-4. 使用外部include和lib，比如vulkan  
+**'4. 使用外部include和lib'**    
 CMakeLists.txt下面添加如下代码  
-> include_directories(E:\\GitHubRepository\\cmakeTester)  
+> include_directories(E:\\GitHubRepository\\somefoldername)  
 > link_directories("/home/server/third/lib")  
 
 5. 如何给make传递参数
