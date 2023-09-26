@@ -209,7 +209,8 @@ void CRenderProcess::createLayout(VkDescriptorSetLayout &descriptorSetLayout, Vk
 }
 
 void CRenderProcess::Cleanup(){
-	vkDestroyRenderPass(CContext::GetHandle().GetLogicalDevice(), renderPass, nullptr);
+	if(renderPass != VK_NULL_HANDLE)
+		vkDestroyRenderPass(CContext::GetHandle().GetLogicalDevice(), renderPass, nullptr);
 
 	if(bCreateGraphicsPipeline){
 	 	vkDestroyPipeline(CContext::GetHandle().GetLogicalDevice(), graphicsPipeline, nullptr);

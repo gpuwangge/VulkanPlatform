@@ -9,7 +9,7 @@ public:
 	};
 	StructStorageBuffer storageBufferObject;
 
-	std::vector<VkClearValue> clearValues{ {  0.0f, 1.0f, 0.0f, 1.0f  } };
+	//std::vector<VkClearValue> clearValues{ {  0.0f, 1.0f, 0.0f, 1.0f  } };
 
 	void initialize(){
 		//0. prepare compute shader(spv)*
@@ -25,12 +25,12 @@ public:
 		//renderer.CreateCommandBuffers();
 		renderer.CreateComputeCommandBuffers();
 
-		renderProcess.addColorAttachment(swapchain.swapChainImageFormat); //add this function will enable color attachment (bUseColorAttachment = true)
-		renderProcess.createSubpass();
-		renderProcess.createDependency();
-		renderProcess.createRenderPass();
+		//renderProcess.addColorAttachment(swapchain.swapChainImageFormat); //add this function will enable color attachment (bUseColorAttachment = true)
+		//renderProcess.createSubpass();
+		//renderProcess.createDependency();
+		//renderProcess.createRenderPass();
 
-		swapchain.CreateFramebuffers(renderProcess.renderPass);
+		//swapchain.CreateFramebuffers(renderProcess.renderPass);
 
 		//shaderManager.InitVertexShader("../shaders/simpleTriangle/vert.spv");
 		//shaderManager.InitFragmentShader("../shaders/simpleTriangle/frag.spv");
@@ -59,7 +59,7 @@ public:
 		storageBufferObject.data = {counter+0.0f, counter+0.1f, counter+0.2f, counter+0.3f};
 
 		//Host >> Device
-		descriptor.updateStorageBuffer<StructStorageBuffer>(renderer.currentFrame, durationTime, storageBufferObject);
+		descriptor.updateStorageBuffer_1<StructStorageBuffer>(renderer.currentFrame, durationTime, storageBufferObject);
 		//std::cout<<"update(): Delta Time: "<<deltaTime<<", Duration Time: "<<durationTime<<std::endl;
 		
     	//vkDeviceWaitIdle(CContext::GetHandle().GetLogicalDevice());

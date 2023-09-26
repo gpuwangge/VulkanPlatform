@@ -27,7 +27,7 @@ public:
 
     VkSubpassDescription subpass{};
     VkSubpassDependency dependency{};
-    VkRenderPass renderPass; 
+    VkRenderPass renderPass = VK_NULL_HANDLE; 
 
     void createSubpass();
     void createDependency(

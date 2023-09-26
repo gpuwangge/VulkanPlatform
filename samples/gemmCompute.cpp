@@ -22,8 +22,6 @@ public:
 	};
 	StructStorageBufferOutput storageBufferObjectOutput;	
 
-	std::vector<VkClearValue> clearValues{ {  0.0f, 1.0f, 0.0f, 1.0f  } };
-
 	bool bVerbose = false;
 	bool bVerify = false;
 
@@ -32,12 +30,6 @@ public:
 		//renderer.CreateCommandBuffers();
 		renderer.CreateComputeCommandBuffers();
 
-		renderProcess.addColorAttachment(swapchain.swapChainImageFormat); //add this function will enable color attachment (bUseColorAttachment = true)
-		renderProcess.createSubpass();
-		renderProcess.createDependency();
-		renderProcess.createRenderPass();
-
-		//swapchain.CreateFramebuffers(renderProcess.renderPass);
 		shaderManager.CreateComputeShader("gemmCompute/comp.spv");
 
 		descriptor.addStorageBuffer(sizeof(StructStorageBufferInput));
