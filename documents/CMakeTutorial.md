@@ -13,7 +13,7 @@ VSCode自带多文件编译系统，也就是task.json，但是用起来不够�
 验证安装CMake的cmd命令:
 > where cmake
 
-(此cmd仅在windows prompt下生效)  
+此cmd仅在windows prompt下生效。
 编写基本的CMakeLists.txt。  
 建立build文件夹并进入。  
 运行cmake的命令:  
@@ -25,18 +25,23 @@ VSCode自带多文件编译系统，也就是task.json，但是用起来不够�
 (这一步会在build文件夹下生成makefile)  
 安装编译器(编译器bin目录会被放入环境变量)  
 验证安装了编译器的cmd命令： 
-> where gcc  
+> where gcc
+
 进入编译器bin目录，重命名mingw32-make.exe为make.exe  
-验证make设置好的cmd命令：where make
-验证make安装好的另一个cmd命令: make -v
-这时候在build目录下运行make，将生成exe文件。
-(以及在一些目录下生成obj文件。并且对每一个cpp文件都生成单独的obj文件)
-(自己写的.h文件不需要写在CMakeLists.txt里，也不必指定其目录)
-(如果只修改了某一些.cpp或.h文件，make就会只重新生成相关的.o文件，并连接成exe)
-(!记得在make之前先保存所有文件!)
+验证make设置好的cmd命令：
+> where make
+
+验证make安装好的另一个cmd命令:   
+> make -v
+
+这时候在build目录下运行make，将生成exe文件。  
+以及在一些目录下生成obj文件。并且对每一个cpp文件都生成单独的obj文件
+自己写的.h文件不需要写在CMakeLists.txt里，也不必指定其目录
+如果只修改了某一些.cpp或.h文件，make就会只重新生成相关的.o文件，并连接成exe
+记得在make之前先保存所有文件。
 
 
----2 修改源文件并重新编译---
+2. 修改源文件并重新编译
 修改了cpp文件后，只要文件夹架构没有改变，就不用重新运行cmake命令，而可以直接make。
 在main.cpp中加入了 #include<stdio.h>，也不用cmake，就可以默认找到这些头文件。
 
