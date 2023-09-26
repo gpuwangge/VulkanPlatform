@@ -76,34 +76,34 @@ CMakeLists.txt下面添加如下代码
 5. 如何给make传递参数
 CMakeLists.txt code:
 ```cmake
-> if(SINGLE)  
->     add_executable(simpleTriangle samples/simpleTriangle.cpp)  
-> else()  
->     aux_source_directory(${PROJECT_SOURCE_DIR}/samples SRC)  
->     foreach(sampleFile IN LISTS SRC)  
->         get_filename_component(sampleName ${sampleFile} NAME_WE)  
->         add_executable(${sampleName} ${sampleFile})  
->     endforeach()  
-> endif()
+if(SINGLE)  
+    add_executable(simpleTriangle samples/simpleTriangle.cpp)  
+else()  
+    aux_source_directory(${PROJECT_SOURCE_DIR}/samples SRC)  
+    foreach(sampleFile IN LISTS SRC)  
+        get_filename_component(sampleName ${sampleFile} NAME_WE)  
+        add_executable(${sampleName} ${sampleFile})  
+    endforeach()  
+endif()
 ```
 Call CMakeLists.txt  
 > cmake -G "MinGW Makefiles" -D SINGLE=true ..
 
 6. 其他
-目前有个问题是，同一段CMakeLists，在laptop Windows环境下生成name.lib，在desktop Windows环境下上生成libname.a。在VSCode terminal和windows command prompt里面都试过。编译器都是MinGW。
-另外，不管名字是什么，
-target_link_libraries(xxx name)
-这种写法都能成功link到lib。并在test环境下都能成功生成exe。所以这个问题并不影响。
+目前有个问题是，同一段CMakeLists，在laptop Windows环境下生成name.lib，在desktop Windows环境下上生成libname.a。在VSCode terminal和windows command prompt里面都试过。编译器都是MinGW。  
+另外，不管名字是什么，  
+> target_link_libraries(xxx name)
+
+这种写法都能成功link到lib。并在test环境下都能成功生成exe。所以这个问题并不影响。  
+
+CMake命令，比如target_link_libraries()的参数是存在依赖关系的。比如  
+target_link_libraries(A,B,C)里：  
+A依赖B+C, B依赖C。  
+(A,C,B)会出现B链接失败的错误。  
 
 
-CMake命令，比如target_link_libraries()的参数是存在依赖关系的。比如
-target_link_libraries(A,B,C)里：
-A依赖B+C, B依赖C。
-(A,C,B)会出现B链接失败的错误。
 
-
-
-
+## Makefile介绍
 https://www.bilibili.com/video/BV188411L7d2/?spm_id_from=333.337.search-card.all.click&vd_source=e9d9bc8892014008f20c4e4027b98036
 makefile的作用
 假设一个项目工程有如下源文件
