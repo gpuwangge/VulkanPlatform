@@ -105,30 +105,35 @@ A依赖B+C, B依赖C。
 
 ## Makefile介绍
 https://www.bilibili.com/video/BV188411L7d2/?spm_id_from=333.337.search-card.all.click&vd_source=e9d9bc8892014008f20c4e4027b98036  
-### makefile的作用  
+### Makefile的作用  
 假设一个项目工程有如下源文件  
 functions.h //内含数学函数和打印函数的定义; #ifndef防止重复include  
 factorial.cpp //#include "functions.h"。内含数学函数的实现  
 printhello.cpp //#include "functions.h"。内含打印函数的实现  
 main.cpp  //#include "functions.h"。main函数里调用数学和打印函数  
 该如何编译呢:  
-g++ main.cpp factorial.cpp pringhello.cpp -o main  
+> g++ main.cpp factorial.cpp pringhello.cpp -o main  
+
 现在问题是，在实际的项目中，往往不止三个源文件。使用这种原始的编译方法将导致编译命令无比坑长；并且如果只改动了其中一个源文件，重新编译的时候需要把所有源文件重新编译一次，浪费时间。  
 
 #### 解决办法A：逐个编译  
-g++ main.cpp -c  
+> g++ main.cpp -c  
+
 这个命令只编译，不链接。结果是产生了main.o文件。同理：  
-g++ main.cpp -c  
-g++ main.cpp -c  
+> g++ main.cpp -c
+
 生成了三个.o文件，然后：  
-g++ *.o -o main  
+> g++ *.o -o main  
+
 这样就把所有的.o文件链接到了一起。  
 这样带来的问题是，手动输入这些命令非常麻烦。  
 
 #### 解决办法B：用脚本实现逐个编译  
 建立一个Makefile文件，写下如下脚本：(hello目标依赖于三个源文件)  
+```Makefile
 hello: main.cpp printhello.cpp factorial.cpp  
-    g++ -o hello main.cpp printhello.cpp factorial.cpp  
+    g++ -o hello main.cpp printhello.cpp factorial.cpp
+```
 如何运行：  
 在Makefile目录下，输入make加回车。  
 这时候会寻找hello这个文件。如果它不存在，就编译生成它；如果hello存在，就比较hello生成的时间和依赖的三个源文件的生成时间：如果有任何源文件比hello更新，就重新编译hello，否则，啥也不做。  
