@@ -10,10 +10,12 @@ VSCode自带多文件编译系统，也就是task.json，但是用起来不够�
 ## CMake使用步骤
 目标： 运行一个基本的编译命令生成exe   
 **`1. 安装CMake`**  
-验证安装CMake的cmd命令:
+https://cmake.org/download/  
+https://cmake-3.27.0-windows-x86_64.zip/  
+下载后解压复制到C盘根目录下, 把C:\cmake-3.27.0-windows-x86_64\bin添加到Path环境变量中   
+验证安装CMake的cmd命令(此cmd仅在windows prompt下生效):
 > where cmake
 
-此cmd仅在windows prompt下生效。
 编写基本的CMakeLists.txt(参考下面CMake编程入门章节)。  
 建立build文件夹并进入。  
 运行cmake的命令:  
@@ -46,36 +48,12 @@ VSCode自带多文件编译系统，也就是task.json，但是用起来不够�
 修改了cpp文件后，只要文件夹架构没有改变，就不用重新运行cmake命令，而可以直接make。  
 在main.cpp中加入了 #include<stdio.h>，也不用cmake，就可以默认找到这些头文件。  
 
-**`3. VS Code下的调试方法`**  
-首先debug的工具也是跟着编译器MinGW安装的：gdb  
-验证安装了gdb的cmd命令:
-> where gdb
-
-调试器似乎必须结合VS Code, 毕竟，我们要在VS Code里面设置断点。  
-settings.json里面会记录使用的"C_Cpp_Runner.debuggerPath": "gdb"  
-launch.json里面也有"miDebuggerPath": "gdb"  
-
-最后，有一点注意，右上角的button的调试运行跟左边launch/task没啥关系。  
-以下讨论都是关于launch/task的。要启动launch，按键盘上的F5!  
-首先，如何调出这两个文件：  
-VSCode界面下点击Add Debug Configuration会添加launch.json文件和tasks.json文件。  
-launch.json解析：  
-"preLaunchTask":     会在执行launch之前先执行这里后面的task。默认会调用task来build。但是我们使用make来编译，就不用这个了，所以把这一行注释掉。（tasks.json就没用了）  
-“program”: 想调试的程序，设置成我们通过make生成的那个exe程序。(cmake里面一定要设定Debug模式！)  
-如上，以后我们编译就通过make，然后调试就用F5。  
-"cwd":   current work directory  
-
-其他launch.json设置参数  
-"request" : "launch"   会启动program  
-"request": "attach"     会提示附着在一个已经运行中的program上  
-关于VSCode的Debug/Release版本问题(尚未验证)：编译的时候的参数, -g是debug模式，-O2是release模式。所以VSCode默认是开debug模式的。  
-
-**`4. 使用外部include和lib`**    
+**`3. 使用外部include和lib`**    
 CMakeLists.txt下面添加如下代码  
 > include_directories(E:\\GitHubRepository\\somefoldername)  
 > link_directories("/home/server/third/lib")  
 
-**`5. 如何给make传递参数`**    
+**`4. 如何给make传递参数`**    
 CMakeLists.txt code:
 ```cmake
 if(SINGLE)  
@@ -91,7 +69,7 @@ endif()
 Call CMakeLists.txt  
 > cmake -G "MinGW Makefiles" -D SINGLE=true ..
 
-**`6. 其他`**    
+**`5. 其他`**    
 目前有个问题是，同一段CMakeLists，在laptop Windows环境下生成name.lib，在desktop Windows环境下上生成libname.a。在VSCode terminal和windows command prompt里面都试过。编译器都是MinGW。  
 另外，不管名字是什么，  
 > target_link_libraries(xxx name)
@@ -164,49 +142,78 @@ MakeFile
 一个小窍门：  
 一般而言运行cmake .会生成一大堆文件跟源文件混在一起。为了避免这种污染，一般手动建立一个空的build文件夹(想叫别的名字也可以)，然后执行：  
 > cd build   
-> cmake ..  
+> cmake ..
+
 (..就是往上一层目录里找文件)
 现在，所有的中间文件都生成在build里面了
 
 
 ## VS Code环境下与CMake的配合开发环境
-https://www.bilibili.com/video/BV13K411M78v?p=2&vd_source=e9d9bc8892014008f20c4e4027b98036
-动机：用纯g++编译多文件工程非常困难。
-方法：配合CMake进行编译，编写一个CMakeLists.txt，构建一个makefile，在生成exe, dll或lib。或者在VS Code里面配置launch.json(for debug)和tasks.json(for build before debug)
+https://www.bilibili.com/video/BV13K411M78v?p=2&vd_source=e9d9bc8892014008f20c4e4027b98036  
+动机：用纯g++编译多文件工程非常困难。  
+方法：配合CMake进行编译，编写一个CMakeLists.txt，构建一个makefile，在生成exe, dll或lib。或者在VS Code里面配置launch.json(for debug)和tasks.json(for build before debug)  
 
-需要预先安装VS Code, mingW64(简称gcc)和CMake
-安装CMake: 下载后解压复制到C盘根目录下, 把C:\cmake-3.27.0-windows-x86_64\bin添加到Path环境变量中
-(https://cmake.org/download/)
-(https://cmake-3.27.0-windows-x86_64.zip/)
-(安装完成后，打开cmd prompt, where cmake)
-VS Code的Cmake插件：
-cmake (optional，cmake语言提示插件) 
-cmake tools  (optional，cmake扩展支持)
+需要预先安装VS Code, mingW64(简称gcc)和CMake  
+安装VS Code的Cmake插件：  
+cmake (optional，cmake语言提示插件)   
+cmake tools  (optional，cmake扩展支持)  
 
 在VS Code下使用CMake手动编译多文件项目
 -编写一个简单的CMakeList.txt
+```cmake
 cmake_minimum_required(VERSION 3.10)
 project(MyZoo)
 add_executable(my_cmake_zoo main.cpp ClassAnimal.cpp)
-Ctrl+Shift+p打开搜索，选择CMake: Configure, 再选择GCC 8.1.0
-(这时候会出现一个build文件夹。但其实这个build文件夹删除自己再建个空的也可以)
-cd build
-cmake ..       (生成Makefile)
-mingw32-make.exe      (真正的编译源文件为obj，并链接成my_cmake_zoo.exe。以后每次更新了源文件，执行这个就可以了。)
-Issue：如果系统安装了Microsoft Visual Studio，则cmake ..有可能优先调用cl.exe (特点是在build文件夹里生成了MyZoo.sln项目文件)
-Solution: 使用cmake -G "MinGW Makefiles" ..
-(这个指令强制使用MingW的gcc编译器。只是第一次用这个命令指定，以后cmake ..即可)
+```
+Ctrl+Shift+p打开搜索，选择CMake: Configure, 再选择GCC 8.1.0  
+(这时候会出现一个build文件夹。但其实这个build文件夹删除自己再建个空的也可以)  
+> cd build  
+> cmake ..
 
-配置tasks.json
-默认的tasks.json是单文件编译的配置，如果不加修改，在多文件项目下编译就会出错。
-主要就是修改"args"这个参数，使其跟手动编译的那个指令一样的参数就可以了。
-修改了tasks.json之后，就可以自动编译多文件项目了！(不必再使用CMake)
+(生成Makefile)
+> mingw32-make.exe      
 
-配置launch.json
-"program": 自动生成的用于debug的可执行exe文件
-"preLaunchTask": 运行调试之前的工作：使用g++.exe作为build，其实就是用来生成exe文件的工具。这个名字要跟tasks.json的那个名字对上。
+(真正的编译源文件为obj，并链接成my_cmake_zoo.exe。以后每次更新了源文件，执行这个就可以了。)  
+Issue：如果系统安装了Microsoft Visual Studio，则cmake ..有可能优先调用cl.exe (特点是在build文件夹里生成了MyZoo.sln项目文件)  
+Solution: 使用
+> cmake -G "MinGW Makefiles" ..
 
+这个指令强制使用MingW的gcc编译器。只是第一次用这个命令指定，以后cmake ..即可 
 
+### 配置tasks.json
+这个文件配置了编译器  
+默认的tasks.json是单文件编译的配置，如果不加修改，在多文件项目下编译就会出错。  
+主要就是修改"args"这个参数，使其跟手动编译的那个指令一样的参数就可以了。  
+修改了tasks.json之后，就可以自动编译多文件项目了！(不必再使用CMake)  
+
+### 配置launch.json
+这个文件配置了运行时参数  
+"program": 自动生成的用于debug的可执行exe文件  
+"preLaunchTask": 运行调试之前的工作：使用g++.exe作为build，其实就是用来生成exe文件的工具。这个名字要跟tasks.json的那个名字对上。  
+
+### VS Code下的调试方法
+首先debug的工具也是跟着编译器MinGW安装的：gdb  
+验证安装了gdb的cmd命令:
+> where gdb
+
+调试器似乎必须结合VS Code, 毕竟，我们要在VS Code里面设置断点。  
+settings.json里面会记录使用的"C_Cpp_Runner.debuggerPath": "gdb"  
+launch.json里面也有"miDebuggerPath": "gdb"  
+
+最后，有一点注意，右上角的button的调试运行跟左边launch/task没啥关系。  
+以下讨论都是关于launch/task的。要启动launch，按键盘上的F5!  
+首先，如何调出这两个文件：  
+VSCode界面下点击Add Debug Configuration会添加launch.json文件和tasks.json文件。  
+launch.json解析：  
+"preLaunchTask":     会在执行launch之前先执行这里后面的task。默认会调用task来build。但是我们使用make来编译，就不用这个了，所以把这一行注释掉。（tasks.json就没用了）  
+“program”: 想调试的程序，设置成我们通过make生成的那个exe程序。(cmake里面一定要设定Debug模式！)  
+如上，以后我们编译就通过make，然后调试就用F5。  
+"cwd":   current work directory  
+
+其他launch.json设置参数  
+"request" : "launch"   会启动program  
+"request": "attach"     会提示附着在一个已经运行中的program上  
+关于VSCode的Debug/Release版本问题(尚未验证)：编译的时候的参数, -g是debug模式，-O2是release模式。所以VSCode默认是开debug模式的。  
 
 
 
