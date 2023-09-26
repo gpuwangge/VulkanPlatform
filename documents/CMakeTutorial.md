@@ -137,7 +137,10 @@ add_executable(hello main.cpp factorial.cpp printhello.cpp)
 CMakeFiles目录  
 MakeFile  
 结论：CMake帮我们生成了MakeFile  
-这时候再用make运行编译链接  
+这时候再用
+> make
+
+运行编译链接  
 好处是CMakeLists.txt可以放到不同的操作系统上，自动生成对应系统和编译器的MakeFile(有跨平台特性)  
 一个小窍门：  
 一般而言运行cmake .会生成一大堆文件跟源文件混在一起。为了避免这种污染，一般手动建立一个空的build文件夹(想叫别的名字也可以)，然后执行：  
