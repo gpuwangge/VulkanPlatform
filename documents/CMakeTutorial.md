@@ -80,11 +80,11 @@ CMakeLists.txt code:
 >     add_executable(simpleTriangle samples/simpleTriangle.cpp)  
 > else()  
 >     aux_source_directory(${PROJECT_SOURCE_DIR}/samples SRC)  
->     foreach(sampleFile IN LISTS SRC)
->         get_filename_component(sampleName ${sampleFile} NAME_WE)
->         add_executable(${sampleName} ${sampleFile})
->     endforeach()
-> endif()
+>     foreach(sampleFile IN LISTS SRC)  
+>         get_filename_component(sampleName ${sampleFile} NAME_WE)  
+>         add_executable(${sampleName} ${sampleFile})  
+>     endforeach()  
+> endif()  
 Call CMakeLists.txt  
 > cmake -G "MinGW Makefiles" -D SINGLE=true ..
 
