@@ -76,10 +76,10 @@ CMakeLists.txt下面添加如下代码
 
 5. 如何给make传递参数
 CMakeLists.txt code:  
-> if(SINGLE)
->     add_executable(simpleTriangle samples/simpleTriangle.cpp)
-> else()
->     aux_source_directory(${PROJECT_SOURCE_DIR}/samples SRC)
+> if(SINGLE)  
+>     add_executable(simpleTriangle samples/simpleTriangle.cpp)  
+> else()  
+>     aux_source_directory(${PROJECT_SOURCE_DIR}/samples SRC)  
 >     foreach(sampleFile IN LISTS SRC)
 >         get_filename_component(sampleName ${sampleFile} NAME_WE)
 >         add_executable(${sampleName} ${sampleFile})
