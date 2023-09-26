@@ -17,18 +17,23 @@ VSCode自带多文件编译系统，也就是task.json，但是用起来不够�
 编写基本的CMakeLists.txt。  
 建立build文件夹并进入。  
 运行cmake的命令:  
-> cmake ..  
+> cmake ..
+
 如果要指定编译器：  
-> cmake -G "MinGW Makefiles" ..  
+> cmake -G "MinGW Makefiles" ..
+
 (这一步会在build文件夹下生成makefile)  
 安装编译器(编译器bin目录会被放入环境变量)  
 验证安装了编译器的cmd命令： 
-> where gcc  
+> where gcc
+
 进入编译器bin目录，重命名mingw32-make.exe为make.exe  
 验证make设置好的cmd命令：
-> where make  
+> where make
+
 验证make安装好的另一个cmd命令:   
-> make -v  
+> make -v
+
 这时候在build目录下运行make，将生成exe文件。  
 以及在一些目录下生成obj文件。并且对每一个cpp文件都生成单独的obj文件
 自己写的.h文件不需要写在CMakeLists.txt里，也不必指定其目录  
@@ -77,7 +82,8 @@ CMakeLists.txt code:
 >         get_filename_component(sampleName ${sampleFile} NAME_WE)  
 >         add_executable(${sampleName} ${sampleFile})  
 >     endforeach()  
-> endif()  
+> endif()
+
 Call CMakeLists.txt  
 > cmake -G "MinGW Makefiles" -D SINGLE=true ..
 
