@@ -79,7 +79,7 @@ public:
 		//Device >> Host
 		float data[4] = {0};
 		//std::cout<<"compute(): Current Frame = "<<renderer.currentFrame<<": "<<std::endl;
-		memcpy(data, descriptor.storageBuffersMapped[renderer.currentFrame], sizeof(data));
+		memcpy(data, descriptor.storageBuffersMapped_1[renderer.currentFrame], sizeof(data));
 		std::cout<<"compute(): read data = {"<<data[0]<<", "<<data[1]<<", "<<data[2]<<", "<<data[3]<<"} from the device at frame="<<renderer.currentFrame<<std::endl;	
 	}
 };

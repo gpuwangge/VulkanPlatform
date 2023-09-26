@@ -1,26 +1,34 @@
 #version 450 core
 
-layout (local_size_x = 3, local_size_y = 3, local_size_z = 1) in; 
+const int DIM = 32;
 
-layout (set = 0, binding = 0) buffer Buffer{
+layout (local_size_x = DIM, local_size_y = DIM, local_size_z = 1) in; 
+
+layout (set = 0, binding = 0) buffer BufferInput{
     uint M;
     uint N;
     uint K;
-    float MatA[9];
-    float MatB[9];
-    float MatC[9];
-} sbuf;
+    float MatA[DIM*DIM];
+    float MatB[DIM*DIM];
+} inBuf;
+
+layout (set = 0, binding = 1) buffer BufferOutput{
+    float MatC[DIM*DIM];
+} outBuf;
+
 
 void main(){
-    const uint row = gl_GlobalInvocationID.x;
-    const uint col = gl_GlobalInvocationID.y;
+    const uint globalRow = gl_GlobalInvocationID.x;
+    const uint globalCol = gl_GlobalInvocationID.y;
 
-    float sum = 0;
-    for(uint i = 0; i < sbuf.K; i++) {
-        sum += sbuf.MatA[row * sbuf.K + i] * sbuf.MatB[i * sbuf.K + col];
+    float acc = 0;
+    for(uint k = 0; k < inBuf.K; k++) {
+        //sum += sbuf_input.MatA[row * sbuf_input.K + i] * sbuf_input.MatB[i * sbuf_input.K + col];
+        acc += inBuf.MatA[k*inBuf.M + globalRow] * inBuf.MatB[globalCol*inBuf.K + k];
     }
-
-    sbuf.MatC[row * sbuf.K + col] = sum;
+ 
+    //sbuf_output.MatC[row * sbuf_input.K + col] = sum;
+    outBuf.MatC[globalCol*inBuf.M + globalRow] = acc;
 }
 
 

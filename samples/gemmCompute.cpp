@@ -3,34 +3,31 @@
 #define TEST_CLASS_NAME CGemmCompute
 class TEST_CLASS_NAME: public CApplication{
 public:
-	static const int DIM = 3;
+	static const int DIM = 32;
 	static const int DIM_M = DIM;
 	static const int DIM_K = DIM;
 	static const int DIM_N = DIM;
-	static const int KernelRunNumber = 1;
+	static const int KernelRunNumber = 5;
 
-	struct StructStorageBuffer {
+	struct StructStorageBufferInput {
 		unsigned int M;
 		unsigned int K;
 		unsigned int N;
 		float MatA[DIM_M * DIM_K];
 		float MatB[DIM_K * DIM_N];
+	};
+	StructStorageBufferInput storageBufferObjectInput;
+	struct StructStorageBufferOutput {
 		float MatC[DIM_M * DIM_N];
 	};
-	StructStorageBuffer storageBufferObject;
+	StructStorageBufferOutput storageBufferObjectOutput;	
 
 	std::vector<VkClearValue> clearValues{ {  0.0f, 1.0f, 0.0f, 1.0f  } };
 
+	bool bVerbose = false;
+	bool bVerify = false;
+
 	void initialize(){
-		//0. prepare compute shader(spv)*
-		//1. need a physical device with compute, and pick Queue Family with compute*
-		//2. create compute command buffer*
-		//3. create storage buffer* (initial data with fill())
-		//4. create layouts for compute shader*
-		//5. create compute pipeline (with shader and layout information)*
-		//6. record command (bind compute shader and dispatch)*
-		//Question: If I edit storage buffer in shader, will it reflect?
-		
 		renderer.CreateCommandPool(surface);
 		//renderer.CreateCommandBuffers();
 		renderer.CreateComputeCommandBuffers();
@@ -40,50 +37,44 @@ public:
 		renderProcess.createDependency();
 		renderProcess.createRenderPass();
 
-		swapchain.CreateFramebuffers(renderProcess.renderPass);
-
-		//shaderManager.InitVertexShader("../shaders/simpleTriangle/vert.spv");
-		//shaderManager.InitFragmentShader("../shaders/simpleTriangle/frag.spv");
+		//swapchain.CreateFramebuffers(renderProcess.renderPass);
 		shaderManager.CreateComputeShader("gemmCompute/comp.spv");
 
-		descriptor.addStorageBuffer(sizeof(StructStorageBuffer));
+		descriptor.addStorageBuffer(sizeof(StructStorageBufferInput));
+		descriptor.addStorageBuffer(sizeof(StructStorageBufferOutput));
 		descriptor.createDescriptorPool();
 		descriptor.createDescriptorSetLayout();
 		descriptor.createDescriptorSets(textureImages);
 
-		// renderProcess.createLayout(descriptor.descriptorSetLayout);
-		// renderProcess.createGraphicsPipeline(
-		// 	VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
-		// 	shaderManager.vertShaderModule, 
-		// 	shaderManager.fragShaderModule);
 		renderProcess.createComputePipeline(shaderManager.computeShaderModule, descriptor.descriptorSetLayout);
 
 		CApplication::initialize();
+
+		
+		//Initial Host data
+		storageBufferObjectInput.M = DIM_M;
+		storageBufferObjectInput.N = DIM_N;
+		storageBufferObjectInput.K = DIM_K;
+		for(int i = 0; i < DIM_M*DIM_K; i++) storageBufferObjectInput.MatA[i] = (float)rand() / (float)RAND_MAX;
+		for(int i = 0; i < DIM_K*DIM_N; i++) storageBufferObjectInput.MatB[i] = (float)rand() / (float)RAND_MAX;
+		if(bVerbose) printMatrix(storageBufferObjectInput.MatA, DIM_M, DIM_K, "A");
+		if(bVerbose) printMatrix(storageBufferObjectInput.MatB, DIM_K, DIM_N, "B");
+
+		//Host >> Device
+		descriptor.updateStorageBuffer_1<StructStorageBufferInput>(renderer.currentFrame, durationTime, storageBufferObjectInput);
+		descriptor.updateStorageBuffer_1<StructStorageBufferInput>(renderer.currentFrame+1, durationTime, storageBufferObjectInput);
+		
 	}
 
 	void update(){
 		static int counter = 1;
 
-		//Initial Host data
-		storageBufferObject.M = DIM_M;
-		storageBufferObject.N = DIM_N;
-		storageBufferObject.K = DIM_K;
-		for(int i = 0; i < DIM_M*DIM_K; i++) storageBufferObject.MatA[i] = (float)rand() / (float)RAND_MAX;
-		for(int i = 0; i < DIM_K*DIM_N; i++) storageBufferObject.MatB[i] = (float)rand() / (float)RAND_MAX;
-
-
-		//Host >> Device
-		//std::cout<<"update(): write counter = "<<counter<<" to the device at frame="<<renderer.currentFrame<<std::endl;
-		//storageBufferObject.data = {counter+0.0f, counter+0.1f, counter+0.2f, counter+0.3f};
-		descriptor.updateStorageBuffer<StructStorageBuffer>(renderer.currentFrame, durationTime, storageBufferObject);
-		//std::cout<<"update(): Delta Time: "<<deltaTime<<", Duration Time: "<<durationTime<<std::endl;
-		
-    	//vkDeviceWaitIdle(CContext::GetHandle().GetLogicalDevice());
-
 		if(counter==KernelRunNumber) NeedToExit = true;
 		counter++;
 
+		
 		CApplication::update(); //update time
+		std::cout<<"update(): Delta Time: "<<deltaTime<<", Duration Time: "<<durationTime<<std::endl;
 	}
 
 	void recordComputeCommandBuffer(){
@@ -93,14 +84,48 @@ public:
 
 		vkDeviceWaitIdle(CContext::GetHandle().GetLogicalDevice());
 
-
 		//Device >> Host
-		unsigned int data[DIM*DIM*3] = {0};
-		//std::cout<<"compute(): Current Frame = "<<renderer.currentFrame<<": "<<std::endl;
-		memcpy(data, descriptor.storageBuffersMapped[renderer.currentFrame], sizeof(data));
-		std::cout<<"compute(): read data = {"<<std::endl;	
-		for(int i = 0; i < DIM*DIM*3; i++) std::cout<<data[i]<<", ";
-		std::cout<<"} from the device at frame="<<renderer.currentFrame<<std::endl;	
+		if(bVerbose) memcpy(storageBufferObjectOutput.MatC, descriptor.storageBuffersMapped_2[renderer.currentFrame], sizeof(storageBufferObjectOutput.MatC));
+		if(bVerbose) printMatrix(storageBufferObjectOutput.MatC, DIM_M, DIM_N, "C");
+
+		if(bVerify){
+			float cpu_result[DIM_M*DIM_N];
+			CPUSingleThreadMatMul(DIM_M, DIM_N, DIM_K, storageBufferObjectInput.MatA, storageBufferObjectInput.MatB, cpu_result, 9);
+			printMatrix(cpu_result, DIM_M, DIM_N, "cpu_C");
+		}
+	}
+
+	void printMatrix(float *matA, int DIM_M, int DIM_N, std::string matName){
+		std::cout<<"Print "<<matName<<std::endl;
+		for(int i=0; i < DIM_M; i++){
+			for(int j=0; j < DIM_N; j++){
+				std::cout<<matA[i*DIM_N + j]<<", ";
+			}
+			std::cout<<std::endl;
+		}
+		std::cout<<std::endl;
+	}
+
+	void CPUSingleThreadMatMul(int M, int N, int K, float *matrixA, float *matrixB, float *outputMatrix, int sampleNum){
+		int count = 0;
+		int printDelta = sampleNum / 1;
+		for(int n = 0; n < N; n++){ //col
+			for(int m = 0; m < M; m++){ //row： fill row first, allign with kernel
+				//column major matrix multiplication
+				outputMatrix[n*M + m] = 0;
+				for(int k = 0; k < K; k++){
+					outputMatrix[n*M + m] += matrixA[k*M + m] * matrixB[n*K + k];
+				}
+
+				count++;
+				if(count % printDelta == 0){
+					float completeRate = (count * 100.0)/sampleNum ;
+					std::cout<<"Completed: "<<completeRate<<"%"<<std::endl;
+				}
+				
+				if(count >= sampleNum) return;
+			}
+		}
 	}
 };
 
