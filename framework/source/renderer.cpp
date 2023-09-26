@@ -310,7 +310,7 @@ void CRenderer::recordComputeCommandBuffer0(VkPipeline &computePipeline, VkPipel
 
     vkCmdBindDescriptorSets(commandBuffers_compute[currentFrame], VK_PIPELINE_BIND_POINT_COMPUTE, pipelineLayout_compute, 0, 1, &descriptorSets_compute[currentFrame], 0, nullptr);
 
-    vkCmdDispatch(commandBuffers_compute[currentFrame], 4, 1, 1);//DISPATCH?
+    vkCmdDispatch(commandBuffers_compute[currentFrame], 1, 1, 1); //TODO: set workgroup number as parameter
 
     if (vkEndCommandBuffer(commandBuffers_compute[currentFrame]) != VK_SUCCESS) {
         throw std::runtime_error("failed to record compute command buffer!");

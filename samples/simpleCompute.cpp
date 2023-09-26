@@ -52,11 +52,13 @@ public:
 	}
 
 	void update(){
-		static int counter = 0;
+		static int counter = 1;
 
-		//Host >> Device
+		//Initial Host data
 		std::cout<<"update(): write counter = "<<counter<<" to the device at frame="<<renderer.currentFrame<<std::endl;
 		storageBufferObject.data = {counter+0.0f, counter+0.1f, counter+0.2f, counter+0.3f};
+
+		//Host >> Device
 		descriptor.updateStorageBuffer<StructStorageBuffer>(renderer.currentFrame, durationTime, storageBufferObject);
 		//std::cout<<"update(): Delta Time: "<<deltaTime<<", Duration Time: "<<durationTime<<std::endl;
 		
@@ -72,6 +74,8 @@ public:
 		std::cout<<"Dispatch Kernel. "<<std::endl;
 		renderer.drawComputeFrame(renderProcess.computePipeline, renderProcess.computePipelineLayout, descriptor.descriptorSets);
 		
+		vkDeviceWaitIdle(CContext::GetHandle().GetLogicalDevice());
+
 		//Device >> Host
 		float data[4] = {0};
 		//std::cout<<"compute(): Current Frame = "<<renderer.currentFrame<<": "<<std::endl;

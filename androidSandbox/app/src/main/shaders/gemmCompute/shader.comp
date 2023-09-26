@@ -1,29 +1,26 @@
 #version 450 core
 
-layout (local_size_x = 4, local_size_y = 1, local_size_z = 1) in; //workgroup size
+layout (local_size_x = 3, local_size_y = 3, local_size_z = 1) in; 
 
 layout (set = 0, binding = 0) buffer Buffer{
-    vec4 A;
-    vec4 B;
-    vec4 C;
-} buf;
-
-const int DIM = 2;
+    uint M;
+    uint N;
+    uint K;
+    float MatA[9];
+    float MatB[9];
+    float MatC[9];
+} sbuf;
 
 void main(){
-   //const uint row = gl_GlobalInvocationID.x;
-    //const uint col = gl_GlobalInvocationID.y;
+    const uint row = gl_GlobalInvocationID.x;
+    const uint col = gl_GlobalInvocationID.y;
 
-    //float sum = 0;
-    //for(uint i = 0; i < DIM; i++) {
-    //    sum += buf.A[row * DIM + i] * buf.B[i * DIM + col];
-   // }
+    float sum = 0;
+    for(uint i = 0; i < sbuf.K; i++) {
+        sum += sbuf.MatA[row * sbuf.K + i] * sbuf.MatB[i * sbuf.K + col];
+    }
 
-    //buf.C[row * DIM + col] = sum;
-    buf.C[0] = 10;
-    buf.C[1] = 11;
-    buf.C[2] = 12;
-    buf.C[3] = 13;
+    sbuf.MatC[row * sbuf.K + col] = sum;
 }
 
 

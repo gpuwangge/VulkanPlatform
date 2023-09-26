@@ -3,15 +3,19 @@
 #define TEST_CLASS_NAME CGemmCompute
 class TEST_CLASS_NAME: public CApplication{
 public:
-	const int DIM_M = 2;
-	const int DIM_K = 2;
-	const int DIM_N = 2;
-	const int KernelRunNumber = 5;
+	static const int DIM = 3;
+	static const int DIM_M = DIM;
+	static const int DIM_K = DIM;
+	static const int DIM_N = DIM;
+	static const int KernelRunNumber = 1;
 
 	struct StructStorageBuffer {
-		glm::vec4 A;
-		glm::vec4 B;
-		glm::vec4 C;
+		unsigned int M;
+		unsigned int K;
+		unsigned int N;
+		float MatA[DIM_M * DIM_K];
+		float MatB[DIM_K * DIM_N];
+		float MatC[DIM_M * DIM_N];
 	};
 	StructStorageBuffer storageBufferObject;
 
@@ -58,15 +62,19 @@ public:
 	}
 
 	void update(){
-		static int counter = 0;
+		static int counter = 1;
+
+		//Initial Host data
+		storageBufferObject.M = DIM_M;
+		storageBufferObject.N = DIM_N;
+		storageBufferObject.K = DIM_K;
+		for(int i = 0; i < DIM_M*DIM_K; i++) storageBufferObject.MatA[i] = (float)rand() / (float)RAND_MAX;
+		for(int i = 0; i < DIM_K*DIM_N; i++) storageBufferObject.MatB[i] = (float)rand() / (float)RAND_MAX;
+
 
 		//Host >> Device
 		//std::cout<<"update(): write counter = "<<counter<<" to the device at frame="<<renderer.currentFrame<<std::endl;
 		//storageBufferObject.data = {counter+0.0f, counter+0.1f, counter+0.2f, counter+0.3f};
-		storageBufferObject.A = glm::vec4(1.0f,1.0f,1.0f,1.0f);
-		storageBufferObject.B = glm::vec4(2.0f,2.0f,2.0f,2.0f);
-		storageBufferObject.C = glm::vec4(30.0f);
-
 		descriptor.updateStorageBuffer<StructStorageBuffer>(renderer.currentFrame, durationTime, storageBufferObject);
 		//std::cout<<"update(): Delta Time: "<<deltaTime<<", Duration Time: "<<durationTime<<std::endl;
 		
@@ -79,15 +87,19 @@ public:
 	}
 
 	void recordComputeCommandBuffer(){
+		//Set kernel prameters. Launch Kernel on device
 		std::cout<<"Dispatch Kernel. "<<std::endl;
 		renderer.drawComputeFrame(renderProcess.computePipeline, renderProcess.computePipelineLayout, descriptor.descriptorSets);
-		
+
+		vkDeviceWaitIdle(CContext::GetHandle().GetLogicalDevice());
+
+
 		//Device >> Host
-		float data[12] = {0};
+		unsigned int data[DIM*DIM*3] = {0};
 		//std::cout<<"compute(): Current Frame = "<<renderer.currentFrame<<": "<<std::endl;
 		memcpy(data, descriptor.storageBuffersMapped[renderer.currentFrame], sizeof(data));
 		std::cout<<"compute(): read data = {"<<std::endl;	
-		for(int i = 0; i < 12; i++) std::cout<<data[i]<<", ";
+		for(int i = 0; i < DIM*DIM*3; i++) std::cout<<data[i]<<", ";
 		std::cout<<"} from the device at frame="<<renderer.currentFrame<<std::endl;	
 	}
 };
