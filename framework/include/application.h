@@ -75,6 +75,7 @@ public:
     virtual void update(); //base: update time, frame id, camera and ubo
     virtual void recordGraphicsCommandBuffer();
     virtual void recordComputeCommandBuffer();
+    virtual void postUpdate();
 
     /*Pure virtual function(=0): base class not implment, derived class must implement*/
     //NA

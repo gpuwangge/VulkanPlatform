@@ -85,8 +85,9 @@ void CApplication::update(){
 }
 
 void CApplication::recordGraphicsCommandBuffer(){}
-
 void CApplication::recordComputeCommandBuffer(){}
+void CApplication::postUpdate(){}
+
 
 #ifndef ANDROID
 void CApplication::mainLoop(){
@@ -106,6 +107,8 @@ void CApplication::mainLoop(){
                 recordComputeCommandBuffer();
                 renderer.postRecordComputeCommandBuffer();
             }
+
+            postUpdate();
 
             renderer.Update(); //update currentFrame
             if (NeedToExit) break;

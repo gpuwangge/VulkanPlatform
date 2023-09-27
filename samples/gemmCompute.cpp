@@ -60,10 +60,8 @@ public:
 
 	void update(){
 		static int counter = 1;
-
 		if(counter==KernelRunNumber) NeedToExit = true;
 		counter++;
-
 		
 		CApplication::update(); //update deltaTime and durationTime (and mainCamera and MVP, VP)
 		std::cout<<"update(): Delta Time: "<<deltaTime<<", Duration Time: "<<durationTime<<std::endl;
@@ -76,9 +74,9 @@ public:
 		renderer.Dispatch(1, 1, 1);
 
 		END_COMPUTE_RECORD
+	}
 
-
-
+	void postUpdate(){
 		vkDeviceWaitIdle(CContext::GetHandle().GetLogicalDevice());
 
 		//Device >> Host

@@ -61,8 +61,6 @@ public:
 		//Host >> Device
 		descriptor.updateStorageBuffer_1<StructStorageBuffer>(renderer.currentFrame, durationTime, storageBufferObject);
 		//std::cout<<"update(): Delta Time: "<<deltaTime<<", Duration Time: "<<durationTime<<std::endl;
-		
-    	//vkDeviceWaitIdle(CContext::GetHandle().GetLogicalDevice());
 
 		if(counter==KernelRunNumber) NeedToExit = true;
 		counter++;
@@ -77,8 +75,9 @@ public:
 		renderer.Dispatch(1, 1, 1);
 
 		END_COMPUTE_RECORD
+	}
 
-		
+	void postUpdate(){
 		vkDeviceWaitIdle(CContext::GetHandle().GetLogicalDevice());
 
 		//Device >> Host
@@ -86,6 +85,7 @@ public:
 		//std::cout<<"compute(): Current Frame = "<<renderer.currentFrame<<": "<<std::endl;
 		memcpy(data, descriptor.storageBuffersMapped_1[renderer.currentFrame], sizeof(data));
 		std::cout<<"compute(): read data = {"<<data[0]<<", "<<data[1]<<", "<<data[2]<<", "<<data[3]<<"} from the device at frame="<<renderer.currentFrame<<std::endl;	
+
 	}
 };
 
