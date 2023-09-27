@@ -2,14 +2,22 @@
 
 ## VS Code介绍
 VS Code是文本编辑器，所以是不带编译器的，需要下载一个C++编译器，比如MinGW(x86_64-win32-seh)  
+ 
+## 安装MinGW
+下载地址：
+https://www.mingw-w64.org/downloads/  
+页面底下 Sources这一栏，点击SourceForge。拉到底下，选择x86_64-win32-seh
+
 下载后解压后剪切粘贴到c盘的根目录下。  
 然后是配置环境变量——也就是告诉VS Code编译器在什么地方：  
-把MinGW的bin路径粘贴到PATH环境变量里面。  
+把MinGW的bin路径(c:\mingw64\bin)粘贴到PATH环境变量里面。  
 在command prompt里面输入  
 > where gcc
 
 就可以知道是否装好了。  
-如果安装过Visual Studio，也会有编译器了： cl.exe。而且这个是Windows下VS Code的默认编译器  
+如果安装过Visual Studio，也会有编译器了： cl.exe。而且这个是Windows下VS Code的默认编译器   
+(关于posix版本编译器：可以再下载x86_64-posix-seh，然后文件夹加上后缀_posix跟win32版放在一起，如果遇上p线程的问题可以换这个: 改CMakeLists使用posix版g++，但make还是一样的)  
+
 
 ## GitHub+VS Code安装方法
 要先安装vscode(安装时勾选允许添加入右键菜单)，再安装git(在Choosing the default editor used by Git这个选项里选择VS Code作为Git's default editor)。  
@@ -106,13 +114,7 @@ settings.json修改了之后，这个也会更新。
 
 ## VS Code+MingW64安装设置
 —安装篇----
-安装MinGW:
-VS Code是不带编译器的，需要下载一个C++编译器，比如MinGW, x86_64-win32-seh, 解压后剪切粘贴到c盘的根目录下。然后是配置环境变量——也就是告诉VS Code编译器在什么地方：把MinGW的bin路径(c:\mingw64\bin)粘贴到PATH环境变量里面。在command prompt里面输入"where gcc",就可以知道是否装好了。
-(https://www.mingw-w64.org/downloads/, 页面底下 Sources这一栏，点击SourceForge。拉到底下，选择x86_64-win32-seh)
-(如果安装过Visual Studio，也会有编译器了： cl.exe，但我们这里不使用它，所以不需要装Visual Studio)
-！posix和win32对我们日常开发没啥影响，我看谁爽选哪个就好了
-！调试选项sjlj和seh的你也可以用这个套路自己去扒一扒，大概就是调试性能和report方式啥的
-(可以再下载x86_64-posix-seh，然后文件夹加上后缀_posix跟win32版放在一起，如果遇上p线程的问题可以换这个: 改CMakeLists使用posix版g++，但make还是一样的)
+
 
 安装VS Code:
 (https://code.visualstudio.com/download)
