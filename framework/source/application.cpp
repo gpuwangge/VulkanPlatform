@@ -23,12 +23,13 @@ CApplication::CApplication(){
 #ifndef ANDROID
 void CApplication::run(){ //Entrance Function
     glfwManager.createWindow(OUT windowWidth, OUT windowHeight);
+
     CContext::Init();
 
     const std::vector<const char*> requiredValidationLayers = {"VK_LAYER_KHRONOS_validation"};
     std::vector<const char*> requiredInstanceExtensions;
     glfwManager.getGLFWRequiredInstanceExtensions(requiredInstanceExtensions);
-    if (enableValidationLayers) requiredInstanceExtensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+    if(enableValidationLayers) requiredInstanceExtensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
     VkQueueFlagBits requiredQueueFamilies = VK_QUEUE_GRAPHICS_BIT; //& VK_QUEUE_COMPUTE_BIT
     const std::vector<const char*>  requireDeviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
 

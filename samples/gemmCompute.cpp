@@ -86,7 +86,7 @@ public:
 		if(bVerify){
 			std::cout<<"Begin verification..."<<std::endl;
 			float cpu_result[DIM_M*DIM_N];
-			CPUSingleThreadMatMul(DIM_M, DIM_N, DIM_K, storageBufferObjectInput.MatA, storageBufferObjectInput.MatB, cpu_result, 9);
+			CPUSingleThreadMatMul(DIM_M, DIM_N, DIM_K, storageBufferObjectInput.MatA, storageBufferObjectInput.MatB, cpu_result, DIM_M*DIM_N);
 			printMatrix(cpu_result, DIM_M, DIM_N, "cpu_C");
 		}
 	}

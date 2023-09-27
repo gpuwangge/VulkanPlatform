@@ -40,7 +40,8 @@ public:
     int windowWidth, windowHeight;
     VkSurfaceKHR surface;//03
     
-    bool framebufferResized = false;
+    //bool framebufferResized = false;
+    //bool needWindow = false;
 
 	CSwapchain swapchain;
     CRenderProcess renderProcess;

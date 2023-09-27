@@ -236,7 +236,7 @@ void CGLFWManager::GLFWMouseButton(GLFWwindow *window, int button, int action, i
 
 static void framebufferResizeCallback(GLFWwindow* window, int width, int height) {
 	auto app = reinterpret_cast<CApplication*>(glfwGetWindowUserPointer(window));
-	app->framebufferResized = true;
+	//app->framebufferResized = true;
 }
 
 void CGLFWManager::createWindow(int &windowWidth, int &windowHeight){
