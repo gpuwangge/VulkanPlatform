@@ -68,25 +68,28 @@ pause
 > auto fragShaderCode = readFile("shaders/frag.spv");  
 
 ## 补充说明
-1、有的test需要c++17，可以在Visual Studio项目设置里面更改。（C++, Language, C++ Language Standard）
-2、关于std_image的问题：是个图像解码库。（https://github.com/nothings/stb） 特点：支持png和jpeg
-重点关注如下三个头文件：stb_image.h用于图像加载。stb_image_write.h用于写入图像文件。stb_image_resize.h用于改变图像尺寸。
-总的来说，它还是挺简单易用的，在平常做一些 Demo 以及需要快速实现、验证功能的情况下都可以考虑考虑。
-但是在一些大型的项目中，还是要深思熟虑一些，从性能方面考虑，它肯定不如老牌的图像解码库了，像 libjpeg-turbo 解码用到了 NEON 这样 SIMD （单指令流多数据流）的操作，才是大型项目的首选了。(说到图像解码库，最容易想起的就是 libpng 和 libjpeg 这两个老牌图像解码库了。)
-3、有些test需要设置好shader和texture
-4、关于tiny_obj_load的问题：用来读obj文件。(https://github.com/tinyobjloader/tinyobjloader)只用include一个头文件
-#define TINYOBJLOADER_IMPLEMENTATION
-#include <tiny_obj_loader.h>
-5、glfw3.h已经包含了vulkan.h，就不用再写了
-6、vk_sdk_platform.h
+1. 有的test需要c++17，可以在Visual Studio项目设置里面更改。（C++, Language, C++ Language Standard）  
+2. 关于std_image的问题：是个图像解码库。（https://github.com/nothings/stb） 特点：支持png和jpeg  
+重点关注如下三个头文件：stb_image.h用于图像加载。stb_image_write.h用于写入图像文件。stb_image_resize.h用于改变图像尺寸。  
+总的来说，它还是挺简单易用的，在平常做一些 Demo 以及需要快速实现、验证功能的情况下都可以考虑考虑。  
+但是在一些大型的项目中，还是要深思熟虑一些，从性能方面考虑，它肯定不如老牌的图像解码库了，像 libjpeg-turbo 解码用到了 NEON 这样 SIMD （单指令流多数据流）的操作，才是大型项目的首选了。  
+(说到图像解码库，最容易想起的就是 libpng 和 libjpeg 这两个老牌图像解码库了。)  
+4. 有些test需要设置好shader和texture
+5. 关于tiny_obj_load的问题：用来读obj文件。(https://github.com/tinyobjloader/tinyobjloader)只用include一个头文件
+> #define TINYOBJLOADER_IMPLEMENTATION  
+> #include <tiny_obj_loader.h>  
+
+5. glfw3.h已经包含了vulkan.h，就不用再写了
+6. vk_sdk_platform.h
 加上这句
-#include <vulkan/vk_sdk_platform.h>
-7、2020 Siggraph的sample目前run的结果是黑屏幕，需要debug。
-8、pragma once与#ifndef的作用有什么区别（作用：为了避免同一个文件被include多次）
-#pragma once是编译相关，就是说这个编译系统上能用，但在其他编译系统不一定可以，也就是说移植性差，不过现在基本上已经是每个编译器都有这个定义了。
-#ifndef，#define，#endif这个是C++语言相关，这是C++语言中的宏定义，通过宏定义避免文件多次编译。所以在所有支持C++语言的编译器上都是有效的，如果写的程序要跨平台，最好使用这种方式
-9、VSCode debug经验：如果忘记拷贝dll的话，会导致debugger失效。
-10、编译错误：error: stray ‘\377’ in program
+> #include <vulkan/vk_sdk_platform.h>
+
+7. 2020 Siggraph的sample目前run的结果是黑屏幕，需要debug。  
+8. pragma once与#ifndef的作用有什么区别（作用：为了避免同一个文件被include多次）
+#pragma once是编译相关，就是说这个编译系统上能用，但在其他编译系统不一定可以，也就是说移植性差，不过现在基本上已经是每个编译器都有这个定义了。  
+#ifndef，#define，#endif这个是C++语言相关，这是C++语言中的宏定义，通过宏定义避免文件多次编译。所以在所有支持C++语言的编译器上都是有效的，如果写的程序要跨平台，最好使用这种方式  
+9. VSCode debug经验：如果忘记拷贝dll的话，会导致debugger失效。
+10. 编译错误：error: stray ‘\377’ in program
 原因：源文件没有用UTF8格式保存
 解决：文件另存为UTF8格式，并且在VSCode内需要重新打开。
 
