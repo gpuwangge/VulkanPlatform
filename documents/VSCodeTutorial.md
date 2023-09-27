@@ -39,25 +39,26 @@ Shader languages support
 (多文件项目，其实就是建立不同的文件夹。可以新建更多工作区来存放不同代码，不同工作区有不同的.vscode编译和调试配置)  
 第一次运行C++文件的时候，会提示选择g++编译器  
 
-## VS Code设置环境变量
-1、新建文件夹，打开VSCode后打开该文件夹。  
-2、添加源文件和后缀（比如.cpp），VS Code会自动生成.vscode文件夹，内含配置文件  
+## VS Code配置文件
+新建文件夹，打开VSCode后打开该文件夹。  
+如果有需要的话，拷贝相应的资源(obj, png, dll…)到工作目录内。  
+添加源文件和后缀（比如.cpp），VS Code会自动生成.vscode文件夹，内含配置文件   
 配置这几个Json文件：   
 tasks.json: 跟编译有关的文件设置  
 launch.json: 跟运行有关的文件设置  
 
-
 这两个地方设置编译器：  
+```
 c_cpp_properties.json  
 "compilerPath": "C:\\mingw64\\bin\\gcc.exe",  
 settings.json  
  "C_Cpp.default.compilerPath": "C:\\mingw64\\bin\\g++.exe"  
-
-
+```
 
 ### settings.json
-说明：这个文件设置VS Code的compiler path and IntelliSense settings
-更新这个文件会自动更新c_cpp_properties.json。但有时候这个文件并不出现，这时候直接修改c_cpp_properties.json即可。
+说明：这个文件设置VS Code的compiler path and IntelliSense settings  
+更新这个文件会自动更新c_cpp_properties.json。但有时候这个文件并不出现，这时候直接修改c_cpp_properties.json即可。  
+```
   "C_Cpp_Runner.includePaths": [
     	"C:/VulkanSDK",
    	 "C:/VulkanSDK/GLM",
@@ -65,11 +66,14 @@ settings.json
    	 //"C:/VulkanSDK/1.2.176.1/Include"
     	"${VULKAN_SDK}/Include"
   ],
-(另一种方法是设置好环境变量，然后再json中使用%VULKAN_SDK%来代替地址)
+```
+另一种方法是设置好环境变量，然后再json中使用%VULKAN_SDK%来代替地址  
+
 ### tasks.json
 说明：告诉Compiler build instructions。即使修改了settings.json，Compiler仍旧不知道includePaths在哪里。(注意VS Code不是IDE，因此VS Code和Compiler是独立存在的)，所以要一同修改task.json。
 (如果一开始没有这个文件，只要运行一次代码它就会出现)
 注意：不知为何，glfw的MingG64版本只能使用dll版，因此需要拷贝dll文件到开发目录下。
+```
             "args": [
                 "-std=c++17",
                 "-IC:/VulkanSDK",
@@ -88,17 +92,15 @@ settings.json
                 "-o",
                 "${fileDirname}\\${fileBasenameNoExtension}.exe"
             ],
+```
+
 ### launch.json
-debugger settings。这个Json会自动生成不需要修改。
-这个文件也不一定会出现。
+debugger settings。这个Json会自动生成不需要修改。  
+这个文件也不一定会出现。  
+
 ### c_cpp_properties.json
-settings.json修改了之后，这个也会更新。
-如果cpp代码是c++17之后，需要手动把这个信息添加进这个文件。
-3、如果有需要的话，拷贝相应的资源(obj, png, dll…)到工作目录内。
-
-
-
-
+settings.json修改了之后，这个也会更新。  
+如果cpp代码是c++17之后，需要手动把这个信息添加进这个文件。    
 
 
 
