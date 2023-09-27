@@ -72,7 +72,27 @@ public:
 	void recordComputeCommandBuffer(){
 		//Set kernel prameters. Launch Kernel on device
 		std::cout<<"Dispatch Kernel. "<<std::endl;
-		renderer.drawComputeFrame(renderProcess.computePipeline, renderProcess.computePipelineLayout, descriptor.descriptorSets);
+		//renderer.drawComputeFrame(renderProcess.computePipeline, renderProcess.computePipelineLayout, descriptor.descriptorSets);
+
+///////////////
+		VkCommandBufferBeginInfo beginInfo{};
+		beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+
+		if (vkBeginCommandBuffer(renderer.commandBuffers_compute[renderer.currentFrame], &beginInfo) != VK_SUCCESS) {
+			throw std::runtime_error("failed to begin recording compute command buffer!");
+		}
+
+		vkCmdBindPipeline(renderer.commandBuffers_compute[renderer.currentFrame], VK_PIPELINE_BIND_POINT_COMPUTE, renderProcess.computePipeline);
+
+		vkCmdBindDescriptorSets(renderer.commandBuffers_compute[renderer.currentFrame], VK_PIPELINE_BIND_POINT_COMPUTE, renderProcess.computePipelineLayout, 0, 1, &descriptor.descriptorSets[renderer.currentFrame], 0, nullptr);
+
+		vkCmdDispatch(renderer.commandBuffers_compute[renderer.currentFrame], 1, 1, 1); //TODO: set workgroup number as parameter
+
+		if (vkEndCommandBuffer(renderer.commandBuffers_compute[renderer.currentFrame]) != VK_SUCCESS) {
+			throw std::runtime_error("failed to record compute command buffer!");
+		}
+///////////////////////
+
 
 		vkDeviceWaitIdle(CContext::GetHandle().GetLogicalDevice());
 

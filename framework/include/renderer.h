@@ -31,12 +31,12 @@ public:
     void CreateSyncObjects();
 
     //Create start() and end() to make sample command recording simple
-    void Start(VkPipeline &pipeline, VkPipelineLayout &pipelineLayout, 
+    void StartRecordGraphicsCommandBuffer(VkPipeline &pipeline, VkPipelineLayout &pipelineLayout, 
         VkRenderPass &renderPass, 
         std::vector<VkFramebuffer> &swapChainFramebuffers, VkExtent2D &extent,
         std::vector<VkDescriptorSet> &descriptorSets,
         std::vector<VkClearValue> &clearValues);
-    void End();
+    void EndRecordGraphicsCommandBuffer();
 
     //Start(...)
     void BeginCommandBuffer();
@@ -60,8 +60,8 @@ public:
     void EndRenderPass();
     void EndCOmmandBuffer();
 
-    void prepareCurrentFrameAndAcquireImageIndex(CSwapchain &swapchain);
-    void drawFrame(CSwapchain &swapchain);
+    void preRecordGraphicsCommandBuffer(CSwapchain &swapchain); //prepareCurrentFrameAndAcquireImageIndex
+    void postRecordGraphicsCommandBuffer(CSwapchain &swapchain);
 
     void Destroy();
 
@@ -76,8 +76,10 @@ public:
 
     std::vector<VkCommandBuffer> commandBuffers_compute; //专门用于compute的command buffer
     void CreateComputeCommandBuffers();
-    void drawComputeFrame(VkPipeline &computePipeline, VkPipelineLayout &pipelineLayout_compute, std::vector<VkDescriptorSet> &descriptorSets_compute);
-    void recordComputeCommandBuffer0(VkPipeline &computePipeline, VkPipelineLayout &pipelineLayout_compute, std::vector<VkDescriptorSet> &descriptorSets_compute);
+    void preRecordComputeCommandBuffer(); //prepareCurrentFrame
+    void postRecordComputeCommandBuffer();
+    //void drawComputeFrame(VkPipeline &computePipeline, VkPipelineLayout &pipelineLayout_compute, std::vector<VkDescriptorSet> &descriptorSets_compute);
+    //void recordComputeCommandBuffer0(VkPipeline &computePipeline, VkPipelineLayout &pipelineLayout_compute, std::vector<VkDescriptorSet> &descriptorSets_compute);
 
     std::vector<VkSemaphore> imageAvailableSemaphores;
 	std::vector<VkSemaphore> renderFinishedSemaphores;

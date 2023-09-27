@@ -56,7 +56,7 @@ public:
 	}
 
 	void recordGraphicsCommandBuffer(){
-		RENDER_START
+		START_GRAPHICS_RECORD
 
 		renderer.BindVertexBuffer();
     	renderer.BindIndexBuffer();
@@ -69,7 +69,7 @@ public:
 		renderer.PushConstant<ModelPushConstants>(pushConstants, renderProcess.graphicsPipelineLayout, shaderManager.pushConstantRange);
 		renderer.DrawIndexed(indices3D);
 
-		RENDER_END
+		END_GRAPHICS_RECORD
 	}
 };
 

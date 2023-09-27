@@ -57,11 +57,11 @@ public:
 	}
 
 	void recordGraphicsCommandBuffer(){
-		RENDER_START
+		START_GRAPHICS_RECORD
 
 		renderer.Draw(3);
 		
-		RENDER_END
+		END_GRAPHICS_RECORD
 	}
 };
 

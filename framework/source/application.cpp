@@ -96,13 +96,15 @@ void CApplication::mainLoop(){
             update();
 
             if(renderProcess.bCreateGraphicsPipeline){
-                renderer.prepareCurrentFrameAndAcquireImageIndex(swapchain);
+                renderer.preRecordGraphicsCommandBuffer(swapchain);
                 recordGraphicsCommandBuffer();
-                renderer.drawFrame(swapchain);
+                renderer.postRecordGraphicsCommandBuffer(swapchain);
             }
 
             if(renderProcess.bCreateComputePipeline){
+                renderer.preRecordComputeCommandBuffer();
                 recordComputeCommandBuffer();
+                renderer.postRecordComputeCommandBuffer();
             }
 
             renderer.Update(); //update currentFrame

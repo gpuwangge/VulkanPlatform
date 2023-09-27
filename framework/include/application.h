@@ -18,13 +18,13 @@
 #include "..\\..\\windowsFramework\\include\\glfwManager.h"
 #endif
 
-#define RENDER_START { \
-    renderer.Start(renderProcess.graphicsPipeline, renderProcess.graphicsPipelineLayout, \
+#define START_GRAPHICS_RECORD { \
+    renderer.StartRecordGraphicsCommandBuffer(renderProcess.graphicsPipeline, renderProcess.graphicsPipelineLayout, \
     renderProcess.renderPass,   \
     swapchain.swapChainFramebuffers,swapchain.swapChainExtent,   \
     descriptor.descriptorSets,  \
     clearValues);}
-#define RENDER_END renderer.End();
+#define END_GRAPHICS_RECORD renderer.EndRecordGraphicsCommandBuffer();
 
 class CApplication{
 public:
