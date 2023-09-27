@@ -115,26 +115,22 @@ debugger settings。这个Json会自动生成不需要修改。
 settings.json修改了之后，这个也会更新。  
 如果cpp代码是c++17之后，需要手动把这个信息添加进这个文件。    
 
-
-
-## 设置篇
-===09022023更新========
-如果不使用debugger，那不不需要设置.vscode。
-因为可以自己用gcc/g++/visual studio来编译。
-但是vscode的IntelliSense可以自动发现一些错误。以下是设置IntelliSense的方法。
+### Debug
+其实如果不使用debugger，那不需要设置.vscode。因为可以自己用gcc/g++/cl来编译。  
+但是vscode的IntelliSense可以自动发现一些错误。以下是设置IntelliSense的方法。  
 Ctrl+Shift+P 跳出设置command prompt，选择C/C++: Edit Configuration(JSON)，这时候会生成c_cpp_properties.json。
-在includePath栏添加INCLUDE，如下所示
+在includePath栏添加INCLUDE，如下所示  
 ```
             "includePath": [
                 "${workspaceFolder}/**",
                 "${INCLUDE}"
             ]
 ```
-添加编译器地址，如下所示：
+添加编译器地址，如下所示：  
 > "compilerPath": "C:/mingw64_posix/bin/g++.exe",
 
-修改intelliSenseMode，如下所示：
-> intelliSenseMode": "gcc-x64"
+修改intelliSenseMode，如下所示：  
+> intelliSenseMode": "gcc-x64"  
 
 
 
