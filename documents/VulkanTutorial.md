@@ -52,19 +52,25 @@ imageAvailableSemaphore x2 被pWaitSemaphores指向
 renderFinishedSemaphore x2 被pSignalSemaphores指向(两个合起来表示的逻辑就是render完成后，通知image可用了。)  
 inFlightFence x2 赋值是VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT  
 在drawFrame()函数中的分配：   
+```vulkan
 VkResult result = vkAcquireNextImageKHR(logicalDevice, swapChain, UINT64_MAX, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &imageIndex);  
 VkSemaphore waitSemaphores[] = { imageAvailableSemaphores[currentFrame] };  
 VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };  
 submitInfo.waitSemaphoreCount = 1;  
 submitInfo.pWaitSemaphores = waitSemaphores;  
-submitInfo.pWaitDstStageMask = waitStages;  
+submitInfo.pWaitDstStageMask = waitStages;
+```
 和  
+```vulkan
 VkSemaphore signalSemaphores[] = { renderFinishedSemaphores[currentFrame] };  
 submitInfo.signalSemaphoreCount = 1;  
-submitInfo.pSignalSemaphores = signalSemaphores;  
+submitInfo.pSignalSemaphores = signalSemaphores;
+```
 和  
+```vulkan
 vkWaitForFences(logicalDevice, 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);  
-vkResetFences(logicalDevice, 1, &inFlightFences[currentFrame]);  
+vkResetFences(logicalDevice, 1, &inFlightFences[currentFrame]);
+```
 解读：  
 对于Fence  
 一开始vkWaitForFences(fence)试图把CPU挡住，但这时候fence没设置，所以挡不住。  
@@ -127,15 +133,10 @@ https://learnopengl-cn.github.io/04%20Advanced%20OpenGL/01%20Depth%20testing/
 https://developer.aliyun.com/article/325636  
 
 ## Todo  
-android resolution    
-compute shader  
 multi object sample  
-ray tracing  
-better documents  
-fps setting, and show fps  
-android screen fliping(Mipmap, furMark)  
-android controller  
-android color not good(furMark)  
+ray tracing    
+android screen flicking(Mipmap, furMark)  
+android controller   
 resize window   
 
 
