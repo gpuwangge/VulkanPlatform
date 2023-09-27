@@ -106,9 +106,20 @@ void CBackend::render() {
     }else frameCount++;
 
     sample.update();
-    sample.renderer.prepareCurrentFrameAndAcquireImageIndex(sample.swapchain);//TODO for test compute shader
-    sample.recordCommandBuffer();
-    sample.renderer.drawFrame(sample.swapchain);//TODO for test compute shader
+    if(sample.renderProcess.bCreateGraphicsPipeline) {
+        sample.renderer.preRecordGraphicsCommandBuffer(sample.swapchain);
+        sample.recordGraphicsCommandBuffer();
+        sample.renderer.postRecordGraphicsCommandBuffer(sample.swapchain);
+    }
+    if(sample.renderProcess.bCreateComputePipeline){
+        sample.renderer.preRecordComputeCommandBuffer();
+        sample.recordComputeCommandBuffer();
+        sample.renderer.postRecordComputeCommandBuffer();
+    }
+    sample.postUpdate();
+
+    sample.renderer.Update();
+    //__android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "currentFrame:  %d", sample.renderer.currentFrame);
 }
 
 void CBackend::cleanup() {
