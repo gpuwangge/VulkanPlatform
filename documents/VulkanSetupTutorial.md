@@ -1,85 +1,73 @@
 # Vulkan Setup Tutorial
 
-2.1 Vulkan SDK 安装
-https://vulkan.lunarg.com/sdk/home#windows
-下载Windows 1.2.176.1 SDK Installer (255mb)
-点击安装。
-验证安装好了的方法: (in command prompt)
-echo %VULKAN_SDK%
+## Vulkan SDK 安装
+Vulkan SDK下载地址：  
+https://vulkan.lunarg.com/sdk/home#windows  
+下载最新版本，比如Windows 1.2.176.1 SDK Installer (255mb)  
+点击安装。  
+验证安装好了的方法: (in command prompt)  
+> echo %VULKAN_SDK%
 
-
-2.2 GLFW安装
+## GLFW安装
 由于Vulkan没有提供窗口创建功能，所以在使用Vulkan前还需要下载窗口创建相关的库，这里我们选择GLFW。
-https://www.glfw.org/download.html
-下载64-bit Windows binaries (2.8mb)
-解压，更该文件夹为GLFW，并放在VulkanSDK文件夹下。
-GLFW的使用方法：
-#define GLFW_INCLUDE_VULKAN 
-#include <GLFW/glfw3.h>
+https://www.glfw.org/download.html  
+下载64-bit Windows binaries (2.8mb)  
+解压，更该文件夹为GLFW，并放在VulkanSDK文件夹下。  
+GLFW的使用方法：  
+> #define GLFW_INCLUDE_VULKAN   
+> #include <GLFW/glfw3.h>  
 
+如果不选择GLFW，可以使用SDL  
 
-2.3 GLM安装
-下载GLM库，该库是针对OpenGL的数学库，为了方便数学运算。
-https://glm.g-truc.net/0.9.9/index.html
-下载0.9.9.8 (3.3mb)
-同样更名为GLM并放在VulkanSDK文件夹下。
-GLM里面只有glm子文件夹是有用的
+## GLM安装
+下载GLM库，该库是针对OpenGL的数学库，为了方便数学运算。  
+https://glm.g-truc.net/0.9.9/index.html  
+下载0.9.9.8 (3.3mb)  
+同样更名为GLM并放在VulkanSDK文件夹下。  
+GLM里面只有glm子文件夹是有用的  
 
-
-2.4 Visual Studio 2017设置
-新建console项目（切换至64位模式）。属性，C++, Additional include directories
-C:\VulkanSDK
-C:\VulkanSDK\GLM
-C:\VulkanSDK\GLFW\include
-C:\VulkanSDK\1.2.176.1\Include
-
+## Visual Studio设置
+新建console项目（切换至64位模式）。属性，C++, Additional include directories  
+C:\VulkanSDK  
+C:\VulkanSDK\GLM  
+C:\VulkanSDK\GLFW\include  
+C:\VulkanSDK\1.2.176.1\Include  
 
 属性，Linker,  Additional library directories
 C:\VulkanSDK\GLFW\lib-vc2017
 C:\VulkanSDK\1.2.176.1\Lib
 
-
 属性，Linker, Input
 vulkan-1.lib
 glfw3.lib
 
+### 另一种配置方法
+先设置好环境变量，然后在include和lib directories里面加入：  
+$(INCLUDE)  
+$(LIB)  
+仍旧需要拷贝vulkan-1.lib和glfw3.lib  
+这样就不用每次生成新工程都在vs里设置那一堆目录了。  
 
-———————————————————————
-另一种方法(设置好环境变量），然后在include和lib directories里面加入：
-$(INCLUDE)
-$(LIB)
-仍旧需要拷贝vulkan-1.lib和glfw3.lib
-这样就不用每次生成新工程都在vs里设置那一堆目录了。
-
-
-
-2.6 测试GLFW，Vulkan以及GLM库是否工作良好
-VulkanBasic
-运行结果：13
-参考文献：https://zhuanlan.zhihu.com/p/269575620
+## 测试GLFW，Vulkan以及GLM库是否工作良好
+VulkanBasic  
+运行结果：13  
+参考文献：https://zhuanlan.zhihu.com/p/269575620  
 
 
-2.7 编译Shader的方法
-建立shader.vert和shader.frag两个文件，并把shader内容写好。名字其实可以随意，这是约定俗成的名字。
-建立compile.bat文件，内容如下：
-
-
-————————————————
-
-
+## 编译Shader的方法
+建立shader.vert和shader.frag两个文件，并把shader内容写好。名字其实可以随意，这是约定俗成的名字。  
+建立compile.bat文件，内容如下：   
+```
 C:/VulkanSDK/1.2.176.1/Bin32/glslc.exe shader.vert -o vert.spv 
 C:/VulkanSDK/1.2.176.1/Bin32/glslc.exe shader.frag -o frag.spv 
 pause
-————————————————
+```
+运行这个文件，会生成两个SPIR-V bytecode文件。  
+在Vulkan代码里通过如下方式读取：  
+> auto vertShaderCode = readFile("shaders/vert.spv");   
+> auto fragShaderCode = readFile("shaders/frag.spv");  
 
-
-运行这个文件，会生成两个SPIR-V bytecode文件。
-在Vulkan代码里通过如下方式读取：
-auto vertShaderCode = readFile("shaders/vert.spv"); 
-auto fragShaderCode = readFile("shaders/frag.spv");
-
-
-2.8 补充说明
+## 补充说明
 1、有的test需要c++17，可以在Visual Studio项目设置里面更改。（C++, Language, C++ Language Standard）
 2、关于std_image的问题：是个图像解码库。（https://github.com/nothings/stb） 特点：支持png和jpeg
 重点关注如下三个头文件：stb_image.h用于图像加载。stb_image_write.h用于写入图像文件。stb_image_resize.h用于改变图像尺寸。
