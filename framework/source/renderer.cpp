@@ -55,8 +55,6 @@ void CRenderer::CreateCommandPool(VkSurfaceKHR &surface) {
 }
 
 void CRenderer::CreateCommandBuffers() {
-    //HERE_I_AM("Init06CommandBuffers");
-
     VkResult result = VK_SUCCESS;
 
     commandBuffers.resize(MAX_FRAMES_IN_FLIGHT);
@@ -73,19 +71,19 @@ void CRenderer::CreateCommandBuffers() {
     //REPORT("vkAllocateCommandBuffers");
 }
 
-void CRenderer::CreateComputeCommandBuffers() {
-	commandBuffers_compute.resize(MAX_FRAMES_IN_FLIGHT);
+// void CRenderer::CreateComputeCommandBuffers() {
+// 	commandBuffers_compute.resize(MAX_FRAMES_IN_FLIGHT);
 
-	VkCommandBufferAllocateInfo allocInfo{};
-	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
-	allocInfo.commandPool = commandPool;
-	allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-	allocInfo.commandBufferCount = (uint32_t)commandBuffers_compute.size();
+// 	VkCommandBufferAllocateInfo allocInfo{};
+// 	allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
+// 	allocInfo.commandPool = commandPool;
+// 	allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
+// 	allocInfo.commandBufferCount = (uint32_t)commandBuffers_compute.size();
 
-	if (vkAllocateCommandBuffers(CContext::GetHandle().GetLogicalDevice(), &allocInfo, commandBuffers_compute.data()) != VK_SUCCESS) { //compute recordCommandBuffer需要用这个buffer： recordCompute CommandBuffer(commandBuffers_compute[currentFrame]);
-		throw std::runtime_error("failed to allocate compute command buffers!");
-	}
-}
+// 	if (vkAllocateCommandBuffers(CContext::GetHandle().GetLogicalDevice(), &allocInfo, commandBuffers_compute.data()) != VK_SUCCESS) { //compute recordCommandBuffer需要用这个buffer： recordCompute CommandBuffer(commandBuffers_compute[currentFrame]);
+// 		throw std::runtime_error("failed to allocate compute command buffers!");
+// 	}
+// }
 
 
 /**************************
@@ -195,14 +193,14 @@ void CRenderer::StartRecordGraphicsCommandBuffer(VkPipeline &pipeline, VkPipelin
         std::vector<VkClearValue> &clearValues){
     BeginCommandBuffer();
     BeginRenderPass(renderPass, swapChainFramebuffers, extent, clearValues);
-    BindPipeline(pipeline);
+    BindPipeline(pipeline, VK_PIPELINE_BIND_POINT_GRAPHICS);
     SetViewport(extent);
     SetScissor(extent);
-    BindDescriptorSets(pipelineLayout, descriptorSets);
+    BindDescriptorSets(pipelineLayout, descriptorSets, VK_PIPELINE_BIND_POINT_GRAPHICS);
 }
 void CRenderer::EndRecordGraphicsCommandBuffer(){
 	EndRenderPass();
-	EndCOmmandBuffer();
+	EndCommandBuffer();
 }
 
 void CRenderer::BeginCommandBuffer(){
@@ -238,8 +236,8 @@ void CRenderer::BeginRenderPass(VkRenderPass &renderPass, std::vector<VkFramebuf
     //Step2
     vkCmdBeginRenderPass(commandBuffers[currentFrame], &renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
 }
-void CRenderer::BindPipeline(VkPipeline &pipeline){
-	vkCmdBindPipeline(commandBuffers[currentFrame], VK_PIPELINE_BIND_POINT_GRAPHICS, pipeline); //renderProcess.graphicsPipeline
+void CRenderer::BindPipeline(VkPipeline &pipeline, VkPipelineBindPoint pipelineBindPoint){
+	vkCmdBindPipeline(commandBuffers[currentFrame], pipelineBindPoint, pipeline); //renderProcess.graphicsPipeline
 }
 void CRenderer::SetViewport(VkExtent2D &extent){
 	VkViewport viewport{};
@@ -266,8 +264,8 @@ void CRenderer::BindVertexBuffer(){
 void CRenderer::BindIndexBuffer(){
 	vkCmdBindIndexBuffer(commandBuffers[currentFrame], indexDataBuffer.buffer, 0, VK_INDEX_TYPE_UINT32);
 }
-void CRenderer::BindDescriptorSets(VkPipelineLayout &pipelineLayout, std::vector<VkDescriptorSet> &descriptorSets){
-	vkCmdBindDescriptorSets(commandBuffers[currentFrame], VK_PIPELINE_BIND_POINT_GRAPHICS, pipelineLayout, 0, 1, &descriptorSets[currentFrame], 0, nullptr);
+void CRenderer::BindDescriptorSets(VkPipelineLayout &pipelineLayout, std::vector<VkDescriptorSet> &descriptorSets, VkPipelineBindPoint pipelineBindPoint){
+	vkCmdBindDescriptorSets(commandBuffers[currentFrame], pipelineBindPoint, pipelineLayout, 0, 1, &descriptorSets[currentFrame], 0, nullptr);
 }
 
 void CRenderer::DrawIndexed(std::vector<uint32_t> &indices3D){
@@ -279,7 +277,7 @@ void CRenderer::Draw(uint32_t n){
 void CRenderer::EndRenderPass(){
 	vkCmdEndRenderPass(commandBuffers[currentFrame]);
 }
-void CRenderer::EndCOmmandBuffer(){
+void CRenderer::EndCommandBuffer(){
 	if (vkEndCommandBuffer(commandBuffers[currentFrame]) != VK_SUCCESS) {
         throw std::runtime_error("failed to record command buffer!");
     }
@@ -296,14 +294,14 @@ void CRenderer::preRecordComputeCommandBuffer(){ //prepareCurrentFrame
 
     //updateUniformBuffer_compute(currentFrame);
     vkResetFences(CContext::GetHandle().GetLogicalDevice(), 1, &inFlightFences[currentFrame]);
-    vkResetCommandBuffer(commandBuffers_compute[currentFrame], /*VkCommandBufferResetFlagBits*/ 0);
+    vkResetCommandBuffer(commandBuffers[currentFrame], /*VkCommandBufferResetFlagBits*/ 0);
 }
 void CRenderer::postRecordComputeCommandBuffer(){
     VkSubmitInfo submitInfo{};
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
     submitInfo.commandBufferCount = 1;
-    submitInfo.pCommandBuffers = &commandBuffers_compute[currentFrame];
+    submitInfo.pCommandBuffers = &commandBuffers[currentFrame];
     //submitInfo.signalSemaphoreCount = 1;
     //submitInfo.pSignalSemaphores = &renderFinishedSemaphores[currentFrame];
 
@@ -311,6 +309,38 @@ void CRenderer::postRecordComputeCommandBuffer(){
         throw std::runtime_error("failed to submit compute command buffer!");
     }; 
 }
+
+void CRenderer::StartRecordComputeCommandBuffer(VkPipeline &pipeline, VkPipelineLayout &pipelineLayout, std::vector<VkDescriptorSet> &descriptorSets){
+    BeginCommandBuffer();
+    //BeginRenderPass(renderPass, swapChainFramebuffers, extent, clearValues);
+    BindPipeline(pipeline, VK_PIPELINE_BIND_POINT_COMPUTE);
+    //SetViewport(extent);
+    //SetScissor(extent);
+    BindDescriptorSets(pipelineLayout, descriptorSets, VK_PIPELINE_BIND_POINT_COMPUTE);
+}
+void CRenderer::EndRecordComputeCommandBuffer(){
+	//EndRenderPass();
+	EndCommandBuffer();
+}
+
+void CRenderer::Dispatch(int numWorkGroupsX, int numWorkGroupsY, int numWorkGroupsZ){
+    vkCmdDispatch(commandBuffers[currentFrame], numWorkGroupsX, numWorkGroupsY, numWorkGroupsZ); //TODO: set workgroup number as parameter
+}
+
+// void CRenderer::BeginComputeCommandBuffer(){
+//     VkCommandBufferBeginInfo beginInfo{};
+//     beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+
+//     if (vkBeginCommandBuffer(commandBuffers[currentFrame], &beginInfo) != VK_SUCCESS) {
+//         throw std::runtime_error("failed to begin recording compute command buffer!");
+//     }
+// }
+
+// void CRenderer::EndComputeCommandBuffer(){
+//     if (vkEndCommandBuffer(commandBuffers[currentFrame]) != VK_SUCCESS) {
+//         throw std::runtime_error("failed to record compute command buffer!");
+//     }
+// }
 
 //void CRenderer::drawComputeFrame(VkPipeline &computePipeline, VkPipelineLayout &pipelineLayout_compute, std::vector<VkDescriptorSet> &descriptorSets_compute){
 //    recordComputeCommandBuffer0(computePipeline, pipelineLayout_compute, descriptorSets_compute); //Dispatch in this function

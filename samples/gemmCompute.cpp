@@ -3,7 +3,7 @@
 #define TEST_CLASS_NAME CGemmCompute
 class TEST_CLASS_NAME: public CApplication{
 public:
-	static const int DIM = 32;
+	static const int DIM = 3;
 	static const int DIM_M = DIM;
 	static const int DIM_K = DIM;
 	static const int DIM_N = DIM;
@@ -22,13 +22,13 @@ public:
 	};
 	StructStorageBufferOutput storageBufferObjectOutput;	
 
-	bool bVerbose = false;
-	bool bVerify = false;
+	bool bVerbose = true;
+	bool bVerify = true;
 
 	void initialize(){
 		renderer.CreateCommandPool(surface);
-		//renderer.CreateCommandBuffers();
-		renderer.CreateComputeCommandBuffers();
+		renderer.CreateCommandBuffers();
+		//renderer.CreateComputeCommandBuffers();
 
 		shaderManager.CreateComputeShader("gemmCompute/comp.spv");
 
@@ -65,33 +65,18 @@ public:
 		counter++;
 
 		
-		CApplication::update(); //update time
+		CApplication::update(); //update deltaTime and durationTime (and mainCamera and MVP, VP)
 		std::cout<<"update(): Delta Time: "<<deltaTime<<", Duration Time: "<<durationTime<<std::endl;
 	}
 
 	void recordComputeCommandBuffer(){
-		//Set kernel prameters. Launch Kernel on device
-		std::cout<<"Dispatch Kernel. "<<std::endl;
-		//renderer.drawComputeFrame(renderProcess.computePipeline, renderProcess.computePipelineLayout, descriptor.descriptorSets);
+		START_COMPUTE_RECORD
 
-///////////////
-		VkCommandBufferBeginInfo beginInfo{};
-		beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+		std::cout<<"Record Compute command buffer. "<<std::endl;
+		renderer.Dispatch(1, 1, 1);
 
-		if (vkBeginCommandBuffer(renderer.commandBuffers_compute[renderer.currentFrame], &beginInfo) != VK_SUCCESS) {
-			throw std::runtime_error("failed to begin recording compute command buffer!");
-		}
+		END_COMPUTE_RECORD
 
-		vkCmdBindPipeline(renderer.commandBuffers_compute[renderer.currentFrame], VK_PIPELINE_BIND_POINT_COMPUTE, renderProcess.computePipeline);
-
-		vkCmdBindDescriptorSets(renderer.commandBuffers_compute[renderer.currentFrame], VK_PIPELINE_BIND_POINT_COMPUTE, renderProcess.computePipelineLayout, 0, 1, &descriptor.descriptorSets[renderer.currentFrame], 0, nullptr);
-
-		vkCmdDispatch(renderer.commandBuffers_compute[renderer.currentFrame], 1, 1, 1); //TODO: set workgroup number as parameter
-
-		if (vkEndCommandBuffer(renderer.commandBuffers_compute[renderer.currentFrame]) != VK_SUCCESS) {
-			throw std::runtime_error("failed to record compute command buffer!");
-		}
-///////////////////////
 
 
 		vkDeviceWaitIdle(CContext::GetHandle().GetLogicalDevice());
@@ -101,6 +86,7 @@ public:
 		if(bVerbose) printMatrix(storageBufferObjectOutput.MatC, DIM_M, DIM_N, "C");
 
 		if(bVerify){
+			std::cout<<"Begin verification..."<<std::endl;
 			float cpu_result[DIM_M*DIM_N];
 			CPUSingleThreadMatMul(DIM_M, DIM_N, DIM_K, storageBufferObjectInput.MatA, storageBufferObjectInput.MatB, cpu_result, 9);
 			printMatrix(cpu_result, DIM_M, DIM_N, "cpu_C");

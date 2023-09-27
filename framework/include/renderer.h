@@ -11,6 +11,71 @@ public:
     CRenderer();
     ~CRenderer();
 
+    /**************************
+     * 
+     * Graphics Functions
+     * 
+     * ***********************/
+
+    void preRecordGraphicsCommandBuffer(CSwapchain &swapchain); //prepareCurrentFrameAndAcquireImageIndex
+    void postRecordGraphicsCommandBuffer(CSwapchain &swapchain);
+
+    //Create start() and end() to make sample command recording simple
+    void StartRecordGraphicsCommandBuffer(VkPipeline &pipeline, VkPipelineLayout &pipelineLayout, 
+        VkRenderPass &renderPass, 
+        std::vector<VkFramebuffer> &swapChainFramebuffers, VkExtent2D &extent,
+        std::vector<VkDescriptorSet> &descriptorSets,
+        std::vector<VkClearValue> &clearValues);
+    void EndRecordGraphicsCommandBuffer();
+
+    //Start(...)
+    void BeginCommandBuffer();
+    void BeginRenderPass(VkRenderPass &renderPass, std::vector<VkFramebuffer> &swapChainFramebuffers, VkExtent2D &extent, std::vector<VkClearValue> &clearValues);
+    void BindPipeline(VkPipeline &pipeline, VkPipelineBindPoint pipelineBindPoint);
+    void SetViewport(VkExtent2D &extent);
+    void SetScissor(VkExtent2D &extent);
+    void BindVertexBuffer();
+    void BindIndexBuffer();
+    void BindDescriptorSets(VkPipelineLayout &pipelineLayout, std::vector<VkDescriptorSet> &descriptorSets, VkPipelineBindPoint pipelineBindPoint);
+
+    //Draw
+    template <typename T>
+    void PushConstant(T &pc, VkPipelineLayout graphicsPipelineLayout, VkPushConstantRange &pushConstantRange){
+        vkCmdPushConstants(commandBuffers[currentFrame], graphicsPipelineLayout, pushConstantRange.stageFlags, pushConstantRange.offset, pushConstantRange.size, &pc);
+    }
+    void DrawIndexed(std::vector<uint32_t> &indices3D);
+    void Draw(uint32_t n);
+
+    //End()
+    void EndRenderPass();
+    void EndCommandBuffer();
+
+
+    /**************************
+     * 
+     * Compute Shader Functions
+     * 
+     * ***********************/
+
+    //std::vector<VkCommandBuffer> commandBuffers_compute; 
+    //void CreateComputeCommandBuffers();
+    void preRecordComputeCommandBuffer(); //prepareCurrentFrame
+    void postRecordComputeCommandBuffer();
+    //void drawComputeFrame(VkPipeline &computePipeline, VkPipelineLayout &pipelineLayout_compute, std::vector<VkDescriptorSet> &descriptorSets_compute);
+    //void recordComputeCommandBuffer0(VkPipeline &computePipeline, VkPipelineLayout &pipelineLayout_compute, std::vector<VkDescriptorSet> &descriptorSets_compute);
+    
+    void StartRecordComputeCommandBuffer(VkPipeline &pipeline, VkPipelineLayout &pipelineLayout, std::vector<VkDescriptorSet> &descriptorSets);
+    void EndRecordComputeCommandBuffer();
+
+    void Dispatch(int numWorkGroupsX, int numWorkGroupsY, int numWorkGroupsZ);
+
+
+    /**************************
+     * 
+     * MISC Functions
+     * 
+     * ***********************/
+
     template <typename T>
     void CreateVertexBuffer(IN std::vector<T> &input){
         //HERE_I_AM("Init05CreateVertexBuffer");
@@ -30,56 +95,17 @@ public:
     void CreateCommandBuffers();
     void CreateSyncObjects();
 
-    //Create start() and end() to make sample command recording simple
-    void StartRecordGraphicsCommandBuffer(VkPipeline &pipeline, VkPipelineLayout &pipelineLayout, 
-        VkRenderPass &renderPass, 
-        std::vector<VkFramebuffer> &swapChainFramebuffers, VkExtent2D &extent,
-        std::vector<VkDescriptorSet> &descriptorSets,
-        std::vector<VkClearValue> &clearValues);
-    void EndRecordGraphicsCommandBuffer();
-
-    //Start(...)
-    void BeginCommandBuffer();
-    void BeginRenderPass(VkRenderPass &renderPass, std::vector<VkFramebuffer> &swapChainFramebuffers, VkExtent2D &extent, std::vector<VkClearValue> &clearValues);
-    void BindPipeline(VkPipeline &pipeline);
-    void SetViewport(VkExtent2D &extent);
-    void SetScissor(VkExtent2D &extent);
-    void BindVertexBuffer();
-    void BindIndexBuffer();
-    void BindDescriptorSets(VkPipelineLayout &pipelineLayout, std::vector<VkDescriptorSet> &descriptorSets);
-
-    //Draw
-    template <typename T>
-    void PushConstant(T &pc, VkPipelineLayout graphicsPipelineLayout, VkPushConstantRange &pushConstantRange){
-        vkCmdPushConstants(commandBuffers[currentFrame], graphicsPipelineLayout, pushConstantRange.stageFlags, pushConstantRange.offset, pushConstantRange.size, &pc);
-    }
-    void DrawIndexed(std::vector<uint32_t> &indices3D);
-    void Draw(uint32_t n);
-
-    //End()
-    void EndRenderPass();
-    void EndCOmmandBuffer();
-
-    void preRecordGraphicsCommandBuffer(CSwapchain &swapchain); //prepareCurrentFrameAndAcquireImageIndex
-    void postRecordGraphicsCommandBuffer(CSwapchain &swapchain);
-
     void Destroy();
 
     uint32_t currentFrame;
     uint32_t imageIndex;
-    void Update();
+    void Update(); //update currentFrame
 
     CWxjBuffer vertexDataBuffer;  //05
 	CWxjBuffer indexDataBuffer; //05
     std::vector<VkCommandBuffer> commandBuffers;//06
     VkCommandPool commandPool;//06
 
-    std::vector<VkCommandBuffer> commandBuffers_compute; //专门用于compute的command buffer
-    void CreateComputeCommandBuffers();
-    void preRecordComputeCommandBuffer(); //prepareCurrentFrame
-    void postRecordComputeCommandBuffer();
-    //void drawComputeFrame(VkPipeline &computePipeline, VkPipelineLayout &pipelineLayout_compute, std::vector<VkDescriptorSet> &descriptorSets_compute);
-    //void recordComputeCommandBuffer0(VkPipeline &computePipeline, VkPipelineLayout &pipelineLayout_compute, std::vector<VkDescriptorSet> &descriptorSets_compute);
 
     std::vector<VkSemaphore> imageAvailableSemaphores;
 	std::vector<VkSemaphore> renderFinishedSemaphores;

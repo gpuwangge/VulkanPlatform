@@ -26,6 +26,9 @@
     clearValues);}
 #define END_GRAPHICS_RECORD renderer.EndRecordGraphicsCommandBuffer();
 
+#define START_COMPUTE_RECORD renderer.StartRecordComputeCommandBuffer(renderProcess.computePipeline, renderProcess.computePipelineLayout, descriptor.descriptorSets);
+#define END_COMPUTE_RECORD renderer.EndRecordComputeCommandBuffer();
+
 class CApplication{
 public:
     CApplication();
