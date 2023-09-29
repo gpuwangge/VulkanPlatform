@@ -34,7 +34,7 @@ public:
 
 		//shaderManager.InitVertexShader("../shaders/simpleTriangle/vert.spv");
 		//shaderManager.InitFragmentShader("../shaders/simpleTriangle/frag.spv");
-		shaderManager.CreateComputeShader("simpleCompute/comp.spv");
+		shaderManager.CreateShader("simpleCompute/comp.spv", shaderManager.COMP);
 
 		descriptor.addStorageBuffer(sizeof(StructStorageBuffer));
 		descriptor.createDescriptorPool();
@@ -47,7 +47,7 @@ public:
 		// 	shaderManager.vertShaderModule, 
 		// 	shaderManager.fragShaderModule);
 
-		renderProcess.createComputePipeline(shaderManager.computeShaderModule, descriptor.descriptorSetLayout);
+		renderProcess.createComputePipeline(shaderManager.compShaderModule, descriptor.descriptorSetLayout);
 
 		CApplication::initialize();
 	}

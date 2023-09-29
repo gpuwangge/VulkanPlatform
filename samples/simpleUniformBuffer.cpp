@@ -31,8 +31,10 @@ public:
 
 		swapchain.CreateFramebuffers(renderProcess.renderPass);
 
-		shaderManager.CreateVertexShader("simpleUniformBuffer/vert.spv");
-		shaderManager.CreateFragmentShader("simpleUniformBuffer/frag.spv");
+		//shaderManager.CreateVertexShader("simpleUniformBuffer/vert.spv");
+		//shaderManager.CreateFragmentShader("simpleUniformBuffer/frag.spv");
+		shaderManager.CreateShader("simpleUniformBuffer/vert.spv", shaderManager.VERT);
+		shaderManager.CreateShader("simpleUniformBuffer/frag.spv", shaderManager.FRAG); 
 
 		descriptor.addCustomUniformBuffer(sizeof(StructCustomUniformBuffer));
 		descriptor.createDescriptorPool();

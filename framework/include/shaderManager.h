@@ -9,13 +9,16 @@ public:
     CShaderManager();
     ~CShaderManager();
 
+    enum ShaderTypes{VERT, FRAG, COMP};
+
     VkShaderModule vertShaderModule = VK_NULL_HANDLE;
 	VkShaderModule fragShaderModule = VK_NULL_HANDLE;
-    VkShaderModule computeShaderModule = VK_NULL_HANDLE;
+    VkShaderModule compShaderModule = VK_NULL_HANDLE;
 
-    void CreateVertexShader(const std::string shaderName);
-    void CreateFragmentShader(const std::string shaderName);
-    void CreateComputeShader(const std::string shaderName);
+    //void CreateVertexShader(const std::string shaderName);
+    //void CreateFragmentShader(const std::string shaderName);
+    //void CreateComputeShader(const std::string shaderName);
+    void CreateShader(const std::string shaderName, short shaderType);
 
     //bool bEnablePushConstant;
     VkPushConstantRange pushConstantRange;

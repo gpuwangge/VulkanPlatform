@@ -30,8 +30,10 @@ public:
 
 		swapchain.CreateFramebuffers(renderProcess.renderPass);
 
-		shaderManager.CreateVertexShader("simplePushConstant/vert.spv");
-		shaderManager.CreateFragmentShader("simplePushConstant/frag.spv");
+		//shaderManager.CreateVertexShader("simplePushConstant/vert.spv");
+		//shaderManager.CreateFragmentShader("simplePushConstant/frag.spv");
+		shaderManager.CreateShader("simplePushConstant/vert.spv", shaderManager.VERT);
+		shaderManager.CreateShader("simplePushConstant/frag.spv", shaderManager.FRAG); 
 		
 		shaderManager.CreatePushConstantRange<ModelPushConstants>(VK_SHADER_STAGE_VERTEX_BIT, 0);
 

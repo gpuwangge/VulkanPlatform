@@ -66,8 +66,10 @@ public:
 
 		swapchain.CreateFramebuffers(renderProcess.renderPass);
 
-		shaderManager.CreateVertexShader("simplePhoneLighting/vert.spv");
-		shaderManager.CreateFragmentShader("simplePhoneLighting/frag.spv");    
+		//shaderManager.CreateVertexShader("simplePhoneLighting/vert.spv");
+		//shaderManager.CreateFragmentShader("simplePhoneLighting/frag.spv");   
+		shaderManager.CreateShader("simplePhoneLighting/vert.spv", shaderManager.VERT);
+		shaderManager.CreateShader("simplePhoneLighting/frag.spv", shaderManager.FRAG); 
 	
 		descriptor.addImageSamplerUniformBuffer(textureImages[0].mipLevels);
 		descriptor.addMVPUniformBuffer();

@@ -23,8 +23,10 @@ public:
 
 		swapchain.CreateFramebuffers(renderProcess.renderPass);
 
-		shaderManager.CreateVertexShader("simpleVertexBuffer/vert.spv");
-		shaderManager.CreateFragmentShader("simpleVertexBuffer/frag.spv");
+		//shaderManager.CreateVertexShader("simpleVertexBuffer/vert.spv");
+		//shaderManager.CreateFragmentShader("simpleVertexBuffer/frag.spv");
+		shaderManager.CreateShader("simpleVertexBuffer/vert.spv", shaderManager.VERT);
+		shaderManager.CreateShader("simpleVertexBuffer/frag.spv", shaderManager.FRAG); 
 
 		descriptor.createDescriptorPool();
 		descriptor.createDescriptorSetLayout();

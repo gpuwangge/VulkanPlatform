@@ -30,7 +30,7 @@ public:
 		renderer.CreateCommandBuffers();
 		//renderer.CreateComputeCommandBuffers();
 
-		shaderManager.CreateComputeShader("gemmCompute/comp.spv");
+		shaderManager.CreateShader("gemmCompute/comp.spv", shaderManager.COMP);
 
 		descriptor.addStorageBuffer(sizeof(StructStorageBufferInput));
 		descriptor.addStorageBuffer(sizeof(StructStorageBufferOutput));
@@ -38,7 +38,7 @@ public:
 		descriptor.createDescriptorSetLayout();
 		descriptor.createDescriptorSets(textureImages);
 
-		renderProcess.createComputePipeline(shaderManager.computeShaderModule, descriptor.descriptorSetLayout);
+		renderProcess.createComputePipeline(shaderManager.compShaderModule, descriptor.descriptorSetLayout);
 
 		CApplication::initialize();
 

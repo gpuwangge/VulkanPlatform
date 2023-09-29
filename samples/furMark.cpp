@@ -53,8 +53,10 @@ public:
 
 		swapchain.CreateFramebuffers(renderProcess.renderPass);
 
-		shaderManager.CreateVertexShader("furMark/vert.spv");
-		shaderManager.CreateFragmentShader("furMark/frag.spv");
+		//shaderManager.CreateVertexShader("furMark/vert.spv");
+		//shaderManager.CreateFragmentShader("furMark/frag.spv");
+		shaderManager.CreateShader("furMark/vert.spv", shaderManager.VERT);
+		shaderManager.CreateShader("furMark/frag.spv", shaderManager.FRAG);
 
         descriptor.textureSamplers.resize(3);
 		descriptor.addImageSamplerUniformBuffer(textureImages[0].mipLevels);
