@@ -55,10 +55,11 @@ public:
 
     void CleanUp();
 
+    void UpdateRecordRender();
+    
 #ifndef ANDROID
     CGLFWManager glfwManager;
     void run();
-    void mainLoop();
 #endif
 
     //for static class member. But can not define and init them in the header file!

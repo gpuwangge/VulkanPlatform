@@ -54,7 +54,7 @@ void CBackend::init() {
             .window = window.get()};
     C_CHECK(vkCreateAndroidSurfaceKHR(sample.instance->getHandle(), &create_info,nullptr /* pAllocator */, &sample.surface));
 
-    VkQueueFlagBits requiredQueueFamilies = VK_QUEUE_GRAPHICS_BIT; //& VK_QUEUE_COMPUTE_BIT
+    VkQueueFlagBits requiredQueueFamilies = VK_QUEUE_GRAPHICS_BIT; //VK_QUEUE_GRAPHICS_BIT & VK_QUEUE_COMPUTE_BIT
     const std::vector<const char*>  requireDeviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
     sample.instance->findAllPhysicalDevices();
 
@@ -93,7 +93,7 @@ static double now_ms(void) {
     return 1000.0 * res.tv_sec + (double) res.tv_nsec / 1e6;
 }
 
-void CBackend::render() {
+void CBackend::render() {//mainloop() equivalent
     //Count FPS
     static double startTime = now_ms(); // start time
     static int frameCount = 0;
@@ -105,21 +105,27 @@ void CBackend::render() {
         startTime = currentTime;
     }else frameCount++;
 
-    sample.update();
-    if(sample.renderProcess.bCreateGraphicsPipeline) {
-        sample.renderer.preRecordGraphicsCommandBuffer(sample.swapchain);
-        sample.recordGraphicsCommandBuffer();
-        sample.renderer.postRecordGraphicsCommandBuffer(sample.swapchain);
-    }
-    if(sample.renderProcess.bCreateComputePipeline){
-        sample.renderer.preRecordComputeCommandBuffer();
-        sample.recordComputeCommandBuffer();
-        sample.renderer.postRecordComputeCommandBuffer();
-    }
-    sample.postUpdate();
+    sample.UpdateRecordRender();
 
-    sample.renderer.Update();
+    //sample.update();
+    //if(sample.renderProcess.bCreateGraphicsPipeline) {
+    //    sample.renderer.preRecordGraphicsCommandBuffer(sample.swapchain);
+    //    sample.recordGraphicsCommandBuffer();
+    //    sample.renderer.postRecordGraphicsCommandBuffer(sample.swapchain);
+    //}
+    //if(sample.renderProcess.bCreateComputePipeline){
+    //    sample.renderer.preRecordComputeCommandBuffer();
+    //    sample.recordComputeCommandBuffer();
+    //    sample.renderer.postRecordComputeCommandBuffer();
+    //}
+    //sample.postUpdate();
+
+    //sample.renderer.Update(); //update currentFrame
     //__android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "currentFrame:  %d", sample.renderer.currentFrame);
+
+
+    if (sample.NeedToExit) std::terminate(); //TODO: is there a better exit function?
+
 }
 
 void CBackend::cleanup() {

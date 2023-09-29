@@ -82,6 +82,11 @@ void CShaderManager::CreateFragmentShader(const std::string shaderName){
 void CShaderManager::CreateComputeShader(const std::string shaderName){
 #ifndef ANDROID
     InitSpirVShader(SHADER_PATH + shaderName, &computeShaderModule);
+#else
+    std::vector<uint8_t> fileBits;
+    std::string fullShaderName = ANDROID_SHADER_PATH + InsertString(shaderName, "shader.", '/');
+    CContext::GetHandle().androidManager.AssetReadFile(fullShaderName.c_str(), fileBits);
+    computeShaderModule = createShaderModule(fileBits);    
 #endif
 }
 

@@ -1,5 +1,15 @@
 #include "../include/instance.h"
 
+
+#ifndef ANDROID
+//#include "..\\..\\windowsFramework\\include\\logManager.h"
+#else
+#include "..\\..\\androidFramework\\include\\androidManager.h"
+#include <android/log.h>
+#define LOG_TAG "VULKAN_PLATFORM"
+#define LOGI(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
+#endif
+
 CInstance::CInstance(const std::vector<const char*> &requiredValidationLayers, std::vector<const char*> &requiredExtensions){
     //debugger = new CDebugger("../logs/instance.log");
 
@@ -191,7 +201,17 @@ std::unique_ptr<CPhysicalDevice>* CInstance::pickSuitablePhysicalDevice(VkSurfac
             }
             if(requiredQueueFamilies & VK_QUEUE_COMPUTE_BIT) {
                 //debugger->writeMSG("Require VK_QUEUE_COMPUTE_BIT\n");debugger->flush();
+#ifndef ANDROID		
+                    std::cout<<"Require VK_QUEUE_COMPUTE_BIT"<<std::endl;
+#else
+                    __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "Require VK_QUEUE_COMPUTE_BIT");
+#endif
                 if(!indices.computeFamily.has_value()) return nullptr;
+#ifndef ANDROID		
+                    std::cout<<"Picked physical device index:"<<indices.computeFamily.value()<<std::endl;
+#else
+                    __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "Picked physical device index: %d\n", indices.computeFamily.value());
+#endif                
                 //debugger->writeMSG("Picked physical device index: %d\n", indices.computeFamily.value());debugger->flush();
 
             }

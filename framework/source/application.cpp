@@ -59,7 +59,13 @@ void CApplication::run(){ //Entrance Function
 
     initialize();
 
-    mainLoop();
+    while (!glfwWindowShouldClose(glfwManager.window)) {
+        glfwPollEvents();
+        UpdateRecordRender();
+        if (NeedToExit) break;
+	}
+
+	vkDeviceWaitIdle(CContext::GetHandle().GetLogicalDevice());//Wait GPU to complete all jobs before CPU destroy resources
 }
 #endif
 
@@ -89,35 +95,26 @@ void CApplication::recordGraphicsCommandBuffer(){}
 void CApplication::recordComputeCommandBuffer(){}
 void CApplication::postUpdate(){}
 
+void CApplication::UpdateRecordRender(){
+    update();
 
-#ifndef ANDROID
-void CApplication::mainLoop(){
-		while (!glfwWindowShouldClose(glfwManager.window)) {
-			glfwPollEvents();
+    if(renderProcess.bCreateGraphicsPipeline){
+        renderer.preRecordGraphicsCommandBuffer(swapchain);
+        recordGraphicsCommandBuffer();
+        renderer.postRecordGraphicsCommandBuffer(swapchain);
+    }
 
-            update();
+    if(renderProcess.bCreateComputePipeline){
+        renderer.preRecordComputeCommandBuffer();
+        recordComputeCommandBuffer();
+        renderer.postRecordComputeCommandBuffer();
+    }
 
-            if(renderProcess.bCreateGraphicsPipeline){
-                renderer.preRecordGraphicsCommandBuffer(swapchain);
-                recordGraphicsCommandBuffer();
-                renderer.postRecordGraphicsCommandBuffer(swapchain);
-            }
+    postUpdate();
 
-            if(renderProcess.bCreateComputePipeline){
-                renderer.preRecordComputeCommandBuffer();
-                recordComputeCommandBuffer();
-                renderer.postRecordComputeCommandBuffer();
-            }
-
-            postUpdate();
-
-            renderer.Update(); //update currentFrame
-            if (NeedToExit) break;
-		}
-
-		vkDeviceWaitIdle(CContext::GetHandle().GetLogicalDevice());//Wait GPU to complete all jobs before CPU destroy resources
+    renderer.Update(); //update currentFrame    
 }
-#endif
+
 
 #ifndef ANDROID
 void CApplication::DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator) {

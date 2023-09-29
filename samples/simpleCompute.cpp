@@ -46,6 +46,7 @@ public:
 		// 	VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
 		// 	shaderManager.vertShaderModule, 
 		// 	shaderManager.fragShaderModule);
+
 		renderProcess.createComputePipeline(shaderManager.computeShaderModule, descriptor.descriptorSetLayout);
 
 		CApplication::initialize();
@@ -55,7 +56,11 @@ public:
 		static int counter = 1;
 
 		//Initial Host data
+#ifndef ANDROID		
 		std::cout<<"update(): write counter = "<<counter<<" to the device at frame="<<renderer.currentFrame<<std::endl;
+#else
+		__android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "update(): write counter = %d to the device", counter);
+#endif
 		storageBufferObject.data = {counter+0.0f, counter+0.1f, counter+0.2f, counter+0.3f};
 
 		//Host >> Device
@@ -84,7 +89,13 @@ public:
 		float data[4] = {0};
 		//std::cout<<"compute(): Current Frame = "<<renderer.currentFrame<<": "<<std::endl;
 		memcpy(data, descriptor.storageBuffersMapped_1[renderer.currentFrame], sizeof(data));
+
+#ifndef ANDROID
 		std::cout<<"compute(): read data = {"<<data[0]<<", "<<data[1]<<", "<<data[2]<<", "<<data[3]<<"} from the device at frame="<<renderer.currentFrame<<std::endl;	
+#else
+		__android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "compute(): read data = {%f,%f,%f,%f}", data[0], data[1], data[2], data[3]);
+#endif
+
 
 	}
 };
