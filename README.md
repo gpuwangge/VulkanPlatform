@@ -75,8 +75,13 @@ If you only want to distribute the binary, copy libstdc++-6.dll or/and libgcc_s_
 Most likely hardware(GPU) does not support Vulkan; or you are using virtual machine that has no GPU support.  
 You can verify this by installing Vulkan SDK, and runing the test under Bin/vkcube.exe.  
 Solution is to not use virtual machine, and buy a real physical graphics card(that supports Vulkan, which most will do) at https://www.amazon.com/ (or whatever e-commerce website)  
+- In Android Studio, when Debug 'app', AVD stucks at "Waiting For Debugger" forever  
+One reason is that there are multiple virtual devices and the debugger is stuck on one of them.   
+Delete these virtual devices and leave only one.  
+(I use **Pixel 7 Pro API 30, Android 11.0 Google Play | x86**)  
 
-## Credits
+
+## References
 https://github.com/StanislavPetrovV/FurMark  
 https://github.com/SaschaWillems/Vulkan  
 https://github.com/KhronosGroup/Vulkan-Samples  
