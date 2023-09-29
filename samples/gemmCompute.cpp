@@ -92,6 +92,7 @@ public:
 	}
 
 	void printMatrix(float *matA, int DIM_M, int DIM_N, std::string matName){
+#ifndef ANDROID		
 		std::cout<<"Print "<<matName<<std::endl;
 		for(int i=0; i < DIM_M; i++){
 			for(int j=0; j < DIM_N; j++){
@@ -100,6 +101,16 @@ public:
 			std::cout<<std::endl;
 		}
 		std::cout<<std::endl;
+#else
+		__android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "Print %s\n", matName.c_str());
+		for(int i=0; i < DIM_M; i++){
+			for(int j=0; j < DIM_N; j++){
+				__android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "%f, ", matA[i*DIM_N + j]);
+			}
+			//__android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "\n");
+		}
+		__android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "\n");
+#endif
 	}
 
 	void CPUSingleThreadMatMul(int M, int N, int K, float *matrixA, float *matrixB, float *outputMatrix, int sampleNum){
