@@ -1,5 +1,5 @@
-#ifndef H_LOGMANAGER
-#define H_LOGMANAGER
+#ifndef H_WINDOWSLOGMANAGER
+#define H_WINDOWSLOGMANAGER
 
 //#pragma once
 #define HERE_I_AM(s) { debugger->writeMSG("\n***** %s *****\n", s); debugger->flush(); }
@@ -48,7 +48,9 @@ class CWindowsLogManager {
 public:
 	FILE * FpDebug;			// where to send debugging messages
 
-	CWindowsLogManager(const std::string&  debugFilename);
+	CWindowsLogManager();
+
+	void createLogFile(const std::string&  debugFilename);
 
 	void setVerbose(bool b) { Verbose = b; }
 	bool getVerbose() {return Verbose; }

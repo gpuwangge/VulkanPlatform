@@ -1,8 +1,10 @@
 #include "windowsLogManager.h"
 
-CWindowsLogManager::CWindowsLogManager(const std::string&  debugFilename) {
+CWindowsLogManager::CWindowsLogManager() {
 	Verbose = true;
+}
 
+void CWindowsLogManager::createLogFile(const std::string&  debugFilename){
 #ifdef _WIN32
 	errno_t err = fopen_s(&FpDebug, debugFilename.c_str(), "w");
 	if (err != 0)
@@ -19,7 +21,6 @@ CWindowsLogManager::CWindowsLogManager(const std::string&  debugFilename) {
 	}
 #endif
 	//fprintf(FpDebug, "Width = %d ; Height = %d\n", WINDOW_WIDTH, WINDOW_HEIGHT);
-
 }
 
 void CWindowsLogManager::writeMSG(std::string s) {
