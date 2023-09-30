@@ -39,9 +39,9 @@ public:
     VkQueue GetPresentQueue();
     VkQueue GetComputeQueue();
 
+    CLogManager logManager;
 #ifndef ANDROID
     //CWindowsLogManager *windowsLogManager;
-    CLogManager logManager;
 #else
     CAndroidManager androidManager;
 #endif

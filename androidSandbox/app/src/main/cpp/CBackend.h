@@ -105,6 +105,7 @@ void CBackend::render() {//mainloop() equivalent
         startTime = currentTime;
     }else frameCount++;
 
+    CContext::GetHandle().logManager.writeLog("test");
     sample.UpdateRecordRender();
 
     //sample.update();
