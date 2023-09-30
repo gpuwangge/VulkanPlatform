@@ -5,7 +5,6 @@
 #include "dataBuffer.hpp"
 
  #ifdef ANDROID
-// #include "..\\..\\androidFramework\\include\\androidManager.h"
 #include "context.h"
  #endif
 

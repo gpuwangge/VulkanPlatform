@@ -43,12 +43,12 @@ static errorcode ErrorCodes[] =
 	{ VK_ERROR_INVALID_EXTERNAL_HANDLE,	"Invalid External Handle" },
 };
 
-class CLogManager {
+class CWindowsLogManager {
 	bool Verbose;			// true = write messages into a file
 public:
 	FILE * FpDebug;			// where to send debugging messages
 
-	CLogManager(const std::string&  debugFilename);
+	CWindowsLogManager(const std::string&  debugFilename);
 
 	void setVerbose(bool b) { Verbose = b; }
 	bool getVerbose() {return Verbose; }

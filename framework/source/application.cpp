@@ -40,7 +40,7 @@ void CApplication::run(){ //Entrance Function
     glfwManager.createSurface(instance, surface);
 
     instance->findAllPhysicalDevices();
-    CContext::GetHandle().logManager->writeMSG("Surface created!\n");
+    CContext::GetHandle().windowsLogManager->writeMSG("Surface created!\n");
     CContext::GetHandle().physicalDevice = instance->pickSuitablePhysicalDevice(surface, requireDeviceExtensions, requiredQueueFamilies);
     //App dev can only query properties from physical device, but can not directly operate it
     //App dev operates logical device, can logical device communicate with physical device by command queues

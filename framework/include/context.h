@@ -5,7 +5,7 @@
 #include "physicalDevice.h"
 
 #ifndef ANDROID
-#include "..\\..\\windowsFramework\\include\\logManager.h"
+#include "..\\..\\windowsFramework\\include\\windowsLogManager.h"
 #else
 #include "..\\..\\androidFramework\\include\\androidManager.h"
 #include <android/log.h>
@@ -39,7 +39,7 @@ public:
     VkQueue GetComputeQueue();
 
 #ifndef ANDROID
-    CLogManager *logManager;
+    CWindowsLogManager *windowsLogManager;
 #else
     CAndroidManager androidManager;
 #endif
