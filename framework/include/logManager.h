@@ -6,7 +6,6 @@
 #ifndef ANDROID
     #include "..\\..\\windowsFramework\\include\\windowsLogManager.h"
 #else
-    #include <android/log.h>
     #include "..\\..\\androidFramework\\include\\androidLogManager.h"
 #endif
 class CLogManager {
@@ -14,7 +13,10 @@ public:
 	CLogManager();
     ~CLogManager();
 //#ifndef ANDROID
-    void writeLog(std::string s);
+    void print(std::string s);
+    void print(std::string s, int n); //uint32_t
+    void print(std::string s, float n);
+    void print(std::string s0, std::string s1);
 //#endif
 
 private:

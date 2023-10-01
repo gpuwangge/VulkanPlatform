@@ -23,16 +23,20 @@ void CWindowsLogManager::createLogFile(const std::string&  debugFilename){
 	//fprintf(FpDebug, "Width = %d ; Height = %d\n", WINDOW_WIDTH, WINDOW_HEIGHT);
 }
 
-void CWindowsLogManager::writeMSG(std::string s) {
+void CWindowsLogManager::printLog(std::string s) {
 	if(Verbose) fprintf(FpDebug, "%s", s.c_str());
 }
 
-void CWindowsLogManager::writeMSG(std::string s0, std::string s1) {
-	if (Verbose) fprintf(FpDebug, s0.c_str(), s1.c_str());
+void CWindowsLogManager::printLog(std::string s, int n) {
+	if (Verbose) fprintf(FpDebug, s.c_str(), n);
 }
 
-void CWindowsLogManager::writeMSG(std::string s, uint32_t n) {
+void CWindowsLogManager::printLog(std::string s, float n) {
 	if (Verbose) fprintf(FpDebug, s.c_str(), n);
+}
+
+void CWindowsLogManager::printLog(std::string s0, std::string s1) {
+	if (Verbose) fprintf(FpDebug, s0.c_str(), s1.c_str());
 }
 
 void CWindowsLogManager::printVkError(VkResult result, std::string prefix){

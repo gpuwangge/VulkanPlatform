@@ -55,9 +55,11 @@ public:
 	void setVerbose(bool b) { Verbose = b; }
 	bool getVerbose() {return Verbose; }
 
-	void writeMSG(std::string s);
-	void writeMSG(std::string s0, std::string s1);
-	void writeMSG(std::string s, uint32_t n);
+	void printLog(std::string s);
+	void printLog(std::string s, int n);
+	void printLog(std::string s, float n);
+	void printLog(std::string s0, std::string s1);
+	
 
 	void printVkError(VkResult result, std::string prefix);
 

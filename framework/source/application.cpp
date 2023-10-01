@@ -40,7 +40,10 @@ void CApplication::run(){ //Entrance Function
     glfwManager.createSurface(instance, surface);
 
     instance->findAllPhysicalDevices();
-    CContext::GetHandle().logManager.writeLog("Surface created!\n");
+    CContext::GetHandle().logManager.print("Surface created!\n");
+    CContext::GetHandle().logManager.print("Surface %d created!\n", 999);
+    CContext::GetHandle().logManager.print("Surface %f created!\n", 1.234f);
+    CContext::GetHandle().logManager.print("Surface %s created!\n", "insert");
     CContext::GetHandle().physicalDevice = instance->pickSuitablePhysicalDevice(surface, requireDeviceExtensions, requiredQueueFamilies);
     //App dev can only query properties from physical device, but can not directly operate it
     //App dev operates logical device, can logical device communicate with physical device by command queues
