@@ -6,6 +6,6 @@
 //#include "simpleMipmap.cpp"
 //#include "simpleShadowMap.cpp"
 //#include "simpleObjLoader.cpp"
-#include "simpleCompute.cpp"
-//#include "gemmCompute.cpp"
+//#include "simpleCompute.cpp"
+#include "gemmCompute.cpp"
 #endif

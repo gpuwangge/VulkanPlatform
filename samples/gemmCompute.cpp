@@ -49,8 +49,11 @@ public:
 		storageBufferObjectInput.K = DIM_K;
 		for(int i = 0; i < DIM_M*DIM_K; i++) storageBufferObjectInput.MatA[i] = (float)rand() / (float)RAND_MAX;
 		for(int i = 0; i < DIM_K*DIM_N; i++) storageBufferObjectInput.MatB[i] = (float)rand() / (float)RAND_MAX;
-		if(bVerbose) printMatrix(storageBufferObjectInput.MatA, DIM_M, DIM_K, "A");
-		if(bVerbose) printMatrix(storageBufferObjectInput.MatB, DIM_K, DIM_N, "B");
+		//if(bVerbose) printMatrix(storageBufferObjectInput.MatA, DIM_M, DIM_K, "A");
+		//if(bVerbose) printMatrix(storageBufferObjectInput.MatB, DIM_K, DIM_N, "B");
+		if(bVerbose) PRINT("A: ", storageBufferObjectInput.MatA, DIM_M*DIM_K);
+		if(bVerbose) PRINT("B: ", storageBufferObjectInput.MatB, DIM_K*DIM_N);
+		if(bVerbose) PRINT("");
 
 		//Host >> Device
 		descriptor.updateStorageBuffer_1<StructStorageBufferInput>(renderer.currentFrame, durationTime, storageBufferObjectInput);
@@ -64,13 +67,14 @@ public:
 		counter++;
 		
 		CApplication::update(); //update deltaTime and durationTime (and mainCamera and MVP, VP)
-		std::cout<<"update(): Delta Time: "<<deltaTime<<", Duration Time: "<<durationTime<<std::endl;
+		//std::cout<<"update(): Delta Time: "<<deltaTime<<", Duration Time: "<<durationTime<<std::endl;
+		PRINT("update(): Delta Time: %f, Duration Time: %f", deltaTime, durationTime);
 	}
 
 	void recordComputeCommandBuffer(){
 		START_COMPUTE_RECORD
 
-		std::cout<<"Record Compute command buffer. "<<std::endl;
+		//std::cout<<"Record Compute command buffer. "<<std::endl;
 		renderer.Dispatch(1, 1, 1);
 
 		END_COMPUTE_RECORD
@@ -81,16 +85,22 @@ public:
 
 		//Device >> Host
 		if(bVerbose) memcpy(storageBufferObjectOutput.MatC, descriptor.storageBuffersMapped_2[renderer.currentFrame], sizeof(storageBufferObjectOutput.MatC));
-		if(bVerbose) printMatrix(storageBufferObjectOutput.MatC, DIM_M, DIM_N, "C");
+		//if(bVerbose) printMatrix(storageBufferObjectOutput.MatC, DIM_M, DIM_N, "C");
+		if(bVerbose) PRINT("C: ", storageBufferObjectOutput.MatC, DIM_M*DIM_N);
 
 		if(bVerify){
-			std::cout<<"Begin verification..."<<std::endl;
+			//std::cout<<"Begin verification..."<<std::endl;
+			PRINT("Begin verification... ");
 			float cpu_result[DIM_M*DIM_N];
 			CPUSingleThreadMatMul(DIM_M, DIM_N, DIM_K, storageBufferObjectInput.MatA, storageBufferObjectInput.MatB, cpu_result, DIM_M*DIM_N);
-			printMatrix(cpu_result, DIM_M, DIM_N, "cpu_C");
+			//printMatrix(cpu_result, DIM_M, DIM_N, "cpu_C");
+			PRINT("cpu_C: ", cpu_result, DIM_M*DIM_N);
 		}
+
+		if(bVerbose) PRINT("");
 	}
 
+/*
 	void printMatrix(float *matA, int DIM_M, int DIM_N, std::string matName){
 #ifndef ANDROID		
 		std::cout<<"Print "<<matName<<std::endl;
@@ -112,7 +122,7 @@ public:
 		__android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "\n");
 #endif
 	}
-
+*/
 	void CPUSingleThreadMatMul(int M, int N, int K, float *matrixA, float *matrixB, float *outputMatrix, int sampleNum){
 		int count = 0;
 		int printDelta = sampleNum / 1;
@@ -127,7 +137,8 @@ public:
 				count++;
 				if(count % printDelta == 0){
 					float completeRate = (count * 100.0)/sampleNum ;
-					std::cout<<"Completed: "<<completeRate<<"%"<<std::endl;
+					PRINT("Completed: %f%%", completeRate);
+					//std::cout<<"Completed: "<<completeRate<<"%"<<std::endl;
 				}
 				
 				if(count >= sampleNum) return;
