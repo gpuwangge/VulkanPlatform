@@ -24,7 +24,7 @@ void CModelManager::LoadObjModel(IN const std::string modelName, OUT std::vector
 #else
 	std::vector<uint8_t> fileBits;
 	std::string fullModelPath = ANDROID_MODEL_PATH + modelName;
-	CContext::GetHandle().androidManager.AssetReadFile(fullModelPath.c_str(), fileBits);
+	CContext::GetHandle().androidFileManager.AssetReadFile(fullModelPath.c_str(), fileBits);
 	std::istringstream in_stream(std::string(fileBits.begin(), fileBits.end()));
    	if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, &in_stream))
 		throw std::runtime_error(warn + err);

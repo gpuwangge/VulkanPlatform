@@ -1,13 +1,13 @@
-#ifndef H_ANDROIDMANAGER
-#define H_ANDROIDMANAGER
+#ifndef H_ANDROIDFILEMANAGER
+#define H_ANDROIDFILEMANAGER
 
 #include "..\\..\\framework\\include\\common.h"
 #include <android/asset_manager.h>
 
-class CAndroidManager final{
+class CAndroidFileManager final{
 public:
-    CAndroidManager();
-    ~CAndroidManager();
+    CAndroidFileManager();
+    ~CAndroidFileManager();
 
     AAssetManager *assetManager;
     bool AssetReadFile(const char *assetName, std::vector<uint8_t>& buf); //std::string& assetName

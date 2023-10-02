@@ -33,7 +33,7 @@ void CShaderManager::CreateShader(const std::string shaderName, short shaderType
 #else
     std::vector<uint8_t> fileBits;
     std::string fullShaderName = ANDROID_SHADER_PATH + InsertString(shaderName, "shader.", '/');
-    CContext::GetHandle().androidManager.AssetReadFile(fullShaderName.c_str(), fileBits);
+    CContext::GetHandle().androidFileManager.AssetReadFile(fullShaderName.c_str(), fileBits);
     *pShaderModule = createShaderModule(fileBits);
 #endif   
 }

@@ -38,7 +38,7 @@ void CTextureImage::CreateTextureImage(const std::string texturePath, VkImageUsa
 	//TODO: need support bitPerTexelPerChannel == 16
 	std::vector<uint8_t> fileBits;
 	std::string fullTexturePath = ANDROID_TEXTURE_PATH + texturePath;
-	CContext::GetHandle().androidManager.AssetReadFile(fullTexturePath.c_str(), fileBits);
+	CContext::GetHandle().androidFileManager.AssetReadFile(fullTexturePath.c_str(), fileBits);
 	if(bitPerTexelPerChannel == 16)
 		texels = stbi_load_16_from_memory(fileBits.data(), fileBits.size(), &texWidth, &texHeight, &texChannels, dstTexChannels);//stbi_uc
 	else
@@ -332,7 +332,7 @@ void CTextureImage::generateMipmaps(std::string rainbowCheckerboardTexturePath, 
 		//TODO: need support 16 bptpc
 		std::vector<uint8_t> fileBits;
 		std::string fullTexturePath = ANDROID_TEXTURE_PATH + rainbowCheckerboardTexturePath + std::to_string(i) + ".png";
-		CContext::GetHandle().androidManager.AssetReadFile(fullTexturePath.c_str(), fileBits);
+		CContext::GetHandle().androidFileManager.AssetReadFile(fullTexturePath.c_str(), fileBits);
 		uint8_t* texels = stbi_load_from_memory(fileBits.data(), fileBits.size(), &texWidth, &texHeight, &texChannels, 4);
 #endif
 		CreateTextureImage(texels, usage, tmpTextureBufferForRainbowMipmaps[i], dstTexChannels, 8);

@@ -3,6 +3,7 @@
 
 #include "common.h"
 #include "physicalDevice.h"
+#include "context.h"
 
 class CInstance{
 public:

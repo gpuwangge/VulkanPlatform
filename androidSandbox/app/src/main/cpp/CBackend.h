@@ -78,7 +78,7 @@ void CBackend::init() {
 void CBackend::reset(ANativeWindow *newWindow, AAssetManager *newManager) {
     window.reset(newWindow);
     CContext::Init();
-    CContext::GetHandle().androidManager.assetManager = newManager;
+    CContext::GetHandle().androidFileManager.assetManager = newManager;
   //if (initialized) {
   //    app.createSurface();
   //  recreateSwapChain();

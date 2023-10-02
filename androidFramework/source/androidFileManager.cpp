@@ -1,9 +1,9 @@
-#include "../include/androidManager.h"
+#include "../include/androidFileManager.h"
 
-CAndroidManager::CAndroidManager(){}
-CAndroidManager::~CAndroidManager(){}
+CAndroidFileManager::CAndroidFileManager(){}
+CAndroidFileManager::~CAndroidFileManager(){}
 
-bool CAndroidManager::AssetReadFile(const char *assetName, std::vector<uint8_t>& buf) {
+bool CAndroidFileManager::AssetReadFile(const char *assetName, std::vector<uint8_t>& buf) {
     //if (!assetName.length()) return false;
     AAsset* file = AAssetManager_open(assetManager, assetName, AASSET_MODE_BUFFER);
     //ASSERT(assetDescriptor, "%s does not exist in %s", assetName.c_str(), __FUNCTION__);

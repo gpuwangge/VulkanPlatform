@@ -5,14 +5,8 @@
 #include "physicalDevice.h"
 #include "logManager.h"
 
-//#ifndef ANDROID
-//#include "..\\..\\windowsFramework\\include\\windowsLogManager.h"
-//#else
 #ifdef ANDROID
-#include "..\\..\\androidFramework\\include\\androidManager.h"
-//#include <android/log.h>
-//#define LOG_TAG "VULKAN_PLATFORM"
-//#define LOGI(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
+#include "..\\..\\androidFramework\\include\\androidFileManager.h"
 #endif
 
 #define PRINT CContext::GetHandle().logManager.print
@@ -43,11 +37,9 @@ public:
     VkQueue GetComputeQueue();
 
     CLogManager logManager;
-//#ifndef ANDROID
-    //CWindowsLogManager *windowsLogManager;
-//#else
+
 #ifdef ANDROID
-    CAndroidManager androidManager;
+    CAndroidFileManager androidFileManager;
 #endif
     
 private:
