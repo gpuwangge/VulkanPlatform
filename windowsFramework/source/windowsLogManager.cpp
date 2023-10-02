@@ -25,22 +25,27 @@ void CWindowsLogManager::createLogFile(const std::string&  debugFilename){
 
 void CWindowsLogManager::printLog(std::string s) {
 	if(Verbose) fprintf(FpDebug, "%s", s.c_str());
+	if(Verbose) fprintf(FpDebug, "\n");
 }
 
 void CWindowsLogManager::printLog(std::string s, int n) {
-	if (Verbose) fprintf(FpDebug, s.c_str(), n);
+	if(Verbose) fprintf(FpDebug, s.c_str(), n);
+	if(Verbose) fprintf(FpDebug, "\n");
 }
 
 void CWindowsLogManager::printLog(std::string s, float n) {
-	if (Verbose) fprintf(FpDebug, s.c_str(), n);
+	if(Verbose) fprintf(FpDebug, s.c_str(), n);
+	if(Verbose) fprintf(FpDebug, "\n");
 }
 
 void CWindowsLogManager::printLog(std::string s, float n0, float n1){
-	if (Verbose) fprintf(FpDebug, s.c_str(), n0, n1);
+	if(Verbose) fprintf(FpDebug, s.c_str(), n0, n1);
+	if(Verbose) fprintf(FpDebug, "\n");
 }
 
 void CWindowsLogManager::printLog(std::string s0, std::string s1) {
-	if (Verbose) fprintf(FpDebug, s0.c_str(), s1.c_str());
+	if(Verbose) fprintf(FpDebug, s0.c_str(), s1.c_str());
+	if(Verbose) fprintf(FpDebug, "\n");
 }
 
 void CWindowsLogManager::printLog(std::string s, float *n, int size){

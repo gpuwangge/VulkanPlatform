@@ -5,14 +5,17 @@
 #include "physicalDevice.h"
 #include "logManager.h"
 
-#ifndef ANDROID
+//#ifndef ANDROID
 //#include "..\\..\\windowsFramework\\include\\windowsLogManager.h"
-#else
+//#else
+#ifdef ANDROID
 #include "..\\..\\androidFramework\\include\\androidManager.h"
-#include <android/log.h>
-#define LOG_TAG "VULKAN_PLATFORM"
-#define LOGI(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
+//#include <android/log.h>
+//#define LOG_TAG "VULKAN_PLATFORM"
+//#define LOGI(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
 #endif
+
+#define PRINT CContext::GetHandle().logManager.print
 
 //CContext is to store some commonly used static variables(physical device, logical device in the current context)
 
@@ -40,9 +43,10 @@ public:
     VkQueue GetComputeQueue();
 
     CLogManager logManager;
-#ifndef ANDROID
+//#ifndef ANDROID
     //CWindowsLogManager *windowsLogManager;
-#else
+//#else
+#ifdef ANDROID
     CAndroidManager androidManager;
 #endif
     

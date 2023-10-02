@@ -8,6 +8,7 @@
 #else
     #include "..\\..\\androidFramework\\include\\androidLogManager.h"
 #endif
+
 class CLogManager {
 public:
 	CLogManager();

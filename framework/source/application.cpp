@@ -86,6 +86,14 @@ void CApplication::initialize(){
     // float mat[4] = {1.1, 2.2, 3.3, 4.4};
     // CContext::GetHandle().logManager.print("Test vector: \n", mat, 4);
     // CContext::GetHandle().logManager.print("Test two floats:  %f, %f!\n", 1.2, 2.3);
+
+    // PRINT("Test single string!");
+    // PRINT("Test interger: %d!", 999);
+    // PRINT("Test float: %f!", 1.234f);
+    // PRINT("Test string: %s!", "another string");
+    // float mat[4] = {1.1, 2.2, 3.3, 4.4};
+    // PRINT("Test vector: ", mat, 4);
+    // PRINT("Test two floats:  %f, %f!", 1.2, 2.3);    
 }
 
 void CApplication::update(){
