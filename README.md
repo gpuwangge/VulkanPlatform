@@ -8,8 +8,7 @@
 # Vulkan Cross-Platform Game Engine
 ![Windows](https://img.shields.io/badge/Windows-passing-brightgreen)
 ![Android](https://img.shields.io/badge/Android-passing-brightgreen)
-- Native Vulkan API is too hard to use! This wrapper can be used for education and test new experiments.
-- Build windows and android binary at the same time (with no Android Java/Kotlin/Gradle knowledge needed)! Save some time for dates!
+- Build windows and android binary with same sample code!
 
 <img src="https://github.com/gpuwangge/VulkanPlatform/blob/main/images/shadowMapAVDDemo.png" alt="alt text" width="170" height="330">  
 
