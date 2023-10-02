@@ -57,6 +57,7 @@ public:
 
 	void printLog(std::string s);
 	void printLog(std::string s, int n);
+	void printLog(std::string s, int n0, int n1);
 	void printLog(std::string s, float n);
 	void printLog(std::string s, float n0, float n1);
 	void printLog(std::string s0, std::string s1);

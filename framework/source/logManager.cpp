@@ -28,6 +28,14 @@ void CLogManager::print(std::string s, int n){
 #endif    
 }
 
+void CLogManager::print(std::string s, int n0, int n1){
+#ifndef ANDROID
+    windowsLogManager.printLog(s, n0, n1);
+#else
+    androidLogManager.printLog(s, n0, n1);
+#endif    
+}
+
 void CLogManager::print(std::string s, float n){
 #ifndef ANDROID
     windowsLogManager.printLog(s, n);

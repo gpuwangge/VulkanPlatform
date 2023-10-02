@@ -4,13 +4,8 @@
 #define LOGI(...) __android_log_print(ANDROID_LOG_INFO, LOG_TAG, __VA_ARGS__)
 #define LOGV(...) __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, __VA_ARGS__)
 
-CAndroidLogManager::CAndroidLogManager(){
-
-}
-
-CAndroidLogManager::~CAndroidLogManager(){
-    
-}
+CAndroidLogManager::CAndroidLogManager(){}
+CAndroidLogManager::~CAndroidLogManager(){}
 
 
 void CAndroidLogManager::printLog(std::string s){
@@ -21,6 +16,10 @@ void CAndroidLogManager::printLog(std::string s){
 void CAndroidLogManager::printLog(std::string s, int n){
     //__android_log_print(ANDROID_LOG_VERBOSE, "LogManager", s.c_str(), n);
     LOGV(s.c_str(), n);
+}
+
+void CAndroidLogManager::printLog(std::string s, int n0, int n1){
+    LOGV(s.c_str(), n0, n1);
 }
 
 void CAndroidLogManager::printLog(std::string s, float n){

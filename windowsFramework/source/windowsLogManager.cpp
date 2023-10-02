@@ -33,6 +33,11 @@ void CWindowsLogManager::printLog(std::string s, int n) {
 	if(Verbose) fprintf(FpDebug, "\n");
 }
 
+void CWindowsLogManager::printLog(std::string s, int n0, int n1) {
+	if(Verbose) fprintf(FpDebug, s.c_str(), n0, n1);
+	if(Verbose) fprintf(FpDebug, "\n");
+}
+
 void CWindowsLogManager::printLog(std::string s, float n) {
 	if(Verbose) fprintf(FpDebug, s.c_str(), n);
 	if(Verbose) fprintf(FpDebug, "\n");

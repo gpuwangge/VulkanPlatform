@@ -54,13 +54,8 @@ public:
 
 	void update(){
 		static int counter = 1;
-
 		//Initial Host data
-#ifndef ANDROID		
-		std::cout<<"update(): write counter = "<<counter<<" to the device at frame="<<renderer.currentFrame<<std::endl;
-#else
-		__android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "update(): write counter = %d to the device", counter);
-#endif
+		PRINT("update(): write counter = %d to the device, frame = %d", counter, renderer.currentFrame);
 		storageBufferObject.data = {counter+0.0f, counter+0.1f, counter+0.2f, counter+0.3f};
 
 		//Host >> Device
@@ -90,13 +85,7 @@ public:
 		//std::cout<<"compute(): Current Frame = "<<renderer.currentFrame<<": "<<std::endl;
 		memcpy(data, descriptor.storageBuffersMapped_1[renderer.currentFrame], sizeof(data));
 
-#ifndef ANDROID
-		std::cout<<"compute(): read data = {"<<data[0]<<", "<<data[1]<<", "<<data[2]<<", "<<data[3]<<"} from the device at frame="<<renderer.currentFrame<<std::endl;	
-#else
-		__android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "compute(): read data = {%f,%f,%f,%f}", data[0], data[1], data[2], data[3]);
-#endif
-
-
+		PRINT("compute() read data: ", data, 4);
 	}
 };
 
