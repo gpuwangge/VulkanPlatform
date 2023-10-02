@@ -36,10 +36,26 @@ void CLogManager::print(std::string s, float n){
 #endif    
 }
 
+void CLogManager::print(std::string s, float n0, float n1){
+#ifndef ANDROID
+    windowsLogManager.printLog(s, n0, n1);
+#else
+    androidLogManager.printLog(s, n0, n1);
+#endif  
+}
+
 void CLogManager::print(std::string s0, std::string s1){
 #ifndef ANDROID
     windowsLogManager.printLog(s0, s1);
 #else
     androidLogManager.printLog(s0, s1);
+#endif 
+}
+
+void CLogManager::print(std::string s, float *n, int size){
+#ifndef ANDROID
+    windowsLogManager.printLog(s, n, size);
+#else
+    androidLogManager.printLog(s, n, size);
 #endif 
 }

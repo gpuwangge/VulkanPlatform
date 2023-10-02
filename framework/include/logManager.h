@@ -16,7 +16,9 @@ public:
     void print(std::string s);
     void print(std::string s, int n); //uint32_t
     void print(std::string s, float n);
+    void print(std::string s, float n0, float n1);
     void print(std::string s0, std::string s1);
+    void print(std::string s, float *n, int size);
 //#endif
 
 private:

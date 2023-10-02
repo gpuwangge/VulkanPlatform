@@ -103,12 +103,6 @@ void CBackend::render() {//mainloop() equivalent
         __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "ElapseTime: %fms, frameCount %d", elapseTime, frameCount);
         frameCount = 0;
         startTime = currentTime;
-
-        CContext::GetHandle().logManager.print("Surface created!\n");
-        CContext::GetHandle().logManager.print("Surface %d created!\n", 999);
-        CContext::GetHandle().logManager.print("Surface %f created!\n", 1.234f);
-        CContext::GetHandle().logManager.print("Surface %s created!\n", "insert");
-        //CContext::GetHandle().logManager.print("Surface %f, %f, %f created!\n", 1.2, 2.3, 3.5);
     }else frameCount++;
 
 

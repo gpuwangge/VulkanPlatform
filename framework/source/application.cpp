@@ -40,10 +40,13 @@ void CApplication::run(){ //Entrance Function
     glfwManager.createSurface(instance, surface);
 
     instance->findAllPhysicalDevices();
-    CContext::GetHandle().logManager.print("Surface created!\n");
-    CContext::GetHandle().logManager.print("Surface %d created!\n", 999);
-    CContext::GetHandle().logManager.print("Surface %f created!\n", 1.234f);
-    CContext::GetHandle().logManager.print("Surface %s created!\n", "insert");
+    //CContext::GetHandle().logManager.print("Surface created!\n");
+    //CContext::GetHandle().logManager.print("Surface %d created!\n", 999);
+    //CContext::GetHandle().logManager.print("Surface %f created!\n", 1.234f);
+    //CContext::GetHandle().logManager.print("Surface %s created!\n", "insert");
+    //float mat[4] = {1.1, 2.2, 3.3, 4.4};
+    //CContext::GetHandle().logManager.print("Surface created!\n", mat, 4);
+    //CContext::GetHandle().logManager.print("Surface %f,%f created!\n", 1.234f, 2.2222f);
     CContext::GetHandle().physicalDevice = instance->pickSuitablePhysicalDevice(surface, requireDeviceExtensions, requiredQueueFamilies);
     //App dev can only query properties from physical device, but can not directly operate it
     //App dev operates logical device, can logical device communicate with physical device by command queues
@@ -75,6 +78,14 @@ void CApplication::run(){ //Entrance Function
 void CApplication::initialize(){
     renderer.CreateSyncObjects();
     shaderManager.Destroy();
+
+    // CContext::GetHandle().logManager.print("Test single string!\n");
+    // CContext::GetHandle().logManager.print("Test interger: %d!\n", 999);
+    // CContext::GetHandle().logManager.print("Test float: %f!\n", 1.234f);
+    // CContext::GetHandle().logManager.print("Test string: %s!\n", "another string");
+    // float mat[4] = {1.1, 2.2, 3.3, 4.4};
+    // CContext::GetHandle().logManager.print("Test vector: \n", mat, 4);
+    // CContext::GetHandle().logManager.print("Test two floats:  %f, %f!\n", 1.2, 2.3);
 }
 
 void CApplication::update(){
