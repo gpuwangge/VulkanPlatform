@@ -25,11 +25,7 @@ VkQueue CContext::GetComputeQueue(){
 
 CContext::CContext(){
 #ifndef ANDROID
-    //windowsLogManager = new CWindowsLogManager("../logs/context.log");
+    logManager.setLogFile("context.log");
 #endif
 }
-CContext::~CContext(){
-#ifndef ANDROID 
-    //if (!windowsLogManager) delete windowsLogManager;
-#endif
-}
+CContext::~CContext(){}

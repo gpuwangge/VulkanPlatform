@@ -1,16 +1,15 @@
 #include "../include/logManager.h"
 
 
+CLogManager::CLogManager(){}
+CLogManager::~CLogManager(){  }
 
-CLogManager::CLogManager(){
 #ifndef ANDROID
-    windowsLogManager.createLogFile("../logs/context.log");
+void CLogManager::setLogFile(std::string s){
+    std::string fullname = "../logs/" + s;
+    windowsLogManager.createLogFile(fullname);
+}
 #endif
-}
-
-CLogManager::~CLogManager(){
-    
-}
 
 void CLogManager::print(std::string s){
 #ifndef ANDROID

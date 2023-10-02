@@ -11,9 +11,13 @@
 
 class CLogManager {
 public:
-	CLogManager();
+    CLogManager();
     ~CLogManager();
-//#ifndef ANDROID
+
+#ifndef ANDROID
+    void setLogFile(std::string s);
+#endif
+
     void print(std::string s);
     void print(std::string s, int n); //uint32_t
     void print(std::string s, int n0, int n1);
@@ -21,7 +25,7 @@ public:
     void print(std::string s, float n0, float n1);
     void print(std::string s0, std::string s1);
     void print(std::string s, float *n, int size);
-//#endif
+
 
 private:
 #ifndef ANDROID

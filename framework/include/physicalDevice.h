@@ -3,8 +3,11 @@
 
 //#include "instance.h"
 #include "logicalDevice.h"
-
 #include "common.h"
+//#include "context.h"
+#include "logManager.h"
+
+//#define PRINT logManager.print
 
 //class CInstance;//forward declaration
 
@@ -38,9 +41,9 @@ public:
     VkPhysicalDevice getHandle() const{ return handle;}
 
     //CDebugger * debugger;
+    CLogManager logManager;
 
     //void setInstance(CInstance *instance);
-
 
     QueueFamilyIndices findQueueFamilies(VkSurfaceKHR surface, std::string s);
     bool checkDeviceExtensionSupport(const std::vector<const char*>  requireDeviceExtensions);

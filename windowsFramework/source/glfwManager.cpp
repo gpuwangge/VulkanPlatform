@@ -245,11 +245,12 @@ void CGLFWManager::createWindow(int &windowWidth, int &windowHeight){
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
 		window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "GLFW Appliciation", nullptr, nullptr);
+
 		glfwSetWindowUserPointer(window, this);
 		glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
 
 		glfwGetFramebufferSize(window, &m_windowWidth, &m_windowHeight);
-
+		
 		glfwSetKeyCallback(window, GLFWKeyboard);
 		glfwSetCursorPosCallback(window, GLFWMouseMotion);
 		glfwSetMouseButtonCallback(window, GLFWMouseButton);
