@@ -5,7 +5,9 @@ CLogManager::CLogManager(){}
 CLogManager::~CLogManager(){  }
 
 #ifndef ANDROID
+#include <sys/stat.h>
 void CLogManager::setLogFile(std::string s){
+    mkdir("../logs");
     std::string fullname = "../logs/" + s;
     windowsLogManager.createLogFile(fullname);
 }
