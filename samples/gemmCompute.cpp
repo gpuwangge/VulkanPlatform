@@ -3,11 +3,11 @@
 #define TEST_CLASS_NAME CGemmCompute
 class TEST_CLASS_NAME: public CApplication{
 public:
-	static const int DIM = 3;
+	static const int DIM = 16;
 	static const int DIM_M = DIM;
 	static const int DIM_K = DIM;
 	static const int DIM_N = DIM;
-	static const int KernelRunNumber = 5;
+	static const int KernelRunNumber = 1;
 
 	struct StructStorageBufferInput {
 		unsigned int M;
@@ -23,7 +23,7 @@ public:
 	StructStorageBufferOutput storageBufferObjectOutput;	
 
 	bool bVerbose = true;
-	bool bVerify = true;
+	bool bVerify = false;
 
 	void initialize(){
 		renderer.CreateCommandPool(surface);
@@ -31,9 +31,12 @@ public:
 		//renderer.CreateComputeCommandBuffers();
 
 		shaderManager.CreateShader("gemmCompute/comp.spv", shaderManager.COMP);
+		std::cout<<"compute shader created."<<std::endl;
 
 		descriptor.addStorageBuffer(sizeof(StructStorageBufferInput));
+		std::cout<<"storageBufferObjectInput added. Size = "<<DIM_M * DIM_K * 8.0f * 2 / 1024 / 1024<<"mb."<<std::endl;
 		descriptor.addStorageBuffer(sizeof(StructStorageBufferOutput));
+		std::cout<<"storageBufferObjectOutput added. Size = "<<DIM_M * DIM_K * 8.0f / 1024 / 1024<<"mb."<<std::endl;
 		descriptor.createDescriptorPool();
 		descriptor.createDescriptorSetLayout();
 		descriptor.createDescriptorSets(textureImages);
@@ -54,6 +57,7 @@ public:
 		if(bVerbose) PRINT("A: ", storageBufferObjectInput.MatA, DIM_M*DIM_K);
 		if(bVerbose) PRINT("B: ", storageBufferObjectInput.MatB, DIM_K*DIM_N);
 		if(bVerbose) PRINT("");
+		std::cout<<"Initialized A and B."<<std::endl;
 
 		//Host >> Device
 		descriptor.updateStorageBuffer_1<StructStorageBufferInput>(renderer.currentFrame, durationTime, storageBufferObjectInput);
@@ -76,12 +80,17 @@ public:
 
 		//std::cout<<"Record Compute command buffer. "<<std::endl;
 		renderer.Dispatch(1, 1, 1);
+		std::cout<<"Dispatched."<<std::endl;
 
 		END_COMPUTE_RECORD
 	}
 
 	void postUpdate(){
 		vkDeviceWaitIdle(CContext::GetHandle().GetLogicalDevice());
+
+		CApplication::update(); //update deltaTime and durationTime (and mainCamera and MVP, VP)
+		//std::cout<<"update(): Delta Time: "<<deltaTime<<", Duration Time: "<<durationTime<<std::endl;
+		PRINT("update(): Delta Time: %f, Duration Time: %f", deltaTime, durationTime);
 
 		//Device >> Host
 		if(bVerbose) memcpy(storageBufferObjectOutput.MatC, descriptor.storageBuffersMapped_2[renderer.currentFrame], sizeof(storageBufferObjectOutput.MatC));

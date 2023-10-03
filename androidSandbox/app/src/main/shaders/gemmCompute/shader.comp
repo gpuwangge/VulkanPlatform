@@ -1,6 +1,6 @@
 #version 450 core
 
-const int DIM = 3;
+const int DIM = 16;
 
 layout (local_size_x = DIM, local_size_y = DIM, local_size_z = 1) in; 
 
