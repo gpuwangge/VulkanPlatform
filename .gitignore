@@ -1,9 +1,8 @@
 build/
-buildS/
+bin/
 .cxx/
 .gradle/
 .idea/
-*.exe
 *.log
 *.pdb
 local.properties

@@ -38,7 +38,8 @@ else()
     endforeach()
 endif()
 
-
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/glfw3.dll
+    DESTINATION ${EXECUTABLE_OUTPUT_PATH}/)
 
 
 
