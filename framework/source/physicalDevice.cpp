@@ -205,10 +205,10 @@ void CPhysicalDevice::displayPhysicalDevices(){
     logManager.print( "\tVendor ID: 0x%04x", (int)PhysicalDeviceProperties.vendorID);
     logManager.print("\tDevice ID: 0x%04x", (int)PhysicalDeviceProperties.deviceID);
     logManager.print("\tPhysical Device Type: %d =", (int)PhysicalDeviceProperties.deviceType);
-    if (PhysicalDeviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)	logManager.print(" (Discrete GPU)\n");
-    if (PhysicalDeviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU)	logManager.print(" (Integrated GPU)\n");
-    if (PhysicalDeviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU)	logManager.print(" (Virtual GPU)\n");
-    if (PhysicalDeviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_CPU)		logManager.print(" (CPU)\n");
+    if (PhysicalDeviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)	logManager.print("\t\t(Discrete GPU)");
+    if (PhysicalDeviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_INTEGRATED_GPU)	logManager.print("\t\t(Integrated GPU)");
+    if (PhysicalDeviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_VIRTUAL_GPU)	logManager.print("\t\t(Virtual GPU)");
+    if (PhysicalDeviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_CPU)		logManager.print("\t\t(CPU)");
     logManager.print("\tDevice Name: %s", PhysicalDeviceProperties.deviceName);
     logManager.print("\tPipeline Cache Size: %d", PhysicalDeviceProperties.pipelineCacheUUID[0]);
 
@@ -270,14 +270,14 @@ void CPhysicalDevice::displayPhysicalDevices(){
         if ((vmpf & VK_MEMORY_PROPERTY_HOST_COHERENT_BIT) != 0)	logManager.print(" HostCoherent");
         if ((vmpf & VK_MEMORY_PROPERTY_HOST_CACHED_BIT) != 0)	logManager.print(" HostCached");
         if ((vmpf & VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT) != 0)	logManager.print(" LazilyAllocated");
-        logManager.print("");
+        //logManager.print("");
     }
 
     logManager.print("\t%d Memory Heaps:", (int)vpdmp.memoryHeapCount);
     for (unsigned int i = 0; i < vpdmp.memoryHeapCount; i++) {
         logManager.print("\tHeap %d: ", (int)i);
         VkMemoryHeap vmh = vpdmp.memoryHeaps[i];
-        //PRINT(" size = 0x%08lx", (unsigned long int)vmh.size);//TODO
+        logManager.print(" size = 0x%08lx", (unsigned long int)vmh.size);
         if ((vmh.flags & VK_MEMORY_HEAP_DEVICE_LOCAL_BIT) != 0)	logManager.print(" DeviceLocal");
         if ((vmh.flags & VK_MEMORY_HEAP_MULTI_INSTANCE_BIT) != 0)	logManager.print(" MultiInstance");
         logManager.print("");

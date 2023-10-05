@@ -59,6 +59,11 @@ void CWindowsLogManager::printLog(std::string s, float *n, int size){
 	if(Verbose) fprintf(FpDebug, "\n");
 }
 
+void CWindowsLogManager::printLog(std::string s, unsigned long int n){
+	if(Verbose) fprintf(FpDebug, s.c_str(), n);
+	if(Verbose) fprintf(FpDebug, "\n");
+}
+
 void CWindowsLogManager::printVkError(VkResult result, std::string prefix){
 	if (Verbose  &&  result == VK_SUCCESS)
 	{

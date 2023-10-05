@@ -68,3 +68,11 @@ void CLogManager::print(std::string s, float *n, int size){
     androidLogManager.printLog(s, n, size);
 #endif 
 }
+
+void CLogManager::print(std::string s, unsigned long int n){
+#ifndef ANDROID
+    windowsLogManager.printLog(s, n);
+#else
+    androidLogManager.printLog(s, n);
+#endif 
+}

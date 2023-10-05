@@ -16,6 +16,7 @@ public:
     void printLog(std::string s, float n0, float n1);
 	void printLog(std::string s0, std::string s1);
     void printLog(std::string s, float *n, int size);
+    void printLog(std::string s, unsigned long int n);
 };
 
 #endif
