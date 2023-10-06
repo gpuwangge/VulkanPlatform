@@ -20,6 +20,10 @@ void CAndroidLogManager::printLog(std::string s, int n0, int n1){
     LOGV(s.c_str(), n0, n1);
 }
 
+void CAndroidLogManager::printLog(std::string s, int n0, int n1, int n2){
+    LOGV(s.c_str(), n0, n1, n2);
+}
+
 void CAndroidLogManager::printLog(std::string s, float n){
     LOGV(s.c_str(), n);
 }
@@ -34,6 +38,14 @@ void CAndroidLogManager::printLog(std::string s0, std::string s1){
 
 
 void CAndroidLogManager::printLog(std::string s, float *n, int size){
+    LOGV("%s", s.c_str());
+    std::string nstr;
+    for(int i = 0; i < size; i++)
+        nstr += std::to_string(n[i]) + ", ";
+    LOGV("%s", nstr.c_str());
+}
+
+void CAndroidLogManager::printLog(std::string s, int *n, int size){
     LOGV("%s", s.c_str());
     std::string nstr;
     for(int i = 0; i < size; i++)

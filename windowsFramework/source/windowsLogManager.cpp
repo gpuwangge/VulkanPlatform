@@ -38,6 +38,11 @@ void CWindowsLogManager::printLog(std::string s, int n0, int n1) {
 	if(Verbose) fprintf(FpDebug, "\n");
 }
 
+void CWindowsLogManager::printLog(std::string s, int n0, int n1, int n2) {
+	if(Verbose) fprintf(FpDebug, s.c_str(), n0, n1, n2);
+	if(Verbose) fprintf(FpDebug, "\n");
+}
+
 void CWindowsLogManager::printLog(std::string s, float n) {
 	if(Verbose) fprintf(FpDebug, s.c_str(), n);
 	if(Verbose) fprintf(FpDebug, "\n");
@@ -56,6 +61,12 @@ void CWindowsLogManager::printLog(std::string s0, std::string s1) {
 void CWindowsLogManager::printLog(std::string s, float *n, int size){
 	if(Verbose) fprintf(FpDebug, "%s", s.c_str());
 	for(int i = 0; i < size; i++) fprintf(FpDebug, "%f, ", n[i]);
+	if(Verbose) fprintf(FpDebug, "\n");
+}
+
+void CWindowsLogManager::printLog(std::string s, int *n, int size){
+	if(Verbose) fprintf(FpDebug, "%s", s.c_str());
+	for(int i = 0; i < size; i++) fprintf(FpDebug, "%d, ", n[i]);
 	if(Verbose) fprintf(FpDebug, "\n");
 }
 

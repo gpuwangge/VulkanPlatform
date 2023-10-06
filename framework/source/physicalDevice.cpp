@@ -199,10 +199,9 @@ void CPhysicalDevice::displayPhysicalDevices(){
     VkPhysicalDeviceProperties	PhysicalDeviceProperties;
     vkGetPhysicalDeviceProperties(IN handle, OUT &PhysicalDeviceProperties);
 
-    //fprintf(debugger->FpDebug, "\nDevice %2d:\n", index);
     logManager.print("\tAPI version: %d", (int)PhysicalDeviceProperties.apiVersion);
     logManager.print("\tDriver version: %d", (int)PhysicalDeviceProperties.apiVersion);
-    logManager.print( "\tVendor ID: 0x%04x", (int)PhysicalDeviceProperties.vendorID);
+    logManager.print("\tVendor ID: 0x%04x", (int)PhysicalDeviceProperties.vendorID);
     logManager.print("\tDevice ID: 0x%04x", (int)PhysicalDeviceProperties.deviceID);
     logManager.print("\tPhysical Device Type: %d =", (int)PhysicalDeviceProperties.deviceType);
     if (PhysicalDeviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU)	logManager.print("\t\t(Discrete GPU)");
@@ -218,69 +217,57 @@ void CPhysicalDevice::displayPhysicalDevices(){
     vkGetPhysicalDeviceFeatures(IN handle, OUT &PhysicalDeviceFeatures);
 
     logManager.print("\n\tPhysical Device Features:");
-    logManager.print("\tgeometryShader = %2d", (int)PhysicalDeviceFeatures.geometryShader);
-    logManager.print("\ttessellationShader = %2d", (int)PhysicalDeviceFeatures.tessellationShader);
-    logManager.print("\tmultiDrawIndirect = %2d", (int)PhysicalDeviceFeatures.multiDrawIndirect);
-    logManager.print("\twideLines = %2d", (int)PhysicalDeviceFeatures.wideLines);
-    logManager.print("\tlargePoints = %2d", (int)PhysicalDeviceFeatures.largePoints);
-    logManager.print("\tmultiViewport = %2d", (int)PhysicalDeviceFeatures.multiViewport);
-    logManager.print("\tocclusionQueryPrecise = %2d", (int)PhysicalDeviceFeatures.occlusionQueryPrecise);
-    logManager.print("\tpipelineStatisticsQuery = %2d", (int)PhysicalDeviceFeatures.pipelineStatisticsQuery);
-    logManager.print("\tshaderFloat64 = %2d", (int)PhysicalDeviceFeatures.shaderFloat64);
-    logManager.print("\tshaderInt64 = %2d", (int)PhysicalDeviceFeatures.shaderInt64);
-    logManager.print("\tshaderInt16 = %2d", (int)PhysicalDeviceFeatures.shaderInt16);
-    logManager.print("\tsamplerAnisotropy = %2d", (int)PhysicalDeviceFeatures.samplerAnisotropy);
+    logManager.print("\t\tgeometryShader = %2d", (int)PhysicalDeviceFeatures.geometryShader);
+    logManager.print("\t\ttessellationShader = %2d", (int)PhysicalDeviceFeatures.tessellationShader);
+    logManager.print("\t\tmultiDrawIndirect = %2d", (int)PhysicalDeviceFeatures.multiDrawIndirect);
+    logManager.print("\t\twideLines = %2d", (int)PhysicalDeviceFeatures.wideLines);
+    logManager.print("\t\tlargePoints = %2d", (int)PhysicalDeviceFeatures.largePoints);
+    logManager.print("\t\tmultiViewport = %2d", (int)PhysicalDeviceFeatures.multiViewport);
+    logManager.print("\t\tocclusionQueryPrecise = %2d", (int)PhysicalDeviceFeatures.occlusionQueryPrecise);
+    logManager.print("\t\tpipelineStatisticsQuery = %2d", (int)PhysicalDeviceFeatures.pipelineStatisticsQuery);
+    logManager.print("\t\tshaderFloat64 = %2d", (int)PhysicalDeviceFeatures.shaderFloat64);
+    logManager.print("\t\tshaderInt64 = %2d", (int)PhysicalDeviceFeatures.shaderInt64);
+    logManager.print("\t\tshaderInt16 = %2d", (int)PhysicalDeviceFeatures.shaderInt16);
+    logManager.print("\t\tsamplerAnisotropy = %2d", (int)PhysicalDeviceFeatures.samplerAnisotropy);
     
 
     VkFormatProperties					vfp;
     logManager.print("\n\tImage Formats Checked:");
     vkGetPhysicalDeviceFormatProperties(handle, IN VK_FORMAT_R32G32B32A32_SFLOAT, &vfp);
-    logManager.print("\tFormat VK_FORMAT_R32G32B32A32_SFLOAT: ");
-    logManager.print("\t0x%08x", (int)vfp.linearTilingFeatures);
-    logManager.print("\t0x%08x", (int)vfp.optimalTilingFeatures);
-    logManager.print("\t0x%08x", (int)vfp.bufferFeatures);
+    logManager.print("\t\tFormat VK_FORMAT_R32G32B32A32_SFLOAT: 0x%08x, 0x%08x, 0x%08x", (int)vfp.linearTilingFeatures, (int)vfp.optimalTilingFeatures, (int)vfp.bufferFeatures);
 
     vkGetPhysicalDeviceFormatProperties(handle, IN VK_FORMAT_R8G8B8A8_UNORM, &vfp);
-    logManager.print("\tFormat VK_FORMAT_R8G8B8A8_UNORM:");
-    logManager.print("\t0x%08x", (int)vfp.linearTilingFeatures);
-    logManager.print("\t0x%08x", (int)vfp.optimalTilingFeatures);
-    logManager.print("\t0x%08x", (int)vfp.bufferFeatures);
+    logManager.print("\t\tFormat VK_FORMAT_R8G8B8A8_UNORM: 0x%08x, 0x%08x, 0x%08x", (int)vfp.linearTilingFeatures, (int)vfp.optimalTilingFeatures, (int)vfp.bufferFeatures);
         
     vkGetPhysicalDeviceFormatProperties(handle, IN VK_FORMAT_B8G8R8A8_UNORM, &vfp);
-    logManager.print("\tFormat VK_FORMAT_B8G8R8A8_UNORM:");
-    logManager.print("\t0x%08x", (int)vfp.linearTilingFeatures);
-    logManager.print("\t0x%08x", (int)vfp.optimalTilingFeatures);
-    logManager.print("\t0x%08x", (int)vfp.bufferFeatures);
+    logManager.print("\t\tFormat VK_FORMAT_B8G8R8A8_UNORM: 0x%08x, 0x%08x, 0x%08x", (int)vfp.linearTilingFeatures, (int)vfp.optimalTilingFeatures, (int)vfp.bufferFeatures);
 
     vkGetPhysicalDeviceFormatProperties(handle, IN VK_FORMAT_B8G8R8A8_SRGB, &vfp);
-    logManager.print("\tFormat VK_FORMAT_B8G8R8A8_SRGB:");
-    logManager.print("\t0x%08x", (int)vfp.linearTilingFeatures);
-    logManager.print("\t0x%08x", (int)vfp.optimalTilingFeatures);
-    logManager.print("\t0x%08x", (int)vfp.bufferFeatures);
+    logManager.print("\t\tFormat VK_FORMAT_B8G8R8A8_SRGB: 0x%08x, 0x%08x, 0x%08x", (int)vfp.linearTilingFeatures, (int)vfp.optimalTilingFeatures, (int)vfp.bufferFeatures);
 
     VkPhysicalDeviceMemoryProperties			vpdmp;
     vkGetPhysicalDeviceMemoryProperties(handle, OUT &vpdmp);
-    logManager.print("\t%d Memory Types:", (int)vpdmp.memoryTypeCount);
+    logManager.print("\n\t%d Memory Types:", (int)vpdmp.memoryTypeCount);
     for (unsigned int i = 0; i < vpdmp.memoryTypeCount; i++) {
         VkMemoryType vmt = vpdmp.memoryTypes[i];
         VkMemoryPropertyFlags vmpf = vmt.propertyFlags;
-        logManager.print("\tMemory %2d: ", (int)i);
-        if ((vmpf & VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT) != 0)	logManager.print(" DeviceLocal");
-        if ((vmpf & VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT) != 0)	logManager.print(" HostVisible");
-        if ((vmpf & VK_MEMORY_PROPERTY_HOST_COHERENT_BIT) != 0)	logManager.print(" HostCoherent");
-        if ((vmpf & VK_MEMORY_PROPERTY_HOST_CACHED_BIT) != 0)	logManager.print(" HostCached");
+        logManager.print("\t\tMemory %2d: ", (int)i);
+        if ((vmpf & VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT) != 0)	logManager.print("\t\t\tDeviceLocal");
+        if ((vmpf & VK_MEMORY_PROPERTY_HOST_VISIBLE_BIT) != 0)	logManager.print("\t\t\tHostVisible");
+        if ((vmpf & VK_MEMORY_PROPERTY_HOST_COHERENT_BIT) != 0)	logManager.print("\t\t\tHostCoherent");
+        if ((vmpf & VK_MEMORY_PROPERTY_HOST_CACHED_BIT) != 0)	logManager.print("\t\t\tHostCached");
         if ((vmpf & VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT) != 0)	logManager.print(" LazilyAllocated");
         //logManager.print("");
     }
 
-    logManager.print("\t%d Memory Heaps:", (int)vpdmp.memoryHeapCount);
+    logManager.print("\n\t%d Memory Heaps:", (int)vpdmp.memoryHeapCount);
     for (unsigned int i = 0; i < vpdmp.memoryHeapCount; i++) {
-        logManager.print("\tHeap %d: ", (int)i);
+        logManager.print("\t\tHeap %d: ", (int)i);
         VkMemoryHeap vmh = vpdmp.memoryHeaps[i];
-        logManager.print(" size = 0x%08lx", (unsigned long int)vmh.size);
-        if ((vmh.flags & VK_MEMORY_HEAP_DEVICE_LOCAL_BIT) != 0)	logManager.print(" DeviceLocal");
-        if ((vmh.flags & VK_MEMORY_HEAP_MULTI_INSTANCE_BIT) != 0)	logManager.print(" MultiInstance");
-        logManager.print("");
+        logManager.print("\t\t\tsize = 0x%08lx", (unsigned long int)vmh.size);
+        if ((vmh.flags & VK_MEMORY_HEAP_DEVICE_LOCAL_BIT) != 0)	logManager.print("\t\t\tDeviceLocal");
+        if ((vmh.flags & VK_MEMORY_HEAP_MULTI_INSTANCE_BIT) != 0)	logManager.print("\t\t\tMultiInstance");
+        //logManager.print("");
     }
     logManager.print("");
 
@@ -289,13 +276,14 @@ void CPhysicalDevice::displayPhysicalDevices(){
     vkEnumerateDeviceLayerProperties(handle, &layerCount, (VkLayerProperties *)nullptr);
     VkLayerProperties * deviceLayers = new VkLayerProperties[layerCount];
     VkResult result = vkEnumerateDeviceLayerProperties(handle, &layerCount, deviceLayers);
-    logManager.print("\tvkEnumerateDeviceLayerProperties");
+    logManager.print("\n\tvkEnumerateDeviceLayerProperties");
     logManager.print("\t%d physical device layers enumerated:", (int)layerCount);
     for (unsigned int i = 0; i < layerCount; i++) {
-        logManager.print("\t0x%08x", (int)deviceLayers[i].specVersion);
-        logManager.print("%2d", (int)deviceLayers[i].implementationVersion);
-        logManager.print("%s", deviceLayers[i].layerName);
-        logManager.print("%s", deviceLayers[i].description);
+        logManager.print("\t\t%s", deviceLayers[i].layerName);
+        logManager.print("\t\t%s", deviceLayers[i].description);
+        logManager.print("\t\t0x%08x", (int)deviceLayers[i].specVersion);
+        logManager.print("\t\t%2d", (int)deviceLayers[i].implementationVersion);
+        
 
         // see what device extensions are available:
         //show layer related extension
@@ -303,13 +291,13 @@ void CPhysicalDevice::displayPhysicalDevices(){
         vkEnumerateDeviceExtensionProperties(handle, deviceLayers[i].layerName, &extensionCount, (VkExtensionProperties *)nullptr);
         VkExtensionProperties * deviceExtensions = new VkExtensionProperties[extensionCount];
         result = vkEnumerateDeviceExtensionProperties(handle, deviceLayers[i].layerName, &extensionCount, deviceExtensions);
-        logManager.print("\n\tvkEnumerateDeviceExtensionProperties");
+        logManager.print("\t\tvkEnumerateDeviceExtensionProperties");
 
-        logManager.print("\t%d device extensions enumerated", (int)extensionCount);
-        logManager.print("\tfor '%s':", deviceLayers[i].layerName);
+        logManager.print("\t\t%d device extensions enumerated", (int)extensionCount);
+        //logManager.print("\t\tfor '%s':", deviceLayers[i].layerName);
         for (unsigned int ii = 0; ii < extensionCount; ii++) {
-            logManager.print("\t0x%08x", (int)deviceExtensions[ii].specVersion);
-            logManager.print("\t%s", deviceExtensions[ii].extensionName);
+            logManager.print("\t\t\t0x%08x", (int)deviceExtensions[ii].specVersion);
+            logManager.print("\t\t\t%s", deviceExtensions[ii].extensionName);
         }
         logManager.print("");
     }
