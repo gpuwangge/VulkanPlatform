@@ -37,7 +37,6 @@ public:
 
     ~CPhysicalDevice();
 
-    VkPhysicalDevice handle{VK_NULL_HANDLE};
     VkPhysicalDevice getHandle() const{ return handle;}
 
     //CDebugger * debugger;
@@ -59,6 +58,9 @@ public:
     VkSampleCountFlagBits getMaxUsableSampleCount();
 
     void displayPhysicalDevices();
+    
+private:
+    VkPhysicalDevice handle{VK_NULL_HANDLE};
 };
 
 #endif

@@ -27,10 +27,12 @@ CInstance::CInstance(const std::vector<const char*> &requiredValidationLayers, s
 
         std::vector<VkLayerProperties> availableLayers(layerCount);
         result = vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
-        //REPORT("vkEnumerateInstanceLayerProperties");
+        PRINT("vkEnumerateInstanceLayerProperties");
         DisplayLayers(availableLayers);
 
+        PRINT("Required Layers:");
         for (const char* layerName : requiredValidationLayers) {// to find out validation layer in available layers
+            PRINT("\t" + std::string(layerName));
             bool layerFound = false;
             for (const auto& layerProperties : availableLayers) {
                 if (strcmp(layerName, layerProperties.layerName) == 0) {
@@ -50,7 +52,7 @@ CInstance::CInstance(const std::vector<const char*> &requiredValidationLayers, s
     vkEnumerateInstanceExtensionProperties((char *)nullptr, &extensionCount, (VkExtensionProperties *)nullptr);
     std::vector<VkExtensionProperties> availableExtensions(extensionCount);
     result = vkEnumerateInstanceExtensionProperties((char *)nullptr, &extensionCount, availableExtensions.data());
-    //REPORT("vkEnumerateInstanceExtensionProperties");
+    PRINT("vkEnumerateInstanceExtensionProperties");
     DisplayExtensions(availableExtensions);
 
     VkInstanceCreateInfo createInfo{};
@@ -76,6 +78,7 @@ CInstance::CInstance(const std::vector<const char*> &requiredValidationLayers, s
     //auto extensions = getRequiredExtensions();
     createInfo.enabledExtensionCount = static_cast<uint32_t>(requiredExtensions.size());
     createInfo.ppEnabledExtensionNames = requiredExtensions.data();
+    PRINT("Required Extensions");
     DisplayExtensions(requiredExtensions);
 
     //Third create instance
@@ -188,28 +191,16 @@ std::unique_ptr<CPhysicalDevice>* CInstance::pickSuitablePhysicalDevice(VkSurfac
             swapChainAdequate = !swapChainSupport.formats.empty() && !swapChainSupport.presentModes.empty();
         }
         if (indices.isComplete() && extensionsSupported && swapChainAdequate) {
-            if(requiredQueueFamilies & VK_QUEUE_GRAPHICS_BIT) {
-                //debugger->writeMSG("Require VK_QUEUE_GRAPHICS_BIT\n"); debugger->flush();
+            if(requiredQueueFamilies & VK_QUEUE_GRAPHICS_BIT) { //VK_QUEUE_GRAPHICS_BIT can do everything, including Compute
+                PRINT("Require VK_QUEUE_GRAPHICS_BIT");
                 if(!indices.graphicsFamily.has_value()) return nullptr;
                 //debugger->writeMSG("Picked physical device index: %d\n", indices.graphicsFamily.value());debugger->flush();
+                //PRINT("Picked physical device index: %d", (int)indices.computeFamily.value());
             }
             if(requiredQueueFamilies & VK_QUEUE_COMPUTE_BIT) {
-                //debugger->writeMSG("Require VK_QUEUE_COMPUTE_BIT\n");debugger->flush();
                 PRINT("Require VK_QUEUE_COMPUTE_BIT");
-// #ifndef ANDROID		
-//                     std::cout<<"Require VK_QUEUE_COMPUTE_BIT"<<std::endl;
-// #else
-//                     __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "Require VK_QUEUE_COMPUTE_BIT");
-// #endif
                 if(!indices.computeFamily.has_value()) return nullptr;
-                PRINT("Picked physical device index: %d", (int)indices.computeFamily.value());
-// #ifndef ANDROID		
-//                     std::cout<<"Picked physical device index:"<<indices.computeFamily.value()<<std::endl;
-// #else
-//                     __android_log_print(ANDROID_LOG_VERBOSE, LOG_TAG, "Picked physical device index: %d\n", indices.computeFamily.value());
-// #endif                
-                //debugger->writeMSG("Picked physical device index: %d\n", indices.computeFamily.value());debugger->flush();
-
+                //PRINT("Picked physical device index: %d", (int)indices.computeFamily.value());
             }
             if((requiredQueueFamilies & VK_QUEUE_COMPUTE_BIT) & VK_QUEUE_GRAPHICS_BIT){
                 //debugger->writeMSG("Require VK_QUEUE_COMPUTE_BIT & VK_QUEUE_GRAPHICS_BIT\n");debugger->flush();
@@ -218,6 +209,10 @@ std::unique_ptr<CPhysicalDevice>* CInstance::pickSuitablePhysicalDevice(VkSurfac
             }
 
             //pickedPhysicalDevice = &phy_device;
+            VkPhysicalDeviceProperties	PhysicalDeviceProperties;
+            vkGetPhysicalDeviceProperties(IN phy_device.get()->getHandle(), OUT &PhysicalDeviceProperties);
+            PRINT("Picked physical device: %s", PhysicalDeviceProperties.deviceName);
+
             return &phy_device;  
         }
     }
@@ -229,41 +224,18 @@ std::unique_ptr<CPhysicalDevice>* CInstance::pickSuitablePhysicalDevice(VkSurfac
 }
 
 void CInstance::DisplayLayers(std::vector<VkLayerProperties> &availableLayers){
-    /*
-    if(debugger->getVerbose()){
-        for (const auto& layerProperties : availableLayers) {
-            fprintf(debugger->FpDebug, "0x%08x  %5d  '%s'  '%s'\n",
-                layerProperties.specVersion,
-                layerProperties.implementationVersion,
-                layerProperties.layerName,
-                layerProperties.description);
-        }
-        debugger->writeMSG("\n");
-    }*/
+    for (const auto& layerProperties : availableLayers) 
+        PRINT("\t" + std::string(layerProperties.layerName) + " (" + std::string(layerProperties.description) + "): 0x%08x, %5d", (int)layerProperties.specVersion, layerProperties.implementationVersion);
 }
 
 void CInstance::DisplayExtensions(std::vector<VkExtensionProperties> &availableExtensions){
-    /*
-    if(debugger->getVerbose()){
-        for (const auto& extensionsProperties : availableExtensions) {
-            fprintf(debugger->FpDebug, "0x%08x  '%s'\n",
-                extensionsProperties.specVersion,
-                extensionsProperties.extensionName);
-        }
-        debugger->writeMSG("\n");
-    }*/
+    for (const auto& extensionsProperties : availableExtensions) 
+        PRINT("\t" + std::string(extensionsProperties.extensionName) + ": 0x%08x", (int)extensionsProperties.specVersion);
 }
 
 void CInstance::DisplayExtensions(std::vector<const char*> &availableExtensions){
-    /*
-    debugger->writeMSG("Required extensions:\n");
-    if(debugger->getVerbose()){
-        for (const auto& extensionsProperties : availableExtensions) {
-            fprintf(debugger->FpDebug, "'%s'\n",
-                extensionsProperties);
-        }
-        debugger->writeMSG("\n");
-    }*/
+    for (const auto& extensionsProperties : availableExtensions) 
+        PRINT("\t" + std::string(extensionsProperties));
 }
 
 
