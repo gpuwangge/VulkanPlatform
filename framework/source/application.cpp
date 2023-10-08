@@ -6,6 +6,7 @@ bool CApplication::NeedToExit = false;
 CApplication::CApplication(){
     //debugger = new CDebugger("../logs/application.log");
 
+    descriptors.resize(1);
     textureImages.resize(1);
 
     mainCamera.type = Camera::CameraType::firstperson;
@@ -105,8 +106,10 @@ void CApplication::update(){
 
     mainCamera.update(deltaTime);
 
-    descriptor.updateMVPUniformBuffer(renderer.currentFrame, durationTime, mainCamera);
-    descriptor.updateVPUniformBuffer(renderer.currentFrame, durationTime, mainCamera);
+    for(int i = 0; i < descriptors.size(); i++){
+        descriptors[i].updateMVPUniformBuffer(renderer.currentFrame, durationTime, mainCamera);
+        descriptors[i].updateVPUniformBuffer(renderer.currentFrame, durationTime, mainCamera);
+    }
 }
 
 void CApplication::recordGraphicsCommandBuffer(){}
@@ -146,7 +149,8 @@ void CApplication::DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUti
 void CApplication::CleanUp(){
     swapchain.CleanUp();
     renderProcess.Cleanup();
-    descriptor.DestroyAndFree();
+    for(int i = 0; i < descriptors.size(); i++)
+        descriptors[i].DestroyAndFree();
     for(int i = 0; i < textureImages.size(); i++)
         textureImages[i].Destroy();
     renderer.Destroy();

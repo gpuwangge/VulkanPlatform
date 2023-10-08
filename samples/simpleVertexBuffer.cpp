@@ -28,11 +28,11 @@ public:
 		shaderManager.CreateShader("simpleVertexBuffer/vert.spv", shaderManager.VERT);
 		shaderManager.CreateShader("simpleVertexBuffer/frag.spv", shaderManager.FRAG); 
 
-		descriptor.createDescriptorPool();
-		descriptor.createDescriptorSetLayout();
-		descriptor.createDescriptorSets(textureImages);
+		descriptors[0].createDescriptorPool();
+		descriptors[0].createDescriptorSetLayout();
+		descriptors[0].createDescriptorSets(textureImages);
 
-		renderProcess.createLayout(descriptor.descriptorSetLayout);
+		renderProcess.createLayout(descriptors[0].descriptorSetLayout);
 		renderProcess.createGraphicsPipeline<Vertex2D>(
 			VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
 			shaderManager.vertShaderModule, 

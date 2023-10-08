@@ -23,7 +23,6 @@ public:
 		
 		renderer.CreateCommandPool(surface);
 		renderer.CreateCommandBuffers();
-		//renderer.CreateComputeCommandBuffers();
 
 		//renderProcess.addColorAttachment(swapchain.swapChainImageFormat); //add this function will enable color attachment (bUseColorAttachment = true)
 		//renderProcess.createSubpass();
@@ -36,10 +35,10 @@ public:
 		//shaderManager.InitFragmentShader("../shaders/simpleTriangle/frag.spv");
 		shaderManager.CreateShader("simpleCompute/comp.spv", shaderManager.COMP);
 
-		descriptor.addStorageBuffer(sizeof(StructStorageBuffer));
-		descriptor.createDescriptorPool();
-		descriptor.createDescriptorSetLayout();
-		descriptor.createDescriptorSets(textureImages);
+		descriptors[0].addStorageBuffer(sizeof(StructStorageBuffer));
+		descriptors[0].createDescriptorPool();
+		descriptors[0].createDescriptorSetLayout();
+		descriptors[0].createDescriptorSets(textureImages);
 
 		// renderProcess.createLayout(descriptor.descriptorSetLayout);
 		// renderProcess.createGraphicsPipeline(
@@ -47,7 +46,7 @@ public:
 		// 	shaderManager.vertShaderModule, 
 		// 	shaderManager.fragShaderModule);
 
-		renderProcess.createComputePipeline(shaderManager.compShaderModule, descriptor.descriptorSetLayout);
+		renderProcess.createComputePipeline(shaderManager.compShaderModule, descriptors[0].descriptorSetLayout);
 
 		CApplication::initialize();
 	}
@@ -59,7 +58,7 @@ public:
 		storageBufferObject.data = {counter+0.0f, counter+0.1f, counter+0.2f, counter+0.3f};
 
 		//Host >> Device
-		descriptor.updateStorageBuffer_1<StructStorageBuffer>(renderer.currentFrame, durationTime, storageBufferObject);
+		descriptors[0].updateStorageBuffer_1<StructStorageBuffer>(renderer.currentFrame, durationTime, storageBufferObject);
 		//std::cout<<"update(): Delta Time: "<<deltaTime<<", Duration Time: "<<durationTime<<std::endl;
 
 		if(counter==KernelRunNumber) NeedToExit = true;
@@ -83,7 +82,7 @@ public:
 		//Device >> Host
 		float data[4] = {0};
 		//std::cout<<"compute(): Current Frame = "<<renderer.currentFrame<<": "<<std::endl;
-		memcpy(data, descriptor.storageBuffersMapped_1[renderer.currentFrame], sizeof(data));
+		memcpy(data, descriptors[0].storageBuffersMapped_1[renderer.currentFrame], sizeof(data));
 
 		PRINT("compute() read data: ", data, 4);
 	}

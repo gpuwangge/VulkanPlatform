@@ -72,15 +72,15 @@ public:
 		shaderManager.CreateShader("simpleShadowMap/vert.spv", shaderManager.VERT);
 		shaderManager.CreateShader("simpleShadowMap/frag.spv", shaderManager.FRAG); 
 
-		descriptor.addImageSamplerUniformBuffer(textureImages[0].mipLevels);
-		descriptor.addMVPUniformBuffer();
-		descriptor.addCustomUniformBuffer(sizeof(CustomUniformBufferObject));
-		descriptor.createDescriptorPool();
+		descriptors[0].addImageSamplerUniformBuffer(textureImages[0].mipLevels);
+		descriptors[0].addMVPUniformBuffer();
+		descriptors[0].addCustomUniformBuffer(sizeof(CustomUniformBufferObject));
+		descriptors[0].createDescriptorPool();
 		VkDescriptorSetLayoutBinding customBinding = CustomUniformBufferObject::GetBinding();
-		descriptor.createDescriptorSetLayout(&customBinding);  
-		descriptor.createDescriptorSets(textureImages);
+		descriptors[0].createDescriptorSetLayout(&customBinding);  
+		descriptors[0].createDescriptorSets(textureImages);
     
-		renderProcess.createLayout(descriptor.descriptorSetLayout);
+		renderProcess.createLayout(descriptors[0].descriptorSetLayout);
 		renderProcess.createGraphicsPipeline<Vertex3D>(
 			VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
 			shaderManager.vertShaderModule,  
@@ -109,9 +109,9 @@ public:
 
 		customUBO.lightSpace = depthProjectionMatrix * depthViewMatrix * depthModelMatrix;
 		
-		descriptor.updateCustomUniformBuffer<CustomUniformBufferObject>(renderer.currentFrame, durationTime, customUBO);
+		descriptors[0].updateCustomUniformBuffer<CustomUniformBufferObject>(renderer.currentFrame, durationTime, customUBO);
 
-		descriptor.mvpUBO.model = glm::rotate(glm::mat4(1.0f),  glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		descriptors[0].mvpUBO.model = glm::rotate(glm::mat4(1.0f),  glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 		CApplication::update();
 	}
 

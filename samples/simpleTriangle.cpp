@@ -21,11 +21,11 @@ public:
 		shaderManager.CreateShader("simpleTriangle/vert.spv", shaderManager.VERT);
 		shaderManager.CreateShader("simpleTriangle/frag.spv", shaderManager.FRAG); 
 
-		descriptor.createDescriptorPool();
-		descriptor.createDescriptorSetLayout();
-		descriptor.createDescriptorSets(textureImages);
+		descriptors[0].createDescriptorPool();
+		descriptors[0].createDescriptorSetLayout();
+		descriptors[0].createDescriptorSets(textureImages);
 
-		renderProcess.createLayout(descriptor.descriptorSetLayout);
+		renderProcess.createLayout(descriptors[0].descriptorSetLayout);
 		renderProcess.createGraphicsPipeline(
 			VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
 			shaderManager.vertShaderModule, 

@@ -58,18 +58,18 @@ public:
 		shaderManager.CreateShader("furMark/vert.spv", shaderManager.VERT);
 		shaderManager.CreateShader("furMark/frag.spv", shaderManager.FRAG);
 
-        descriptor.textureSamplers.resize(3);
-		descriptor.addImageSamplerUniformBuffer(textureImages[0].mipLevels);
-        descriptor.addImageSamplerUniformBuffer(textureImages[1].mipLevels);
-        descriptor.addImageSamplerUniformBuffer(textureImages[2].mipLevels);
+        descriptors[0].textureSamplers.resize(3);
+		descriptors[0].addImageSamplerUniformBuffer(textureImages[0].mipLevels);
+        descriptors[0].addImageSamplerUniformBuffer(textureImages[1].mipLevels);
+        descriptors[0].addImageSamplerUniformBuffer(textureImages[2].mipLevels);
 		//descriptor.addMVPUniformBuffer();
-		descriptor.addCustomUniformBuffer(sizeof(CustomUniformBufferObject));
-		descriptor.createDescriptorPool();
+		descriptors[0].addCustomUniformBuffer(sizeof(CustomUniformBufferObject));
+		descriptors[0].createDescriptorPool();
 		VkDescriptorSetLayoutBinding customBinding = CustomUniformBufferObject::GetBinding();
-		descriptor.createDescriptorSetLayout(&customBinding);
-		descriptor.createDescriptorSets(textureImages);
+		descriptors[0].createDescriptorSetLayout(&customBinding);
+		descriptors[0].createDescriptorSets(textureImages);
 
-		renderProcess.createLayout(descriptor.descriptorSetLayout);
+		renderProcess.createLayout(descriptors[0].descriptorSetLayout);
 		renderProcess.createGraphicsPipeline<Vertex3D>(
 			VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
 			shaderManager.vertShaderModule, 
@@ -82,7 +82,7 @@ public:
 		//customUBO.color = {(sin(durationTime) + 1.0f) / 2.0f, 0.0f, (cos(durationTime) + 1.0f) / 2.0f};
         customUBO.u_time = durationTime;
         customUBO.u_resolution = glm::vec2(windowWidth, windowHeight);
-		descriptor.updateCustomUniformBuffer<CustomUniformBufferObject>(renderer.currentFrame, durationTime, customUBO);
+		descriptors[0].updateCustomUniformBuffer<CustomUniformBufferObject>(renderer.currentFrame, durationTime, customUBO);
 
 		//descriptor.mvpUBO.model = glm::rotate(glm::mat4(1.0f), durationTime * glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 		CApplication::update();

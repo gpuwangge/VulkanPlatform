@@ -33,15 +33,15 @@ public:
 		shaderManager.CreateShader("gemmCompute/comp.spv", shaderManager.COMP);
 		std::cout<<"compute shader created."<<std::endl;
 
-		descriptor.addStorageBuffer(sizeof(StructStorageBufferInput));
+		descriptors[0].addStorageBuffer(sizeof(StructStorageBufferInput));
 		std::cout<<"storageBufferObjectInput added. Size = "<<DIM_M * DIM_K * 8.0f * 2 / 1024 / 1024<<"mb."<<std::endl;
-		descriptor.addStorageBuffer(sizeof(StructStorageBufferOutput));
+		descriptors[0].addStorageBuffer(sizeof(StructStorageBufferOutput));
 		std::cout<<"storageBufferObjectOutput added. Size = "<<DIM_M * DIM_K * 8.0f / 1024 / 1024<<"mb."<<std::endl;
-		descriptor.createDescriptorPool();
-		descriptor.createDescriptorSetLayout();
-		descriptor.createDescriptorSets(textureImages);
+		descriptors[0].createDescriptorPool();
+		descriptors[0].createDescriptorSetLayout();
+		descriptors[0].createDescriptorSets(textureImages);
 
-		renderProcess.createComputePipeline(shaderManager.compShaderModule, descriptor.descriptorSetLayout);
+		renderProcess.createComputePipeline(shaderManager.compShaderModule, descriptors[0].descriptorSetLayout);
 
 		CApplication::initialize();
 
@@ -60,8 +60,8 @@ public:
 		std::cout<<"Initialized A and B."<<std::endl;
 
 		//Host >> Device
-		descriptor.updateStorageBuffer_1<StructStorageBufferInput>(renderer.currentFrame, durationTime, storageBufferObjectInput);
-		descriptor.updateStorageBuffer_1<StructStorageBufferInput>(renderer.currentFrame+1, durationTime, storageBufferObjectInput);
+		descriptors[0].updateStorageBuffer_1<StructStorageBufferInput>(renderer.currentFrame, durationTime, storageBufferObjectInput);
+		descriptors[0].updateStorageBuffer_1<StructStorageBufferInput>(renderer.currentFrame+1, durationTime, storageBufferObjectInput);
 		
 	}
 
@@ -93,7 +93,7 @@ public:
 		PRINT("update(): Delta Time: %f, Duration Time: %f", deltaTime, durationTime);
 
 		//Device >> Host
-		if(bVerbose) memcpy(storageBufferObjectOutput.MatC, descriptor.storageBuffersMapped_2[renderer.currentFrame], sizeof(storageBufferObjectOutput.MatC));
+		if(bVerbose) memcpy(storageBufferObjectOutput.MatC, descriptors[0].storageBuffersMapped_2[renderer.currentFrame], sizeof(storageBufferObjectOutput.MatC));
 		//if(bVerbose) printMatrix(storageBufferObjectOutput.MatC, DIM_M, DIM_N, "C");
 		if(bVerbose) PRINT("C: ", storageBufferObjectOutput.MatC, DIM_M*DIM_N);
 

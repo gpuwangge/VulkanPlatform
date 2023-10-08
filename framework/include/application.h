@@ -22,11 +22,11 @@
     renderer.StartRecordGraphicsCommandBuffer(renderProcess.graphicsPipeline, renderProcess.graphicsPipelineLayout, \
     renderProcess.renderPass,   \
     swapchain.swapChainFramebuffers,swapchain.swapChainExtent,   \
-    descriptor.descriptorSets,  \
+    descriptors[0].descriptorSets,  \
     clearValues);}
 #define END_GRAPHICS_RECORD renderer.EndRecordGraphicsCommandBuffer();
 
-#define START_COMPUTE_RECORD renderer.StartRecordComputeCommandBuffer(renderProcess.computePipeline, renderProcess.computePipelineLayout, descriptor.descriptorSets);
+#define START_COMPUTE_RECORD renderer.StartRecordComputeCommandBuffer(renderProcess.computePipeline, renderProcess.computePipelineLayout, descriptors[0].descriptorSets);
 #define END_COMPUTE_RECORD renderer.EndRecordComputeCommandBuffer();
 
 class CApplication{
@@ -46,7 +46,7 @@ public:
 	CSwapchain swapchain;
     CRenderProcess renderProcess;
     CShaderManager shaderManager;
-    CDescriptor descriptor;
+    std::vector<CDescriptor> descriptors;
     CRenderer renderer;
     std::vector<CTextureImage> textureImages;
     CModelManager modelManager;

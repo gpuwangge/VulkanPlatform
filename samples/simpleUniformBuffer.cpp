@@ -36,13 +36,13 @@ public:
 		shaderManager.CreateShader("simpleUniformBuffer/vert.spv", shaderManager.VERT);
 		shaderManager.CreateShader("simpleUniformBuffer/frag.spv", shaderManager.FRAG); 
 
-		descriptor.addCustomUniformBuffer(sizeof(StructCustomUniformBuffer));
-		descriptor.createDescriptorPool();
+		descriptors[0].addCustomUniformBuffer(sizeof(StructCustomUniformBuffer));
+		descriptors[0].createDescriptorPool();
 		VkDescriptorSetLayoutBinding customBinding = StructCustomUniformBuffer::GetBinding();
-		descriptor.createDescriptorSetLayout(&customBinding);
-		descriptor.createDescriptorSets(textureImages);
+		descriptors[0].createDescriptorSetLayout(&customBinding);
+		descriptors[0].createDescriptorSets(textureImages);
 
-		renderProcess.createLayout(descriptor.descriptorSetLayout);
+		renderProcess.createLayout(descriptors[0].descriptorSetLayout);
 		renderProcess.createGraphicsPipeline(
 			VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
 			shaderManager.vertShaderModule, 
@@ -54,7 +54,7 @@ public:
 	void update(){
 		//printf("%f\n", durationTime);
 		customUniformBufferObject.color = {(sin(durationTime*3) + 1.0f) / 2.0f, (cos(durationTime*3) + 1.0f) / 2.0f, 0.0f, 1.0f};
-		descriptor.updateCustomUniformBuffer<StructCustomUniformBuffer>(renderer.currentFrame, durationTime, customUniformBufferObject);
+		descriptors[0].updateCustomUniformBuffer<StructCustomUniformBuffer>(renderer.currentFrame, durationTime, customUniformBufferObject);
 		CApplication::update();
 	}
 

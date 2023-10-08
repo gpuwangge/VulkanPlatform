@@ -37,13 +37,13 @@ public:
 		
 		shaderManager.CreatePushConstantRange<ModelPushConstants>(VK_SHADER_STAGE_VERTEX_BIT, 0);
 
-		descriptor.addVPUniformBuffer();
-		descriptor.addImageSamplerUniformBuffer(textureImages[0].mipLevels);
-		descriptor.createDescriptorPool();
-		descriptor.createDescriptorSetLayout();
-		descriptor.createDescriptorSets(textureImages);
+		descriptors[0].addVPUniformBuffer();
+		descriptors[0].addImageSamplerUniformBuffer(textureImages[0].mipLevels);
+		descriptors[0].createDescriptorPool();
+		descriptors[0].createDescriptorSetLayout();
+		descriptors[0].createDescriptorSets(textureImages);
 
-		renderProcess.createLayout(descriptor.descriptorSetLayout, shaderManager.pushConstantRange);
+		renderProcess.createLayout(descriptors[0].descriptorSetLayout, shaderManager.pushConstantRange);
 		renderProcess.createGraphicsPipeline<Vertex3D>(
 			VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
 			shaderManager.vertShaderModule, 
