@@ -112,7 +112,9 @@
     "sstream": "cpp",
     "streambuf": "cpp",
     "typeinfo": "cpp",
-    "functional": "cpp"
+    "functional": "cpp",
+    "numeric": "cpp",
+    "random": "cpp"
   },
   "C_Cpp.default.compilerPath": "C:\\mingw64\\bin\\g++.exe"
 }

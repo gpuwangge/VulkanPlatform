@@ -29,7 +29,7 @@ void CShaderManager::CreateShader(const std::string shaderName, short shaderType
 #ifndef ANDROID
     bool bopen = InitSpirVShader(SHADER_PATH + shaderName, pShaderModule);
     if(!bopen) bopen = InitSpirVShader("shaders/" + shaderName, pShaderModule);
-    if(!bopen) throw std::runtime_error("failed to open vertex shader!");
+    if(!bopen) throw std::runtime_error("failed to open shader!");
 #else
     std::vector<uint8_t> fileBits;
     std::string fullShaderName = ANDROID_SHADER_PATH + InsertString(shaderName, "shader.", '/');
@@ -42,6 +42,7 @@ void CShaderManager::CreateShader(const std::string shaderName, short shaderType
 bool CShaderManager::InitSpirVShader(const std::string shaderName, VkShaderModule *pShaderModule){
     std::vector<char> shaderCode;
     bool bOpen = readFile(shaderName.c_str(), shaderCode);
+    //std::cout<<shaderName<<std::endl;
     if(!bOpen) return false;
 
     VkShaderModuleCreateInfo createInfo{};
