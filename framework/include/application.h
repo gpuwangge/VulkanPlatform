@@ -18,15 +18,15 @@
 #include "..\\..\\windowsFramework\\include\\glfwManager.h"
 #endif
 
-#define START_GRAPHICS_RECORD { \
+#define START_GRAPHICS_RECORD(descriptorIdx) { \
     renderer.StartRecordGraphicsCommandBuffer(renderProcess.graphicsPipeline, renderProcess.graphicsPipelineLayout, \
     renderProcess.renderPass,   \
     swapchain.swapChainFramebuffers,swapchain.swapChainExtent,   \
-    descriptors[0].descriptorSets,  \
+    descriptors[descriptorIdx].descriptorSets,  \
     clearValues);}
 #define END_GRAPHICS_RECORD renderer.EndRecordGraphicsCommandBuffer();
 
-#define START_COMPUTE_RECORD renderer.StartRecordComputeCommandBuffer(renderProcess.computePipeline, renderProcess.computePipelineLayout, descriptors[0].descriptorSets);
+#define START_COMPUTE_RECORD(descriptorIdx) renderer.StartRecordComputeCommandBuffer(renderProcess.computePipeline, renderProcess.computePipelineLayout, descriptors[descriptorIdx].descriptorSets);
 #define END_COMPUTE_RECORD renderer.EndRecordComputeCommandBuffer();
 
 class CApplication{

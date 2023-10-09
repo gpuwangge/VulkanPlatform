@@ -76,7 +76,7 @@ public:
 	}
 
 	void recordComputeCommandBuffer(){
-		START_COMPUTE_RECORD
+		START_COMPUTE_RECORD(0)
 
 		//std::cout<<"Record Compute command buffer. "<<std::endl;
 		renderer.Dispatch(1, 1, 1);

@@ -39,7 +39,7 @@ public:
 	}
 
 	void recordGraphicsCommandBuffer(){
-		START_GRAPHICS_RECORD
+		START_GRAPHICS_RECORD(0)
 		//actually this sample doesn't need BindDescriptorSets
 
 		renderer.Draw(3);

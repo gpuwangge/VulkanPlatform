@@ -101,7 +101,7 @@ public:
 	}
 
 	void recordComputeCommandBuffer(){
-		START_COMPUTE_RECORD
+		START_COMPUTE_RECORD(0)
 
 
 		renderer.Dispatch(1, 1, 1);

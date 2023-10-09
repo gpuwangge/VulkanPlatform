@@ -60,7 +60,7 @@ public:
 	}
 
 	void recordGraphicsCommandBuffer(){
-		START_GRAPHICS_RECORD
+		START_GRAPHICS_RECORD(0)
 
 		renderer.BindVertexBuffer();
 		renderer.BindIndexBuffer();
