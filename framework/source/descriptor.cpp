@@ -252,7 +252,7 @@ void CDescriptor::createDescriptorSetLayout(VkDescriptorSetLayoutBinding *custom
 	//REPORT("vkCreateDescriptorSetLayout");
 }
 
-void CDescriptor::createDescriptorSets(std::vector<CTextureImage> &textureImages){
+void CDescriptor::createDescriptorSets(std::vector<CTextureImage> *textureImages){
     //Descriptor Step 3/3
     //HERE_I_AM("wxjCreateDescriptorSets");
 
@@ -328,7 +328,7 @@ void CDescriptor::createDescriptorSets(std::vector<CTextureImage> &textureImages
             imageInfo.resize(textureSamplers.size());
             for(int j = 0; j < textureSamplers.size(); j++){
                 imageInfo[j].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-                imageInfo[j].imageView = textureImages[j].textureImageBuffer.view;
+                imageInfo[j].imageView = (*textureImages)[j].textureImageBuffer.view;
                 imageInfo[j].sampler = textureSamplers[j];
                 descriptorWrites[counter].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
                 descriptorWrites[counter].dstSet = descriptorSets[i];

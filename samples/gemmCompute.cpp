@@ -39,7 +39,7 @@ public:
 		std::cout<<"storageBufferObjectOutput added. Size = "<<DIM_M * DIM_K * 8.0f / 1024 / 1024<<"mb."<<std::endl;
 		descriptors[0].createDescriptorPool();
 		descriptors[0].createDescriptorSetLayout();
-		descriptors[0].createDescriptorSets(textureImages);
+		descriptors[0].createDescriptorSets();
 
 		renderProcess.createComputePipeline(shaderManager.compShaderModule, descriptors[0].descriptorSetLayout);
 

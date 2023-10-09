@@ -23,7 +23,7 @@ public:
 
 		descriptors[0].createDescriptorPool();
 		descriptors[0].createDescriptorSetLayout();
-		descriptors[0].createDescriptorSets(textureImages);
+		descriptors[0].createDescriptorSets();
 
 		renderProcess.createLayout(descriptors[0].descriptorSetLayout);
 		renderProcess.createGraphicsPipeline(

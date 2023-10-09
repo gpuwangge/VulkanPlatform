@@ -49,7 +49,7 @@ public:
 		descriptors[0].addImageSamplerUniformBuffer(textureImages[0].mipLevels);
 		descriptors[0].createDescriptorPool();
 		descriptors[0].createDescriptorSetLayout();
-		descriptors[0].createDescriptorSets(textureImages);
+		descriptors[0].createDescriptorSets(&textureImages);
 
 		renderProcess.createLayout(descriptors[0].descriptorSetLayout);
 		renderProcess.createGraphicsPipeline<Vertex3D>(

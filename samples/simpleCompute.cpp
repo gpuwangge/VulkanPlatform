@@ -38,7 +38,7 @@ public:
 		descriptors[0].addStorageBuffer(sizeof(StructStorageBuffer));
 		descriptors[0].createDescriptorPool();
 		descriptors[0].createDescriptorSetLayout();
-		descriptors[0].createDescriptorSets(textureImages);
+		descriptors[0].createDescriptorSets();
 
 		// renderProcess.createLayout(descriptor.descriptorSetLayout);
 		// renderProcess.createGraphicsPipeline(

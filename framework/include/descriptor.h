@@ -89,7 +89,7 @@ public:
         //VkShaderStageFlags    stageFlags = VK_SHADER_STAGE_VERTEX_BIT,
         //uint32_t              descriptorCount = 1,
         //const VkSampler*      pImmutableSamplers = nullptr);
-    void createDescriptorSets(std::vector<CTextureImage> &textureImages);
+    void createDescriptorSets(std::vector<CTextureImage> *textureImages = NULL);
 
     void DestroyAndFree();
 

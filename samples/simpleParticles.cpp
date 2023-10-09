@@ -48,26 +48,31 @@ public:
 		shaderManager.CreateShader("gemmCompute/comp.spv", shaderManager.COMP);
 		std::cout<<"compute shader created."<<std::endl;
 
-		//For Compute
-		descriptors[0].addStorageBuffer(sizeof(StructStorageBufferInput));
-		std::cout<<"storageBufferObjectInput added. Size = "<<DIM_M * DIM_K * 8.0f * 2 / 1024 / 1024<<"mb."<<std::endl;
-		descriptors[0].addStorageBuffer(sizeof(StructStorageBufferOutput));
-		std::cout<<"storageBufferObjectOutput added. Size = "<<DIM_M * DIM_K * 8.0f / 1024 / 1024<<"mb."<<std::endl;
+		descriptors.resize(2);
+		//For Graphics
 		descriptors[0].createDescriptorPool();
 		descriptors[0].createDescriptorSetLayout();
-		descriptors[0].createDescriptorSets(textureImages);
+		descriptors[0].createDescriptorSets();
+		//For Compute
+		descriptors[1].addStorageBuffer(sizeof(StructStorageBufferInput));
+		std::cout<<"storageBufferObjectInput added. Size = "<<DIM_M * DIM_K * 8.0f * 2 / 1024 / 1024<<"mb."<<std::endl;
+		descriptors[1].addStorageBuffer(sizeof(StructStorageBufferOutput));
+		std::cout<<"storageBufferObjectOutput added. Size = "<<DIM_M * DIM_K * 8.0f / 1024 / 1024<<"mb."<<std::endl;
+		descriptors[1].createDescriptorPool();
+		descriptors[1].createDescriptorSetLayout();
+		descriptors[1].createDescriptorSets();
 
 		//for Graphics
 		//!compute and graphics pipeline should have different pipeline layout(already did), and different descriptorSetLayout
 		//?different command buffers?
 		renderProcess.createLayout(descriptors[0].descriptorSetLayout);//!this only create graphics pipline layout, should make it support compute pipeline layout
-		//renderProcess.createGraphicsPipeline(
-		//	VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
-		//	shaderManager.vertShaderModule, 
-		//	shaderManager.fragShaderModule);
+		renderProcess.createGraphicsPipeline(
+			VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
+			shaderManager.vertShaderModule, 
+			shaderManager.fragShaderModule);
 
 		//For Compute
-		renderProcess.createComputePipeline(shaderManager.compShaderModule, descriptors[0].descriptorSetLayout);
+		renderProcess.createComputePipeline(shaderManager.compShaderModule, descriptors[1].descriptorSetLayout);
 
 		CApplication::initialize();
 
@@ -86,8 +91,8 @@ public:
 		std::cout<<"Initialized A and B."<<std::endl;
 
 		//Host >> Device
-		descriptors[0].updateStorageBuffer_1<StructStorageBufferInput>(renderer.currentFrame, durationTime, storageBufferObjectInput);
-		descriptors[0].updateStorageBuffer_1<StructStorageBufferInput>(renderer.currentFrame+1, durationTime, storageBufferObjectInput);
+		descriptors[1].updateStorageBuffer_1<StructStorageBufferInput>(renderer.currentFrame, durationTime, storageBufferObjectInput);
+		descriptors[1].updateStorageBuffer_1<StructStorageBufferInput>(renderer.currentFrame+1, durationTime, storageBufferObjectInput);
 		
 	}
 
@@ -100,8 +105,17 @@ public:
 		//PRINT("update(): Delta Time: %f, Duration Time: %f", deltaTime, durationTime);
 	}
 
+	void recordGraphicsCommandBuffer(){
+		START_GRAPHICS_RECORD(0)
+		//actually this sample doesn't need BindDescriptorSets
+
+		renderer.Draw(3);
+		
+		END_GRAPHICS_RECORD
+	}
+
 	void recordComputeCommandBuffer(){
-		START_COMPUTE_RECORD(0)
+		START_COMPUTE_RECORD(1)
 
 
 		renderer.Dispatch(1, 1, 1);
