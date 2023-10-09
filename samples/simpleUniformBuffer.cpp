@@ -22,7 +22,7 @@ public:
 
 	void initialize(){
 		renderer.CreateCommandPool(surface);
-		renderer.CreateCommandBuffers();
+		renderer.CreateGraphicsCommandBuffer();
 
 		renderProcess.addColorAttachment(swapchain.swapChainImageFormat); //add this function will enable color attachment (bUseColorAttachment = true)
 		renderProcess.createSubpass();

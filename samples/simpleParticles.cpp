@@ -29,7 +29,8 @@ public:
 
 	void initialize(){
 		renderer.CreateCommandPool(surface);
-		renderer.CreateCommandBuffers();
+		renderer.CreateGraphicsCommandBuffer(); 
+		renderer.CreateComputeCommandBuffer();
 
 		//For Graphics
 		renderProcess.addColorAttachment(swapchain.swapChainImageFormat); 
@@ -75,7 +76,6 @@ public:
 		renderProcess.createComputePipeline(shaderManager.compShaderModule, descriptors[1].descriptorSetLayout);
 
 		CApplication::initialize();
-
 		
 		//Initial Host data
 		storageBufferObjectInput.M = DIM_M;
@@ -131,6 +131,11 @@ public:
 
 		//CApplication::update(); //update deltaTime and durationTime (and mainCamera and MVP, VP)
 		//PRINT("update(): Delta Time: %f, Duration Time: %f", deltaTime, durationTime);
+
+		//Device >> Host
+		if(bVerbose) memcpy(storageBufferObjectOutput.MatC, descriptors[1].storageBuffersMapped_2[renderer.currentFrame], sizeof(storageBufferObjectOutput.MatC));
+		//if(bVerbose) printMatrix(storageBufferObjectOutput.MatC, DIM_M, DIM_N, "C");
+		if(bVerbose) PRINT("C: ", storageBufferObjectOutput.MatC, DIM_M*DIM_N);
 
 	}
 };

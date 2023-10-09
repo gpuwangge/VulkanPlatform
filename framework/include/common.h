@@ -57,7 +57,6 @@ const int MIPMAP_TEXTURE_COUNT = 7;
 #define ANDROID_MODEL_PATH "models/"
 #define ANDROID_SHADER_PATH "shaders/"
 
-
 //#define NDEBUG
 #ifdef NDEBUG
 const bool enableValidationLayers = false;

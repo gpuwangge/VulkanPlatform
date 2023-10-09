@@ -29,26 +29,26 @@ public:
     void EndRecordGraphicsCommandBuffer();
 
     //Start(...)
-    void BeginCommandBuffer();
+    void BeginCommandBuffer(int commandBufferIndex);
     void BeginRenderPass(VkRenderPass &renderPass, std::vector<VkFramebuffer> &swapChainFramebuffers, VkExtent2D &extent, std::vector<VkClearValue> &clearValues);
-    void BindPipeline(VkPipeline &pipeline, VkPipelineBindPoint pipelineBindPoint);
+    void BindPipeline(VkPipeline &pipeline, VkPipelineBindPoint pipelineBindPoint, int commandBufferIndex);
     void SetViewport(VkExtent2D &extent);
     void SetScissor(VkExtent2D &extent);
     void BindVertexBuffer();
     void BindIndexBuffer();
-    void BindDescriptorSets(VkPipelineLayout &pipelineLayout, std::vector<VkDescriptorSet> &descriptorSets, VkPipelineBindPoint pipelineBindPoint);
+    void BindDescriptorSets(VkPipelineLayout &pipelineLayout, std::vector<VkDescriptorSet> &descriptorSets, VkPipelineBindPoint pipelineBindPoint, int commandBufferIndex);
 
     //Draw
     template <typename T>
-    void PushConstant(T &pc, VkPipelineLayout graphicsPipelineLayout, VkPushConstantRange &pushConstantRange){
-        vkCmdPushConstants(commandBuffers[currentFrame], graphicsPipelineLayout, pushConstantRange.stageFlags, pushConstantRange.offset, pushConstantRange.size, &pc);
+    void PushConstantToCommand(T &pc, VkPipelineLayout graphicsPipelineLayout, VkPushConstantRange &pushConstantRange){
+        vkCmdPushConstants(commandBuffers[graphicsCmdId][currentFrame], graphicsPipelineLayout, pushConstantRange.stageFlags, pushConstantRange.offset, pushConstantRange.size, &pc);
     }
     void DrawIndexed(std::vector<uint32_t> &indices3D);
     void Draw(uint32_t n);
 
     //End()
     void EndRenderPass();
-    void EndCommandBuffer();
+    void EndCommandBuffer(int commandBufferIndex);
 
 
     /**************************
@@ -89,10 +89,15 @@ public:
         //FillDataBufferHelper(vertexDataBuffer, (void *)(input.data()));//copy vertices3D to vertexDataBuffer
         vertexDataBuffer.fill((void *)(input.data()));
     }
-
     void CreateIndexBuffer(std::vector<uint32_t> &indices3D);
+
+    int graphicsCmdId;
+    int computeCmdId;
     void CreateCommandPool(VkSurfaceKHR &surface);
+    void CreateGraphicsCommandBuffer();
+    void CreateComputeCommandBuffer();
     void CreateCommandBuffers();
+
     void CreateSyncObjects();
 
     void Destroy();
@@ -101,10 +106,10 @@ public:
     uint32_t imageIndex;
     void Update(); //update currentFrame
 
-    CWxjBuffer vertexDataBuffer;  //05
-	CWxjBuffer indexDataBuffer; //05
-    std::vector<VkCommandBuffer> commandBuffers;//06
-    VkCommandPool commandPool;//06
+    CWxjBuffer vertexDataBuffer;  
+	CWxjBuffer indexDataBuffer; 
+    std::vector<std::vector<VkCommandBuffer>> commandBuffers;  //commandBuffers[Size][MAX_FRAMES_IN_FLIGHT or currentFrame]
+    VkCommandPool commandPool;
 
 
     std::vector<VkSemaphore> imageAvailableSemaphores;

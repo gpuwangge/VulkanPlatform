@@ -22,7 +22,7 @@ public:
 		//Question: If I edit storage buffer in shader, will it reflect?
 		
 		renderer.CreateCommandPool(surface);
-		renderer.CreateCommandBuffers();
+		renderer.CreateComputeCommandBuffer();
 
 		//renderProcess.addColorAttachment(swapchain.swapChainImageFormat); //add this function will enable color attachment (bUseColorAttachment = true)
 		//renderProcess.createSubpass();

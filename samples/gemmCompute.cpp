@@ -27,8 +27,7 @@ public:
 
 	void initialize(){
 		renderer.CreateCommandPool(surface);
-		renderer.CreateCommandBuffers();
-		//renderer.CreateComputeCommandBuffers();
+		renderer.CreateComputeCommandBuffer();
 
 		shaderManager.CreateShader("gemmCompute/comp.spv", shaderManager.COMP);
 		std::cout<<"compute shader created."<<std::endl;

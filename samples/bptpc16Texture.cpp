@@ -24,7 +24,7 @@ public:
 		renderer.CreateVertexBuffer<Vertex3D>(vertices3D);
 		renderer.CreateIndexBuffer(indices3D);
 		renderer.CreateCommandPool(surface);
-		renderer.CreateCommandBuffers();
+		renderer.CreateGraphicsCommandBuffer();
 
 		VkImageUsageFlags usage_texture = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
 		textureImages[0].imageFormat = VK_FORMAT_R16G16B16A16_UNORM;//VK_FORMAT_R16G16B16A16_UNORM or VK_FORMAT_R16G16B16A16_SFLOAT(need frac_float16())

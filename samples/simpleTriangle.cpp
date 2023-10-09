@@ -7,7 +7,7 @@ public:
 
 	void initialize(){
 		renderer.CreateCommandPool(surface);
-		renderer.CreateCommandBuffers();
+		renderer.CreateGraphicsCommandBuffer();
 
 		renderProcess.addColorAttachment(swapchain.swapChainImageFormat); //add this function will enable color attachment (bUseColorAttachment = true)
 		renderProcess.createSubpass();
@@ -41,7 +41,7 @@ public:
 	void recordGraphicsCommandBuffer(){
 		START_GRAPHICS_RECORD(0)
 		//actually this sample doesn't need BindDescriptorSets
-
+		
 		renderer.Draw(3);
 		
 		END_GRAPHICS_RECORD

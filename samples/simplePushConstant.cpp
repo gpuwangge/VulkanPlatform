@@ -17,7 +17,7 @@ public:
 		renderer.CreateVertexBuffer<Vertex3D>(vertices3D);
 		renderer.CreateIndexBuffer(indices3D);
 		renderer.CreateCommandPool(surface);
-		renderer.CreateCommandBuffers();
+		renderer.CreateGraphicsCommandBuffer();
 
 		VkImageUsageFlags usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
 		textureImages[0].CreateTextureImage("texture.jpg", usage, renderer.commandPool);
@@ -68,7 +68,7 @@ public:
 		// 								0 ,0, 1, 0,
 		// 								0, 0, 0, 1);
 		pushConstants.model = glm::rotate(glm::mat4(1.0f), durationTime * glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-		renderer.PushConstant<ModelPushConstants>(pushConstants, renderProcess.graphicsPipelineLayout, shaderManager.pushConstantRange);
+		renderer.PushConstantToCommand<ModelPushConstants>(pushConstants, renderProcess.graphicsPipelineLayout, shaderManager.pushConstantRange);
 		renderer.DrawIndexed(indices3D);
 
 		END_GRAPHICS_RECORD

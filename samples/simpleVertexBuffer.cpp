@@ -14,7 +14,7 @@ public:
 	void initialize(){
 		renderer.CreateVertexBuffer<Vertex2D>(vertices);
 		renderer.CreateCommandPool(surface);
-		renderer.CreateCommandBuffers();
+		renderer.CreateGraphicsCommandBuffer();
 
 		renderProcess.addColorAttachment(swapchain.swapChainImageFormat); //add this function will enable color attachment (bUseColorAttachment = true)
 		renderProcess.createSubpass();
