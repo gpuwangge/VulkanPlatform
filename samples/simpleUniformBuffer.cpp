@@ -42,7 +42,7 @@ public:
 		descriptors[0].createDescriptorSetLayout(&customBinding);
 		descriptors[0].createDescriptorSets();
 
-		renderProcess.createLayout(descriptors[0].descriptorSetLayout);
+		renderProcess.createGraphicsPipelineLayout(descriptors[0].descriptorSetLayout);
 		renderProcess.createGraphicsPipeline(
 			VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
 			shaderManager.vertShaderModule, 

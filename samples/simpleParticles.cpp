@@ -29,7 +29,11 @@ public:
 
 	void initialize(){
 		renderer.CreateCommandPool(surface);
+		
+		//For Graphics
 		renderer.CreateGraphicsCommandBuffer(); 
+
+		//For Compute
 		renderer.CreateComputeCommandBuffer();
 
 		//For Graphics
@@ -37,11 +41,7 @@ public:
 		renderProcess.createSubpass();
 		renderProcess.createDependency();
 		renderProcess.createRenderPass();
-
-		//For Graphics
 		swapchain.CreateFramebuffers(renderProcess.renderPass);
-
-		//For Graphics
 		shaderManager.CreateShader("simpleTriangle/vert.spv", shaderManager.VERT);
 		shaderManager.CreateShader("simpleTriangle/frag.spv", shaderManager.FRAG); 
 
@@ -49,7 +49,7 @@ public:
 		shaderManager.CreateShader("gemmCompute/comp.spv", shaderManager.COMP);
 		std::cout<<"compute shader created."<<std::endl;
 
-		descriptors.resize(2);
+		descriptors.resize(2);//you can have many descriptor sets. Here I use ds[0] for graphics pipeline and ds[1] for compute pipeline
 		//For Graphics
 		descriptors[0].createDescriptorPool();
 		descriptors[0].createDescriptorSetLayout();
@@ -63,17 +63,16 @@ public:
 		descriptors[1].createDescriptorSetLayout();
 		descriptors[1].createDescriptorSets();
 
-		//for Graphics
-		//!compute and graphics pipeline should have different pipeline layout(already did), and different descriptorSetLayout
-		//?different command buffers?
-		renderProcess.createLayout(descriptors[0].descriptorSetLayout);//!this only create graphics pipline layout, should make it support compute pipeline layout
+		//for Graphics: when create graphics pipeline, use descriptor set 0 layout
+		renderProcess.createGraphicsPipelineLayout(descriptors[0].descriptorSetLayout);
 		renderProcess.createGraphicsPipeline(
 			VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
 			shaderManager.vertShaderModule, 
 			shaderManager.fragShaderModule);
 
-		//For Compute
-		renderProcess.createComputePipeline(shaderManager.compShaderModule, descriptors[1].descriptorSetLayout);
+		//For Compute: when create compute pipeline, use descriptor set 1 layout
+		renderProcess.createComputePipelineLayout(descriptors[1].descriptorSetLayout);
+		renderProcess.createComputePipeline(shaderManager.compShaderModule);
 
 		CApplication::initialize();
 		

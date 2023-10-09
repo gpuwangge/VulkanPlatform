@@ -46,7 +46,8 @@ public:
 		// 	shaderManager.vertShaderModule, 
 		// 	shaderManager.fragShaderModule);
 
-		renderProcess.createComputePipeline(shaderManager.compShaderModule, descriptors[0].descriptorSetLayout);
+		renderProcess.createComputePipelineLayout(descriptors[0].descriptorSetLayout);
+		renderProcess.createComputePipeline(shaderManager.compShaderModule);
 
 		CApplication::initialize();
 	}

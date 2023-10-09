@@ -55,8 +55,11 @@ public:
     VkPipelineLayout computePipelineLayout;
 	VkPipeline computePipeline;
 
-    void createLayout(VkDescriptorSetLayout &descriptorSetLayout);
-    void createLayout(VkDescriptorSetLayout &descriptorSetLayout, VkPushConstantRange &pushConstantRange, bool bUsePushConstant = true);
+    void createComputePipelineLayout(VkDescriptorSetLayout &descriptorSetLayout);
+    void createComputePipeline(VkShaderModule &computeShaderModule);
+
+    void createGraphicsPipelineLayout(VkDescriptorSetLayout &descriptorSetLayout);
+    void createGraphicsPipelineLayout(VkDescriptorSetLayout &descriptorSetLayout, VkPushConstantRange &pushConstantRange, bool bUsePushConstant = true);
 
     struct DummyVertex {
         static VkVertexInputBindingDescription getBindingDescription() {
@@ -248,10 +251,6 @@ public:
 
         //HERE_I_AM("DrawFrame() will begin");
     }
-
-
-    void createComputePipeline(VkShaderModule &computeShaderModule, VkDescriptorSetLayout &computeDescriptorSetLayout);
-
 
     //CDebugger * debugger;
 };

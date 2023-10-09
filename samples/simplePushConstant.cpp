@@ -43,7 +43,7 @@ public:
 		descriptors[0].createDescriptorSetLayout();
 		descriptors[0].createDescriptorSets(&textureImages);
 
-		renderProcess.createLayout(descriptors[0].descriptorSetLayout, shaderManager.pushConstantRange);
+		renderProcess.createGraphicsPipelineLayout(descriptors[0].descriptorSetLayout, shaderManager.pushConstantRange);
 		renderProcess.createGraphicsPipeline<Vertex3D>(
 			VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
 			shaderManager.vertShaderModule, 

@@ -40,7 +40,8 @@ public:
 		descriptors[0].createDescriptorSetLayout();
 		descriptors[0].createDescriptorSets();
 
-		renderProcess.createComputePipeline(shaderManager.compShaderModule, descriptors[0].descriptorSetLayout);
+		renderProcess.createComputePipelineLayout(descriptors[0].descriptorSetLayout);
+		renderProcess.createComputePipeline(shaderManager.compShaderModule);
 
 		CApplication::initialize();
 

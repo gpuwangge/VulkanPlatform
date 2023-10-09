@@ -32,7 +32,7 @@ public:
 		descriptors[0].createDescriptorSetLayout();
 		descriptors[0].createDescriptorSets();
 
-		renderProcess.createLayout(descriptors[0].descriptorSetLayout);
+		renderProcess.createGraphicsPipelineLayout(descriptors[0].descriptorSetLayout);
 		renderProcess.createGraphicsPipeline<Vertex2D>(
 			VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
 			shaderManager.vertShaderModule, 

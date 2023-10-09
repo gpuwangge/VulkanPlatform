@@ -150,7 +150,16 @@ VkFormat CRenderProcess::findDepthFormat() {
     );
 }
 
-void CRenderProcess::createComputePipeline(VkShaderModule &computeShaderModule, VkDescriptorSetLayout &computeDescriptorSetLayout){
+void CRenderProcess::createComputePipelineLayout(VkDescriptorSetLayout &descriptorSetLayout){
+	VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
+	pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
+	pipelineLayoutInfo.setLayoutCount = 1;
+	pipelineLayoutInfo.pSetLayouts = &descriptorSetLayout;
+
+	if (vkCreatePipelineLayout(CContext::GetHandle().GetLogicalDevice(), &pipelineLayoutInfo, nullptr, &computePipelineLayout) != VK_SUCCESS) 
+		throw std::runtime_error("failed to create compute pipeline layout!");
+}
+void CRenderProcess::createComputePipeline(VkShaderModule &computeShaderModule){
 	bCreateComputePipeline = true;
 	
 	VkPipelineShaderStageCreateInfo computeShaderStageInfo{};
@@ -158,15 +167,6 @@ void CRenderProcess::createComputePipeline(VkShaderModule &computeShaderModule, 
 	computeShaderStageInfo.stage = VK_SHADER_STAGE_COMPUTE_BIT;
 	computeShaderStageInfo.module = computeShaderModule;
 	computeShaderStageInfo.pName = "main";
-
-	VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
-	pipelineLayoutInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;
-	pipelineLayoutInfo.setLayoutCount = 1;
-	pipelineLayoutInfo.pSetLayouts = &computeDescriptorSetLayout;
-
-	if (vkCreatePipelineLayout(CContext::GetHandle().GetLogicalDevice(), &pipelineLayoutInfo, nullptr, &computePipelineLayout) != VK_SUCCESS) {
-		throw std::runtime_error("failed to create compute pipeline layout!");
-	}
 
 	VkComputePipelineCreateInfo pipelineInfo{};
 	pipelineInfo.sType = VK_STRUCTURE_TYPE_COMPUTE_PIPELINE_CREATE_INFO;
@@ -178,13 +178,11 @@ void CRenderProcess::createComputePipeline(VkShaderModule &computeShaderModule, 
 	}
 }
 
-
-
-void CRenderProcess::createLayout(VkDescriptorSetLayout &descriptorSetLayout){
+void CRenderProcess::createGraphicsPipelineLayout(VkDescriptorSetLayout &descriptorSetLayout){
 	VkPushConstantRange dummyPushConstantRange;
-	createLayout(descriptorSetLayout, dummyPushConstantRange, false);
+	createGraphicsPipelineLayout(descriptorSetLayout, dummyPushConstantRange, false);
 }
-void CRenderProcess::createLayout(VkDescriptorSetLayout &descriptorSetLayout, VkPushConstantRange &pushConstantRange, bool bUsePushConstant){
+void CRenderProcess::createGraphicsPipelineLayout(VkDescriptorSetLayout &descriptorSetLayout, VkPushConstantRange &pushConstantRange, bool bUsePushConstant){
 	VkResult result = VK_SUCCESS;
 
 	VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
