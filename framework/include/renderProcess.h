@@ -17,6 +17,8 @@ public:
     bool bUseDepthAttachment;
     bool bUseColorAttachmentResolve;
 
+    bool bUseColorBlendAttachment;
+
     VkAttachmentDescription colorAttachment{};
     VkAttachmentDescription depthAttachment{};
     VkAttachmentDescription colorAttachmentResolve{};
@@ -24,6 +26,8 @@ public:
     VkAttachmentReference colorAttachmentRef{};
     VkAttachmentReference depthAttachmentRef{};
     VkAttachmentReference colorAttachmentResolveRef{};
+
+    VkPipelineColorBlendAttachmentState colorBlendAttachment{};
 
     VkSubpassDescription subpass{};
     VkSubpassDependency dependency{};
@@ -40,6 +44,9 @@ public:
         VkImageLayout imageLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
     void addDepthAttachment();
     void addColorAttachmentResolve();
+
+    void addColorBlendAttachment(VkBlendOp colorBlendOp, VkBlendFactor srcColorBlendFactor, VkBlendFactor dstColorBlendFactor, 
+								 VkBlendOp alphaBlendOp, VkBlendFactor srcAlphaBlendFactor, VkBlendFactor dstAlphaBlendFactor);
 
     VkFormat findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
     VkFormat findDepthFormat();
@@ -175,21 +182,11 @@ public:
         pipelineInfo.pMultisampleState = &multisampling; 
 
         /*********7 Color Blend**********/
-        VkPipelineColorBlendAttachmentState colorBlendAttachment{};
-        colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
-
-        // if (pt == PIPELINE_COMPUTE) { //blend particle color in compute pipeline
-        // 	colorBlendAttachment.blendEnable = VK_TRUE;
-        // 	colorBlendAttachment.colorBlendOp = VK_BLEND_OP_ADD;
-        // 	colorBlendAttachment.srcColorBlendFactor = VK_BLEND_FACTOR_SRC_ALPHA;
-        // 	colorBlendAttachment.dstColorBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
-        // 	colorBlendAttachment.alphaBlendOp = VK_BLEND_OP_ADD;
-        // 	colorBlendAttachment.srcAlphaBlendFactor = VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA;
-        // 	colorBlendAttachment.dstAlphaBlendFactor = VK_BLEND_FACTOR_ZERO;
-        // }
-        // else {
+        //VkPipelineColorBlendAttachmentState colorBlendAttachment{};
+        if(!bUseColorBlendAttachment){
+            colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
             colorBlendAttachment.blendEnable = VK_FALSE;
-        //}
+        }
 
         VkPipelineColorBlendStateCreateInfo colorBlending{};
         colorBlending.sType = VK_STRUCTURE_TYPE_PIPELINE_COLOR_BLEND_STATE_CREATE_INFO;

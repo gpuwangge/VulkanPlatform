@@ -7,6 +7,8 @@ CRenderProcess::CRenderProcess(){
     bUseDepthAttachment = false;
     bUseColorAttachmentResolve = false;
 
+	bUseColorBlendAttachment = false;
+
     m_msaaSamples = VK_SAMPLE_COUNT_1_BIT;
     m_swapChainImageFormat = VK_FORMAT_UNDEFINED;
 
@@ -124,6 +126,33 @@ void CRenderProcess::addColorAttachmentResolve(){
 	colorAttachmentResolve.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 	colorAttachmentResolve.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 }
+
+
+void CRenderProcess::addColorBlendAttachment(VkBlendOp colorBlendOp, VkBlendFactor srcColorBlendFactor, VkBlendFactor dstColorBlendFactor, 
+											 VkBlendOp alphaBlendOp, VkBlendFactor srcAlphaBlendFactor, VkBlendFactor dstAlphaBlendFactor){
+	bUseColorBlendAttachment = true;
+
+	//Blend Algorithm
+	//oldColor: the color already in framebuffer
+	//newColor: the color output from fragment shader
+	//if blendEnable:
+	//  finalColor.rgb = (srcColorBlendFactor * newColor.rgb) <colorBlendOp> (dstColorBlendFactor * oldColor.rgb)
+	//  finalColor.a   = (srcAlphaBlendFactor * newColor.a  ) <alphaBlendOp> (dstAlphaBlendFactor * oldColor.a  )
+	//else:
+	//  finalColor = newColor
+
+	colorBlendAttachment.colorWriteMask = VK_COLOR_COMPONENT_R_BIT | VK_COLOR_COMPONENT_G_BIT | VK_COLOR_COMPONENT_B_BIT | VK_COLOR_COMPONENT_A_BIT;
+
+	colorBlendAttachment.blendEnable = VK_TRUE;
+
+	colorBlendAttachment.colorBlendOp = colorBlendOp;
+	colorBlendAttachment.srcColorBlendFactor = srcColorBlendFactor;
+	colorBlendAttachment.dstColorBlendFactor = dstColorBlendFactor;
+	colorBlendAttachment.alphaBlendOp = alphaBlendOp;
+	colorBlendAttachment.srcAlphaBlendFactor = srcAlphaBlendFactor;
+	colorBlendAttachment.dstAlphaBlendFactor = dstAlphaBlendFactor;
+}
+
 
 
 VkFormat CRenderProcess::findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) {
