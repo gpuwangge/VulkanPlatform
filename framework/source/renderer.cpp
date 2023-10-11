@@ -132,7 +132,6 @@ void CRenderer::preRecordGraphicsCommandBuffer(CSwapchain &swapchain){//prepareC
 }
 
 void CRenderer::postRecordGraphicsCommandBuffer(CSwapchain &swapchain) {//drawFrame
-    //recordCommandBuffer();//TODO
     //printf("currentFrame: %d, imageIndex: %d \n", currentFrame, imageIndex);
 
     VkSubmitInfo submitInfo{};
@@ -346,7 +345,7 @@ void CRenderer::EndRecordComputeCommandBuffer(){
 }
 
 void CRenderer::Dispatch(int numWorkGroupsX, int numWorkGroupsY, int numWorkGroupsZ){
-    vkCmdDispatch(commandBuffers[computeCmdId][currentFrame], numWorkGroupsX, numWorkGroupsY, numWorkGroupsZ); //TODO: set workgroup number as parameter
+    vkCmdDispatch(commandBuffers[computeCmdId][currentFrame], numWorkGroupsX, numWorkGroupsY, numWorkGroupsZ); 
 }
 
 

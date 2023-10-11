@@ -9,21 +9,22 @@ public:
 	static const int DIM_N = DIM;
 	static const int KernelRunNumber = 1;
 
-	struct StructStorageBufferInput {
+	struct StructStorageBuffer {
 		unsigned int M;
 		unsigned int K;
 		unsigned int N;
 		float MatA[DIM_M * DIM_K];
 		float MatB[DIM_K * DIM_N];
-	};
-	StructStorageBufferInput storageBufferObjectInput;
-	struct StructStorageBufferOutput {
 		float MatC[DIM_M * DIM_N];
 	};
-	StructStorageBufferOutput storageBufferObjectOutput;	
+	StructStorageBuffer storageBufferObject;
+	// struct StructStorageBufferOutput {
+	// 	float MatC[DIM_M * DIM_N];
+	// };
+	// StructStorageBufferOutput storageBufferObjectOutput;	
 
 	bool bVerbose = true;
-	bool bVerify = false;
+	bool bVerify = true;
 
 	void initialize(){
 		renderer.CreateCommandPool(surface);
@@ -32,10 +33,10 @@ public:
 		shaderManager.CreateShader("gemmCompute/comp.spv", shaderManager.COMP);
 		std::cout<<"compute shader created."<<std::endl;
 
-		descriptors[0].addStorageBuffer(sizeof(StructStorageBufferInput));
-		std::cout<<"storageBufferObjectInput added. Size = "<<DIM_M * DIM_K * 8.0f * 2 / 1024 / 1024<<"mb."<<std::endl;
-		descriptors[0].addStorageBuffer(sizeof(StructStorageBufferOutput));
-		std::cout<<"storageBufferObjectOutput added. Size = "<<DIM_M * DIM_K * 8.0f / 1024 / 1024<<"mb."<<std::endl;
+		descriptors[0].addStorageBuffer(sizeof(StructStorageBuffer));
+		//std::cout<<"storageBufferObjectInput added. Size = "<<DIM_M * DIM_K * 8.0f * 3 / 1024 / 1024<<"mb."<<std::endl;
+		//descriptors[0].addStorageBuffer(sizeof(StructStorageBufferOutput));
+		//std::cout<<"storageBufferObjectOutput added. Size = "<<DIM_M * DIM_K * 8.0f / 1024 / 1024<<"mb."<<std::endl;
 		descriptors[0].createDescriptorPool();
 		descriptors[0].createDescriptorSetLayout();
 		descriptors[0].createDescriptorSets();
@@ -47,21 +48,21 @@ public:
 
 		
 		//Initial Host data
-		storageBufferObjectInput.M = DIM_M;
-		storageBufferObjectInput.N = DIM_N;
-		storageBufferObjectInput.K = DIM_K;
-		for(int i = 0; i < DIM_M*DIM_K; i++) storageBufferObjectInput.MatA[i] = (float)rand() / (float)RAND_MAX;
-		for(int i = 0; i < DIM_K*DIM_N; i++) storageBufferObjectInput.MatB[i] = (float)rand() / (float)RAND_MAX;
+		storageBufferObject.M = DIM_M;
+		storageBufferObject.N = DIM_N;
+		storageBufferObject.K = DIM_K;
+		for(int i = 0; i < DIM_M*DIM_K; i++) storageBufferObject.MatA[i] = (float)rand() / (float)RAND_MAX;
+		for(int i = 0; i < DIM_K*DIM_N; i++) storageBufferObject.MatB[i] = (float)rand() / (float)RAND_MAX;
 		//if(bVerbose) printMatrix(storageBufferObjectInput.MatA, DIM_M, DIM_K, "A");
 		//if(bVerbose) printMatrix(storageBufferObjectInput.MatB, DIM_K, DIM_N, "B");
-		if(bVerbose) PRINT("A: ", storageBufferObjectInput.MatA, DIM_M*DIM_K);
-		if(bVerbose) PRINT("B: ", storageBufferObjectInput.MatB, DIM_K*DIM_N);
+		if(bVerbose) PRINT("A: ", storageBufferObject.MatA, DIM_M*DIM_K);
+		if(bVerbose) PRINT("B: ", storageBufferObject.MatB, DIM_K*DIM_N);
 		if(bVerbose) PRINT("");
 		std::cout<<"Initialized A and B."<<std::endl;
 
 		//Host >> Device
-		descriptors[0].updateStorageBuffer_1<StructStorageBufferInput>(renderer.currentFrame, durationTime, storageBufferObjectInput);
-		descriptors[0].updateStorageBuffer_1<StructStorageBufferInput>(renderer.currentFrame+1, durationTime, storageBufferObjectInput);
+		descriptors[0].updateStorageBuffer<StructStorageBuffer>(renderer.currentFrame, durationTime, storageBufferObject); //1 TODO: fill all inflight, update input only
+		descriptors[0].updateStorageBuffer<StructStorageBuffer>(renderer.currentFrame+1, durationTime, storageBufferObject); //1
 		
 	}
 
@@ -93,15 +94,16 @@ public:
 		PRINT("update(): Delta Time: %f, Duration Time: %f", deltaTime, durationTime);
 
 		//Device >> Host
-		if(bVerbose) memcpy(storageBufferObjectOutput.MatC, descriptors[0].storageBuffersMapped_2[renderer.currentFrame], sizeof(storageBufferObjectOutput.MatC));
+		//if(bVerbose) memcpy(storageBufferObject.MatC, descriptors[0].storageBuffersMapped[renderer.currentFrame], sizeof(storageBufferObject.MatC));//2
+		if(bVerbose) memcpy(&storageBufferObject, descriptors[0].storageBuffersMapped[renderer.currentFrame], sizeof(storageBufferObject));//2 TODO: how to copy only MatC
 		//if(bVerbose) printMatrix(storageBufferObjectOutput.MatC, DIM_M, DIM_N, "C");
-		if(bVerbose) PRINT("C: ", storageBufferObjectOutput.MatC, DIM_M*DIM_N);
+		if(bVerbose) PRINT("C: ", storageBufferObject.MatC, DIM_M*DIM_N);
 
 		if(bVerify){
 			//std::cout<<"Begin verification..."<<std::endl;
 			PRINT("Begin verification... ");
 			float cpu_result[DIM_M*DIM_N];
-			CPUSingleThreadMatMul(DIM_M, DIM_N, DIM_K, storageBufferObjectInput.MatA, storageBufferObjectInput.MatB, cpu_result, DIM_M*DIM_N);
+			CPUSingleThreadMatMul(DIM_M, DIM_N, DIM_K, storageBufferObject.MatA, storageBufferObject.MatB, cpu_result, DIM_M*DIM_N);
 			//printMatrix(cpu_result, DIM_M, DIM_N, "cpu_C");
 			PRINT("cpu_C: ", cpu_result, DIM_M*DIM_N);
 		}

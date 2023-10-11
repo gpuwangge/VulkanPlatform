@@ -11,8 +11,8 @@ typedef enum UniformBufferBits {
     UNIFORM_BUFFER_MVP_BIT = 0x00000002,
     UNIFORM_BUFFER_VP_BIT = 0x00000004,
     UNIFORM_BUFFER_SAMPLER_BIT = 0x00000008,
-    UNIFORM_BUFFER_STORAGE_1_BIT = 0x00000010,
-    UNIFORM_BUFFER_STORAGE_2_BIT = 0x00000020,
+    UNIFORM_BUFFER_STORAGE_BIT = 0x00000010,
+    //UNIFORM_BUFFER_STORAGE_2_BIT = 0x00000020,
     UNIFORM_BUFFERG_BITS_MAX_ENUM = 0x7FFFFFFF
 } UniformBufferBits;
 
@@ -60,23 +60,23 @@ public:
 
     //bool bUseStorageBuffer;
     //define two set of storage buffers, one for input, the other for output
-	std::vector<CWxjBuffer> storageBuffers_1; 
-    std::vector<void*> storageBuffersMapped_1;
-    VkDeviceSize m_storageBufferSize_1;
-    std::vector<CWxjBuffer> storageBuffers_2; 
-    std::vector<void*> storageBuffersMapped_2;
-    VkDeviceSize m_storageBufferSize_2;
-    void addStorageBuffer(VkDeviceSize storageBufferSize); //the same function to add storage 1&2
+	std::vector<CWxjBuffer> storageBuffers; 
+    std::vector<void*> storageBuffersMapped;
+    VkDeviceSize m_storageBufferSize;
+    //std::vector<CWxjBuffer> storageBuffers_2; 
+    //std::vector<void*> storageBuffersMapped_2;
+    //VkDeviceSize m_storageBufferSize_2;
+    void addStorageBuffer(VkDeviceSize storageBufferSize, VkBufferUsageFlags usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT); //the same function to add storage 1&2
     template <typename T>
-    void updateStorageBuffer_1(uint32_t currentFrame, float durationTime, T storageBufferObject){ 
+    void updateStorageBuffer(uint32_t currentFrame, float durationTime, T storageBufferObject){ 
         //if(uniformBufferUsageFlags & UNIFORM_BUFFER_STORAGE_1_BIT)
-        memcpy(storageBuffersMapped_1[currentFrame], &storageBufferObject, sizeof(storageBufferObject));
+        memcpy(storageBuffersMapped[currentFrame], &storageBufferObject, sizeof(storageBufferObject));
     }
-    template <typename T>
-    void updateStorageBuffer_2(uint32_t currentFrame, float durationTime, T storageBufferObject){ 
+    //template <typename T>
+    //void updateStorageBuffer_2(uint32_t currentFrame, float durationTime, T storageBufferObject){ 
         //if(uniformBufferUsageFlags & UNIFORM_BUFFER_STORAGE_2_BIT)
-        memcpy(storageBuffersMapped_2[currentFrame], &storageBufferObject, sizeof(storageBufferObject));
-    }
+    //    memcpy(storageBuffersMapped_2[currentFrame], &storageBufferObject, sizeof(storageBufferObject));
+    //}
 
 
 

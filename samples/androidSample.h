@@ -7,5 +7,6 @@
 //#include "simpleShadowMap.cpp"
 //#include "simpleObjLoader.cpp"
 //#include "simpleCompute.cpp"
-#include "gemmCompute.cpp"
+//#include "gemmCompute.cpp"
+#include "simpleParticles.cpp"
 #endif

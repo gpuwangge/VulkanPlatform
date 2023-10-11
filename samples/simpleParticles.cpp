@@ -4,7 +4,7 @@
 #define TEST_CLASS_NAME CSimpleParticles
 class TEST_CLASS_NAME: public CApplication{
 public:
-	static const uint32_t PARTICLE_COUNT = 8192;
+	static const uint32_t PARTICLE_COUNT = 4096;//8192 will fail on Pixel 7 Pro
 
 	struct StructCustomUniformBuffer {
 		float deltaTime = 1.0f;
@@ -15,7 +15,7 @@ public:
 			binding.descriptorCount = 1;
 			binding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 			binding.pImmutableSamplers = nullptr;
-			binding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+			binding.stageFlags = VK_SHADER_STAGE_COMPUTE_BIT;
 			return binding;
 		}
 	};
@@ -53,19 +53,19 @@ public:
 	};
 
 
-	struct StructStorageBufferInput {
-		Particle particlesIn[PARTICLE_COUNT];
+	struct StructStorageBuffer {
+		Particle particles[PARTICLE_COUNT];
 	};
-	StructStorageBufferInput storageBufferObjectInput;
-	struct StructStorageBufferOutput {
-		Particle particlesOut[PARTICLE_COUNT];
-	};
-	StructStorageBufferOutput storageBufferObjectOutput;	
+	StructStorageBuffer storageBufferObject;
+	// struct StructStorageBufferOutput {
+	// 	Particle particlesOut[PARTICLE_COUNT];
+	// };
+	//StructStorageBufferOutput storageBufferObjectOutput;	
 
 	bool bVerbose = true;
 	bool bVerify = false;
 
-	std::vector<VkClearValue> clearValues{ {  0.0f, 1.0f, 0.0f, 1.0f  } };
+	std::vector<VkClearValue> clearValues{ {  0.0f, 0.0f, 0.0f, 1.0f  } };
 
 	void initialize(){
 		renderer.CreateCommandPool(surface);
@@ -81,6 +81,17 @@ public:
 		renderProcess.createSubpass();
 		renderProcess.createDependency();
 		renderProcess.createRenderPass();
+		renderProcess.addColorBlendAttachment(
+			VK_BLEND_OP_ADD, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,
+			VK_BLEND_OP_ADD, VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO);
+		//default value
+		//renderProcess.addColorBlendAttachment(
+		// 	VK_BLEND_OP_ADD, VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO,
+		// 	VK_BLEND_OP_ADD, VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO);
+		//vulkan tutorial value
+		//renderProcess.addColorBlendAttachment(
+		//	VK_BLEND_OP_ADD, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,
+		//	VK_BLEND_OP_ADD, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_FACTOR_ZERO);
 		swapchain.CreateFramebuffers(renderProcess.renderPass);
 		shaderManager.CreateShader("simpleParticles/vert.spv", shaderManager.VERT);
 		shaderManager.CreateShader("simpleParticles/frag.spv", shaderManager.FRAG); 
@@ -99,9 +110,10 @@ public:
 
 		//For Compute
 		descriptors[1].addCustomUniformBuffer(sizeof(StructCustomUniformBuffer));
-		descriptors[1].addStorageBuffer(sizeof(StructStorageBufferInput));
+		VkBufferUsageFlags usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+		descriptors[1].addStorageBuffer(sizeof(StructStorageBuffer), usage);
 		//std::cout<<"storageBufferObjectInput added. Size = "<<DIM_M * DIM_K * 8.0f * 2 / 1024 / 1024<<"mb."<<std::endl;
-		descriptors[1].addStorageBuffer(sizeof(StructStorageBufferOutput));
+		//descriptors[1].addStorageBuffer(sizeof(StructStorageBufferOutput), usage);
 		//std::cout<<"storageBufferObjectOutput added. Size = "<<DIM_M * DIM_K * 8.0f / 1024 / 1024<<"mb."<<std::endl;
 		std::cout<<"add storage buffer done."<<std::endl;
 		descriptors[1].createDescriptorPool(); std::cout<<"createDescriptorPool done."<<std::endl;
@@ -114,7 +126,7 @@ public:
 		//for Graphics: when create graphics pipeline, use descriptor set 0 layout
 		renderProcess.createGraphicsPipelineLayout(descriptors[0].descriptorSetLayout);
 		renderProcess.createGraphicsPipeline<Particle>(
-			VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
+			VK_PRIMITIVE_TOPOLOGY_POINT_LIST, 
 			shaderManager.vertShaderModule, 
 			shaderManager.fragShaderModule);
 
@@ -147,9 +159,9 @@ public:
             float theta = rndDist(rndEngine) * 2.0f * 3.14159265358979323846f;
             float x = r * cos(theta) * windowHeight / windowWidth;
             float y = r * sin(theta);
-			storageBufferObjectInput.particlesIn[i].position = glm::vec2(x, y);
-            storageBufferObjectInput.particlesIn[i].velocity = glm::normalize(glm::vec2(x,y)) * 0.00025f;
-            storageBufferObjectInput.particlesIn[i].color = glm::vec4(rndDist(rndEngine), rndDist(rndEngine), rndDist(rndEngine), 1.0f);
+			storageBufferObject.particles[i].position = glm::vec2(x, y);
+            storageBufferObject.particles[i].velocity = glm::normalize(glm::vec2(x,y)) * 0.001f;
+            storageBufferObject.particles[i].color = glm::vec4(rndDist(rndEngine), rndDist(rndEngine), rndDist(rndEngine), 1.0f);
         }
 		//VkDeviceSize bufferSize = sizeof(Particle) * PARTICLE_COUNT;
 		/*
@@ -165,8 +177,11 @@ public:
 		*/
 
 		//Host >> Device
-		descriptors[1].updateStorageBuffer_1<StructStorageBufferInput>(renderer.currentFrame, durationTime, storageBufferObjectInput);
-		descriptors[1].updateStorageBuffer_1<StructStorageBufferInput>(renderer.currentFrame+1, durationTime, storageBufferObjectInput);
+		// Copy initial particle data to all storage buffers
+		// Alternative: create particle info in a buffer, and copybuffer to all storage buffers
+        for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) 
+			descriptors[1].updateStorageBuffer<StructStorageBuffer>(i, durationTime, storageBufferObject);
+		//descriptors[1].updateStorageBuffer<StructStorageBuffer>(renderer.currentFrame+1, durationTime, storageBufferObject);
 		
 		std::cout<<"Host >> Device done."<<std::endl;
 	}
@@ -175,7 +190,11 @@ public:
 		//static int counter = 1;
 		//if(counter==KernelRunNumber) NeedToExit = true;
 		//counter++;
-		
+		customUniformBufferObject.deltaTime = deltaTime * 1000;
+		//std::cout<<deltaTime<<std::endl;
+		//customUniformBufferObject.color = {(sin(durationTime*3) + 1.0f) / 2.0f, (cos(durationTime*3) + 1.0f) / 2.0f, 0.0f, 1.0f};
+		descriptors[1].updateCustomUniformBuffer<StructCustomUniformBuffer>(renderer.currentFrame, durationTime, customUniformBufferObject);
+
 		CApplication::update(); //update deltaTime and durationTime (and mainCamera and MVP, VP)
 		//PRINT("update(): Delta Time: %f, Duration Time: %f", deltaTime, durationTime);
 	}
@@ -187,7 +206,7 @@ public:
 		//VkBuffer vertexBuffers[] = {vertexDataBuffer.buffer };
 
 		VkDeviceSize offsets[] = { 0 };
-		vkCmdBindVertexBuffers(renderer.commandBuffers[renderer.graphicsCmdId][renderer.currentFrame], 0, 1, &descriptors[1].storageBuffers_1[renderer.currentFrame].buffer, offsets);
+		vkCmdBindVertexBuffers(renderer.commandBuffers[renderer.graphicsCmdId][renderer.currentFrame], 0, 1, &descriptors[1].storageBuffers[renderer.currentFrame].buffer, offsets);
 
 		renderer.Draw(PARTICLE_COUNT);
 		
