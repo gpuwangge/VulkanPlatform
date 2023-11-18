@@ -12,7 +12,8 @@ typedef enum UniformBufferBits {
     UNIFORM_BUFFER_VP_BIT = 0x00000004,
     UNIFORM_BUFFER_SAMPLER_BIT = 0x00000008,
     UNIFORM_BUFFER_STORAGE_BIT = 0x00000010,
-    //UNIFORM_BUFFER_STORAGE_2_BIT = 0x00000020,
+    //UNIFORM_BUFFER_STORAGE_2_BIT = ,
+    UNIFORM_IMAGE_STORAGE_BIT = 0x00000020,
     UNIFORM_BUFFERG_BITS_MAX_ENUM = 0x7FFFFFFF
 } UniformBufferBits;
 
@@ -78,6 +79,12 @@ public:
     //    memcpy(storageBuffersMapped_2[currentFrame], &storageBufferObject, sizeof(storageBufferObject));
     //}
 
+    //for storage image
+    std::vector<CWxjBuffer> storageImages; 
+    std::vector<void*> storageImagesMapped;
+    VkDeviceSize m_storageImageSize;
+    void addStorageImage(VkDeviceSize storageImageSize, VkBufferUsageFlags usage = VK_BUFFER_USAGE_STORAGE_TEXEL_BUFFER_BIT);
+    void updateStorageImage();
 
 
 
