@@ -361,7 +361,7 @@ void CDescriptor::createDescriptorSets(std::vector<CTextureImage> *textureImages
         if(uniformBufferUsageFlags & UNIFORM_BUFFER_SAMPLER_BIT){
             imageInfo.resize(textureSamplers.size());
             for(int j = 0; j < textureSamplers.size(); j++){
-                imageInfo[j].imageLayout = VK_IMAGE_LAYOUT_GENERAL;//VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+                imageInfo[j].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL; //test compute storage image:  VK_IMAGE_LAYOUT_GENERAL
                 imageInfo[j].imageView = (*textureImages)[j].textureImageBuffer.view;
                 imageInfo[j].sampler = textureSamplers[j];
                 descriptorWrites[counter].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;

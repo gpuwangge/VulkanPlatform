@@ -1,6 +1,6 @@
 #include "..\\framework\\include\\application.h"
 
-#define TEST_CLASS_NAME CSimpleCompute
+#define TEST_CLASS_NAME CSimpleComputeStorageBuffer
 class TEST_CLASS_NAME: public CApplication{
 public:
 	const int KernelRunNumber = 5;
