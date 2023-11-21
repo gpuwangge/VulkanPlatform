@@ -3,7 +3,7 @@
 CSwapchain::CSwapchain(){
     //debugger = new CDebugger("../logs/swapchain.log");
 
-    imageSize = 0;
+    imageSize = 0; //0 means the size is not set, will query for the value
     bEnableMSAA = false;
     msaaSamples = VK_SAMPLE_COUNT_1_BIT;
 }
@@ -34,7 +34,7 @@ void CSwapchain::createSwapchainImages(VkSurfaceKHR surface, int width, int heig
     VkPresentModeKHR presentMode = chooseSwapPresentMode(swapChainSupport.presentModes);
     VkExtent2D extent = chooseSwapExtent(swapChainSupport.capabilities, width, height);
 
-    imageSize = swapChainSupport.capabilities.minImageCount + 1;
+    if(imageSize == 0) imageSize = swapChainSupport.capabilities.minImageCount + 1;
     if (swapChainSupport.capabilities.maxImageCount > 0 && imageSize > swapChainSupport.capabilities.maxImageCount) {
         imageSize = swapChainSupport.capabilities.maxImageCount;
     }
@@ -48,7 +48,7 @@ void CSwapchain::createSwapchainImages(VkSurfaceKHR surface, int width, int heig
     createInfo.imageColorSpace = surfaceFormat.colorSpace;
     createInfo.imageExtent = extent;
     createInfo.imageArrayLayers = 1;
-    createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+    createInfo.imageUsage = VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT | VK_IMAGE_USAGE_STORAGE_BIT; //todo: added VK_IMAGE_USAGE_STORAGE_BIT for image storage
 
     QueueFamilyIndices indices = CContext::GetHandle().physicalDevice->get()->findQueueFamilies(surface, "Find Queue Families when creating swapchain images");
     uint32_t queueFamilyIndices[] = { indices.graphicsFamily.value(), indices.presentFamily.value() };

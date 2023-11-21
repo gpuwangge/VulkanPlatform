@@ -59,8 +59,8 @@ public:
 
     //std::vector<VkCommandBuffer> commandBuffers_compute; 
     //void CreateComputeCommandBuffers();
-    void preRecordComputeCommandBuffer(); //prepareCurrentFrame
-    void postRecordComputeCommandBuffer();
+    void preRecordComputeCommandBuffer(CSwapchain &swapchain); //prepareCurrentFrame
+    void postRecordComputeCommandBuffer(CSwapchain &swapchain);
     //void drawComputeFrame(VkPipeline &computePipeline, VkPipelineLayout &pipelineLayout_compute, std::vector<VkDescriptorSet> &descriptorSets_compute);
     //void recordComputeCommandBuffer0(VkPipeline &computePipeline, VkPipelineLayout &pipelineLayout_compute, std::vector<VkDescriptorSet> &descriptorSets_compute);
     
@@ -115,6 +115,7 @@ public:
     std::vector<VkSemaphore> imageAvailableSemaphores;
 	std::vector<VkSemaphore> renderFinishedSemaphores;
     std::vector<VkFence> inFlightFences;
+    std::vector<VkFence> imagesInFlight;/////////
 
 private:
     //CDebugger * debugger;

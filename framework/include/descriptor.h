@@ -13,7 +13,8 @@ typedef enum UniformBufferBits {
     UNIFORM_BUFFER_SAMPLER_BIT = 0x00000008,
     UNIFORM_BUFFER_STORAGE_BIT = 0x00000010,
     //UNIFORM_BUFFER_STORAGE_2_BIT = ,
-    UNIFORM_IMAGE_STORAGE_BIT = 0x00000020,
+    UNIFORM_IMAGE_STORAGE_SWAPCHAIN_BIT = 0x00000020,
+    UNIFORM_IMAGE_STORAGE_TEXTURE_BIT = 0x00000040,
     UNIFORM_BUFFERG_BITS_MAX_ENUM = 0x7FFFFFFF
 } UniformBufferBits;
 
@@ -80,11 +81,11 @@ public:
     //}
 
     //for storage image
-    std::vector<CWxjBuffer> storageImages; 
-    std::vector<void*> storageImagesMapped;
-    VkDeviceSize m_storageImageSize;
-    void addStorageImage(VkDeviceSize storageImageSize, VkBufferUsageFlags usage = VK_BUFFER_USAGE_STORAGE_TEXEL_BUFFER_BIT);
-    void updateStorageImage();
+    //std::vector<CWxjBuffer> storageImages; 
+    //std::vector<void*> storageImagesMapped;
+    //VkDeviceSize m_storageImageSize;
+    // void addStorageImage(VkDeviceSize storageImageSize, VkBufferUsageFlags usage = VK_BUFFER_USAGE_STORAGE_TEXEL_BUFFER_BIT);
+    // void updateStorageImage();
 
 
 
@@ -96,7 +97,7 @@ public:
         //VkShaderStageFlags    stageFlags = VK_SHADER_STAGE_VERTEX_BIT,
         //uint32_t              descriptorCount = 1,
         //const VkSampler*      pImmutableSamplers = nullptr);
-    void createDescriptorSets(std::vector<CTextureImage> *textureImages = NULL);
+    void createDescriptorSets(std::vector<CTextureImage> *textureImages = NULL, std::vector<VkImageView> *swapchainImageViews = NULL);
 
     void DestroyAndFree();
 

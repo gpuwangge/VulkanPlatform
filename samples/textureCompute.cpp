@@ -82,7 +82,7 @@ public:
 		//std::cout<<"storageBufferObjectInput added. Size = "<<DIM_M * DIM_K * 8.0f * 3 / 1024 / 1024<<"mb."<<std::endl;
 		//descriptors[1].addStorageBuffer(sizeof(StructStorageBufferOutput));
 		//std::cout<<"storageBufferObjectOutput added. Size = "<<DIM_M * DIM_K * 8.0f / 1024 / 1024<<"mb."<<std::endl;
-		descriptors[1].addStorageImage(textureImages[0].textureImageBuffer.size);//assume 4 channels and 4 bytes/channel
+		//descriptors[1].addStorageImage(textureImages[0].textureImageBuffer.size);//assume 4 channels and 4 bytes/channel
 		//std::cout<<"storageImage added. Size = "<<textureImages[0].texHeight * textureImages[0].texWidth * 4 * 4<<" bytes."<<std::endl;
 		//descriptors[1].addStorageImage(sizeof(StructStorageBuffer));
 		std::cout<<"addStorageImage() done."<<std::endl;
@@ -129,7 +129,7 @@ public:
 
 	void update(){
 		static int counter = 1;
-		if(counter==KernelRunNumber) NeedToExit = true;
+		//if(counter==KernelRunNumber) NeedToExit = true;
 		counter++;
 		
 		CApplication::update(); //update deltaTime and durationTime (and mainCamera and MVP, VP)
@@ -153,13 +153,13 @@ public:
 	}
 
 	void recordComputeCommandBuffer(){
-		START_COMPUTE_RECORD(1)
+		//START_COMPUTE_RECORD(1)
 
 		//std::cout<<"Record Compute command buffer. "<<std::endl;
-		renderer.Dispatch(100, 1, 1);
+		//renderer.Dispatch(100, 1, 1);
 		//std::cout<<"Dispatched."<<std::endl;
 
-		END_COMPUTE_RECORD
+		//END_COMPUTE_RECORD
 	}
 
 	void postUpdate(){
@@ -176,13 +176,13 @@ public:
 		//if(bVerbose) PRINT("C: ", storageBufferObject.MatC, DIM_M*DIM_N);
 
 
-	    std::cout<<textureImages[0].textureImageBuffer.size<<std::endl;
+	    //std::cout<<textureImages[0].textureImageBuffer.size<<std::endl;
 		//memcpy(textureImages[0].textureImageBuffer.deviceMemory, descriptors[1].storageImagesMapped[renderer.currentFrame], textureImages[0].textureImageBuffer.size);
 		
-		float data[textureImages[0].textureImageBuffer.size];
-		memcpy(data, descriptors[1].storageImagesMapped[renderer.currentFrame], textureImages[0].textureImageBuffer.size);
-		for(int i = 0; i < textureImages[0].textureImageBuffer.size; i++)
-			PRINT("%f",data[i]);
+		//float data[textureImages[0].textureImageBuffer.size];
+		//memcpy(data, descriptors[1].storageImagesMapped[renderer.currentFrame], textureImages[0].textureImageBuffer.size);
+		//for(int i = 0; i < textureImages[0].textureImageBuffer.size; i++)
+			//PRINT("%f",data[i]);
 
 
 		std::cout<<"done"<<std::endl;

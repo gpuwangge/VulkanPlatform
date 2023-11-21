@@ -71,6 +71,7 @@ void CRenderer::CreateCommandBuffers() {
     VkResult result = VK_SUCCESS;
 
     commandBuffer.resize(MAX_FRAMES_IN_FLIGHT);
+    //commandBuffer.resize(3);///!!!
 
     VkCommandBufferAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
@@ -179,6 +180,9 @@ void CRenderer::CreateSyncObjects() {
     //computeFinishedSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
     inFlightFences.resize(MAX_FRAMES_IN_FLIGHT);
     //computeInFlightFences.resize(MAX_FRAMES_IN_FLIGHT);
+    //imagesInFlight.resize(swapChainImages.size(), VK_NULL_HANDLE);
+    imagesInFlight.resize(MAX_FRAMES_IN_FLIGHT, VK_NULL_HANDLE);
+    //imagesInFlight.resize(3, VK_NULL_HANDLE);///!!!
 
     VkSemaphoreCreateInfo semaphoreInfo{};
     semaphoreInfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_CREATE_INFO;
@@ -310,25 +314,111 @@ void CRenderer::EndCommandBuffer(int commandBufferIndex){
  * 
  * ***********************/
 
-void CRenderer::preRecordComputeCommandBuffer(){ //prepareCurrentFrame
-    VkResult result = vkWaitForFences(CContext::GetHandle().GetLogicalDevice(), 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
+void CRenderer::preRecordComputeCommandBuffer(CSwapchain &swapchain){ //prepareCurrentFrame
+   
+    vkWaitForFences(CContext::GetHandle().GetLogicalDevice(), 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
 
-    //updateUniformBuffer_compute(currentFrame);
-    vkResetFences(CContext::GetHandle().GetLogicalDevice(), 1, &inFlightFences[currentFrame]);
-    vkResetCommandBuffer(commandBuffers[graphicsCmdId][currentFrame], /*VkCommandBufferResetFlagBits*/ 0);
-}
-void CRenderer::postRecordComputeCommandBuffer(){
+    //uint32_t imageIndex;
+    VkResult result = vkAcquireNextImageKHR(CContext::GetHandle().GetLogicalDevice(), swapchain.getHandle(), UINT64_MAX, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &imageIndex);
+
+    if (imagesInFlight[imageIndex] != VK_NULL_HANDLE) {
+        vkWaitForFences(CContext::GetHandle().GetLogicalDevice(), 1, &imagesInFlight[imageIndex], VK_TRUE, UINT64_MAX);
+    }
+    imagesInFlight[imageIndex] = inFlightFences[currentFrame];
+
+     printf("currentFrame: %d, imageIndex: %d \n", currentFrame, imageIndex);
+
     VkSubmitInfo submitInfo{};
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
+    VkSemaphore waitSemaphores[] = { imageAvailableSemaphores[currentFrame] };
+    VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+    submitInfo.waitSemaphoreCount = 1;
+    submitInfo.pWaitSemaphores = waitSemaphores;
+    submitInfo.pWaitDstStageMask = waitStages;
+
     submitInfo.commandBufferCount = 1;
-    submitInfo.pCommandBuffers = &commandBuffers[computeCmdId][currentFrame];
-    //submitInfo.signalSemaphoreCount = 1;
-    //submitInfo.pSignalSemaphores = &renderFinishedSemaphores[currentFrame];
+    submitInfo.pCommandBuffers = &commandBuffers[computeCmdId][currentFrame];///!!!
+
+    VkSemaphore signalSemaphores[] = { renderFinishedSemaphores[currentFrame] };
+    submitInfo.signalSemaphoreCount = 1;
+    submitInfo.pSignalSemaphores = signalSemaphores;
+
+    vkResetFences(CContext::GetHandle().GetLogicalDevice(), 1, &inFlightFences[currentFrame]);
+
+    if (vkQueueSubmit(CContext::GetHandle().GetComputeQueue(), 1, &submitInfo, inFlightFences[currentFrame]) != VK_SUCCESS) {
+        throw std::runtime_error("failed to submit draw command buffer!");
+    }
+
+    VkPresentInfoKHR presentInfo{};
+    presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+
+    presentInfo.waitSemaphoreCount = 1;
+    presentInfo.pWaitSemaphores = signalSemaphores;
+
+    VkSwapchainKHR swapChains[] = { swapchain.getHandle() };
+    presentInfo.swapchainCount = 1;
+    presentInfo.pSwapchains = swapChains;
+
+    presentInfo.pImageIndices = &imageIndex;
+
+    result = vkQueuePresentKHR(CContext::GetHandle().GetPresentQueue(), &presentInfo);
+
+
+/*
+    VkResult result = vkWaitForFences(CContext::GetHandle().GetLogicalDevice(), 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
+
+    result = vkAcquireNextImageKHR(CContext::GetHandle().GetLogicalDevice(), swapchain.getHandle(), UINT64_MAX, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &imageIndex);//
+
+    //updateUniformBuffer_compute(currentFrame);
+    vkResetFences(CContext::GetHandle().GetLogicalDevice(), 1, &inFlightFences[currentFrame]);
+    //vkResetCommandBuffer(commandBuffers[graphicsCmdId][currentFrame],  0);////////////////////
+    */
+   /*VkCommandBufferResetFlagBits*/
+}
+void CRenderer::postRecordComputeCommandBuffer(CSwapchain &swapchain){
+    /*
+    printf("currentFrame: %d, imageIndex: %d \n", currentFrame, imageIndex);
+
+    VkSubmitInfo submitInfo{};
+    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+
+    VkSemaphore waitSemaphores[] = {imageAvailableSemaphores[currentFrame] };//
+    VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };//
+    submitInfo.waitSemaphoreCount = 1;//
+    submitInfo.pWaitSemaphores = waitSemaphores;//
+    submitInfo.pWaitDstStageMask = waitStages;//
+    
+    submitInfo.commandBufferCount = 1;
+    //submitInfo.pCommandBuffers = &commandBuffers[computeCmdId][currentFrame];
+    submitInfo.pCommandBuffers = &commandBuffers[computeCmdId][imageIndex];//
+
+    VkSemaphore signalSemaphores[] = { renderFinishedSemaphores[currentFrame] };//
+    submitInfo.signalSemaphoreCount = 1;//
+    submitInfo.pSignalSemaphores = signalSemaphores;//
+    //submitInfo.signalSemaphoreCount = 1;//
+    //submitInfo.pSignalSemaphores = &renderFinishedSemaphores[currentFrame];//
 
     if (vkQueueSubmit(CContext::GetHandle().GetComputeQueue(), 1, &submitInfo, inFlightFences[currentFrame]) != VK_SUCCESS) {
         throw std::runtime_error("failed to submit compute command buffer!");
     }; 
+
+
+    VkPresentInfoKHR presentInfo{};//
+    presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;//
+
+    //VkSemaphore signalSemaphores[] = { renderFinishedSemaphores[currentFrame] };//
+    presentInfo.waitSemaphoreCount = 1;//
+    presentInfo.pWaitSemaphores = signalSemaphores;//
+
+    VkSwapchainKHR swapChains[] = { swapchain.getHandle() };//
+    presentInfo.swapchainCount = 1;//
+    presentInfo.pSwapchains = swapChains;//
+
+    presentInfo.pImageIndices = &imageIndex;//
+
+    VkResult result = vkQueuePresentKHR(CContext::GetHandle().GetPresentQueue(), &presentInfo);//
+    */
 }
 
 void CRenderer::StartRecordComputeCommandBuffer(VkPipeline &pipeline, VkPipelineLayout &pipelineLayout, std::vector<VkDescriptorSet> &descriptorSets){

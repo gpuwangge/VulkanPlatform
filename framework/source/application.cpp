@@ -126,9 +126,9 @@ void CApplication::UpdateRecordRender(){
     }
 
     if(renderProcess.bCreateComputePipeline){
-        renderer.preRecordComputeCommandBuffer();
+        renderer.preRecordComputeCommandBuffer(swapchain);
         recordComputeCommandBuffer();
-        renderer.postRecordComputeCommandBuffer();
+        renderer.postRecordComputeCommandBuffer(swapchain);
     }
 
     postUpdate();

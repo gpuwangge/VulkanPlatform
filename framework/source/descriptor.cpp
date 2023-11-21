@@ -17,7 +17,7 @@ CDescriptor::CDescriptor(){
     textureSamplers.resize(1);
     textureSamplerCount = 0;
 
-    m_storageImageSize = 0;
+    //m_storageImageSize = 0;
 
     uniformBufferUsageFlags = 0;
 }
@@ -137,22 +137,22 @@ void CDescriptor::addStorageBuffer(VkDeviceSize storageBufferSize, VkBufferUsage
     // }
 }
 
-void CDescriptor::addStorageImage(VkDeviceSize storageImageSize, VkBufferUsageFlags usage){
-        uniformBufferUsageFlags |= UNIFORM_IMAGE_STORAGE_BIT;
+// void CDescriptor::addStorageImage(VkDeviceSize storageImageSize, VkBufferUsageFlags usage){
+//         uniformBufferUsageFlags |= UNIFORM_IMAGE_STORAGE_BIT;
 
-        storageImages.resize(MAX_FRAMES_IN_FLIGHT);
-        storageImagesMapped.resize(MAX_FRAMES_IN_FLIGHT);
+//         storageImages.resize(MAX_FRAMES_IN_FLIGHT);
+//         storageImagesMapped.resize(MAX_FRAMES_IN_FLIGHT);
 
-        m_storageImageSize = storageImageSize;
+//         m_storageImageSize = storageImageSize;
 
-        for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-            storageImages[i].init(storageImageSize, usage);
-            vkMapMemory(CContext::GetHandle().GetLogicalDevice(), storageImages[i].deviceMemory, 0, storageImageSize, 0, &storageImagesMapped[i]);
-        }
-}
-void CDescriptor::updateStorageImage(){
+//         for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+//             storageImages[i].init(storageImageSize, usage);
+//             vkMapMemory(CContext::GetHandle().GetLogicalDevice(), storageImages[i].deviceMemory, 0, storageImageSize, 0, &storageImagesMapped[i]);
+//         }
+// }
+// void CDescriptor::updateStorageImage(){
 
-}
+// }
 
 
 
@@ -190,9 +190,9 @@ void CDescriptor::createDescriptorPool(){//VkDescriptorType type
 	    poolSizes[counter].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT); 
         counter++;
     }
-    if(uniformBufferUsageFlags & UNIFORM_IMAGE_STORAGE_BIT){
+    if(uniformBufferUsageFlags & UNIFORM_IMAGE_STORAGE_SWAPCHAIN_BIT){
         poolSizes[counter].type = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
-	    poolSizes[counter].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT); 
+	    poolSizes[counter].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT); ///!!!
         counter++;
     }
 
@@ -200,7 +200,7 @@ void CDescriptor::createDescriptorPool(){//VkDescriptorType type
 	poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
 	poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
 	poolInfo.pPoolSizes = poolSizes.data();
-	poolInfo.maxSets = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
+	poolInfo.maxSets = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);///!!!
 
 	VkResult result = vkCreateDescriptorPool(CContext::GetHandle().GetLogicalDevice(), &poolInfo, nullptr, &descriptorPool);
 	if (result != VK_SUCCESS) throw std::runtime_error("failed to create descriptor pool!");
@@ -267,7 +267,7 @@ void CDescriptor::createDescriptorSetLayout(VkDescriptorSetLayoutBinding *custom
         bindings[counter].stageFlags = VK_SHADER_STAGE_COMPUTE_BIT;
         counter++;
     }
-    if(uniformBufferUsageFlags & UNIFORM_IMAGE_STORAGE_BIT){
+    if(uniformBufferUsageFlags & UNIFORM_IMAGE_STORAGE_SWAPCHAIN_BIT){
         bindings[counter].binding = counter;
         bindings[counter].descriptorCount = 1;
         bindings[counter].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
@@ -286,28 +286,29 @@ void CDescriptor::createDescriptorSetLayout(VkDescriptorSetLayoutBinding *custom
 	//REPORT("vkCreateDescriptorSetLayout");
 }
 
-void CDescriptor::createDescriptorSets(std::vector<CTextureImage> *textureImages){
+void CDescriptor::createDescriptorSets(std::vector<CTextureImage> *textureImages, std::vector<VkImageView> *swapchainImageViews){
     //Descriptor Step 3/3
     //HERE_I_AM("wxjCreateDescriptorSets");
 
     int descriptorSize = getDescriptorSize();
+    std::cout<<"descriptorSize: "<<descriptorSize<<std::endl;
 
     VkResult result = VK_SUCCESS;
 
-    std::vector<VkDescriptorSetLayout> layouts(MAX_FRAMES_IN_FLIGHT, descriptorSetLayout);
+    std::vector<VkDescriptorSetLayout> layouts(MAX_FRAMES_IN_FLIGHT, descriptorSetLayout);///!!!
     VkDescriptorSetAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
     allocInfo.descriptorPool = descriptorPool;
-    allocInfo.descriptorSetCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
+    allocInfo.descriptorSetCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);///!!!
     allocInfo.pSetLayouts = layouts.data();
 
-    descriptorSets.resize(MAX_FRAMES_IN_FLIGHT);
+    descriptorSets.resize(MAX_FRAMES_IN_FLIGHT);///!!!
     //Step 3
     result = vkAllocateDescriptorSets(CContext::GetHandle().GetLogicalDevice(), &allocInfo, descriptorSets.data());
     if (result != VK_SUCCESS) throw std::runtime_error("failed to allocate descriptor sets!");
     //REPORT("vkAllocateDescriptorSets");
 
-    for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+    for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {///!!!
         std::vector<VkWriteDescriptorSet> descriptorWrites;
         //VkDescriptorBufferInfo storageBufferInfoLastFrame{}; //for compute shader
         //VkDescriptorBufferInfo storageBufferInfoCurrentFrame{}; //for compute shader
@@ -405,7 +406,7 @@ void CDescriptor::createDescriptorSets(std::vector<CTextureImage> *textureImages
             descriptorWrites[counter].pBufferInfo = &storageBufferInfo_2;
             counter++;
         }
-        if(uniformBufferUsageFlags & UNIFORM_IMAGE_STORAGE_BIT){
+        if(uniformBufferUsageFlags & UNIFORM_IMAGE_STORAGE_SWAPCHAIN_BIT){
             //VkDescriptorBufferInfo storageBufferInfo_1{};
             //storageBufferInfo_1.buffer = storageBuffers[(i - 1) % MAX_FRAMES_IN_FLIGHT].buffer; //storage buffer of last frame in flight as compute shader input
             //storageBufferInfo_1.offset = 0;
@@ -416,7 +417,7 @@ void CDescriptor::createDescriptorSets(std::vector<CTextureImage> *textureImages
                 //VK_IMAGE_LAYOUT_GENERAL
             };
             storageImageInfo.imageLayout = VK_IMAGE_LAYOUT_GENERAL;
-            storageImageInfo.imageView = (*textureImages)[0].textureImageBuffer.view;
+            storageImageInfo.imageView = (*swapchainImageViews)[i];
             storageImageInfo.sampler = VK_NULL_HANDLE; //textureSamplers[0];
 
             descriptorWrites[counter].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
@@ -516,7 +517,7 @@ int CDescriptor::getDescriptorSize(){
 	descriptorSize += uniformBufferUsageFlags & UNIFORM_BUFFER_SAMPLER_BIT ? textureSamplers.size():0;
     descriptorSize += uniformBufferUsageFlags & UNIFORM_BUFFER_STORAGE_BIT ? 2:0;
     //descriptorSize += uniformBufferUsageFlags & UNIFORM_BUFFER_STORAGE_2_BIT ? 1:0;
-    descriptorSize += uniformBufferUsageFlags & UNIFORM_IMAGE_STORAGE_BIT ? 1:0;
+    descriptorSize += uniformBufferUsageFlags & UNIFORM_IMAGE_STORAGE_SWAPCHAIN_BIT ? 1:0;
 	return descriptorSize;
 }
 
