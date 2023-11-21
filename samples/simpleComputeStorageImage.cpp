@@ -63,7 +63,7 @@ public:
 	}
 
 	void recordComputeCommandBuffer(){
-		std::cout<<"Record Compute command buffer. "<<std::endl;
+		//std::cout<<"Record Compute command buffer. "<<std::endl;
 
 		
 

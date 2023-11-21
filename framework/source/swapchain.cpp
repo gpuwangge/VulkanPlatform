@@ -15,6 +15,12 @@ CSwapchain::~CSwapchain(){
 //     m_physical_device = physical_device;
 // }
 
+bool CSwapchain::CheckFormatSupport(VkPhysicalDevice gpu, VkFormat format, VkFormatFeatureFlags requestedSupport) {///!!!!
+    VkFormatProperties vkFormatProperties;
+    vkGetPhysicalDeviceFormatProperties(gpu, format, &vkFormatProperties);
+    return (vkFormatProperties.optimalTilingFeatures & requestedSupport) == requestedSupport;
+}
+
 void CSwapchain::createSwapchainImages(VkSurfaceKHR surface, int width, int height){
     //vulkan draws on the vkImage(s)
     //SwapChain will set vkImage to present on the screen
@@ -31,6 +37,17 @@ void CSwapchain::createSwapchainImages(VkSurfaceKHR surface, int width, int heig
     displaySwapchainInfo(swapChainSupport);
 
     VkSurfaceFormatKHR surfaceFormat = chooseSwapSurfaceFormat(swapChainSupport.formats);
+    for (auto& format : swapChainSupport.formats) {///!!!!
+        if (CheckFormatSupport(CContext::GetHandle().GetPhysicalDevice(), format.format,///!!!!
+                VK_FORMAT_FEATURE_STORAGE_IMAGE_BIT |///!!!!
+                VK_FORMAT_FEATURE_COLOR_ATTACHMENT_BIT)) {///!!!!
+                surfaceFormat.format = format.format;///!!!!
+                break;///!!!!
+            }
+        }
+
+
+
     VkPresentModeKHR presentMode = chooseSwapPresentMode(swapChainSupport.presentModes);
     VkExtent2D extent = chooseSwapExtent(swapChainSupport.capabilities, width, height);
 

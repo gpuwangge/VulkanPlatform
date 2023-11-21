@@ -60,6 +60,8 @@ public:
 
     void displaySwapchainInfo(SwapChainSupportDetails swapChainSupport);
     //CDebugger * debugger;
+
+    bool CheckFormatSupport(VkPhysicalDevice gpu, VkFormat format, VkFormatFeatureFlags requestedSupport);
 };
 
 #endif

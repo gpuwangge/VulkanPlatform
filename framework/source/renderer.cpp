@@ -326,7 +326,7 @@ void CRenderer::preRecordComputeCommandBuffer(CSwapchain &swapchain){ //prepareC
     }
     imagesInFlight[imageIndex] = inFlightFences[currentFrame];
 
-     printf("currentFrame: %d, imageIndex: %d \n", currentFrame, imageIndex);
+    //printf("currentFrame: %d, imageIndex: %d \n", currentFrame, imageIndex);
 
     VkSubmitInfo submitInfo{};
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;

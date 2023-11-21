@@ -30,6 +30,7 @@ void main(){
         //blurColor += (texelFetch(in_sampler, ivec2(fetch), 0) * _102[i+5]);
 		blurColor += (imageLoad(textureImage, ivec2(fetch)).rgba * _102[i+5]); 
     }
+	//blurColor = vec4(1,0,0,1);
 	imageStore(myImage, ivec2(gl_GlobalInvocationID.xy), blurColor);
 }
 
