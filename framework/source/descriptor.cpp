@@ -195,6 +195,11 @@ void CDescriptor::createDescriptorPool(){//VkDescriptorType type
 	    poolSizes[counter].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT); ///!!!
         counter++;
     }
+    if(uniformBufferUsageFlags & UNIFORM_IMAGE_STORAGE_SWAPCHAIN_BIT){
+        poolSizes[counter].type = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
+	    poolSizes[counter].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT); ///!!!
+        counter++;
+    }
 
 	VkDescriptorPoolCreateInfo poolInfo{};
 	poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
@@ -268,6 +273,14 @@ void CDescriptor::createDescriptorSetLayout(VkDescriptorSetLayoutBinding *custom
         counter++;
     }
     if(uniformBufferUsageFlags & UNIFORM_IMAGE_STORAGE_SWAPCHAIN_BIT){
+        bindings[counter].binding = counter;
+        bindings[counter].descriptorCount = 1;
+        bindings[counter].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
+        bindings[counter].pImmutableSamplers = nullptr;
+        bindings[counter].stageFlags = VK_SHADER_STAGE_COMPUTE_BIT;
+        counter++;
+    }
+    if(uniformBufferUsageFlags & UNIFORM_IMAGE_STORAGE_TEXTURE_BIT){
         bindings[counter].binding = counter;
         bindings[counter].descriptorCount = 1;
         bindings[counter].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
@@ -407,15 +420,7 @@ void CDescriptor::createDescriptorSets(std::vector<CTextureImage> *textureImages
             counter++;
         }
         if(uniformBufferUsageFlags & UNIFORM_IMAGE_STORAGE_SWAPCHAIN_BIT){
-            //VkDescriptorBufferInfo storageBufferInfo_1{};
-            //storageBufferInfo_1.buffer = storageBuffers[(i - 1) % MAX_FRAMES_IN_FLIGHT].buffer; //storage buffer of last frame in flight as compute shader input
-            //storageBufferInfo_1.offset = 0;
-            //storageBufferInfo_1.range = m_storageBufferSize;//sizeof(uint32_t) * 4;//sizeof(Particle) * PARTICLE_COUNT;
-            VkDescriptorImageInfo storageImageInfo{
-               // VK_NULL_HANDLE, // sampler
-                //(*textureImages)[0].textureImageBuffer.view,
-                //VK_IMAGE_LAYOUT_GENERAL
-            };
+            VkDescriptorImageInfo storageImageInfo{};
             storageImageInfo.imageLayout = VK_IMAGE_LAYOUT_GENERAL;
             storageImageInfo.imageView = (*swapchainImageViews)[i];
             storageImageInfo.sampler = VK_NULL_HANDLE; //textureSamplers[0];
@@ -429,7 +434,21 @@ void CDescriptor::createDescriptorSets(std::vector<CTextureImage> *textureImages
             descriptorWrites[counter].pImageInfo = &storageImageInfo;
             counter++;
         }
+        if(uniformBufferUsageFlags & UNIFORM_IMAGE_STORAGE_TEXTURE_BIT){
+            VkDescriptorImageInfo storageImageInfo{};
+            storageImageInfo.imageLayout = VK_IMAGE_LAYOUT_GENERAL;
+            storageImageInfo.imageView = (*textureImages)[0].textureImageBuffer.view;
+            storageImageInfo.sampler = VK_NULL_HANDLE; //textureSamplers[0];
 
+            descriptorWrites[counter].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+            descriptorWrites[counter].dstSet = descriptorSets[i];
+            descriptorWrites[counter].dstBinding = counter;
+            descriptorWrites[counter].dstArrayElement = 0;
+            descriptorWrites[counter].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
+            descriptorWrites[counter].descriptorCount = 1;
+            descriptorWrites[counter].pImageInfo = &storageImageInfo;
+            counter++;
+        }
         /*switch (pt) {
         // case PIPELINE_COMPUTE:
         //     descriptorWrites.resize(3);
@@ -518,6 +537,7 @@ int CDescriptor::getDescriptorSize(){
     descriptorSize += uniformBufferUsageFlags & UNIFORM_BUFFER_STORAGE_BIT ? 2:0;
     //descriptorSize += uniformBufferUsageFlags & UNIFORM_BUFFER_STORAGE_2_BIT ? 1:0;
     descriptorSize += uniformBufferUsageFlags & UNIFORM_IMAGE_STORAGE_SWAPCHAIN_BIT ? 1:0;
+    descriptorSize += uniformBufferUsageFlags & UNIFORM_IMAGE_STORAGE_TEXTURE_BIT ? 1:0;
 	return descriptorSize;
 }
 

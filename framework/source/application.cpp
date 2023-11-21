@@ -120,9 +120,9 @@ void CApplication::UpdateRecordRender(){
     update();
 
     if(renderProcess.bCreateGraphicsPipeline){
-        renderer.preRecordGraphicsCommandBuffer(swapchain);
-        recordGraphicsCommandBuffer();
-        renderer.postRecordGraphicsCommandBuffer(swapchain);
+        //renderer.preRecordGraphicsCommandBuffer(swapchain);
+        //recordGraphicsCommandBuffer();
+        //renderer.postRecordGraphicsCommandBuffer(swapchain);
     }
 
     if(renderProcess.bCreateComputePipeline){

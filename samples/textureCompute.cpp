@@ -35,6 +35,10 @@ public:
 	std::vector<uint32_t> indices3D = { 0, 1, 2, 2, 3, 0};
 	std::vector<VkClearValue> clearValues{ {  0.0f, 1.0f, 0.0f, 1.0f  } };
 
+	CTextureCompute(){
+		swapchain.imageSize = MAX_FRAMES_IN_FLIGHT;
+	}
+
 	void initialize(){
 		//For Grapics
 		renderer.CreateVertexBuffer<Vertex3D>(vertices3D);
@@ -45,7 +49,7 @@ public:
 		//For Graphics
 		renderer.CreateGraphicsCommandBuffer(); 
 		VkImageUsageFlags usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT;
-		textureImages[0].CreateTextureImage("texture_eye.png", usage, renderer.commandPool);
+		textureImages[0].CreateTextureImage("texture.jpg", usage, renderer.commandPool);
 		textureImages[0].CreateImageView(VK_IMAGE_ASPECT_COLOR_BIT);
 
 		//For Compute
@@ -85,12 +89,15 @@ public:
 		//descriptors[1].addStorageImage(textureImages[0].textureImageBuffer.size);//assume 4 channels and 4 bytes/channel
 		//std::cout<<"storageImage added. Size = "<<textureImages[0].texHeight * textureImages[0].texWidth * 4 * 4<<" bytes."<<std::endl;
 		//descriptors[1].addStorageImage(sizeof(StructStorageBuffer));
-		std::cout<<"addStorageImage() done."<<std::endl;
+		//std::cout<<"addStorageImage() done."<<std::endl;
+		descriptors[1].uniformBufferUsageFlags |= UNIFORM_IMAGE_STORAGE_SWAPCHAIN_BIT;
+		descriptors[1].uniformBufferUsageFlags |= UNIFORM_IMAGE_STORAGE_TEXTURE_BIT;
 		descriptors[1].createDescriptorPool();
 		std::cout<<"createDescriptorPool() done."<<std::endl;
 		descriptors[1].createDescriptorSetLayout();
 		std::cout<<"createDescriptorSetLayout() done."<<std::endl;
-		descriptors[1].createDescriptorSets(&textureImages);
+		//descriptors[1].createDescriptorSets(&textureImages);
+		descriptors[1].createDescriptorSets(&textureImages, &(swapchain.views));
 		std::cout<<"compute descriptor created."<<std::endl;
 
 		//for Graphics: when create graphics pipeline, use descriptor set 0 layout
@@ -107,6 +114,8 @@ public:
 		renderProcess.createComputePipeline(shaderManager.compShaderModule);
 
 		CApplication::initialize();
+
+		createComputeCommandBuffers(renderer.commandBuffers[renderer.computeCmdId], swapchain.images);
 
 		//Initial Host data
 		// storageBufferObject.M = DIM_M;
@@ -145,9 +154,9 @@ public:
 
 		//renderer.Draw(3);
 
-		renderer.BindVertexBuffer();
-		renderer.BindIndexBuffer();
-		renderer.DrawIndexed(indices3D);
+		//renderer.BindVertexBuffer();
+		//renderer.BindIndexBuffer();
+		//renderer.DrawIndexed(indices3D);
 		
 		END_GRAPHICS_RECORD
 	}
@@ -185,7 +194,7 @@ public:
 			//PRINT("%f",data[i]);
 
 
-		std::cout<<"done"<<std::endl;
+		//std::cout<<"done"<<std::endl;
 
 		// if(bVerify){
 		// 	//std::cout<<"Begin verification..."<<std::endl;
@@ -199,7 +208,64 @@ public:
 		//if(bVerbose) PRINT("");
 	}
 
+	void recordImageBarrier(VkCommandBuffer buffer, VkImage image, VkImageLayout oldLayout, VkImageLayout newLayout,
+        VkAccessFlags scrAccess, VkAccessFlags dstAccess, VkPipelineStageFlags srcBind, VkPipelineStageFlags dstBind) {
+        VkImageMemoryBarrier barrier{};
+        barrier.image = image;
+        barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+        barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+        barrier.oldLayout = oldLayout;
+        barrier.newLayout = newLayout;
+        barrier.srcAccessMask = scrAccess;
+        barrier.dstAccessMask = dstAccess;
+        barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+        VkImageSubresourceRange sub{};
+        sub.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+        sub.baseArrayLayer = 0;
+        sub.baseMipLevel = 0;
+        sub.layerCount = VK_REMAINING_MIP_LEVELS;
+        sub.levelCount = VK_REMAINING_MIP_LEVELS;
+        barrier.subresourceRange = sub;
 
+        vkCmdPipelineBarrier(buffer, srcBind, dstBind,
+            0, 0, nullptr, 0, nullptr, 1, &barrier);
+    }
+
+	void createComputeCommandBuffers(std::vector<VkCommandBuffer> &commandBuffers, std::vector<VkImage> &swapChainImages) {
+        for (size_t i = 0; i < commandBuffers.size(); i++) {
+			renderer.currentFrame = i;
+			std::cout<<"commandbuffer i: "<<i<<std::endl;
+            VkCommandBufferBeginInfo beginInfo{};
+            beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
+
+            //if (vkBeginCommandBuffer(commandBuffers[i], &beginInfo) != VK_SUCCESS) {
+            //    throw std::runtime_error("failed to begin recording command buffer!");
+            //}
+			renderer.StartRecordComputeCommandBuffer(renderProcess.computePipeline, renderProcess.computePipelineLayout, descriptors[1].descriptorSets);
+
+            recordImageBarrier(commandBuffers[i], swapChainImages[i],
+                VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_GENERAL,
+                VK_ACCESS_MEMORY_WRITE_BIT,VK_ACCESS_SHADER_WRITE_BIT,
+                VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT);
+            
+			
+            //vkCmdBindPipeline(commandBuffers[i], VK_PIPELINE_BIND_POINT_COMPUTE, pipeline);
+            //vkCmdBindDescriptorSets(commandBuffers[i], VK_PIPELINE_BIND_POINT_COMPUTE, pipelineLayout, 0, 1, &descriptorSets[i], 0, nullptr);
+            //vkCmdDispatch(commandBuffers[i], 200, 300, 1);
+			renderer.Dispatch(300, 600, 1); 
+         
+            recordImageBarrier(commandBuffers[i], swapChainImages[i],
+                VK_IMAGE_LAYOUT_GENERAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
+                VK_ACCESS_SHADER_WRITE_BIT, VK_ACCESS_MEMORY_READ_BIT,
+                VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT);
+
+            //if (vkEndCommandBuffer(commandBuffers[i]) != VK_SUCCESS) {
+            //    throw std::runtime_error("failed to record command buffer!");
+            //}
+			renderer.EndRecordComputeCommandBuffer();
+        }
+		renderer.currentFrame = 0;
+    }
 
 };
 
