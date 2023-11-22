@@ -37,6 +37,7 @@ public:
 
 	CTextureCompute(){
 		swapchain.imageSize = MAX_FRAMES_IN_FLIGHT;
+		swapchain.bComputeSwapChainImage = true;
 	}
 
 	void initialize(){
@@ -49,6 +50,7 @@ public:
 		//For Graphics
 		renderer.CreateGraphicsCommandBuffer(); 
 		VkImageUsageFlags usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT;
+		textureImages[0].imageFormat = swapchain.swapChainImageFormat;
 		textureImages[0].CreateTextureImage("texture.jpg", usage, renderer.commandPool);
 		textureImages[0].CreateImageView(VK_IMAGE_ASPECT_COLOR_BIT);
 
@@ -82,16 +84,8 @@ public:
 		std::cout<<"graphcis descriptor created."<<std::endl;
 
 		//For Compute
-		//descriptors[1].addStorageBuffer(sizeof(StructStorageBuffer));
-		//std::cout<<"storageBufferObjectInput added. Size = "<<DIM_M * DIM_K * 8.0f * 3 / 1024 / 1024<<"mb."<<std::endl;
-		//descriptors[1].addStorageBuffer(sizeof(StructStorageBufferOutput));
-		//std::cout<<"storageBufferObjectOutput added. Size = "<<DIM_M * DIM_K * 8.0f / 1024 / 1024<<"mb."<<std::endl;
-		//descriptors[1].addStorageImage(textureImages[0].textureImageBuffer.size);//assume 4 channels and 4 bytes/channel
-		//std::cout<<"storageImage added. Size = "<<textureImages[0].texHeight * textureImages[0].texWidth * 4 * 4<<" bytes."<<std::endl;
-		//descriptors[1].addStorageImage(sizeof(StructStorageBuffer));
-		//std::cout<<"addStorageImage() done."<<std::endl;
-		descriptors[1].uniformBufferUsageFlags |= UNIFORM_IMAGE_STORAGE_SWAPCHAIN_BIT;
-		descriptors[1].uniformBufferUsageFlags |= UNIFORM_IMAGE_STORAGE_TEXTURE_BIT;
+		descriptors[1].addStorageImage(UNIFORM_IMAGE_STORAGE_TEXTURE_BIT); //as input
+		descriptors[1].addStorageImage(UNIFORM_IMAGE_STORAGE_SWAPCHAIN_BIT); //as output
 		descriptors[1].createDescriptorPool();
 		std::cout<<"createDescriptorPool() done."<<std::endl;
 		descriptors[1].createDescriptorSetLayout();

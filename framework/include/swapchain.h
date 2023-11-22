@@ -6,6 +6,7 @@
 #include "context.h"
 #include "imageBuffer.h"
 //#include "application.h"
+#include "logManager.h"
 
 class CSwapchain final{
     VkSwapchainKHR handle{VK_NULL_HANDLE};
@@ -20,7 +21,7 @@ public:
     //CPhysicalDevice *m_physical_device;
     //void GetPhysicalDevice(CPhysicalDevice *physical_device);
 
-    VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
+    //VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
     VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
     VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities, int width, int height);
     void createSwapchainImages(VkSurfaceKHR surface, int width, int height);
@@ -39,6 +40,8 @@ public:
     std::vector<VkImageView> views;//08
     uint32_t imageSize;
 
+    bool bComputeSwapChainImage = false; //added VK_IMAGE_USAGE_STORAGE_BIT for image storage
+
     //Resource for Depth Test
     bool bEnableDepthTest = false;
 	CWxjImageBuffer depthImageBuffer;
@@ -53,7 +56,7 @@ public:
 	VkFormat swapChainImageFormat;//08
 	VkExtent2D swapChainExtent;//08
 	
-
+    CLogManager logManager;
 
     std::vector<VkFramebuffer> swapChainFramebuffers;
     void CreateFramebuffers(VkRenderPass &renderPass);
@@ -61,7 +64,7 @@ public:
     void displaySwapchainInfo(SwapChainSupportDetails swapChainSupport);
     //CDebugger * debugger;
 
-    bool CheckFormatSupport(VkPhysicalDevice gpu, VkFormat format, VkFormatFeatureFlags requestedSupport);
+    //bool CheckFormatSupport(VkPhysicalDevice gpu, VkFormat format, VkFormatFeatureFlags requestedSupport);
 };
 
 #endif

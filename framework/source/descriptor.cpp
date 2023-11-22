@@ -107,20 +107,20 @@ void CDescriptor::addStorageBuffer(VkDeviceSize storageBufferSize, VkBufferUsage
     //bUseStorageBuffer = true;
 
     //if(!(uniformBufferUsageFlags & UNIFORM_BUFFER_STORAGE_1_BIT)){
-        uniformBufferUsageFlags |= UNIFORM_BUFFER_STORAGE_BIT;
+    uniformBufferUsageFlags |= UNIFORM_BUFFER_STORAGE_BIT;
 
-        storageBuffers.resize(MAX_FRAMES_IN_FLIGHT);
-        storageBuffersMapped.resize(MAX_FRAMES_IN_FLIGHT);
+    storageBuffers.resize(MAX_FRAMES_IN_FLIGHT);
+    storageBuffersMapped.resize(MAX_FRAMES_IN_FLIGHT);
 
-        m_storageBufferSize = storageBufferSize;
+    m_storageBufferSize = storageBufferSize;
 
-        for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-            //VkResult result = InitDataBufferHelper(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, &shaderStorageBuffers_compute[i]);// Create a staging buffer used to upload data to the gpu
-            //FillDataBufferHelper(shaderStorageBuffers_compute[i], (void *)(particles.data()));// Copy initial particle data to all storage buffers
-            //shaderStorageBuffers_compute[i].init(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
-            storageBuffers[i].init(storageBufferSize, usage);
-            vkMapMemory(CContext::GetHandle().GetLogicalDevice(), storageBuffers[i].deviceMemory, 0, storageBufferSize, 0, &storageBuffersMapped[i]);
-        }
+    for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+        //VkResult result = InitDataBufferHelper(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT, &shaderStorageBuffers_compute[i]);// Create a staging buffer used to upload data to the gpu
+        //FillDataBufferHelper(shaderStorageBuffers_compute[i], (void *)(particles.data()));// Copy initial particle data to all storage buffers
+        //shaderStorageBuffers_compute[i].init(bufferSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
+        storageBuffers[i].init(storageBufferSize, usage);
+        vkMapMemory(CContext::GetHandle().GetLogicalDevice(), storageBuffers[i].deviceMemory, 0, storageBufferSize, 0, &storageBuffersMapped[i]);
+    }
     //}
     //else if(!(uniformBufferUsageFlags & UNIFORM_BUFFER_STORAGE_2_BIT)){
     //     uniformBufferUsageFlags |= UNIFORM_BUFFER_STORAGE_2_BIT;
@@ -137,22 +137,12 @@ void CDescriptor::addStorageBuffer(VkDeviceSize storageBufferSize, VkBufferUsage
     // }
 }
 
-// void CDescriptor::addStorageImage(VkDeviceSize storageImageSize, VkBufferUsageFlags usage){
-//         uniformBufferUsageFlags |= UNIFORM_IMAGE_STORAGE_BIT;
+void CDescriptor::addStorageImage(VkBufferUsageFlags usage){
+    uniformBufferUsageFlags |= usage;
+}
 
-//         storageImages.resize(MAX_FRAMES_IN_FLIGHT);
-//         storageImagesMapped.resize(MAX_FRAMES_IN_FLIGHT);
-
-//         m_storageImageSize = storageImageSize;
-
-//         for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-//             storageImages[i].init(storageImageSize, usage);
-//             vkMapMemory(CContext::GetHandle().GetLogicalDevice(), storageImages[i].deviceMemory, 0, storageImageSize, 0, &storageImagesMapped[i]);
-//         }
-// }
 // void CDescriptor::updateStorageImage(){
-
-// }
+//}
 
 
 
@@ -184,13 +174,13 @@ void CDescriptor::createDescriptorPool(){//VkDescriptorType type
         poolSizes[counter].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
 	    poolSizes[counter].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT); 
         counter++;
-    //}
-    //if(uniformBufferUsageFlags & UNIFORM_BUFFER_STORAGE_2_BIT){
+        //}
+        //if(uniformBufferUsageFlags & UNIFORM_BUFFER_STORAGE_2_BIT){
         poolSizes[counter].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
 	    poolSizes[counter].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT); 
         counter++;
     }
-    if(uniformBufferUsageFlags & UNIFORM_IMAGE_STORAGE_SWAPCHAIN_BIT){
+    if(uniformBufferUsageFlags & UNIFORM_IMAGE_STORAGE_TEXTURE_BIT){
         poolSizes[counter].type = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
 	    poolSizes[counter].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT); ///!!!
         counter++;
@@ -263,8 +253,8 @@ void CDescriptor::createDescriptorSetLayout(VkDescriptorSetLayoutBinding *custom
         bindings[counter].pImmutableSamplers = nullptr;
         bindings[counter].stageFlags = VK_SHADER_STAGE_COMPUTE_BIT;
         counter++;
-    //}
-    //if(uniformBufferUsageFlags & UNIFORM_BUFFER_STORAGE_2_BIT){
+        //}
+        //if(uniformBufferUsageFlags & UNIFORM_BUFFER_STORAGE_2_BIT){
         bindings[counter].binding = counter;
         bindings[counter].descriptorCount = 1;
         bindings[counter].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
@@ -272,7 +262,7 @@ void CDescriptor::createDescriptorSetLayout(VkDescriptorSetLayoutBinding *custom
         bindings[counter].stageFlags = VK_SHADER_STAGE_COMPUTE_BIT;
         counter++;
     }
-    if(uniformBufferUsageFlags & UNIFORM_IMAGE_STORAGE_SWAPCHAIN_BIT){
+    if(uniformBufferUsageFlags & UNIFORM_IMAGE_STORAGE_TEXTURE_BIT){
         bindings[counter].binding = counter;
         bindings[counter].descriptorCount = 1;
         bindings[counter].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
@@ -280,7 +270,7 @@ void CDescriptor::createDescriptorSetLayout(VkDescriptorSetLayoutBinding *custom
         bindings[counter].stageFlags = VK_SHADER_STAGE_COMPUTE_BIT;
         counter++;
     }
-    if(uniformBufferUsageFlags & UNIFORM_IMAGE_STORAGE_TEXTURE_BIT){
+    if(uniformBufferUsageFlags & UNIFORM_IMAGE_STORAGE_SWAPCHAIN_BIT){
         bindings[counter].binding = counter;
         bindings[counter].descriptorCount = 1;
         bindings[counter].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
@@ -403,9 +393,9 @@ void CDescriptor::createDescriptorSets(std::vector<CTextureImage> *textureImages
             descriptorWrites[counter].descriptorCount = 1;
             descriptorWrites[counter].pBufferInfo = &storageBufferInfo_1;
             counter++;
-        //}
+            //}
             VkDescriptorBufferInfo storageBufferInfo_2{};
-        //if(uniformBufferUsageFlags & UNIFORM_BUFFER_STORAGE_2_BIT){ //for storage buffer 2
+            //if(uniformBufferUsageFlags & UNIFORM_BUFFER_STORAGE_2_BIT){ //for storage buffer 2
             storageBufferInfo_2.buffer = storageBuffers[i].buffer; //storage buffer of the current frame in flight as compute shader output
             storageBufferInfo_2.offset = 0;
             storageBufferInfo_2.range = m_storageBufferSize;
@@ -417,21 +407,6 @@ void CDescriptor::createDescriptorSets(std::vector<CTextureImage> *textureImages
             descriptorWrites[counter].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
             descriptorWrites[counter].descriptorCount = 1;
             descriptorWrites[counter].pBufferInfo = &storageBufferInfo_2;
-            counter++;
-        }
-        if(uniformBufferUsageFlags & UNIFORM_IMAGE_STORAGE_SWAPCHAIN_BIT){
-            VkDescriptorImageInfo storageImageInfo{};
-            storageImageInfo.imageLayout = VK_IMAGE_LAYOUT_GENERAL;
-            storageImageInfo.imageView = (*swapchainImageViews)[i];
-            storageImageInfo.sampler = VK_NULL_HANDLE; //textureSamplers[0];
-
-            descriptorWrites[counter].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-            descriptorWrites[counter].dstSet = descriptorSets[i];
-            descriptorWrites[counter].dstBinding = counter;
-            descriptorWrites[counter].dstArrayElement = 0;
-            descriptorWrites[counter].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
-            descriptorWrites[counter].descriptorCount = 1;
-            descriptorWrites[counter].pImageInfo = &storageImageInfo;
             counter++;
         }
         if(uniformBufferUsageFlags & UNIFORM_IMAGE_STORAGE_TEXTURE_BIT){
@@ -449,6 +424,22 @@ void CDescriptor::createDescriptorSets(std::vector<CTextureImage> *textureImages
             descriptorWrites[counter].pImageInfo = &storageImageInfo;
             counter++;
         }
+        if(uniformBufferUsageFlags & UNIFORM_IMAGE_STORAGE_SWAPCHAIN_BIT){
+            VkDescriptorImageInfo storageImageInfo{};
+            storageImageInfo.imageLayout = VK_IMAGE_LAYOUT_GENERAL;
+            storageImageInfo.imageView = (*swapchainImageViews)[i];
+            storageImageInfo.sampler = VK_NULL_HANDLE; //textureSamplers[0];
+
+            descriptorWrites[counter].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+            descriptorWrites[counter].dstSet = descriptorSets[i];
+            descriptorWrites[counter].dstBinding = counter;
+            descriptorWrites[counter].dstArrayElement = 0;
+            descriptorWrites[counter].descriptorType = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
+            descriptorWrites[counter].descriptorCount = 1;
+            descriptorWrites[counter].pImageInfo = &storageImageInfo;
+            counter++;
+        }
+
         /*switch (pt) {
         // case PIPELINE_COMPUTE:
         //     descriptorWrites.resize(3);

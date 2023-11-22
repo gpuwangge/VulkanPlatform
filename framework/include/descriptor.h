@@ -84,7 +84,7 @@ public:
     //std::vector<CWxjBuffer> storageImages; 
     //std::vector<void*> storageImagesMapped;
     //VkDeviceSize m_storageImageSize;
-    // void addStorageImage(VkDeviceSize storageImageSize, VkBufferUsageFlags usage = VK_BUFFER_USAGE_STORAGE_TEXEL_BUFFER_BIT);
+    void addStorageImage(VkBufferUsageFlags usage);
     // void updateStorageImage();
 
 

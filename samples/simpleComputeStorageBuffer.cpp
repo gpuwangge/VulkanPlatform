@@ -13,7 +13,7 @@ public:
 		renderer.CreateCommandPool(surface);
 		renderer.CreateComputeCommandBuffer();
 
-		shaderManager.CreateShader("simpleCompute/comp.spv", shaderManager.COMP);
+		shaderManager.CreateShader("simpleComputeStorageBuffer/comp.spv", shaderManager.COMP);
 
 		descriptors[0].addStorageBuffer(sizeof(StructStorageBuffer));
 		descriptors[0].createDescriptorPool();

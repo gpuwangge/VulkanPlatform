@@ -11,6 +11,7 @@ public:
 	//Thus no graphics pipeline is needed here
 	CSimpleComputeStorageImage(){
 		swapchain.imageSize = MAX_FRAMES_IN_FLIGHT;
+		swapchain.bComputeSwapChainImage = true;
 	}
 
 	void initialize(){
@@ -33,8 +34,7 @@ public:
 		shaderManager.CreateShader("simpleComputeStorageImage/comp.spv", shaderManager.COMP);
 		std::cout<<"compute shader created."<<std::endl;
 
-		//descriptors[0].addStorageImage(textureImages[0].textureImageBuffer.size);//storageImages and storageImagesMapped are not useful here
-		descriptors[0].uniformBufferUsageFlags |= UNIFORM_IMAGE_STORAGE_SWAPCHAIN_BIT;
+		descriptors[0].addStorageImage(UNIFORM_IMAGE_STORAGE_SWAPCHAIN_BIT); //as output
 		std::cout<<"descriptor 1."<<std::endl;
 		descriptors[0].createDescriptorPool();
 		std::cout<<"descriptor 2."<<std::endl;
