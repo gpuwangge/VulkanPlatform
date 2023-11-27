@@ -13,12 +13,36 @@ public:
 
     /**************************
      * 
+     * Universial Render Functions
+     * 
+     * ***********************/
+    typedef enum RenderModes {
+        RENDER_GRAPHICS_Mode = 0,
+        RENDER_COMPUTE_Mode = 1,
+        RENDER_COMPUTE_SWAPCHAIN_Mode = 2,
+        RENDER_COMPUTE_GRAPHICS_Mode = 3,
+    } RenderModes;
+
+    RenderModes m_renderMode = RENDER_GRAPHICS_Mode;
+    //void RecordCompute();
+    //void RecordGraphics();
+
+    void AquireSwapchainImage(CSwapchain &swapchain);
+    void WaitForComputeFence();
+    void SubmitCompute();
+    void WaitForGraphicsFence();
+    void SubmitGraphics();
+    void PresentSwapchainImage(CSwapchain &swapchain); 
+
+
+    /**************************
+     * 
      * Graphics Functions
      * 
      * ***********************/
 
-    void preRecordGraphicsCommandBuffer(CSwapchain &swapchain); //prepareCurrentFrameAndAcquireImageIndex
-    void postRecordGraphicsCommandBuffer(CSwapchain &swapchain);
+    //void preRecordGraphicsCommandBuffer(CSwapchain &swapchain); //prepareCurrentFrameAndAcquireImageIndex
+    //void postRecordGraphicsCommandBuffer(CSwapchain &swapchain);
 
     //Create start() and end() to make sample command recording simple
     void StartRecordGraphicsCommandBuffer(VkPipeline &pipeline, VkPipelineLayout &pipelineLayout, 
@@ -59,8 +83,8 @@ public:
 
     //std::vector<VkCommandBuffer> commandBuffers_compute; 
     //void CreateComputeCommandBuffers();
-    void preRecordComputeCommandBuffer(CSwapchain &swapchain); //prepareCurrentFrame
-    void postRecordComputeCommandBuffer(CSwapchain &swapchain);
+    //void preRecordComputeCommandBuffer(CSwapchain &swapchain); //prepareCurrentFrame
+    //void postRecordComputeCommandBuffer(CSwapchain &swapchain);
     //void drawComputeFrame(VkPipeline &computePipeline, VkPipelineLayout &pipelineLayout_compute, std::vector<VkDescriptorSet> &descriptorSets_compute);
     //void recordComputeCommandBuffer0(VkPipeline &computePipeline, VkPipelineLayout &pipelineLayout_compute, std::vector<VkDescriptorSet> &descriptorSets_compute);
     
@@ -98,7 +122,7 @@ public:
     void CreateComputeCommandBuffer();
     void CreateCommandBuffers();
 
-    void CreateSyncObjects();
+    void CreateSyncObjects(int swapchainSize);
 
     void Destroy();
 
@@ -115,8 +139,10 @@ public:
     std::vector<VkSemaphore> imageAvailableSemaphores;
 	std::vector<VkSemaphore> renderFinishedSemaphores;
     std::vector<VkFence> inFlightFences;
-    std::vector<VkFence> imagesInFlight;/////////
+   // std::vector<VkFence> imagesInFlight;/////////
 
+    std::vector<VkSemaphore> computeFinishedSemaphores;
+    std::vector<VkFence> computeInFlightFences;
 private:
     //CDebugger * debugger;
 };

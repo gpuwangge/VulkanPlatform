@@ -73,7 +73,7 @@ void CApplication::run(){ //Entrance Function
 #endif
 
 void CApplication::initialize(){
-    renderer.CreateSyncObjects();
+    renderer.CreateSyncObjects(swapchain.imageSize);
     shaderManager.Destroy();
 
     // CContext::GetHandle().logManager.print("Test single string!\n");
@@ -119,17 +119,71 @@ void CApplication::postUpdate(){}
 void CApplication::UpdateRecordRender(){
     update();
 
-    if(renderProcess.bCreateGraphicsPipeline){
+    /**************************
+     * 
+     * Universial Render Functions
+     * 
+     * ***********************/
+    switch(renderer.m_renderMode){
+        case renderer.RENDER_GRAPHICS_Mode:
+            //std::cout<<"RENDER_GRAPHICS_Mode"<<std::endl;
+            renderer.WaitForGraphicsFence();//must wait for fence before record
+            recordGraphicsCommandBuffer();
+
+            renderer.AquireSwapchainImage(swapchain);
+            renderer.SubmitGraphics();
+            renderer.PresentSwapchainImage(swapchain); 
+        break;
+        case renderer.RENDER_COMPUTE_Mode:
+            renderer.WaitForComputeFence();//must wait for fence before record
+            recordComputeCommandBuffer();
+
+            renderer.SubmitCompute();
+        break;
+        case renderer.RENDER_COMPUTE_SWAPCHAIN_Mode:
+            renderer.WaitForComputeFence();//must wait for fence before record
+            recordComputeCommandBuffer();
+
+            renderer.AquireSwapchainImage(swapchain);
+            renderer.SubmitCompute();
+            renderer.PresentSwapchainImage(swapchain); 
+        break;
+        case renderer.RENDER_COMPUTE_GRAPHICS_Mode:
+            renderer.WaitForComputeFence();//must wait for fence before record
+            recordComputeCommandBuffer();
+            renderer.WaitForGraphicsFence();//must wait for fence before record
+            recordGraphicsCommandBuffer();
+            
+            renderer.AquireSwapchainImage(swapchain);
+            renderer.SubmitCompute();
+            renderer.SubmitGraphics();
+            renderer.PresentSwapchainImage(swapchain); 
+        break;
+        default:
+        break;
+    }
+
+    //renderer.RecordCompute();
+    //recordComputeCommandBuffer();
+    //renderer.RecordGraphics();
+    //recordGraphicsCommandBuffer();
+
+    //renderer.AquireSwapchainImage(swapchain);
+    //renderer.SubmitCompute();
+    //renderer.SubmitGraphics();
+    //renderer.PresentSwapchainImage(swapchain);     
+
+    //if(renderProcess.bCreateGraphicsPipeline){
         //renderer.preRecordGraphicsCommandBuffer(swapchain);
         //recordGraphicsCommandBuffer();
         //renderer.postRecordGraphicsCommandBuffer(swapchain);
-    }
+    //}
 
-    if(renderProcess.bCreateComputePipeline){
-        renderer.preRecordComputeCommandBuffer(swapchain);
-        recordComputeCommandBuffer();
-        renderer.postRecordComputeCommandBuffer(swapchain);
-    }
+    //if(renderProcess.bCreateComputePipeline){
+        //recordComputeCommandBuffer();
+        //renderer.preRecordComputeCommandBuffer(swapchain);
+        //renderer.postRecordComputeCommandBuffer(swapchain);
+   //}
 
     postUpdate();
 

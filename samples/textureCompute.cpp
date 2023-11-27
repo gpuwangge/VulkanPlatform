@@ -3,25 +3,8 @@
 #define TEST_CLASS_NAME CTextureCompute
 class TEST_CLASS_NAME: public CApplication{
 public:
-	//Compute Shader Constants
-	// static const int DIM = 16;
-	// static const int DIM_M = DIM;
-	// static const int DIM_K = DIM;
-	// static const int DIM_N = DIM;
 	static const int KernelRunNumber = 1;
-	// struct StructStorageBuffer {
-	// 	unsigned int M;
-	// 	unsigned int K;
-	// 	unsigned int N;
-	// 	float MatA[DIM_M * DIM_K];
-	// 	float MatB[DIM_K * DIM_N];
-	// 	float MatC[DIM_M * DIM_N];
-	// };
-	// StructStorageBuffer storageBufferObject;
-	// struct StructStorageBufferOutput {
-	// 	float MatC[DIM_M * DIM_N];
-	// };
-	// StructStorageBufferOutput storageBufferObjectOutput;	
+
 	bool bVerbose = true;
 	bool bVerify = true;
 
@@ -55,6 +38,7 @@ public:
 		textureImages[0].CreateImageView(VK_IMAGE_ASPECT_COLOR_BIT);
 
 		//For Compute
+		renderer.m_renderMode = renderer.RENDER_COMPUTE_SWAPCHAIN_Mode;
 		renderer.CreateComputeCommandBuffer();
 
 		//For Graphics
@@ -110,24 +94,6 @@ public:
 		CApplication::initialize();
 
 		createComputeCommandBuffers(renderer.commandBuffers[renderer.computeCmdId], swapchain.images);
-
-		//Initial Host data
-		// storageBufferObject.M = DIM_M;
-		// storageBufferObject.N = DIM_N;
-		// storageBufferObject.K = DIM_K;
-		// for(int i = 0; i < DIM_M*DIM_K; i++) storageBufferObject.MatA[i] = (float)rand() / (float)RAND_MAX;
-		// for(int i = 0; i < DIM_K*DIM_N; i++) storageBufferObject.MatB[i] = (float)rand() / (float)RAND_MAX;
-		// //if(bVerbose) printMatrix(storageBufferObjectInput.MatA, DIM_M, DIM_K, "A");
-		// //if(bVerbose) printMatrix(storageBufferObjectInput.MatB, DIM_K, DIM_N, "B");
-		// if(bVerbose) PRINT("A: ", storageBufferObject.MatA, DIM_M*DIM_K);
-		// if(bVerbose) PRINT("B: ", storageBufferObject.MatB, DIM_K*DIM_N);
-		// if(bVerbose) PRINT("");
-		// std::cout<<"Initialized A and B."<<std::endl;
-
-		//Host >> Device
-		//descriptors[1].updateStorageBuffer<StructStorageBuffer>(renderer.currentFrame, durationTime, storageBufferObject); //1 TODO: fill all inflight, update input only
-		//descriptors[1].updateStorageBuffer<StructStorageBuffer>(renderer.currentFrame+1, durationTime, storageBufferObject); //1
-		
 	}
 
 	void update(){

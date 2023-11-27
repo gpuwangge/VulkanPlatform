@@ -30,7 +30,6 @@ void CRenderer::CreateIndexBuffer(std::vector<uint32_t> &indices3D){
 	indexDataBuffer.fill((void *)(indices3D.data()));
 }
 
-
 /**************************
  * 
  * Command Buffer Functions
@@ -105,10 +104,125 @@ void CRenderer::CreateCommandBuffers() {
 
 /**************************
  * 
+ * Universial Render Functions
+ * 
+ * ***********************/
+void CRenderer::AquireSwapchainImage(CSwapchain &swapchain){
+    VkResult result = vkAcquireNextImageKHR(CContext::GetHandle().GetLogicalDevice(), swapchain.getHandle(), UINT64_MAX, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &imageIndex);
+}
+
+void CRenderer::WaitForComputeFence(){
+    vkWaitForFences(CContext::GetHandle().GetLogicalDevice(), 1, &computeInFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
+}
+
+void CRenderer::SubmitCompute(){
+    //if (imagesInFlight[imageIndex] != VK_NULL_HANDLE) {
+    //    vkWaitForFences(CContext::GetHandle().GetLogicalDevice(), 1, &imagesInFlight[imageIndex], VK_TRUE, UINT64_MAX);
+    //}
+    //imagesInFlight[imageIndex] = inFlightFences[currentFrame];
+    //vkWaitForFences(CContext::GetHandle().GetLogicalDevice(), 1, &computeInFlightFences[imageIndex], VK_TRUE, UINT64_MAX);
+
+    //printf("currentFrame: %d, imageIndex: %d \n", currentFrame, imageIndex);
+
+    VkSubmitInfo submitInfo{};
+    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+
+    VkSemaphore waitSemaphores[] = { imageAvailableSemaphores[currentFrame] }; //to wait until image is ready
+    VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+    submitInfo.waitSemaphoreCount = 1;
+    submitInfo.pWaitSemaphores = waitSemaphores;
+    submitInfo.pWaitDstStageMask = waitStages;
+
+    submitInfo.commandBufferCount = 1;
+    submitInfo.pCommandBuffers = &commandBuffers[computeCmdId][currentFrame];///!!!
+
+    VkSemaphore signalSemaphores[] = { computeFinishedSemaphores[currentFrame] }; //to tell graphics or present that compute is finished
+    submitInfo.signalSemaphoreCount = 1;
+    submitInfo.pSignalSemaphores = signalSemaphores;
+
+    vkResetFences(CContext::GetHandle().GetLogicalDevice(), 1, &computeInFlightFences[currentFrame]);
+
+    if (vkQueueSubmit(CContext::GetHandle().GetComputeQueue(), 1, &submitInfo, computeInFlightFences[currentFrame]) != VK_SUCCESS) {
+        throw std::runtime_error("failed to submit draw command buffer!");
+    }
+}
+
+void CRenderer::WaitForGraphicsFence(){
+    VkResult result = vkWaitForFences(CContext::GetHandle().GetLogicalDevice(), 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);//must call vkWaitForFences before record command buffer
+    //Validation Error: vkBeginCommandBuffer() on active VkCommandBuffer 0x8c99500[] before it has completed. 
+    //You must check command buffer fence before this call. 
+    //The Vulkan spec states: commandBuffer must not be in the recording or pending state
+}
+
+void CRenderer::SubmitGraphics(){
+    VkSubmitInfo submitInfo{};
+    submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+
+    VkSemaphore waitSemaphores[] = {imageAvailableSemaphores[currentFrame] };
+    VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+    submitInfo.waitSemaphoreCount = 1;
+    submitInfo.pWaitSemaphores = waitSemaphores;
+    submitInfo.pWaitDstStageMask = waitStages;
+
+    submitInfo.commandBufferCount = 1;
+    submitInfo.pCommandBuffers = &commandBuffers[graphicsCmdId][currentFrame];
+
+    VkSemaphore signalSemaphores[] = { renderFinishedSemaphores[currentFrame] };
+    submitInfo.signalSemaphoreCount = 1;
+    submitInfo.pSignalSemaphores = signalSemaphores;
+
+    vkResetFences(CContext::GetHandle().GetLogicalDevice(), 1, &inFlightFences[currentFrame]);
+
+    //GPU read recorded command buffer and execute
+    if (vkQueueSubmit(CContext::GetHandle().GetGraphicsQueue(), 1, &submitInfo, inFlightFences[currentFrame]) != VK_SUCCESS) {
+        //debugger->writeMSG("Failed to submit draw command buffer! CurrentFrame: %d\n", currentFrame);
+        throw std::runtime_error("failed to submit draw command buffer!");
+    }
+
+    //vkResetCommandBuffer(commandBuffers[graphicsCmdId][currentFrame], /*VkCommandBufferResetFlagBits*/ 0);//TODO: put this back at the right place
+}
+
+void CRenderer::PresentSwapchainImage(CSwapchain &swapchain){
+    VkPresentInfoKHR presentInfo{};
+    presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
+
+
+    presentInfo.waitSemaphoreCount = 1;
+    VkSemaphore signalSemaphores[1];// = { computeFinishedSemaphores[currentFrame] }; //can not present until compute/graphics signal is ready renderFinishedSemaphores
+    switch(m_renderMode){
+        case RENDER_GRAPHICS_Mode:
+            signalSemaphores[0] = renderFinishedSemaphores[currentFrame]; 
+        break;
+        case RENDER_COMPUTE_Mode:
+        break;
+        case RENDER_COMPUTE_SWAPCHAIN_Mode:
+            signalSemaphores[0] = computeFinishedSemaphores[currentFrame]; 
+        break;
+        case RENDER_COMPUTE_GRAPHICS_Mode:
+            signalSemaphores[0] = renderFinishedSemaphores[currentFrame]; //submit compute first, then graphics. present only after graphics finishes
+        break;
+        default:
+        break;
+    }
+    
+
+    presentInfo.pWaitSemaphores = signalSemaphores;
+
+    VkSwapchainKHR swapChains[] = { swapchain.getHandle() };
+    presentInfo.swapchainCount = 1;
+    presentInfo.pSwapchains = swapChains;
+
+    presentInfo.pImageIndices = &imageIndex;
+
+    VkResult result = vkQueuePresentKHR(CContext::GetHandle().GetPresentQueue(), &presentInfo);
+}
+
+/**************************
+ * 
  * Graphics Functions
  * 
  * ***********************/
-
+/*
 void CRenderer::preRecordGraphicsCommandBuffer(CSwapchain &swapchain){//prepareCurrentFrameAndAcquireImageIndex
     //printf("currentFrame: %d, ", currentFrame);
 
@@ -129,7 +243,7 @@ void CRenderer::preRecordGraphicsCommandBuffer(CSwapchain &swapchain){//prepareC
 
     vkResetFences(CContext::GetHandle().GetLogicalDevice(), 1, &inFlightFences[currentFrame]);
 
-    vkResetCommandBuffer(commandBuffers[graphicsCmdId][currentFrame], /*VkCommandBufferResetFlagBits*/ 0);
+    vkResetCommandBuffer(commandBuffers[graphicsCmdId][currentFrame],  0);//VkCommandBufferResetFlagBits
 }
 
 void CRenderer::postRecordGraphicsCommandBuffer(CSwapchain &swapchain) {//drawFrame
@@ -151,14 +265,16 @@ void CRenderer::postRecordGraphicsCommandBuffer(CSwapchain &swapchain) {//drawFr
     submitInfo.signalSemaphoreCount = 1;
     submitInfo.pSignalSemaphores = signalSemaphores;
 
-    VkPresentInfoKHR presentInfo{};
-    presentInfo.pWaitSemaphores = signalSemaphores;
-    
     //GPU read recorded command buffer and execute
     if (vkQueueSubmit(CContext::GetHandle().GetGraphicsQueue(), 1, &submitInfo, inFlightFences[currentFrame]) != VK_SUCCESS) {
         //debugger->writeMSG("Failed to submit draw command buffer! CurrentFrame: %d\n", currentFrame);
         throw std::runtime_error("failed to submit draw command buffer!");
     }
+
+
+
+    VkPresentInfoKHR presentInfo{};
+    presentInfo.pWaitSemaphores = signalSemaphores;
 
     presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
     presentInfo.waitSemaphoreCount = 1;
@@ -172,16 +288,22 @@ void CRenderer::postRecordGraphicsCommandBuffer(CSwapchain &swapchain) {//drawFr
 
     //present engine read image the present(present imageIndex)
     VkResult result = vkQueuePresentKHR(CContext::GetHandle().GetPresentQueue(), &presentInfo);
-}
+}*/
 
-void CRenderer::CreateSyncObjects() {
+void CRenderer::CreateSyncObjects(int swapchainSize) {
     imageAvailableSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
+
     renderFinishedSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
     //computeFinishedSemaphores.resize(MAX_FRAMES_IN_FLIGHT);
     inFlightFences.resize(MAX_FRAMES_IN_FLIGHT);
     //computeInFlightFences.resize(MAX_FRAMES_IN_FLIGHT);
+
+    computeFinishedSemaphores.resize(MAX_FRAMES_IN_FLIGHT);;
+    computeInFlightFences.resize(MAX_FRAMES_IN_FLIGHT);;
+
     //imagesInFlight.resize(swapChainImages.size(), VK_NULL_HANDLE);
-    imagesInFlight.resize(MAX_FRAMES_IN_FLIGHT, VK_NULL_HANDLE);
+    //imagesInFlight.resize(swapchainSize, VK_NULL_HANDLE);
+    //imagesInFlight.resize(MAX_FRAMES_IN_FLIGHT, VK_NULL_HANDLE);
     //imagesInFlight.resize(3, VK_NULL_HANDLE);///!!!
 
     VkSemaphoreCreateInfo semaphoreInfo{};
@@ -194,7 +316,9 @@ void CRenderer::CreateSyncObjects() {
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
         if (vkCreateSemaphore(CContext::GetHandle().GetLogicalDevice(), &semaphoreInfo, nullptr, &imageAvailableSemaphores[i]) != VK_SUCCESS ||
             vkCreateSemaphore(CContext::GetHandle().GetLogicalDevice(), &semaphoreInfo, nullptr, &renderFinishedSemaphores[i]) != VK_SUCCESS ||
-            vkCreateFence(CContext::GetHandle().GetLogicalDevice(), &fenceInfo, nullptr, &inFlightFences[i]) != VK_SUCCESS) {
+            vkCreateFence(CContext::GetHandle().GetLogicalDevice(), &fenceInfo, nullptr, &inFlightFences[i]) != VK_SUCCESS ||
+            vkCreateFence(CContext::GetHandle().GetLogicalDevice(), &fenceInfo, nullptr, &computeInFlightFences[i]) != VK_SUCCESS ||
+            vkCreateSemaphore(CContext::GetHandle().GetLogicalDevice(), &semaphoreInfo, nullptr, &computeFinishedSemaphores[i]) != VK_SUCCESS) {
             throw std::runtime_error("failed to create synchronization objects for a frame!");
         }
         //if (vkCreateSemaphore(logicalDevice, &semaphoreInfo, nullptr, &computeFinishedSemaphores[i]) != VK_SUCCESS ||
@@ -313,7 +437,7 @@ void CRenderer::EndCommandBuffer(int commandBufferIndex){
  * Compute Shader Functions
  * 
  * ***********************/
-
+/*
 void CRenderer::preRecordComputeCommandBuffer(CSwapchain &swapchain){ //prepareCurrentFrame
    
     vkWaitForFences(CContext::GetHandle().GetLogicalDevice(), 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
@@ -321,10 +445,11 @@ void CRenderer::preRecordComputeCommandBuffer(CSwapchain &swapchain){ //prepareC
     //uint32_t imageIndex;
     VkResult result = vkAcquireNextImageKHR(CContext::GetHandle().GetLogicalDevice(), swapchain.getHandle(), UINT64_MAX, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &imageIndex);
 
-    if (imagesInFlight[imageIndex] != VK_NULL_HANDLE) {
-        vkWaitForFences(CContext::GetHandle().GetLogicalDevice(), 1, &imagesInFlight[imageIndex], VK_TRUE, UINT64_MAX);
-    }
-    imagesInFlight[imageIndex] = inFlightFences[currentFrame];
+    //if (imagesInFlight[imageIndex] != VK_NULL_HANDLE) {
+    //    vkWaitForFences(CContext::GetHandle().GetLogicalDevice(), 1, &imagesInFlight[imageIndex], VK_TRUE, UINT64_MAX);
+    //}
+    //imagesInFlight[imageIndex] = inFlightFences[currentFrame];
+    vkWaitForFences(CContext::GetHandle().GetLogicalDevice(), 1, &inFlightFences[imageIndex], VK_TRUE, UINT64_MAX);
 
     //printf("currentFrame: %d, imageIndex: %d \n", currentFrame, imageIndex);
 
@@ -350,6 +475,10 @@ void CRenderer::preRecordComputeCommandBuffer(CSwapchain &swapchain){ //prepareC
         throw std::runtime_error("failed to submit draw command buffer!");
     }
 
+
+
+
+
     VkPresentInfoKHR presentInfo{};
     presentInfo.sType = VK_STRUCTURE_TYPE_PRESENT_INFO_KHR;
 
@@ -365,7 +494,7 @@ void CRenderer::preRecordComputeCommandBuffer(CSwapchain &swapchain){ //prepareC
     result = vkQueuePresentKHR(CContext::GetHandle().GetPresentQueue(), &presentInfo);
 
 
-/*
+
     VkResult result = vkWaitForFences(CContext::GetHandle().GetLogicalDevice(), 1, &inFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
 
     result = vkAcquireNextImageKHR(CContext::GetHandle().GetLogicalDevice(), swapchain.getHandle(), UINT64_MAX, imageAvailableSemaphores[currentFrame], VK_NULL_HANDLE, &imageIndex);//
@@ -373,11 +502,12 @@ void CRenderer::preRecordComputeCommandBuffer(CSwapchain &swapchain){ //prepareC
     //updateUniformBuffer_compute(currentFrame);
     vkResetFences(CContext::GetHandle().GetLogicalDevice(), 1, &inFlightFences[currentFrame]);
     //vkResetCommandBuffer(commandBuffers[graphicsCmdId][currentFrame],  0);////////////////////
-    */
-   /*VkCommandBufferResetFlagBits*/
-}
+    
+  
+}*/
+/*
 void CRenderer::postRecordComputeCommandBuffer(CSwapchain &swapchain){
-    /*
+    
     printf("currentFrame: %d, imageIndex: %d \n", currentFrame, imageIndex);
 
     VkSubmitInfo submitInfo{};
@@ -418,8 +548,8 @@ void CRenderer::postRecordComputeCommandBuffer(CSwapchain &swapchain){
     presentInfo.pImageIndices = &imageIndex;//
 
     VkResult result = vkQueuePresentKHR(CContext::GetHandle().GetPresentQueue(), &presentInfo);//
-    */
-}
+    
+}*/
 
 void CRenderer::StartRecordComputeCommandBuffer(VkPipeline &pipeline, VkPipelineLayout &pipelineLayout, std::vector<VkDescriptorSet> &descriptorSets){
     BeginCommandBuffer(computeCmdId);
@@ -452,9 +582,10 @@ void CRenderer::Destroy(){
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
         vkDestroySemaphore(CContext::GetHandle().GetLogicalDevice(), renderFinishedSemaphores[i], nullptr);
         vkDestroySemaphore(CContext::GetHandle().GetLogicalDevice(), imageAvailableSemaphores[i], nullptr);
-        //vkDestroySemaphore(logicalDevice, computeFinishedSemaphores[i], nullptr);
         vkDestroyFence(CContext::GetHandle().GetLogicalDevice(), inFlightFences[i], nullptr);
-        //vkDestroyFence(logicalDevice, computeInFlightFences[i], nullptr);
+
+        vkDestroyFence(CContext::GetHandle().GetLogicalDevice(), computeInFlightFences[i], nullptr);
+        vkDestroySemaphore(CContext::GetHandle().GetLogicalDevice(), computeFinishedSemaphores[i], nullptr);
     }
 
     vkDestroyCommandPool(CContext::GetHandle().GetLogicalDevice(), commandPool, nullptr);
