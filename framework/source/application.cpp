@@ -125,7 +125,8 @@ void CApplication::UpdateRecordRender(){
      * 
      * ***********************/
     switch(renderer.m_renderMode){
-        case renderer.RENDER_GRAPHICS_Mode:
+        case CRenderer::RENDER_GRAPHICS_Mode:
+        //case renderer.RENDER_GRAPHICS_Mode:
             //std::cout<<"RENDER_GRAPHICS_Mode"<<std::endl;
             renderer.WaitForGraphicsFence();//must wait for fence before record
             recordGraphicsCommandBuffer();
@@ -134,13 +135,15 @@ void CApplication::UpdateRecordRender(){
             renderer.SubmitGraphics();
             renderer.PresentSwapchainImage(swapchain); 
         break;
-        case renderer.RENDER_COMPUTE_Mode:
+        case CRenderer::RENDER_COMPUTE_Mode:
+        //case renderer.RENDER_COMPUTE_Mode:
             renderer.WaitForComputeFence();//must wait for fence before record
             recordComputeCommandBuffer();
 
             renderer.SubmitCompute();
         break;
-        case renderer.RENDER_COMPUTE_SWAPCHAIN_Mode:
+        case CRenderer::RENDER_COMPUTE_SWAPCHAIN_Mode:
+        //case renderer.RENDER_COMPUTE_SWAPCHAIN_Mode:
             renderer.WaitForComputeFence();//must wait for fence before record
             recordComputeCommandBuffer();
 
@@ -148,7 +151,8 @@ void CApplication::UpdateRecordRender(){
             renderer.SubmitCompute();
             renderer.PresentSwapchainImage(swapchain); 
         break;
-        case renderer.RENDER_COMPUTE_GRAPHICS_Mode:
+        case CRenderer::RENDER_COMPUTE_GRAPHICS_Mode:
+        //case renderer.RENDER_COMPUTE_GRAPHICS_Mode:
             renderer.WaitForComputeFence();//must wait for fence before record
             recordComputeCommandBuffer();
             renderer.WaitForGraphicsFence();//must wait for fence before record

@@ -199,6 +199,8 @@ void CPhysicalDevice::displayPhysicalDevices(){
     VkPhysicalDeviceProperties	PhysicalDeviceProperties;
     vkGetPhysicalDeviceProperties(IN handle, OUT &PhysicalDeviceProperties);
 
+    logManager.print("\tlimits.timestampPeriod(ns): %f", (float)PhysicalDeviceProperties.limits.timestampPeriod);
+
     logManager.print("\tAPI version: %d", (int)PhysicalDeviceProperties.apiVersion);
     logManager.print("\tDriver version: %d", (int)PhysicalDeviceProperties.apiVersion);
     logManager.print("\tVendor ID: 0x%04x", (int)PhysicalDeviceProperties.vendorID);

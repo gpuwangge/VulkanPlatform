@@ -1,5 +1,5 @@
 #ifdef ANDROID
-//#include "simpleTriangle.cpp"
+#include "simpleTriangle.cpp"
 //#include "simpleTexture.cpp"
 //#include "bptpc16Texture.cpp"
 //#include "furMark.cpp"
@@ -8,5 +8,5 @@
 //#include "simpleObjLoader.cpp"
 //#include "simpleCompute.cpp"
 //#include "gemmCompute.cpp"
-#include "simpleParticles.cpp"
+//#include "simpleParticles.cpp"
 #endif

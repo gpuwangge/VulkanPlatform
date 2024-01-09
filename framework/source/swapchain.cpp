@@ -119,10 +119,11 @@ void CSwapchain::createSwapchainImages(VkSurfaceKHR surface, int width, int heig
 
     //generate swapChain images (swapChainImages)
     //result = vkCreateSwapchainKHR(LOGICAL_DEVICE, &createInfo, nullptr, &swapChain);
+
     result = vkCreateSwapchainKHR(CContext::GetHandle().GetLogicalDevice(), &createInfo, nullptr, &handle);
     if (result != VK_SUCCESS) throw std::runtime_error("failed to create swap chain!");
     //REPORT("vkCreateSwapchainKHR");
-
+    logManager.print("wxjtest");
     result = vkGetSwapchainImagesKHR(CContext::GetHandle().GetLogicalDevice(), handle, &imageSize, nullptr);
     //REPORT("vkGetSwapchainImagesKHR(Get imageCount)");
     images.resize(imageSize);
