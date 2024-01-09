@@ -47,6 +47,10 @@ Launch Android Studio, open "androidSandbox" folder.   Select "Build" > "Build B
 - [Optional] Edit samples/androidSample.h to tell Android Studio which sample to build  
 - [Optional] If you want to run sample on AVD(Android Virtual Device), in the Android Studio, click the green button on the top right corner.  
 
+## How to debug in Android Studio
+- When device is connected, Run 'app' will launch on device  
+- When device is not conntected, Run 'app' will launch AVD, then you can click the green triangle button on the bar to start app  
+
 ## Distribution
 - For Android, just distribute the single .apk file, it contains all resources.  
 - For Windows, it is more complicated. Besides the .exe binary, you should include the following resources(if the sample use any):  
