@@ -17,7 +17,7 @@ Prepare:
 1. Install Vulkan  
 1. Install CMake  
 1. Setup GLFW (Or use SDL at your preference)  
-1. Setup GLM
+1. Setup GLM (Tested version 0.9.9.8)
 1. git clone this repo 
 - [Optional] Download other thirdparty headers: stb_image.h and tiny_obj_loader.h (I already put both files in the "thirdparty" folder in this repo)  
 ### for all samples
