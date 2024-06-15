@@ -21,16 +21,20 @@ Prepare:
 1. git clone this repo 
 - [Optional] Download other thirdparty headers: stb_image.h and tiny_obj_loader.h (I already put both files in the "thirdparty" folder in this repo)  
 ### for all samples
+```
 mkdir build  
 cd build  
 cmake -G "MinGW Makefiles" ..   
 make  
+```
 
 ### for one sample  
+```
 mkdir build  
 cd build  
 cmake -G "MinGW Makefiles" -D SINGLE=true ..  
-make  
+make
+```
 - [Optional] Edit CMakeLists.txt to tell compiler which sample to build   
 
 ## How to build to Android binary(.apk)
