@@ -25,7 +25,7 @@ CSwapchain::~CSwapchain(){
 //     return (vkFormatProperties.optimalTilingFeatures & requestedSupport) == requestedSupport;
 // }
 
-void CSwapchain::createSwapchainImages(VkSurfaceKHR surface, int width, int height){
+void CSwapchain::createImages(VkSurfaceKHR surface, int width, int height){
     //vulkan draws on the vkImage(s)
     //SwapChain will set vkImage to present on the screen
     //Surface will tell the format of the vkImage
@@ -86,6 +86,9 @@ void CSwapchain::createSwapchainImages(VkSurfaceKHR surface, int width, int heig
     if (swapChainSupport.capabilities.maxImageCount > 0 && imageSize > swapChainSupport.capabilities.maxImageCount) {
         imageSize = swapChainSupport.capabilities.maxImageCount;
     }
+    logManager.print("swapChainSupport.capabilities.minImageCount = %d", (int)swapChainSupport.capabilities.minImageCount);
+    logManager.print("swapChainSupport.capabilities.maxImageCount = %d", (int)swapChainSupport.capabilities.maxImageCount);
+    logManager.print("imageSize = %d", (int)imageSize);
 
     VkSwapchainCreateInfoKHR createInfo{};
     createInfo.sType = VK_STRUCTURE_TYPE_SWAPCHAIN_CREATE_INFO_KHR;
@@ -123,7 +126,7 @@ void CSwapchain::createSwapchainImages(VkSurfaceKHR surface, int width, int heig
     result = vkCreateSwapchainKHR(CContext::GetHandle().GetLogicalDevice(), &createInfo, nullptr, &handle);
     if (result != VK_SUCCESS) throw std::runtime_error("failed to create swap chain!");
     //REPORT("vkCreateSwapchainKHR");
-    logManager.print("wxjtest");
+    //logManager.print("wxjtest");
     result = vkGetSwapchainImagesKHR(CContext::GetHandle().GetLogicalDevice(), handle, &imageSize, nullptr);
     //REPORT("vkGetSwapchainImagesKHR(Get imageCount)");
     images.resize(imageSize);
@@ -132,12 +135,11 @@ void CSwapchain::createSwapchainImages(VkSurfaceKHR surface, int width, int heig
 
     swapChainImageFormat = surfaceFormat.format;
     swapChainExtent = extent;
-
-    // present views for the double-buffering:
-    views.resize(imageSize);
 }
 
 void CSwapchain::createImageViews(VkImageAspectFlags aspectFlags){
+    // present views for the double-buffering:
+    views.resize(imageSize);
     for (size_t i = 0; i < imageSize; i++) {
         CWxjImageBuffer dummyImageBuffer; //dummyImageBuffer doesn't really matter here, just use it's create function
 		views[i] = dummyImageBuffer.createImageView(images[i], swapChainImageFormat, aspectFlags, 1);

@@ -57,7 +57,7 @@ void CApplication::run(){ //Entrance Function
     //std::cout<<"Surface min extent: width="<<pSurfaceCapabilities->minImageExtent.width<<", Surface min extent: height="<<pSurfaceCapabilities->minImageExtent.height<<std::endl;
     //std::cout<<"Surface max extent: width="<<pSurfaceCapabilities->maxImageExtent.width<<", Surface max extent: height="<<pSurfaceCapabilities->maxImageExtent.height<<std::endl;
 
-    swapchain.createSwapchainImages(surface, windowWidth, windowHeight);
+    swapchain.createImages(surface, windowWidth, windowHeight);
 	swapchain.createImageViews(VK_IMAGE_ASPECT_COLOR_BIT);
 
     initialize();

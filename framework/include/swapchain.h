@@ -24,7 +24,7 @@ public:
     //VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
     VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
     VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities, int width, int height);
-    void createSwapchainImages(VkSurfaceKHR surface, int width, int height);
+    void createImages(VkSurfaceKHR surface, int width, int height);
     void createImageViews(VkImageAspectFlags aspectFlags);
 
     void createMSAAImages(VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties);
