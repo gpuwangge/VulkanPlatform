@@ -27,6 +27,7 @@ public:
 	bool bVerify = true;
 
 	void initialize(){
+		renderer.m_renderMode = renderer.RENDER_COMPUTE_Mode;
 		renderer.CreateCommandPool(surface);
 		renderer.CreateComputeCommandBuffer();
 
@@ -67,6 +68,7 @@ public:
 	}
 
 	void update(){
+		std::cout<<"update."<<std::endl;
 		static int counter = 1;
 		if(counter==KernelRunNumber) NeedToExit = true;
 		counter++;
@@ -87,6 +89,7 @@ public:
 	}
 
 	void postUpdate(){
+		std::cout<<"postUpdate."<<std::endl;
 		vkDeviceWaitIdle(CContext::GetHandle().GetLogicalDevice());
 
 		CApplication::update(); //update deltaTime and durationTime (and mainCamera and MVP, VP)

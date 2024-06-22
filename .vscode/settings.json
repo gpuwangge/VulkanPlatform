@@ -116,5 +116,6 @@
     "numeric": "cpp",
     "random": "cpp"
   },
-  "C_Cpp.default.compilerPath": "C:\\mingw64\\bin\\g++.exe"
+  "C_Cpp.default.compilerPath": "C:\\mingw64\\bin\\g++.exe",
+  "cmake.configureOnOpen": false
 }

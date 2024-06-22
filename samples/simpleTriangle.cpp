@@ -44,6 +44,10 @@ public:
 		
 		renderer.Draw(3);
 		
+		//std::cout<<"renderer.currentFrame: "<<renderer.currentFrame<<std::endl;
+		//std::cout<<"renderer.graphicsCmdId: "<<renderer.graphicsCmdId<<std::endl;
+
+
 		END_GRAPHICS_RECORD
 	}
 };

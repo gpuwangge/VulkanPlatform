@@ -122,7 +122,7 @@ void CRenderer::SubmitCompute(){
     //imagesInFlight[imageIndex] = inFlightFences[currentFrame];
     //vkWaitForFences(CContext::GetHandle().GetLogicalDevice(), 1, &computeInFlightFences[imageIndex], VK_TRUE, UINT64_MAX);
 
-    //printf("currentFrame: %d, imageIndex: %d \n", currentFrame, imageIndex);
+    printf("currentFrame: %d, imageIndex: %d \n", currentFrame, imageIndex);
 
     VkSubmitInfo submitInfo{};
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -173,13 +173,16 @@ void CRenderer::SubmitGraphics(){
 
     vkResetFences(CContext::GetHandle().GetLogicalDevice(), 1, &inFlightFences[currentFrame]);
 
+    //std::cout<<"before graphics submit. "<<std::endl;
     //GPU read recorded command buffer and execute
     if (vkQueueSubmit(CContext::GetHandle().GetGraphicsQueue(), 1, &submitInfo, inFlightFences[currentFrame]) != VK_SUCCESS) {
         //debugger->writeMSG("Failed to submit draw command buffer! CurrentFrame: %d\n", currentFrame);
         throw std::runtime_error("failed to submit draw command buffer!");
     }
+    //std::cout<<"Done submit. "<<std::endl;
 
-    //vkResetCommandBuffer(commandBuffers[graphicsCmdId][currentFrame], /*VkCommandBufferResetFlagBits*/ 0);//TODO: put this back at the right place
+    //after command is submitted, reset command buffer
+    //vkResetCommandBuffer(commandBuffers[graphicsCmdId][currentFrame], /*VkCommandBufferResetFlagBits*/ 0);
 }
 
 void CRenderer::PresentSwapchainImage(CSwapchain &swapchain){
@@ -194,6 +197,7 @@ void CRenderer::PresentSwapchainImage(CSwapchain &swapchain){
             signalSemaphores[0] = renderFinishedSemaphores[currentFrame]; 
         break;
         case RENDER_COMPUTE_Mode:
+            //signalSemaphores[0] = computeFinishedSemaphores[currentFrame]; //???
         break;
         case RENDER_COMPUTE_SWAPCHAIN_Mode:
             signalSemaphores[0] = computeFinishedSemaphores[currentFrame]; 

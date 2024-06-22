@@ -128,39 +128,68 @@ void CApplication::UpdateRecordRender(){
         case CRenderer::RENDER_GRAPHICS_Mode:
         //case renderer.RENDER_GRAPHICS_Mode:
             //std::cout<<"RENDER_GRAPHICS_Mode"<<std::endl;
-            renderer.WaitForGraphicsFence();//must wait for fence before record
+
+            //must wait for fence before record command buffer
+            renderer.WaitForGraphicsFence();
+            //must aquire swap image before record command buffer
+            renderer.AquireSwapchainImage(swapchain); 
+
+            vkResetCommandBuffer(renderer.commandBuffers[renderer.graphicsCmdId][renderer.currentFrame], /*VkCommandBufferResetFlagBits*/ 0);
+
             recordGraphicsCommandBuffer();
 
-            renderer.AquireSwapchainImage(swapchain);
             renderer.SubmitGraphics();
+
             renderer.PresentSwapchainImage(swapchain); 
         break;
         case CRenderer::RENDER_COMPUTE_Mode:
         //case renderer.RENDER_COMPUTE_Mode:
+            std::cout<<"Application: RENDER_COMPUTE_Mode."<<std::endl;
             renderer.WaitForComputeFence();//must wait for fence before record
+            std::cout<<"Application: renderer.WaitForComputeFence()"<<std::endl;
+
+            vkResetCommandBuffer(renderer.commandBuffers[renderer.computeCmdId][renderer.currentFrame], /*VkCommandBufferResetFlagBits*/ 0);
+            std::cout<<"Application: vkResetCommandBuffer"<<std::endl;
+
             recordComputeCommandBuffer();
+            std::cout<<"Application: recordComputeCommandBuffer()"<<std::endl;
 
             renderer.SubmitCompute();
+            std::cout<<"Application: renderer.SubmitCompute()"<<std::endl;
+
+           // renderer.PresentSwapchainImage(swapchain); //???
         break;
         case CRenderer::RENDER_COMPUTE_SWAPCHAIN_Mode:
         //case renderer.RENDER_COMPUTE_SWAPCHAIN_Mode:
-            renderer.WaitForComputeFence();//must wait for fence before record
+            //must wait for fence before record
+            renderer.WaitForComputeFence();
+            //must aquire swap image before record command buffer
+            renderer.AquireSwapchainImage(swapchain);
+
+            vkResetCommandBuffer(renderer.commandBuffers[renderer.computeCmdId][renderer.currentFrame], /*VkCommandBufferResetFlagBits*/ 0);
+
             recordComputeCommandBuffer();
 
-            renderer.AquireSwapchainImage(swapchain);
             renderer.SubmitCompute();
+
             renderer.PresentSwapchainImage(swapchain); 
         break;
         case CRenderer::RENDER_COMPUTE_GRAPHICS_Mode:
         //case renderer.RENDER_COMPUTE_GRAPHICS_Mode:
             renderer.WaitForComputeFence();//must wait for fence before record
-            recordComputeCommandBuffer();
             renderer.WaitForGraphicsFence();//must wait for fence before record
+            renderer.AquireSwapchainImage(swapchain);//must aquire swap image before record command buffer
+
+            vkResetCommandBuffer(renderer.commandBuffers[renderer.graphicsCmdId][renderer.currentFrame], /*VkCommandBufferResetFlagBits*/ 0);
+            vkResetCommandBuffer(renderer.commandBuffers[renderer.computeCmdId][renderer.currentFrame], /*VkCommandBufferResetFlagBits*/ 0);
+            
+
+            recordComputeCommandBuffer();
             recordGraphicsCommandBuffer();
             
-            renderer.AquireSwapchainImage(swapchain);
             renderer.SubmitCompute();
             renderer.SubmitGraphics();
+
             renderer.PresentSwapchainImage(swapchain); 
         break;
         default:
