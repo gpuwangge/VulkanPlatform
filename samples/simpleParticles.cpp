@@ -68,6 +68,8 @@ public:
 	std::vector<VkClearValue> clearValues{ {  0.0f, 0.0f, 0.0f, 1.0f  } };
 
 	void initialize(){
+		renderer.m_renderMode = renderer.RENDER_COMPUTE_GRAPHICS_Mode;
+
 		renderer.CreateCommandPool(surface);
 		
 		//For Graphics

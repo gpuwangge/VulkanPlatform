@@ -115,14 +115,14 @@ void CRenderer::WaitForComputeFence(){
     vkWaitForFences(CContext::GetHandle().GetLogicalDevice(), 1, &computeInFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
 }
 
-void CRenderer::SubmitCompute(){
+void CRenderer::SubmitCompute(bool bUseGraphicsPipeline){
     //if (imagesInFlight[imageIndex] != VK_NULL_HANDLE) {
     //    vkWaitForFences(CContext::GetHandle().GetLogicalDevice(), 1, &imagesInFlight[imageIndex], VK_TRUE, UINT64_MAX);
     //}
     //imagesInFlight[imageIndex] = inFlightFences[currentFrame];
     //vkWaitForFences(CContext::GetHandle().GetLogicalDevice(), 1, &computeInFlightFences[imageIndex], VK_TRUE, UINT64_MAX);
 
-    printf("currentFrame: %d, imageIndex: %d \n", currentFrame, imageIndex);
+    //printf("currentFrame: %d, imageIndex: %d \n", currentFrame, imageIndex);
 
     VkSubmitInfo submitInfo{};
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
@@ -136,9 +136,11 @@ void CRenderer::SubmitCompute(){
     submitInfo.commandBufferCount = 1;
     submitInfo.pCommandBuffers = &commandBuffers[computeCmdId][currentFrame];///!!!
 
-    ///VkSemaphore signalSemaphores[] = { computeFinishedSemaphores[currentFrame] }; //to tell graphics or present that compute is finished
-    ///submitInfo.signalSemaphoreCount = 1;
-    ///submitInfo.pSignalSemaphores = signalSemaphores;
+    if(bUseGraphicsPipeline){ //GPU needs to know when the compute pipeline commands are executed
+        VkSemaphore signalSemaphores[] = { computeFinishedSemaphores[currentFrame] }; //to tell graphics or present that compute is finished
+        submitInfo.signalSemaphoreCount = 1;
+        submitInfo.pSignalSemaphores = signalSemaphores;
+    }
 
     vkResetFences(CContext::GetHandle().GetLogicalDevice(), 1, &computeInFlightFences[currentFrame]);
 
@@ -154,15 +156,23 @@ void CRenderer::WaitForGraphicsFence(){
     //The Vulkan spec states: commandBuffer must not be in the recording or pending state
 }
 
-void CRenderer::SubmitGraphics(){
+void CRenderer::SubmitGraphics(bool bUseComputePipeline){
     VkSubmitInfo submitInfo{};
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
-    VkSemaphore waitSemaphores[] = {imageAvailableSemaphores[currentFrame] };
-    VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
-    submitInfo.waitSemaphoreCount = 1;
-    submitInfo.pWaitSemaphores = waitSemaphores;
-    submitInfo.pWaitDstStageMask = waitStages;
+    if(bUseComputePipeline){
+        VkSemaphore waitSemaphores[] = {computeFinishedSemaphores[currentFrame], imageAvailableSemaphores[currentFrame] };
+        VkPipelineStageFlags waitStages[] = {VK_PIPELINE_STAGE_VERTEX_INPUT_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+        submitInfo.waitSemaphoreCount = 2;
+        submitInfo.pWaitSemaphores = waitSemaphores;
+        submitInfo.pWaitDstStageMask = waitStages;
+    }else{
+        VkSemaphore waitSemaphores[] = {imageAvailableSemaphores[currentFrame] };
+        VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+        submitInfo.waitSemaphoreCount = 1;
+        submitInfo.pWaitSemaphores = waitSemaphores;
+        submitInfo.pWaitDstStageMask = waitStages;
+    }   
 
     submitInfo.commandBufferCount = 1;
     submitInfo.pCommandBuffers = &commandBuffers[graphicsCmdId][currentFrame];
@@ -197,7 +207,7 @@ void CRenderer::PresentSwapchainImage(CSwapchain &swapchain){
             signalSemaphores[0] = renderFinishedSemaphores[currentFrame]; 
         break;
         case RENDER_COMPUTE_Mode:
-            //signalSemaphores[0] = computeFinishedSemaphores[currentFrame]; //???
+            //signalSemaphores[0] = computeFinishedSemaphores[currentFrame]; //no need to present image for this mode
         break;
         case RENDER_COMPUTE_SWAPCHAIN_Mode:
             signalSemaphores[0] = computeFinishedSemaphores[currentFrame]; 

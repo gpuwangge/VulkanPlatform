@@ -29,9 +29,9 @@ public:
 
     void AquireSwapchainImage(CSwapchain &swapchain);
     void WaitForComputeFence();
-    void SubmitCompute();
+    void SubmitCompute(bool bUseGraphicsPipeline = false);
     void WaitForGraphicsFence();
-    void SubmitGraphics();
+    void SubmitGraphics(bool bUseComputePipeline = false);
     void PresentSwapchainImage(CSwapchain &swapchain); 
 
 

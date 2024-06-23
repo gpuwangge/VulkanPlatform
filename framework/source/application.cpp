@@ -187,8 +187,8 @@ void CApplication::UpdateRecordRender(){
             recordComputeCommandBuffer();
             recordGraphicsCommandBuffer();
             
-            renderer.SubmitCompute();
-            renderer.SubmitGraphics();
+            renderer.SubmitCompute(true); //true: submit compute comamnd queue with extra semaphore for graphics
+            renderer.SubmitGraphics(true); //true: submit graphics with compute semaphore
 
             renderer.PresentSwapchainImage(swapchain); 
         break;
