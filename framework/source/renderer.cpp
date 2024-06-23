@@ -127,18 +127,18 @@ void CRenderer::SubmitCompute(){
     VkSubmitInfo submitInfo{};
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
-    VkSemaphore waitSemaphores[] = { imageAvailableSemaphores[currentFrame] }; //to wait until image is ready
-    VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
-    submitInfo.waitSemaphoreCount = 1;
-    submitInfo.pWaitSemaphores = waitSemaphores;
-    submitInfo.pWaitDstStageMask = waitStages;
+    ///VkSemaphore waitSemaphores[] = { imageAvailableSemaphores[currentFrame] }; //to wait until image is ready
+    ///VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+    ///submitInfo.waitSemaphoreCount = 1;
+    ///submitInfo.pWaitSemaphores = waitSemaphores;
+    ///submitInfo.pWaitDstStageMask = waitStages;
 
     submitInfo.commandBufferCount = 1;
     submitInfo.pCommandBuffers = &commandBuffers[computeCmdId][currentFrame];///!!!
 
-    VkSemaphore signalSemaphores[] = { computeFinishedSemaphores[currentFrame] }; //to tell graphics or present that compute is finished
-    submitInfo.signalSemaphoreCount = 1;
-    submitInfo.pSignalSemaphores = signalSemaphores;
+    ///VkSemaphore signalSemaphores[] = { computeFinishedSemaphores[currentFrame] }; //to tell graphics or present that compute is finished
+    ///submitInfo.signalSemaphoreCount = 1;
+    ///submitInfo.pSignalSemaphores = signalSemaphores;
 
     vkResetFences(CContext::GetHandle().GetLogicalDevice(), 1, &computeInFlightFences[currentFrame]);
 

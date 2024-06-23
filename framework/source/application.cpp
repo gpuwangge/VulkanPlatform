@@ -144,18 +144,18 @@ void CApplication::UpdateRecordRender(){
         break;
         case CRenderer::RENDER_COMPUTE_Mode:
         //case renderer.RENDER_COMPUTE_Mode:
-            std::cout<<"Application: RENDER_COMPUTE_Mode."<<std::endl;
+            //std::cout<<"Application: RENDER_COMPUTE_Mode."<<std::endl;
             renderer.WaitForComputeFence();//must wait for fence before record
-            std::cout<<"Application: renderer.WaitForComputeFence()"<<std::endl;
+            //std::cout<<"Application: renderer.WaitForComputeFence()"<<std::endl;
 
             vkResetCommandBuffer(renderer.commandBuffers[renderer.computeCmdId][renderer.currentFrame], /*VkCommandBufferResetFlagBits*/ 0);
-            std::cout<<"Application: vkResetCommandBuffer"<<std::endl;
+            //std::cout<<"Application: vkResetCommandBuffer"<<std::endl;
 
             recordComputeCommandBuffer();
-            std::cout<<"Application: recordComputeCommandBuffer()"<<std::endl;
+            //std::cout<<"Application: recordComputeCommandBuffer()"<<std::endl;
 
             renderer.SubmitCompute();
-            std::cout<<"Application: renderer.SubmitCompute()"<<std::endl;
+            //std::cout<<"Application: renderer.SubmitCompute()"<<std::endl;
 
            // renderer.PresentSwapchainImage(swapchain); //???
         break;
