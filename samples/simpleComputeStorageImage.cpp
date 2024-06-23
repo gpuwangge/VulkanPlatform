@@ -15,6 +15,8 @@ public:
 	}
 
 	void initialize(){
+		renderer.m_renderMode = renderer.RENDER_COMPUTE_SWAPCHAIN_Mode;
+
 		renderer.CreateCommandPool(surface);
 		renderer.CreateComputeCommandBuffer();
 		///renderer.CreateGraphicsCommandBuffer();

@@ -10,6 +10,8 @@ public:
 	StructStorageBuffer storageBufferObject;
 
 	void initialize(){
+		renderer.m_renderMode = renderer.RENDER_COMPUTE_Mode;
+		
 		renderer.CreateCommandPool(surface);
 		renderer.CreateComputeCommandBuffer();
 
