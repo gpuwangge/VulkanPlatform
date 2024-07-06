@@ -165,12 +165,14 @@ void CApplication::UpdateRecordRender(){
             renderer.WaitForComputeFence();
             //must aquire swap image before record command buffer
             renderer.AquireSwapchainImage(swapchain);
+            //std::cout<<"Application: renderer.imageIndex = "<<renderer.imageIndex<< std::endl;
+            //std::cout<<"Application: renderer.currentFrame = "<<renderer.currentFrame<< std::endl;
 
-            vkResetCommandBuffer(renderer.commandBuffers[renderer.computeCmdId][renderer.currentFrame], /*VkCommandBufferResetFlagBits*/ 0);
+            //vkResetCommandBuffer(renderer.commandBuffers[renderer.computeCmdId][renderer.currentFrame], /*VkCommandBufferResetFlagBits*/ 0);
 
             recordComputeCommandBuffer();
 
-            renderer.SubmitCompute();
+            renderer.SubmitCompute(); 
 
             renderer.PresentSwapchainImage(swapchain); 
         break;
@@ -187,8 +189,8 @@ void CApplication::UpdateRecordRender(){
             recordComputeCommandBuffer();
             recordGraphicsCommandBuffer();
             
-            renderer.SubmitCompute(true); //true: submit compute comamnd queue with extra semaphore for graphics
-            renderer.SubmitGraphics(true); //true: submit graphics with compute semaphore
+            renderer.SubmitCompute(); 
+            renderer.SubmitGraphics(); 
 
             renderer.PresentSwapchainImage(swapchain); 
         break;

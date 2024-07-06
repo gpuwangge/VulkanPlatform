@@ -2,6 +2,7 @@
 
 #define TEST_CLASS_NAME CSimpleComputeStorageImage
 class TEST_CLASS_NAME: public CApplication{
+	//static const int KernelRunNumber = 1;
 public:
 	std::vector<VkClearValue> clearValues{ {  0.0f, 1.0f, 0.0f, 1.0f  } };
 
@@ -61,14 +62,16 @@ public:
 	void update(){
 		CApplication::update();
 
-		//NeedToExit = true;
+		//static int counter = 1;
+		//if(counter==KernelRunNumber) NeedToExit = true;
+		//counter++;
 	}
 
 	void recordComputeCommandBuffer(){
 		//std::cout<<"Record Compute command buffer. "<<std::endl;
 
 		
-
+	//command buffer recorded in init() so dont need to record here
 /*
 		START_COMPUTE_RECORD(0)
 

@@ -115,7 +115,7 @@ void CRenderer::WaitForComputeFence(){
     vkWaitForFences(CContext::GetHandle().GetLogicalDevice(), 1, &computeInFlightFences[currentFrame], VK_TRUE, UINT64_MAX);
 }
 
-void CRenderer::SubmitCompute(bool bUseGraphicsPipeline){
+void CRenderer::SubmitCompute(){
     //if (imagesInFlight[imageIndex] != VK_NULL_HANDLE) {
     //    vkWaitForFences(CContext::GetHandle().GetLogicalDevice(), 1, &imagesInFlight[imageIndex], VK_TRUE, UINT64_MAX);
     //}
@@ -127,20 +127,43 @@ void CRenderer::SubmitCompute(bool bUseGraphicsPipeline){
     VkSubmitInfo submitInfo{};
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
-    ///VkSemaphore waitSemaphores[] = { imageAvailableSemaphores[currentFrame] }; //to wait until image is ready
-    ///VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
-    ///submitInfo.waitSemaphoreCount = 1;
-    ///submitInfo.pWaitSemaphores = waitSemaphores;
-    ///submitInfo.pWaitDstStageMask = waitStages;
+    //this code handles compute semaphores
+    switch(m_renderMode){
+        case RENDER_GRAPHICS_Mode:
+            //Pure graphics application doesn't use compute pipeline
+        break;
+        case RENDER_COMPUTE_Mode:
+            //Pure compute application doesn't need swap image or present
+        break;
+        case RENDER_COMPUTE_SWAPCHAIN_Mode:
+        {
+            //Because this mode use swap image to present, wait swap image to be ready
+            VkSemaphore waitSemaphores[] = { imageAvailableSemaphores[currentFrame] }; //to wait until image is ready
+            VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+            submitInfo.waitSemaphoreCount = 1;
+            submitInfo.pWaitSemaphores = waitSemaphores;
+            submitInfo.pWaitDstStageMask = waitStages;
+
+            //Also because this mode need present swap image, need to tell present that compute is finished
+            VkSemaphore signalSemaphores[] = { computeFinishedSemaphores[currentFrame] }; 
+            submitInfo.signalSemaphoreCount = 1;
+            submitInfo.pSignalSemaphores = signalSemaphores;
+        }
+        break;
+        case RENDER_COMPUTE_GRAPHICS_Mode:
+        {
+            //This mode doesn't interact with swap image, this semaphore is to tell graphics that compute is finished
+            VkSemaphore signalSemaphores[] = { computeFinishedSemaphores[currentFrame] }; 
+            submitInfo.signalSemaphoreCount = 1;
+            submitInfo.pSignalSemaphores = signalSemaphores;
+        }
+        break;
+        default:
+        break;
+    }
 
     submitInfo.commandBufferCount = 1;
     submitInfo.pCommandBuffers = &commandBuffers[computeCmdId][currentFrame];///!!!
-
-    if(bUseGraphicsPipeline){ //GPU needs to know when the compute pipeline commands are executed
-        VkSemaphore signalSemaphores[] = { computeFinishedSemaphores[currentFrame] }; //to tell graphics or present that compute is finished
-        submitInfo.signalSemaphoreCount = 1;
-        submitInfo.pSignalSemaphores = signalSemaphores;
-    }
 
     vkResetFences(CContext::GetHandle().GetLogicalDevice(), 1, &computeInFlightFences[currentFrame]);
 
@@ -156,23 +179,42 @@ void CRenderer::WaitForGraphicsFence(){
     //The Vulkan spec states: commandBuffer must not be in the recording or pending state
 }
 
-void CRenderer::SubmitGraphics(bool bUseComputePipeline){
+void CRenderer::SubmitGraphics(){
     VkSubmitInfo submitInfo{};
     submitInfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
 
-    if(bUseComputePipeline){
-        VkSemaphore waitSemaphores[] = {computeFinishedSemaphores[currentFrame], imageAvailableSemaphores[currentFrame] };
-        VkPipelineStageFlags waitStages[] = {VK_PIPELINE_STAGE_VERTEX_INPUT_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
-        submitInfo.waitSemaphoreCount = 2;
-        submitInfo.pWaitSemaphores = waitSemaphores;
-        submitInfo.pWaitDstStageMask = waitStages;
-    }else{
-        VkSemaphore waitSemaphores[] = {imageAvailableSemaphores[currentFrame] };
-        VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
-        submitInfo.waitSemaphoreCount = 1;
-        submitInfo.pWaitSemaphores = waitSemaphores;
-        submitInfo.pWaitDstStageMask = waitStages;
-    }   
+    //this code handles graphics semaphores
+    switch(m_renderMode){
+        case RENDER_GRAPHICS_Mode:
+        {
+            //pure graphics pipeline, need wait swap image is ready
+            VkSemaphore waitSemaphores[] = {imageAvailableSemaphores[currentFrame] };
+            VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+            submitInfo.waitSemaphoreCount = 1;
+            submitInfo.pWaitSemaphores = waitSemaphores;
+            submitInfo.pWaitDstStageMask = waitStages;
+        }
+        break;
+        case RENDER_COMPUTE_Mode:
+            //pure compute application doen't need graphics pipeline
+        break;
+        case RENDER_COMPUTE_SWAPCHAIN_Mode:
+            //if render direct on swap image, doesn't need graphics pipeline
+        break;
+        case RENDER_COMPUTE_GRAPHICS_Mode:
+        {
+            //graphics/compute pipeline hybrid, need wait both swap image and compute are ready
+            VkSemaphore waitSemaphores[] = {computeFinishedSemaphores[currentFrame], imageAvailableSemaphores[currentFrame] };
+            VkPipelineStageFlags waitStages[] = {VK_PIPELINE_STAGE_VERTEX_INPUT_BIT, VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT };
+            submitInfo.waitSemaphoreCount = 2;
+            submitInfo.pWaitSemaphores = waitSemaphores;
+            submitInfo.pWaitDstStageMask = waitStages;
+        }
+        break;
+        default:
+        break;
+    }
+   
 
     submitInfo.commandBufferCount = 1;
     submitInfo.pCommandBuffers = &commandBuffers[graphicsCmdId][currentFrame];
@@ -204,16 +246,19 @@ void CRenderer::PresentSwapchainImage(CSwapchain &swapchain){
     VkSemaphore signalSemaphores[1];// = { computeFinishedSemaphores[currentFrame] }; //can not present until compute/graphics signal is ready renderFinishedSemaphores
     switch(m_renderMode){
         case RENDER_GRAPHICS_Mode:
+            //present only if render is finished
             signalSemaphores[0] = renderFinishedSemaphores[currentFrame]; 
         break;
         case RENDER_COMPUTE_Mode:
-            //signalSemaphores[0] = computeFinishedSemaphores[currentFrame]; //no need to present image for this mode
+            //no need to present image for pure compute application
         break;
         case RENDER_COMPUTE_SWAPCHAIN_Mode:
+            //present only if compute is finished
             signalSemaphores[0] = computeFinishedSemaphores[currentFrame]; 
         break;
         case RENDER_COMPUTE_GRAPHICS_Mode:
-            signalSemaphores[0] = renderFinishedSemaphores[currentFrame]; //submit compute first, then graphics. present only after graphics finishes
+            //present only if render is finished
+            signalSemaphores[0] = renderFinishedSemaphores[currentFrame]; 
         break;
         default:
         break;
