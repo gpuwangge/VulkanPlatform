@@ -20,9 +20,10 @@ public:
     void CreateTextureImage(void* texels, VkImageUsageFlags usage, CWxjImageBuffer &imageBuffer, unsigned short texChannels, unsigned short texBptpc);
     void CreateImageView(VkImageAspectFlags aspectFlags);
 
-    void generateMipmaps();
-    void generateMipmaps(VkImage image, bool bMix = false, std::array<CWxjImageBuffer, MIPMAP_TEXTURE_COUNT> *textureImageBuffers_mipmaps = NULL);
-    void generateMipmaps(std::string rainbowCheckerboardTexturePath, VkImageUsageFlags usage);
+    void generateMipmaps(); //create normal mipmap
+    void generateMipmaps(std::string rainbowCheckerboardTexturePath, VkImageUsageFlags usage); //create mix mipmaps
+    void generateMipmapsCore(VkImage image, bool bCreateTempTexture = false, bool bCreateMixTexture = false, std::array<CWxjImageBuffer, MIPMAP_TEXTURE_COUNT> *textureImageBuffers_mipmaps = NULL);
+    
 
     //Resource for Texture
     int32_t texWidth, texHeight;

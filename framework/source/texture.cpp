@@ -219,10 +219,10 @@ void CTextureImage::endSingleTimeCommands(VkCommandBuffer commandBuffer) {
 
 void CTextureImage::generateMipmaps(){
     if(mipLevels <= 1) return;
-    generateMipmaps(textureImageBuffer.image);
+    generateMipmapsCore(textureImageBuffer.image);
 }
 
-void CTextureImage::generateMipmaps(VkImage image, bool bMix, std::array<CWxjImageBuffer, MIPMAP_TEXTURE_COUNT> *textureImageBuffers_mipmaps) {
+void CTextureImage::generateMipmapsCore(VkImage image, bool bCreateTempTexture, bool bCreateMixTexture, std::array<CWxjImageBuffer, MIPMAP_TEXTURE_COUNT> *textureImageBuffers_mipmaps) {
 	//bMix: default is false
 	//textureImageBuffers_mipmaps: default is NULL
 	// Check if image format supports linear blitting
@@ -275,11 +275,7 @@ void CTextureImage::generateMipmaps(VkImage image, bool bMix, std::array<CWxjIma
 		blit.dstSubresource.baseArrayLayer = 0;
 		blit.dstSubresource.layerCount = 1;
 
-		if (bMix) {
-            //TODO: (Validation Error)
-            //command buffer VkCommandBuffer 0x62f45f8[] expects VkImage 0xab64de0000000020[] 
-            //(subresource: aspectMask 0x1 array layer 0, mip level 3) to be in layout VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL--instead, 
-            //current layout is VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
+		if (bCreateMixTexture) {
 			int j = i > MIPMAP_TEXTURE_COUNT ? MIPMAP_TEXTURE_COUNT : i;
 			vkCmdBlitImage(commandBuffer,
 				(*textureImageBuffers_mipmaps)[j-1].image, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
@@ -295,8 +291,8 @@ void CTextureImage::generateMipmaps(VkImage image, bool bMix, std::array<CWxjIma
 		}
 
 		barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
-        //barrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-		barrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+		if(bCreateTempTexture) barrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+		else barrier.newLayout = VK_IMAGE_LAYOUT_GENERAL;
 		barrier.srcAccessMask = VK_ACCESS_TRANSFER_READ_BIT;
 		barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
 
@@ -312,8 +308,8 @@ void CTextureImage::generateMipmaps(VkImage image, bool bMix, std::array<CWxjIma
 
 	barrier.subresourceRange.baseMipLevel = mipLevels - 1;
 	barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
-    //barrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
-	barrier.newLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+	if(bCreateTempTexture) barrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
+	else barrier.newLayout = VK_IMAGE_LAYOUT_GENERAL;//VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
 	barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
 	barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
 
@@ -343,10 +339,10 @@ void CTextureImage::generateMipmaps(std::string rainbowCheckerboardTexturePath, 
 		uint8_t* texels = stbi_load_from_memory(fileBits.data(), fileBits.size(), &texWidth, &texHeight, &texChannels, 4);
 #endif
 		CreateTextureImage(texels, usage, tmpTextureBufferForRainbowMipmaps[i], dstTexChannels, 8);
-        generateMipmaps(tmpTextureBufferForRainbowMipmaps[i].image);
+        generateMipmapsCore(tmpTextureBufferForRainbowMipmaps[i].image, true);
 	}
 	//Generate mipmaps for image, using tmpTextureBufferForRainbowMipmaps
-	generateMipmaps(textureImageBuffer.image, true, &tmpTextureBufferForRainbowMipmaps);
+	generateMipmapsCore(textureImageBuffer.image, false, true, &tmpTextureBufferForRainbowMipmaps);
 	//Clean up
 	for (int i = 0; i < MIPMAP_TEXTURE_COUNT; i++) {
         tmpTextureBufferForRainbowMipmaps[i].destroy();
