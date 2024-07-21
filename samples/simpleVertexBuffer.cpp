@@ -48,7 +48,7 @@ public:
 	void recordGraphicsCommandBuffer(){
 		START_GRAPHICS_RECORD(0)
 
-		renderer.BindVertexBuffer();
+		renderer.BindVertexBuffer(0);
 		renderer.Draw(3);
 
 		END_GRAPHICS_RECORD

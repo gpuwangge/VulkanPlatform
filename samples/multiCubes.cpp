@@ -7,8 +7,13 @@
 #define TEST_CLASS_NAME CMultiCubes
 class TEST_CLASS_NAME: public CApplication{
 public:
-	std::vector<Vertex3D> vertices3D;
-	std::vector<uint32_t> indices3D;
+	//TODO: need create vectors for different cubes
+	class CCube : public CObject{
+	public:
+		CCube(){} //TODO: merge load model/texture and record action into CObject...
+	};
+
+	CCube cubes[2];
 
 	std::vector<VkClearValue> clearValues{ {  1.0f, 1.0f, 1.0f, 1.0f  },  { 1.0f, 0 } };
 
@@ -20,13 +25,19 @@ public:
 		swapchain.bEnableMSAA = true;//!To enable MSAA, make sure it has depth test (call addDepthAttachment())
 		swapchain.bEnableDepthTest = true; 
 
-		modelManager.LoadObjModel("cube.obj", vertices3D, indices3D);
-		
-		renderer.CreateVertexBuffer<Vertex3D>(vertices3D);
-		renderer.CreateIndexBuffer(indices3D);
+		//multiple models, multiple vertex buffers, multiple index buffers
+		std::vector<std::string> modelNames = {"cube.obj", "hallway.obj"}; //"viking_room.obj"
+		for(unsigned int i = 0; i < 2; i++){
+			cubes[i].id = i;
+			modelManager.LoadObjModel(modelNames[i], cubes[i].vertices3D, cubes[i].indices3D);
+			renderer.CreateVertexBuffer<Vertex3D>(cubes[i].vertices3D); //the first buffer index is 0(so renderer will use object id to access buffer)
+			renderer.CreateIndexBuffer(cubes[i].indices3D);
+		}
+
 		renderer.CreateCommandPool(surface);
 		renderer.CreateGraphicsCommandBuffer();
 
+		//TODO: Add texture for different objects
 		VkImageUsageFlags usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
 		textureImages[0].CreateTextureImage("viking_room.png", usage, renderer.commandPool);
 		textureImages[0].CreateImageView(VK_IMAGE_ASPECT_COLOR_BIT);
@@ -56,8 +67,6 @@ public:
 
 		swapchain.CreateFramebuffers(renderProcess.renderPass);
 
-		//shaderManager.CreateVertexShader("simpleObjLoader/vert.spv");
-		//shaderManager.CreateFragmentShader("simpleObjLoader/frag.spv");
 		shaderManager.CreateShader("multiCubes/vert.spv", shaderManager.VERT);
 		shaderManager.CreateShader("multiCubes/frag.spv", shaderManager.FRAG);
 
@@ -77,18 +86,29 @@ public:
 	}
 
 	void update(){
-		descriptors[0].mvpUBO.model = glm::rotate(glm::mat4(1.0f), durationTime * glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		descriptors[0].mvpUBO.mvpData[0].model = glm::rotate(glm::mat4(1.0f), durationTime * glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		descriptors[0].mvpUBO.mvpData[1].model = glm::rotate(glm::mat4(1.0f), durationTime * glm::radians(-45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		//descriptors[0].mvpUBO.mvpData[1].model = glm::mat4(1.0f); //identity matrix
 		CApplication::update();
 	}
 
 	void recordGraphicsCommandBuffer(){
 		START_GRAPHICS_RECORD(0)
 
-		renderer.BindVertexBuffer();
-		renderer.BindIndexBuffer();
-		renderer.DrawIndexed(indices3D);
-
+		drawObject(0); //draw object id = 0
+		drawObject(1); //draw object id = 1
+		
 		END_GRAPHICS_RECORD
+	}
+
+	void drawObject(int objectId){
+		//If shader is the same, can reuse the same descriptor for different objects.
+		//The offset index can be different than object id. Different offset index means different MVP uniforms.
+		renderer.BindGraphicsDescriptorSets(renderProcess.graphicsPipelineLayout, descriptors[0].descriptorSets, objectId);
+		
+		renderer.BindVertexBuffer(objectId);
+		renderer.BindIndexBuffer(objectId);
+		renderer.DrawIndexed(cubes[objectId].indices3D);
 	}
 };
 

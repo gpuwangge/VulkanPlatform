@@ -60,8 +60,6 @@ public:
 	void recordGraphicsCommandBuffer(){
 		START_GRAPHICS_RECORD(0)
 
-		renderer.BindVertexBuffer();
-    	renderer.BindIndexBuffer();
 		ModelPushConstants pushConstants;
 		// pushConstants.model = glm::mat4(1, 0, 0, 0,
 		// 							    0, 1, 0, 0,
@@ -69,9 +67,17 @@ public:
 		// 								0, 0, 0, 1);
 		pushConstants.model = glm::rotate(glm::mat4(1.0f), durationTime * glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		renderer.PushConstantToCommand<ModelPushConstants>(pushConstants, renderProcess.graphicsPipelineLayout, shaderManager.pushConstantRange);
-		renderer.DrawIndexed(indices3D);
+
+		drawObject(0);
 
 		END_GRAPHICS_RECORD
+	}
+
+	void drawObject(int objectId){
+		renderer.BindGraphicsDescriptorSets(renderProcess.graphicsPipelineLayout, descriptors[0].descriptorSets, objectId);
+		renderer.BindVertexBuffer(objectId);
+		renderer.BindIndexBuffer(objectId);
+		renderer.DrawIndexed(indices3D);
 	}
 };
 

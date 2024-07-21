@@ -12,7 +12,14 @@ CDescriptor::CDescriptor(){
 	m_customUniformBufferSize = 0;
     m_storageBufferSize = 0;
     //m_storageBufferSize_2 = 0;
-	mvpUBO.model = glm::mat4(1.0f);
+
+
+	//mvpUBO.model = glm::mat4(1.0f);
+    //mvpUBO.init(1);
+    mvpUBO.mvpData[0].model = glm::mat4(1.0f);
+    mvpUBO.mvpData[1].model = glm::mat4(1.0f);
+    //mvpUBO.mvpData.model = glm::mat4(1.0f);
+
     //textureSampler = NULL;
     textureSamplers.resize(1);
     textureSamplerCount = 0;
@@ -47,6 +54,9 @@ void CDescriptor::addMVPUniformBuffer(){
 	
     mvpUniformBuffers.resize(MAX_FRAMES_IN_FLIGHT);
     mvpUniformBuffersMapped.resize(MAX_FRAMES_IN_FLIGHT);
+
+    //std::cout<<"sizeof(MVPUniformBufferObject): "<<sizeof(MVPUniformBufferObject)<<std::endl;
+    //int mvp_size = 256*2;
 
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
         VkResult result = mvpUniformBuffers[i].init(sizeof(MVPUniformBufferObject), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
@@ -159,7 +169,7 @@ void CDescriptor::createDescriptorPool(){//VkDescriptorType type
 		counter++;
 	}
     if(uniformBufferUsageFlags & UNIFORM_BUFFER_MVP_BIT || uniformBufferUsageFlags & UNIFORM_BUFFER_VP_BIT){
-        poolSizes[counter].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        poolSizes[counter].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
 	 	poolSizes[counter].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
 		counter++;
     }
@@ -337,12 +347,14 @@ void CDescriptor::createDescriptorSets(std::vector<CTextureImage> *textureImages
         if(uniformBufferUsageFlags & UNIFORM_BUFFER_MVP_BIT){
             mvpBufferInfo.buffer = mvpUniformBuffers[i].buffer;
             mvpBufferInfo.offset = 0;
-            mvpBufferInfo.range = sizeof(MVPUniformBufferObject);
+            //sizeof(MVPUniformBufferObject) is 512, including 2 mvp matrices. We only use one at a time.
+            //spec requires alighment to be multiple of 256 (1080 TI). Maybe change this later?
+            mvpBufferInfo.range = 256;
             descriptorWrites[counter].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
             descriptorWrites[counter].dstSet = descriptorSets[i];
             descriptorWrites[counter].dstBinding = counter;
             descriptorWrites[counter].dstArrayElement = 0;
-            descriptorWrites[counter].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+            descriptorWrites[counter].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
             descriptorWrites[counter].descriptorCount = 1;
             descriptorWrites[counter].pBufferInfo = &mvpBufferInfo;
             counter++;
@@ -356,7 +368,7 @@ void CDescriptor::createDescriptorSets(std::vector<CTextureImage> *textureImages
             descriptorWrites[counter].dstSet = descriptorSets[i];
             descriptorWrites[counter].dstBinding = counter;
             descriptorWrites[counter].dstArrayElement = 0;
-            descriptorWrites[counter].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+            descriptorWrites[counter].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
             descriptorWrites[counter].descriptorCount = 1;
             descriptorWrites[counter].pBufferInfo = &vpBufferInfo;
             counter++;
@@ -505,8 +517,18 @@ void CDescriptor::updateMVPUniformBuffer(uint32_t currentFrame, float durationTi
         // ubo.model = glm::rotate(glm::mat4(1.0f), durationTime * glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 
         //UniformBufferObject ubo{};
-        mvpUBO.view = mainCamera.matrices.view;
-        mvpUBO.proj = mainCamera.matrices.perspective;
+        //mvpUBO.view = mainCamera.matrices.view;
+        //mvpUBO.proj = mainCamera.matrices.perspective;
+
+        mvpUBO.mvpData[0].view = mainCamera.matrices.view;
+        mvpUBO.mvpData[0].proj = mainCamera.matrices.perspective;
+        mvpUBO.mvpData[1].view = mainCamera.matrices.view;
+        mvpUBO.mvpData[1].proj = mainCamera.matrices.perspective;
+        //mvpUBO.mvpData.view = mainCamera.matrices.view;
+        //mvpUBO.mvpData.proj = mainCamera.matrices.perspective;
+
+        //std::cout<<"sizeof(mvpUBO) = "<<sizeof(mvpUBO)<<std::endl;
+        //int size_mvpUBO = 256*2;
 
         memcpy(mvpUniformBuffersMapped[currentFrame], &mvpUBO, sizeof(mvpUBO));
     }

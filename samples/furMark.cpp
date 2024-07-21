@@ -91,12 +91,18 @@ public:
 	void recordGraphicsCommandBuffer(){
 		START_GRAPHICS_RECORD(0)
 
-		renderer.BindVertexBuffer();
-		renderer.BindIndexBuffer();
-		renderer.DrawIndexed(indices3D);
+		drawObject(0);
 
 		END_GRAPHICS_RECORD
 	}
+
+	void drawObject(int objectId){
+		renderer.BindGraphicsDescriptorSets(renderProcess.graphicsPipelineLayout, descriptors[0].descriptorSets, -1); //-1 to offset means no dynamic offset
+		renderer.BindVertexBuffer(objectId);
+		renderer.BindIndexBuffer(objectId);
+		renderer.DrawIndexed(indices3D);
+	}
+
 };
 
 #ifndef ANDROID

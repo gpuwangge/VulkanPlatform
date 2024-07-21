@@ -218,6 +218,7 @@ public:
 	void recordComputeCommandBuffer(){
 		START_COMPUTE_RECORD(1)
 
+		renderer.BindComputeDescriptorSets(renderProcess.computePipelineLayout, descriptors[1].descriptorSets, -1); //-1 to offset means no dynamic offset
 
 		renderer.Dispatch(PARTICLE_COUNT / 256, 1, 1);
 		static int counter = 0;

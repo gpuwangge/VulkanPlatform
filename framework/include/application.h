@@ -13,6 +13,7 @@
 #include "renderer.h"
 #include "texture.h" //this includes imageManager.h
 #include "modelManager.h"
+#include "object.h"
 
 #ifndef ANDROID
 #include "..\\..\\windowsFramework\\include\\glfwManager.h"

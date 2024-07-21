@@ -42,7 +42,7 @@ public:
     }
 
     //bool bUseMVP;
-    std::vector<CWxjBuffer> mvpUniformBuffers; 
+    std::vector<CWxjBuffer> mvpUniformBuffers; //need one mvp buffer for each host resource: MAX_FRAMES_IN_FLIGHT
 	std::vector<void*> mvpUniformBuffersMapped;
     void addMVPUniformBuffer();
     MVPUniformBufferObject mvpUBO{};

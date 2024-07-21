@@ -17,6 +17,7 @@ void CRenderer::Update(){
 
 void CRenderer::CreateIndexBuffer(std::vector<uint32_t> &indices3D){
     //Init05CreateIndexBuffer();
+    CWxjBuffer indexDataBuffer;
 
 	//HERE_I_AM("wxjCreateIndexBuffer");
     VkDeviceSize bufferSize = sizeof(indices3D[0]) * indices3D.size();
@@ -24,10 +25,12 @@ void CRenderer::CreateIndexBuffer(std::vector<uint32_t> &indices3D){
     //VK_BUFFER_USAGE_TRANSFER_SRC_BIT
     //VkResult result = InitDataBufferHelper(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT, &indexDataBuffer);
     VkResult result = indexDataBuffer.init(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_INDEX_BUFFER_BIT);
- 
+
 	//REPORT("InitIndexDataBuffer");
     //FillDataBufferHelper(indexDataBuffer, (void *)(indices3D.data()));
 	indexDataBuffer.fill((void *)(indices3D.data()));
+
+    indexDataBuffers.push_back(indexDataBuffer);
 }
 
 /**************************
@@ -402,7 +405,7 @@ void CRenderer::StartRecordGraphicsCommandBuffer(VkPipeline &pipeline, VkPipelin
     //std::cout<<"BindPipeline done"<<std::endl;
     SetViewport(extent);
     SetScissor(extent);
-    BindDescriptorSets(pipelineLayout, descriptorSets, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsCmdId);
+    //BindDescriptorSets(pipelineLayout, descriptorSets, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsCmdId, 0);
     //std::cout<<"start record done"<<std::endl;
 }
 void CRenderer::EndRecordGraphicsCommandBuffer(){
@@ -464,16 +467,34 @@ void CRenderer::SetScissor(VkExtent2D &extent){
     scissor.extent = extent; //swapchain.swapChainExtent;
     vkCmdSetScissor(commandBuffers[graphicsCmdId][currentFrame], 0, 1, &scissor);
 }
-void CRenderer::BindVertexBuffer(){
-	VkBuffer vertexBuffers[] = {vertexDataBuffer.buffer };
+void CRenderer::BindVertexBuffer(int objectId){
+	VkBuffer vertexBuffers[] = {vertexDataBuffers[objectId].buffer };
 	VkDeviceSize offsets[] = { 0 };
 	vkCmdBindVertexBuffers(commandBuffers[graphicsCmdId][currentFrame], 0, 1, vertexBuffers, offsets);
 }
-void CRenderer::BindIndexBuffer(){
-	vkCmdBindIndexBuffer(commandBuffers[graphicsCmdId][currentFrame], indexDataBuffer.buffer, 0, VK_INDEX_TYPE_UINT32);
+void CRenderer::BindIndexBuffer(int objectId){
+	vkCmdBindIndexBuffer(commandBuffers[graphicsCmdId][currentFrame], indexDataBuffers[objectId].buffer, 0, VK_INDEX_TYPE_UINT32);
 }
-void CRenderer::BindDescriptorSets(VkPipelineLayout &pipelineLayout, std::vector<VkDescriptorSet> &descriptorSets, VkPipelineBindPoint pipelineBindPoint, int commandBufferIndex){
-	vkCmdBindDescriptorSets(commandBuffers[commandBufferIndex][currentFrame], pipelineBindPoint, pipelineLayout, 0, 1, &descriptorSets[currentFrame], 0, nullptr);
+void CRenderer::BindDescriptorSets(VkPipelineLayout &pipelineLayout, std::vector<VkDescriptorSet> &descriptorSets, VkPipelineBindPoint pipelineBindPoint, uint32_t commandBufferIndex, uint32_t offsetIndex){
+    //if use mvp, need enable dynamic offset; otherwise disable it
+    if(offsetIndex == 0xffffffff){
+        vkCmdBindDescriptorSets(commandBuffers[commandBufferIndex][currentFrame], pipelineBindPoint, pipelineLayout, 0, 1, &descriptorSets[currentFrame], 
+                0, 
+                nullptr
+            );
+    }else{
+        uint32_t offsets[1] ={256 * offsetIndex};
+            vkCmdBindDescriptorSets(commandBuffers[commandBufferIndex][currentFrame], pipelineBindPoint, pipelineLayout, 0, 1, &descriptorSets[currentFrame], 
+                1, //dynamicOffsetCount, 
+                offsets 
+        );
+    }
+}
+void CRenderer::BindGraphicsDescriptorSets(VkPipelineLayout &pipelineLayout, std::vector<VkDescriptorSet> &descriptorSets, int offsetIndex){
+    BindDescriptorSets(pipelineLayout, descriptorSets, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsCmdId, offsetIndex);
+}
+void CRenderer::BindComputeDescriptorSets(VkPipelineLayout &pipelineLayout, std::vector<VkDescriptorSet> &descriptorSets, int offsetIndex){
+    BindDescriptorSets(pipelineLayout, descriptorSets, VK_PIPELINE_BIND_POINT_COMPUTE, computeCmdId, offsetIndex);
 }
 
 void CRenderer::DrawIndexed(std::vector<uint32_t> &indices3D){
@@ -616,7 +637,7 @@ void CRenderer::StartRecordComputeCommandBuffer(VkPipeline &pipeline, VkPipeline
     BindPipeline(pipeline, VK_PIPELINE_BIND_POINT_COMPUTE, computeCmdId);
     //SetViewport(extent);
     //SetScissor(extent);
-    BindDescriptorSets(pipelineLayout, descriptorSets, VK_PIPELINE_BIND_POINT_COMPUTE, computeCmdId);
+    //BindDescriptorSets(pipelineLayout, descriptorSets, VK_PIPELINE_BIND_POINT_COMPUTE, computeCmdId, 0);
 }
 void CRenderer::EndRecordComputeCommandBuffer(){
 	//EndRenderPass();
@@ -635,9 +656,12 @@ void CRenderer::Dispatch(int numWorkGroupsX, int numWorkGroupsY, int numWorkGrou
  * ***********************/
 
 void CRenderer::Destroy(){
-    indexDataBuffer.DestroyAndFree();
-    vertexDataBuffer.DestroyAndFree();
+    int size = vertexDataBuffers.size();
+    for(size_t i = 0; i < size; i++)  vertexDataBuffers[i].DestroyAndFree();
 
+    size = indexDataBuffers.size();
+    for(size_t i = 0; i < size; i++) indexDataBuffers[i].DestroyAndFree();
+   
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
         vkDestroySemaphore(CContext::GetHandle().GetLogicalDevice(), renderFinishedSemaphores[i], nullptr);
         vkDestroySemaphore(CContext::GetHandle().GetLogicalDevice(), imageAvailableSemaphores[i], nullptr);

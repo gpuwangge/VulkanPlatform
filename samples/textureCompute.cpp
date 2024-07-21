@@ -203,6 +203,9 @@ public:
             //}
 			renderer.StartRecordComputeCommandBuffer(renderProcess.computePipeline, renderProcess.computePipelineLayout, descriptors[1].descriptorSets);
 
+			renderer.BindComputeDescriptorSets(renderProcess.computePipelineLayout, descriptors[1].descriptorSets, -1); //-1 to offset means no dynamic offset
+
+
             recordImageBarrier(commandBuffers[i], swapChainImages[i],
                 VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_GENERAL,
                 VK_ACCESS_MEMORY_WRITE_BIT,VK_ACCESS_SHADER_WRITE_BIT,

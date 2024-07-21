@@ -58,9 +58,11 @@ public:
     void BindPipeline(VkPipeline &pipeline, VkPipelineBindPoint pipelineBindPoint, int commandBufferIndex);
     void SetViewport(VkExtent2D &extent);
     void SetScissor(VkExtent2D &extent);
-    void BindVertexBuffer();
-    void BindIndexBuffer();
-    void BindDescriptorSets(VkPipelineLayout &pipelineLayout, std::vector<VkDescriptorSet> &descriptorSets, VkPipelineBindPoint pipelineBindPoint, int commandBufferIndex);
+    void BindVertexBuffer(int objectId);
+    void BindIndexBuffer(int objectId);
+    void BindDescriptorSets(VkPipelineLayout &pipelineLayout, std::vector<VkDescriptorSet> &descriptorSets, VkPipelineBindPoint pipelineBindPoint, uint32_t commandBufferIndex, uint32_t dynamicOffsetCount);
+    void BindGraphicsDescriptorSets(VkPipelineLayout &pipelineLayout, std::vector<VkDescriptorSet> &descriptorSets, int dynamicOffsetCount);
+    void BindComputeDescriptorSets(VkPipelineLayout &pipelineLayout, std::vector<VkDescriptorSet> &descriptorSets, int dynamicOffsetCount);
 
     //Draw
     template <typename T>
@@ -102,6 +104,7 @@ public:
 
     template <typename T>
     void CreateVertexBuffer(IN std::vector<T> &input){
+        CWxjBuffer vertexDataBuffer;
         //HERE_I_AM("Init05CreateVertexBuffer");
         VkDeviceSize bufferSize = sizeof(input[0]) * input.size();
 
@@ -112,6 +115,8 @@ public:
         //REPORT("InitVertexDataBuffer");
         //FillDataBufferHelper(vertexDataBuffer, (void *)(input.data()));//copy vertices3D to vertexDataBuffer
         vertexDataBuffer.fill((void *)(input.data()));
+
+        vertexDataBuffers.push_back(vertexDataBuffer);
     }
     void CreateIndexBuffer(std::vector<uint32_t> &indices3D);
 
@@ -130,8 +135,8 @@ public:
     uint32_t imageIndex;
     void Update(); //update currentFrame
 
-    CWxjBuffer vertexDataBuffer;  
-	CWxjBuffer indexDataBuffer; 
+    std::vector<CWxjBuffer> vertexDataBuffers;  //each buffer object is for one model object, the index in this vector is object.id
+	std::vector<CWxjBuffer> indexDataBuffers; 
     std::vector<std::vector<VkCommandBuffer>> commandBuffers;  //commandBuffers[Size][MAX_FRAMES_IN_FLIGHT or currentFrame]
     VkCommandPool commandPool;
 

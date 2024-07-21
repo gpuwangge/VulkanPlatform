@@ -223,19 +223,48 @@ private:
 
 };
 
+struct MVPData{
+    alignas(16) glm::mat4 model; //16*4=64 bytes
+	alignas(16) glm::mat4 view; //16*4=64 bytes
+	alignas(16) glm::mat4 proj; //16*4=64 bytes
+    alignas(16) glm::mat4 padding; //: MVP size is 192 bytes, but require a multiple of device limit minUniformBufferOffsetAlignment 256.
+    //Each element of pDynamicOffsets which corresponds to a descriptor binding with type VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC must be a multiple of VkPhysicalDeviceLimits::minUniformBufferOffsetAlignment
+};  
+
 struct MVPUniformBufferObject {
-	alignas(16) glm::mat4 model;
-	alignas(16) glm::mat4 view;
-	alignas(16) glm::mat4 proj;
+	//MVPData *mvpData; //dynamic doesn't work
+
+    //for now, support two groups of mvpData. Each draw only use one mvpData matrices. Use offset to access.
+    //Each mvpData is to be aligned to be 256 bytes
+    //buffer size is 256*2 = 512 bytes; Buffer range is 256 bytes(for each object)
+    MVPData mvpData[2]; 
 
     static VkDescriptorSetLayoutBinding GetBinding(){
         VkDescriptorSetLayoutBinding binding;
         binding.binding = 0;
 		binding.descriptorCount = 1;
-		binding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		binding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
 		binding.pImmutableSamplers = nullptr;
 		binding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
         return binding;
+    }
+
+public:
+    MVPUniformBufferObject(){
+        
+    }   
+
+    void init(int mvpCount){
+       // mvpData = new MVPData[mvpCount];
+        //std::cout<<"Created mvpData, mvpCount = "<<mvpCount<<std::endl;
+    }
+
+   // MVPData getMVP(int mvpId){
+    //    return mvpData[mvpId];
+    //}
+
+    ~MVPUniformBufferObject(){
+        //if(mvpData) delete mvpData;
     }
 };
 
@@ -248,7 +277,7 @@ struct VPUniformBufferObject {
         VkDescriptorSetLayoutBinding binding;
         binding.binding = 0;
 		binding.descriptorCount = 1;
-		binding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+		binding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
 		binding.pImmutableSamplers = nullptr;
 		binding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
         return binding;

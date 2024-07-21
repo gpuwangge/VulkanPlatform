@@ -61,10 +61,17 @@ public:
 	void recordGraphicsCommandBuffer(){
 		START_GRAPHICS_RECORD(0)
 
-		renderer.Draw(3);
+		drawObject(0);
 		
 		END_GRAPHICS_RECORD
 	}
+
+	void drawObject(int objectId){
+		renderer.BindGraphicsDescriptorSets(renderProcess.graphicsPipelineLayout, descriptors[0].descriptorSets, -1);
+		//renderer.BindVertexBuffer(objectId);
+		//renderer.BindIndexBuffer(objectId);
+		renderer.Draw(3);
+	}	
 };
 
 #ifndef ANDROID

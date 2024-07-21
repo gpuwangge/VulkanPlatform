@@ -111,19 +111,24 @@ public:
 		
 		descriptors[0].updateCustomUniformBuffer<CustomUniformBufferObject>(renderer.currentFrame, durationTime, customUBO);
 
-		descriptors[0].mvpUBO.model = glm::rotate(glm::mat4(1.0f),  glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		descriptors[0].mvpUBO.mvpData[0].model = glm::rotate(glm::mat4(1.0f),  glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 		CApplication::update();
 	}
 
 	void recordGraphicsCommandBuffer(){
 		START_GRAPHICS_RECORD(0)
 
-		renderer.BindVertexBuffer();
-		renderer.BindIndexBuffer();
-		renderer.DrawIndexed(indices3D);
+		drawObject(0);
 
 		END_GRAPHICS_RECORD
 	}
+
+	void drawObject(int objectId){
+		renderer.BindGraphicsDescriptorSets(renderProcess.graphicsPipelineLayout, descriptors[0].descriptorSets, objectId);
+		renderer.BindVertexBuffer(objectId);
+		renderer.BindIndexBuffer(objectId);
+		renderer.DrawIndexed(indices3D);
+	}	
 };
 
 #ifndef ANDROID
