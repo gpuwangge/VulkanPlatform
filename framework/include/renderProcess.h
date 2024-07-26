@@ -65,8 +65,8 @@ public:
     void createComputePipelineLayout(VkDescriptorSetLayout &descriptorSetLayout);
     void createComputePipeline(VkShaderModule &computeShaderModule);
 
-    void createGraphicsPipelineLayout(VkDescriptorSetLayout &descriptorSetLayout);
-    void createGraphicsPipelineLayout(VkDescriptorSetLayout &descriptorSetLayout, VkPushConstantRange &pushConstantRange, bool bUsePushConstant = true);
+    void createGraphicsPipelineLayout(std::vector<VkDescriptorSetLayout> &descriptorSetLayouts);
+    void createGraphicsPipelineLayout(std::vector<VkDescriptorSetLayout> &descriptorSetLayouts, VkPushConstantRange &pushConstantRange, bool bUsePushConstant = true);
 
     struct DummyVertex {
         static VkVertexInputBindingDescription getBindingDescription() {

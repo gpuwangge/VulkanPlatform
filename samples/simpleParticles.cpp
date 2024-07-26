@@ -125,8 +125,12 @@ public:
 
 		std::cout<<"compute descriptor created."<<std::endl;
 
+		//support multiple descriptors in one piplines: bind multiple descriptor layouts in one pipeline
+		std::vector<VkDescriptorSetLayout> dsLayouts;
+		dsLayouts.push_back(descriptors[0].descriptorSetLayout);
+
 		//for Graphics: when create graphics pipeline, use descriptor set 0 layout
-		renderProcess.createGraphicsPipelineLayout(descriptors[0].descriptorSetLayout);
+		renderProcess.createGraphicsPipelineLayout(dsLayouts);
 		renderProcess.createGraphicsPipeline<Particle>(
 			VK_PRIMITIVE_TOPOLOGY_POINT_LIST, 
 			shaderManager.vertShaderModule, 
@@ -218,7 +222,10 @@ public:
 	void recordComputeCommandBuffer(){
 		START_COMPUTE_RECORD(1)
 
-		renderer.BindComputeDescriptorSets(renderProcess.computePipelineLayout, descriptors[1].descriptorSets, -1); //-1 to offset means no dynamic offset
+		std::vector<std::vector<VkDescriptorSet>> dsSets; 
+		dsSets.push_back(descriptors[1].descriptorSets);
+
+		renderer.BindComputeDescriptorSets(renderProcess.computePipelineLayout, dsSets, -1); //-1 to offset means no dynamic offset
 
 		renderer.Dispatch(PARTICLE_COUNT / 256, 1, 1);
 		static int counter = 0;

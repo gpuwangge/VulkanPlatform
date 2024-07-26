@@ -7,7 +7,7 @@
 #define TEST_CLASS_NAME CMultiCubes
 class TEST_CLASS_NAME: public CApplication{
 public:
-	//TODO: need create vectors for different cubes
+	//TODO: need simply draw and update different cubes
 	class CCube : public CObject{
 	public:
 		CCube(){} //TODO: merge load model/texture and record action into CObject...
@@ -76,7 +76,11 @@ public:
 		descriptors[0].createDescriptorSetLayout();
 		descriptors[0].createDescriptorSets(&textureImages);
 
-		renderProcess.createGraphicsPipelineLayout(descriptors[0].descriptorSetLayout);
+		//support multiple descriptors in one piplines: bind multiple descriptor layouts in one pipeline
+		std::vector<VkDescriptorSetLayout> dsLayouts;
+		dsLayouts.push_back(descriptors[0].descriptorSetLayout);
+
+		renderProcess.createGraphicsPipelineLayout(dsLayouts);
 		renderProcess.createGraphicsPipeline<Vertex3D>(
 			VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
 			shaderManager.vertShaderModule, 
@@ -102,9 +106,12 @@ public:
 	}
 
 	void drawObject(int objectId){
+		std::vector<std::vector<VkDescriptorSet>> dsSets; 
+		dsSets.push_back(descriptors[0].descriptorSets);
+
 		//If shader is the same, can reuse the same descriptor for different objects.
 		//The offset index can be different than object id. Different offset index means different MVP uniforms.
-		renderer.BindGraphicsDescriptorSets(renderProcess.graphicsPipelineLayout, descriptors[0].descriptorSets, objectId);
+		renderer.BindGraphicsDescriptorSets(renderProcess.graphicsPipelineLayout, dsSets, objectId);
 		
 		renderer.BindVertexBuffer(objectId);
 		renderer.BindIndexBuffer(objectId);

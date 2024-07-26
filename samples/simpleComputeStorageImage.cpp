@@ -133,7 +133,10 @@ public:
             //}
 			renderer.StartRecordComputeCommandBuffer(renderProcess.computePipeline, renderProcess.computePipelineLayout, descriptors[0].descriptorSets);
 
-			renderer.BindComputeDescriptorSets(renderProcess.computePipelineLayout, descriptors[0].descriptorSets, -1); //-1 to offset means no dynamic offset
+			std::vector<std::vector<VkDescriptorSet>> dsSets; 
+			dsSets.push_back(descriptors[0].descriptorSets);
+
+			renderer.BindComputeDescriptorSets(renderProcess.computePipelineLayout, dsSets, -1); //-1 to offset means no dynamic offset
 
             recordImageBarrier(commandBuffers[i], swapChainImages[i],
                 VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_GENERAL,

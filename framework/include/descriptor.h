@@ -18,7 +18,7 @@ typedef enum UniformBufferBits {
     UNIFORM_BUFFERG_BITS_MAX_ENUM = 0x7FFFFFFF
 } UniformBufferBits;
 
-class CDescriptor final{
+class CDescriptor{
 
 public:
     CDescriptor();
@@ -103,11 +103,52 @@ public:
 
     VkDescriptorPool descriptorPool;
     VkDescriptorSetLayout descriptorSetLayout;
-    std::vector<VkDescriptorSet> descriptorSets;
+    std::vector<VkDescriptorSet> descriptorSets; //one descriptor set for each host resource (MAX_FRAMES_IN_FLIGHT)
 
     //CDebugger * debugger;
 };
 
+
+class CComputeDescriptor : CDescriptor{
+public:
+    CComputeDescriptor(){
+        std::cout<<"CComputeDescriptor construct."<<std::endl;
+    }
+};
+
+class CTextureDescriptor : CDescriptor{
+public:
+    // typedef enum UniformBufferBits {
+    //     UNIFORM_BUFFER_CUSTOM_BIT = 0x00000001,
+    //     UNIFORM_BUFFER_MVP_BIT = 0x00000002,
+    //     UNIFORM_BUFFER_VP_BIT = 0x00000004,
+    //     UNIFORM_BUFFER_SAMPLER_BIT = 0x00000008,
+    //     UNIFORM_BUFFER_STORAGE_BIT = 0x00000010,
+    //     UNIFORM_IMAGE_STORAGE_SWAPCHAIN_BIT = 0x00000020,
+    //     UNIFORM_IMAGE_STORAGE_TEXTURE_BIT = 0x00000040,
+    //     UNIFORM_BUFFERG_BITS_MAX_ENUM = 0x7FFFFFFF
+    // } UniformBufferBits;
+    
+    void createDescriptorPool();//VkDescriptorType    type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER
+    void createDescriptorSetLayout(VkDescriptorSetLayoutBinding *customBinding = nullptr);
+        //VkDescriptorType      descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
+        //VkShaderStageFlags    stageFlags = VK_SHADER_STAGE_VERTEX_BIT,
+        //uint32_t              descriptorCount = 1,
+        //const VkSampler*      pImmutableSamplers = nullptr);
+    void createDescriptorSets(std::vector<CTextureImage> *textureImages = NULL, std::vector<VkImageView> *swapchainImageViews = NULL);
+
+
+    CTextureDescriptor(){
+        std::cout<<"CTextureDescriptor construct."<<std::endl;
+    }
+};
+
+class CUniformDescriptor : CDescriptor{
+public:
+    CUniformDescriptor(){
+        std::cout<<"CUniformDescriptor construct."<<std::endl;
+    }
+};
 
 
 #endif

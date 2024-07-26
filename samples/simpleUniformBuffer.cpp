@@ -42,7 +42,11 @@ public:
 		descriptors[0].createDescriptorSetLayout(&customBinding);
 		descriptors[0].createDescriptorSets();
 
-		renderProcess.createGraphicsPipelineLayout(descriptors[0].descriptorSetLayout);
+		//support multiple descriptors in one piplines: bind multiple descriptor layouts in one pipeline
+		std::vector<VkDescriptorSetLayout> dsLayouts;
+		dsLayouts.push_back(descriptors[0].descriptorSetLayout);
+
+		renderProcess.createGraphicsPipelineLayout(dsLayouts);
 		renderProcess.createGraphicsPipeline(
 			VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
 			shaderManager.vertShaderModule, 
@@ -67,7 +71,10 @@ public:
 	}
 
 	void drawObject(int objectId){
-		renderer.BindGraphicsDescriptorSets(renderProcess.graphicsPipelineLayout, descriptors[0].descriptorSets, -1);
+		std::vector<std::vector<VkDescriptorSet>> dsSets; 
+		dsSets.push_back(descriptors[0].descriptorSets);
+
+		renderer.BindGraphicsDescriptorSets(renderProcess.graphicsPipelineLayout, dsSets, -1);
 		//renderer.BindVertexBuffer(objectId);
 		//renderer.BindIndexBuffer(objectId);
 		renderer.Draw(3);

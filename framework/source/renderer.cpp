@@ -475,25 +475,34 @@ void CRenderer::BindVertexBuffer(int objectId){
 void CRenderer::BindIndexBuffer(int objectId){
 	vkCmdBindIndexBuffer(commandBuffers[graphicsCmdId][currentFrame], indexDataBuffers[objectId].buffer, 0, VK_INDEX_TYPE_UINT32);
 }
-void CRenderer::BindDescriptorSets(VkPipelineLayout &pipelineLayout, std::vector<VkDescriptorSet> &descriptorSets, VkPipelineBindPoint pipelineBindPoint, uint32_t commandBufferIndex, uint32_t offsetIndex){
+void CRenderer::BindDescriptorSets(VkPipelineLayout &pipelineLayout, std::vector<std::vector<VkDescriptorSet>> &descriptorSets, VkPipelineBindPoint pipelineBindPoint, uint32_t commandBufferIndex, uint32_t offsetIndex){
+    //you can bind many descriptor sets for one mesh, they are identified in shader by set index
+    //also, each descriptor set can have multiple writes, they are identified in shader by binding index
+    //unsigned int setCount = 1;
+    //VkDescriptorSet sets[setCount] = { descriptorSets[currentFrame] };
+    unsigned int setCount = descriptorSets.size();
+    VkDescriptorSet sets[setCount] = { descriptorSets[0][currentFrame] };
+    
     //if use mvp, need enable dynamic offset; otherwise disable it
     if(offsetIndex == 0xffffffff){
-        vkCmdBindDescriptorSets(commandBuffers[commandBufferIndex][currentFrame], pipelineBindPoint, pipelineLayout, 0, 1, &descriptorSets[currentFrame], 
+        vkCmdBindDescriptorSets(commandBuffers[commandBufferIndex][currentFrame], pipelineBindPoint, pipelineLayout, 0, 
+                setCount, sets, 
                 0, 
                 nullptr
             );
     }else{
         uint32_t offsets[1] ={256 * offsetIndex};
-            vkCmdBindDescriptorSets(commandBuffers[commandBufferIndex][currentFrame], pipelineBindPoint, pipelineLayout, 0, 1, &descriptorSets[currentFrame], 
+            vkCmdBindDescriptorSets(commandBuffers[commandBufferIndex][currentFrame], pipelineBindPoint, pipelineLayout, 0, 
+                setCount, sets,  
                 1, //dynamicOffsetCount, 
                 offsets 
         );
     }
 }
-void CRenderer::BindGraphicsDescriptorSets(VkPipelineLayout &pipelineLayout, std::vector<VkDescriptorSet> &descriptorSets, int offsetIndex){
+void CRenderer::BindGraphicsDescriptorSets(VkPipelineLayout &pipelineLayout, std::vector<std::vector<VkDescriptorSet>> &descriptorSets, int offsetIndex){
     BindDescriptorSets(pipelineLayout, descriptorSets, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsCmdId, offsetIndex);
 }
-void CRenderer::BindComputeDescriptorSets(VkPipelineLayout &pipelineLayout, std::vector<VkDescriptorSet> &descriptorSets, int offsetIndex){
+void CRenderer::BindComputeDescriptorSets(VkPipelineLayout &pipelineLayout, std::vector<std::vector<VkDescriptorSet>> &descriptorSets, int offsetIndex){
     BindDescriptorSets(pipelineLayout, descriptorSets, VK_PIPELINE_BIND_POINT_COMPUTE, computeCmdId, offsetIndex);
 }
 

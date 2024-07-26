@@ -81,7 +81,10 @@ public:
 	void recordComputeCommandBuffer(){
 		START_COMPUTE_RECORD(0)
 
-		renderer.BindComputeDescriptorSets(renderProcess.computePipelineLayout, descriptors[0].descriptorSets, -1); //-1 to offset means no dynamic offset
+		std::vector<std::vector<VkDescriptorSet>> dsSets; 
+		dsSets.push_back(descriptors[0].descriptorSets);
+
+		renderer.BindComputeDescriptorSets(renderProcess.computePipelineLayout, dsSets, -1); //-1 to offset means no dynamic offset
 
 		//std::cout<<"Record Compute command buffer. "<<std::endl;
 		renderer.Dispatch(1, 1, 1);

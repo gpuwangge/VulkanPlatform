@@ -32,7 +32,11 @@ public:
 		descriptors[0].createDescriptorSetLayout();
 		descriptors[0].createDescriptorSets();
 
-		renderProcess.createGraphicsPipelineLayout(descriptors[0].descriptorSetLayout);
+		//support multiple descriptors in one piplines: bind multiple descriptor layouts in one pipeline
+		std::vector<VkDescriptorSetLayout> dsLayouts;
+		dsLayouts.push_back(descriptors[0].descriptorSetLayout);
+
+		renderProcess.createGraphicsPipelineLayout(dsLayouts);
 		renderProcess.createGraphicsPipeline<Vertex2D>(
 			VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
 			shaderManager.vertShaderModule, 

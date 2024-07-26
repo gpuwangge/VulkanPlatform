@@ -207,11 +207,11 @@ void CRenderProcess::createComputePipeline(VkShaderModule &computeShaderModule){
 	}
 }
 
-void CRenderProcess::createGraphicsPipelineLayout(VkDescriptorSetLayout &descriptorSetLayout){
+void CRenderProcess::createGraphicsPipelineLayout(std::vector<VkDescriptorSetLayout> &descriptorSetLayouts){
 	VkPushConstantRange dummyPushConstantRange;
-	createGraphicsPipelineLayout(descriptorSetLayout, dummyPushConstantRange, false);
+	createGraphicsPipelineLayout(descriptorSetLayouts, dummyPushConstantRange, false);
 }
-void CRenderProcess::createGraphicsPipelineLayout(VkDescriptorSetLayout &descriptorSetLayout, VkPushConstantRange &pushConstantRange, bool bUsePushConstant){
+void CRenderProcess::createGraphicsPipelineLayout(std::vector<VkDescriptorSetLayout> &descriptorSetLayouts, VkPushConstantRange &pushConstantRange, bool bUsePushConstant){
 	VkResult result = VK_SUCCESS;
 
 	VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
@@ -220,8 +220,8 @@ void CRenderProcess::createGraphicsPipelineLayout(VkDescriptorSetLayout &descrip
 	// 	pipelineLayoutInfo.setLayoutCount = 0;
 	// 	pipelineLayoutInfo.pSetLayouts = nullptr;
 	// }else {
-	pipelineLayoutInfo.setLayoutCount = 1;
-	pipelineLayoutInfo.pSetLayouts = &descriptorSetLayout;//  descriptorSetLayout;//todo: LAYOUT
+	pipelineLayoutInfo.setLayoutCount = descriptorSetLayouts.size();
+	pipelineLayoutInfo.pSetLayouts = descriptorSetLayouts.data();//  descriptorSetLayout;//todo: LAYOUT
 	//}
 
 	if(bUsePushConstant){

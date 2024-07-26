@@ -45,7 +45,11 @@ public:
 		descriptors[0].createDescriptorSetLayout();
 		descriptors[0].createDescriptorSets(&textureImages);
 		
-		renderProcess.createGraphicsPipelineLayout(descriptors[0].descriptorSetLayout);
+		//support multiple descriptors in one piplines: bind multiple descriptor layouts in one pipeline
+		std::vector<VkDescriptorSetLayout> dsLayouts;
+		dsLayouts.push_back(descriptors[0].descriptorSetLayout);
+
+		renderProcess.createGraphicsPipelineLayout(dsLayouts);
 		renderProcess.createGraphicsPipeline<Vertex3D>(
 			VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
 			shaderManager.vertShaderModule, 
@@ -68,7 +72,13 @@ public:
 	}
 
 	void drawObject(int objectId){
-		renderer.BindGraphicsDescriptorSets(renderProcess.graphicsPipelineLayout, descriptors[0].descriptorSets, objectId);
+		//2d vector: dsSets[different sets][host resources]
+		std::vector<std::vector<VkDescriptorSet>> dsSets; 
+		dsSets.push_back(descriptors[0].descriptorSets);
+		//dsSets.push_back(textureDescriptorSets.descriptorSets);
+
+		//support multiple descriptors in one piplines: bind multiple descriptor sets in one pipeline
+		renderer.BindGraphicsDescriptorSets(renderProcess.graphicsPipelineLayout, dsSets, objectId);//descriptors[0].descriptorSets
 		renderer.BindVertexBuffer(objectId);
 		renderer.BindIndexBuffer(objectId);
 		renderer.DrawIndexed(indices3D);

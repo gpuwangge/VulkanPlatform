@@ -25,7 +25,11 @@ public:
 		descriptors[0].createDescriptorSetLayout();
 		descriptors[0].createDescriptorSets();
 
-		renderProcess.createGraphicsPipelineLayout(descriptors[0].descriptorSetLayout);
+		//support multiple descriptors in one piplines: bind multiple descriptor layouts in one pipeline
+		std::vector<VkDescriptorSetLayout> dsLayouts;
+		dsLayouts.push_back(descriptors[0].descriptorSetLayout);
+
+		renderProcess.createGraphicsPipelineLayout(dsLayouts);
 		renderProcess.createGraphicsPipeline(
 			VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
 			shaderManager.vertShaderModule, 
@@ -35,7 +39,11 @@ public:
 	}
 
 	void update(){
+		//static int counter = 1;
 		CApplication::update();
+
+		//if(counter==7504) NeedToExit = true;
+		//counter++;
 	}
 
 	void recordGraphicsCommandBuffer(){

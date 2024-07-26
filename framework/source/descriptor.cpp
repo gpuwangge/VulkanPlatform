@@ -587,3 +587,16 @@ void CDescriptor::DestroyAndFree(){
     vkDestroyDescriptorSetLayout(CContext::GetHandle().GetLogicalDevice(), descriptorSetLayout, nullptr);
 }
 
+
+    void CTextureDescriptor::createDescriptorPool(){
+
+    }
+
+    void CTextureDescriptor::createDescriptorSetLayout(VkDescriptorSetLayoutBinding *customBinding){
+
+    }
+
+    void CTextureDescriptor::createDescriptorSets(std::vector<CTextureImage> *textureImages, std::vector<VkImageView> *swapchainImageViews){
+
+    }
+
