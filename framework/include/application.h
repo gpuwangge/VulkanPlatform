@@ -48,6 +48,7 @@ public:
     CRenderProcess renderProcess;
     CShaderManager shaderManager;
     std::vector<CDescriptor> descriptors;
+    CTextureDescriptor textureDescriptor;
     CRenderer renderer;
     std::vector<CTextureImage> textureImages;
     CModelManager modelManager;

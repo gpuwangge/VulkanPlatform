@@ -588,15 +588,160 @@ void CDescriptor::DestroyAndFree(){
 }
 
 
-    void CTextureDescriptor::createDescriptorPool(){
+CTextureDescriptor::CTextureDescriptor(){
+    std::cout<<"TextureDescriptor::CTextureDescriptor"<<std::endl;
+    textureSamplers.resize(1);
+    textureSamplerCount = 0;
+}
 
+
+
+void CTextureDescriptor::createDescriptorPool(){
+    std::cout<<"TextureDescriptor::createDescriptorPool."<<std::endl;
+    bCreatedDescriptorPool = true;
+    
+
+    poolSizes.resize(1); //getDescriptorSize()
+	int counter = 0;
+
+    //if(uniformBufferUsageFlags & UNIFORM_BUFFER_SAMPLER_BIT){
+    for(int i = 0; i < textureSamplers.size(); i++){
+        poolSizes[counter].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+        poolSizes[counter].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
+        counter++;
+    }
+    //}
+
+	VkDescriptorPoolCreateInfo poolInfo{};
+	poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
+	poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
+	poolInfo.pPoolSizes = poolSizes.data();
+	poolInfo.maxSets = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);///!!!
+
+	VkResult result = vkCreateDescriptorPool(CContext::GetHandle().GetLogicalDevice(), &poolInfo, nullptr, &descriptorPool);
+	if (result != VK_SUCCESS) throw std::runtime_error("failed to create descriptor pool!");
+}
+
+void CTextureDescriptor::createDescriptorSetLayout(VkDescriptorSetLayoutBinding *customBinding){
+    std::cout<<"TextureDescriptor::createDescriptorSetLayout."<<std::endl;
+    bCreatedDescriptorLayout = true;
+
+    bindings.resize(1);//getDescriptorSize()
+	int counter = 0;
+
+    //if(uniformBufferUsageFlags & UNIFORM_BUFFER_SAMPLER_BIT){
+    for(int i = 0; i < textureSamplers.size(); i++){
+        bindings[counter].binding = counter;
+        bindings[counter].descriptorCount = 1;
+        bindings[counter].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+        bindings[counter].pImmutableSamplers = nullptr;
+        bindings[counter].stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+        counter++;
+    }
+    //}
+
+    VkDescriptorSetLayoutCreateInfo layoutInfo{};
+	layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
+	layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
+	layoutInfo.pBindings = bindings.data();
+
+	VkResult result = vkCreateDescriptorSetLayout(CContext::GetHandle().GetLogicalDevice(), &layoutInfo, nullptr, OUT &descriptorSetLayout);
+	if (result != VK_SUCCESS) throw std::runtime_error("failed to create descriptor set layout!");
+}
+
+void CTextureDescriptor::createDescriptorSets(std::vector<CTextureImage> *textureImages, std::vector<VkImageView> *swapchainImageViews){
+    std::cout<<"TextureDescriptor::createDescriptorSets."<<std::endl;
+
+    int descriptorSize = 1;//getDescriptorSize();
+    //std::cout<<"descriptorSize: "<<descriptorSize<<std::endl;
+
+    VkResult result = VK_SUCCESS;
+
+    std::vector<VkDescriptorSetLayout> layouts(MAX_FRAMES_IN_FLIGHT, descriptorSetLayout);///!!!
+    VkDescriptorSetAllocateInfo allocInfo{};
+    allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+    allocInfo.descriptorPool = descriptorPool;
+    allocInfo.descriptorSetCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);///!!!
+    allocInfo.pSetLayouts = layouts.data();
+
+    descriptorSets.resize(MAX_FRAMES_IN_FLIGHT);///!!!
+    //Step 3
+    result = vkAllocateDescriptorSets(CContext::GetHandle().GetLogicalDevice(), &allocInfo, descriptorSets.data());
+    if (result != VK_SUCCESS) throw std::runtime_error("failed to allocate descriptor sets!");
+
+    for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+        std::vector<VkWriteDescriptorSet> descriptorWrites;
+
+        descriptorWrites.resize(descriptorSize);
+        int counter = 0;
+
+        VkDescriptorBufferInfo customBufferInfo{}; //for custom uniform
+
+        std::vector<VkDescriptorImageInfo> imageInfo{}; //for texture sampler
+        //if(uniformBufferUsageFlags & UNIFORM_BUFFER_SAMPLER_BIT){
+        imageInfo.resize(textureSamplers.size());
+        for(int j = 0; j < textureSamplers.size(); j++){
+            imageInfo[j].imageLayout = VK_IMAGE_LAYOUT_GENERAL; //test compute storage image: ?need figure this out. VK_IMAGE_LAYOUT_GENERAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
+            imageInfo[j].imageView = (*textureImages)[j].textureImageBuffer.view;
+            imageInfo[j].sampler = textureSamplers[j];
+            descriptorWrites[counter].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+            descriptorWrites[counter].dstSet = descriptorSets[i];
+            descriptorWrites[counter].dstBinding = counter;
+            descriptorWrites[counter].dstArrayElement = 0;
+            descriptorWrites[counter].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+            descriptorWrites[counter].descriptorCount = 1;
+            descriptorWrites[counter].pImageInfo = &imageInfo[j];
+            counter++;
+        }
+        //}
+
+        //Step 4
+        vkUpdateDescriptorSets(CContext::GetHandle().GetLogicalDevice(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
     }
 
-    void CTextureDescriptor::createDescriptorSetLayout(VkDescriptorSetLayoutBinding *customBinding){
+    std::cout<<"Done set descriptor. "<<std::endl;
+}
 
+void CTextureDescriptor::addImageSamplerUniformBuffer(uint32_t mipLevels){
+    std::cout<<"TextureDescriptor::addImageSamplerUniformBuffer."<<std::endl;
+
+    //bUseSampler = true;
+    //uniformBufferUsageFlags |= UNIFORM_BUFFER_SAMPLER_BIT;
+
+    VkPhysicalDeviceProperties properties{};
+    vkGetPhysicalDeviceProperties(CContext::GetHandle().GetPhysicalDevice(), &properties);
+
+    VkSamplerCreateInfo samplerInfo{};
+    samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+    samplerInfo.magFilter = VK_FILTER_LINEAR;
+    samplerInfo.minFilter = VK_FILTER_LINEAR;
+    samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+    samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+    samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+    samplerInfo.anisotropyEnable = VK_TRUE;
+    samplerInfo.maxAnisotropy = properties.limits.maxSamplerAnisotropy;
+    samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
+    samplerInfo.unnormalizedCoordinates = VK_FALSE;
+    samplerInfo.compareEnable = VK_FALSE;
+    samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
+
+    if (mipLevels > 1) {
+        samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;// VK_SAMPLER_MIPMAP_MODE_NEAREST;
+        samplerInfo.minLod = 0.0f;
+        samplerInfo.maxLod = static_cast<float>(mipLevels / 2);
+        samplerInfo.mipLodBias = 0.0f;
     }
 
-    void CTextureDescriptor::createDescriptorSets(std::vector<CTextureImage> *textureImages, std::vector<VkImageView> *swapchainImageViews){
+    VkResult result = vkCreateSampler(CContext::GetHandle().GetLogicalDevice(), &samplerInfo, nullptr, &textureSamplers[textureSamplerCount++]);
+    //REPORT("vkCreateSampler");
+}
 
+void CTextureDescriptor::DestroyAndFree(){
+    //CDescriptor::DestroyAndFree();
+    //no need to destroy descriptorSets, because they are from descriptorPool
+    for(int i = 0; i < textureSamplers.size(); i++){
+        vkDestroySampler(CContext::GetHandle().GetLogicalDevice(), textureSamplers[i], nullptr);
     }
-
+    if(bCreatedDescriptorPool) vkDestroyDescriptorPool(CContext::GetHandle().GetLogicalDevice(), descriptorPool, nullptr);
+    if(bCreatedDescriptorLayout) vkDestroyDescriptorSetLayout(CContext::GetHandle().GetLogicalDevice(), descriptorSetLayout, nullptr);
+}

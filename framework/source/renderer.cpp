@@ -481,8 +481,13 @@ void CRenderer::BindDescriptorSets(VkPipelineLayout &pipelineLayout, std::vector
     //unsigned int setCount = 1;
     //VkDescriptorSet sets[setCount] = { descriptorSets[currentFrame] };
     unsigned int setCount = descriptorSets.size();
-    VkDescriptorSet sets[setCount] = { descriptorSets[0][currentFrame] };
-    
+    //VkDescriptorSet sets[setCount] = { descriptorSets[0][currentFrame] };
+    //VkDescriptorSet sets[setCount] = { descriptorSets[0][currentFrame], descriptorSets[1][currentFrame] };
+    VkDescriptorSet sets[setCount];
+    for(unsigned int i = 0; i < setCount; i++){
+        sets[i] = descriptorSets[i][currentFrame];
+    }
+
     //if use mvp, need enable dynamic offset; otherwise disable it
     if(offsetIndex == 0xffffffff){
         vkCmdBindDescriptorSets(commandBuffers[commandBufferIndex][currentFrame], pipelineBindPoint, pipelineLayout, 0, 

@@ -116,7 +116,7 @@ public:
     }
 };
 
-class CTextureDescriptor : CDescriptor{
+class CTextureDescriptor : public CDescriptor{
 public:
     // typedef enum UniformBufferBits {
     //     UNIFORM_BUFFER_CUSTOM_BIT = 0x00000001,
@@ -129,6 +129,14 @@ public:
     //     UNIFORM_BUFFERG_BITS_MAX_ENUM = 0x7FFFFFFF
     // } UniformBufferBits;
     
+    bool bCreatedDescriptorPool = false;
+    bool bCreatedDescriptorLayout = false;
+
+    //bool bUseSampler;
+    //int textureSamplerCount;
+    //std::vector<VkSampler> textureSamplers;
+    void addImageSamplerUniformBuffer(uint32_t mipLevels);
+
     void createDescriptorPool();//VkDescriptorType    type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER
     void createDescriptorSetLayout(VkDescriptorSetLayoutBinding *customBinding = nullptr);
         //VkDescriptorType      descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
@@ -137,10 +145,9 @@ public:
         //const VkSampler*      pImmutableSamplers = nullptr);
     void createDescriptorSets(std::vector<CTextureImage> *textureImages = NULL, std::vector<VkImageView> *swapchainImageViews = NULL);
 
+    void DestroyAndFree();
 
-    CTextureDescriptor(){
-        std::cout<<"CTextureDescriptor construct."<<std::endl;
-    }
+    CTextureDescriptor();
 };
 
 class CUniformDescriptor : CDescriptor{

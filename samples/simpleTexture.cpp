@@ -40,14 +40,22 @@ public:
 		shaderManager.CreateShader("simpleTexture/frag.spv", shaderManager.FRAG); 
 
 		descriptors[0].addMVPUniformBuffer();
-		descriptors[0].addImageSamplerUniformBuffer(textureImages[0].mipLevels);
+		//descriptors[0].addImageSamplerUniformBuffer(textureImages[0].mipLevels);
 		descriptors[0].createDescriptorPool();
 		descriptors[0].createDescriptorSetLayout();
-		descriptors[0].createDescriptorSets(&textureImages);
+		descriptors[0].createDescriptorSets(); //&textureImages
+
+		//create independent texture descriptor
+		textureDescriptor.addImageSamplerUniformBuffer(textureImages[0].mipLevels);
+		textureDescriptor.createDescriptorPool();
+		textureDescriptor.createDescriptorSetLayout();
+		textureDescriptor.createDescriptorSets(&textureImages);
+		
 		
 		//support multiple descriptors in one piplines: bind multiple descriptor layouts in one pipeline
 		std::vector<VkDescriptorSetLayout> dsLayouts;
-		dsLayouts.push_back(descriptors[0].descriptorSetLayout);
+		dsLayouts.push_back(descriptors[0].descriptorSetLayout); //set = 0
+		dsLayouts.push_back(textureDescriptor.descriptorSetLayout); //set = 1
 
 		renderProcess.createGraphicsPipelineLayout(dsLayouts);
 		renderProcess.createGraphicsPipeline<Vertex3D>(
@@ -74,7 +82,8 @@ public:
 	void drawObject(int objectId){
 		//2d vector: dsSets[different sets][host resources]
 		std::vector<std::vector<VkDescriptorSet>> dsSets; 
-		dsSets.push_back(descriptors[0].descriptorSets);
+		dsSets.push_back(descriptors[0].descriptorSets); //set = 0
+		dsSets.push_back(textureDescriptor.descriptorSets); //set = 1
 		//dsSets.push_back(textureDescriptorSets.descriptorSets);
 
 		//support multiple descriptors in one piplines: bind multiple descriptor sets in one pipeline

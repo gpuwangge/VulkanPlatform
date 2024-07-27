@@ -240,6 +240,7 @@ void CApplication::CleanUp(){
     renderProcess.Cleanup();
     for(int i = 0; i < descriptors.size(); i++)
         descriptors[i].DestroyAndFree();
+    textureDescriptor.DestroyAndFree();
     for(int i = 0; i < textureImages.size(); i++)
         textureImages[i].Destroy();
     renderer.Destroy();
