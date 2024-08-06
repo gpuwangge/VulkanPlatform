@@ -2,6 +2,7 @@
 
 #define TEST_CLASS_NAME CSimpleTriangle
 class TEST_CLASS_NAME: public CApplication{
+//a blue triangle on the screen
 public:
 	void initialize(){
 		renderer.CreateCommandPool(surface);

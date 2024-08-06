@@ -6,8 +6,8 @@ bool CApplication::NeedToExit = false;
 CApplication::CApplication(){
     //debugger = new CDebugger("../logs/application.log");
 
-    descriptors.resize(1);
-    textureImages.resize(1);
+    //descriptors.resize(1);
+    //textureImages.resize(1);
     //textureImages1.resize(1);
     //textureImages2.resize(1);
 
@@ -108,11 +108,12 @@ void CApplication::update(){
 
     mainCamera.update(deltaTime);
 
-    for(int i = 0; i < descriptors.size(); i++){
-        descriptors[i].updateMVPUniformBuffer(renderer.currentFrame, durationTime, mainCamera);
-        descriptors[i].updateVPUniformBuffer(renderer.currentFrame, durationTime, mainCamera);
-    }
+    //for(int i = 0; i < descriptors.size(); i++){
+    //    descriptors[i].updateMVPUniformBuffer(renderer.currentFrame, durationTime, mainCamera);
+    //    descriptors[i].updateVPUniformBuffer(renderer.currentFrame, durationTime, mainCamera);
+    //}
     graphicsDescriptorManager.updateMVPUniformBuffer(renderer.currentFrame, durationTime, mainCamera);
+    graphicsDescriptorManager.updateVPUniformBuffer(renderer.currentFrame, durationTime, mainCamera);
 }
 
 void CApplication::recordGraphicsCommandBuffer(){}
@@ -263,7 +264,7 @@ void CApplication::CleanUp(){
     graphicsDescriptorManager.DestroyAndFree();
     computeDescriptorManager.DestroyAndFree();
     //textureDescriptor.DestroyAndFree();
-    for(int i = 0; i < textureImages.size(); i++) textureImages[i].Destroy();
+    //for(int i = 0; i < textureImages.size(); i++) textureImages[i].Destroy();
     //for(int i = 0; i < textureImages1.size(); i++) textureImages1[i].Destroy();
     //for(int i = 0; i < textureImages2.size(); i++) textureImages2[i].Destroy();
     textureManager.Destroy();

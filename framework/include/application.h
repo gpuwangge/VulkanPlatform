@@ -49,12 +49,12 @@ public:
 	CSwapchain swapchain;
     CRenderProcess renderProcess;
     CShaderManager shaderManager;
-    std::vector<CGraphicsDescriptorManager> descriptors;//to be remove
+    //std::vector<CGraphicsDescriptorManager> descriptors;//to be remove
     CGraphicsDescriptorManager graphicsDescriptorManager;
     CComputeDescriptorManager computeDescriptorManager;
     //CTextureDescriptor textureDescriptor;
     CRenderer renderer;
-    std::vector<CTextureImage> textureImages; //temp
+    //std::vector<CTextureImage> textureImages; //temp
     CModelManager modelManager;
     //std::vector<CTextureImage> textureImages1; //temp
     //std::vector<CTextureImage> textureImages2; //temp

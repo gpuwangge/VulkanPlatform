@@ -2,6 +2,7 @@
 
 #define TEST_CLASS_NAME CSimpleVertexBuffer
 class TEST_CLASS_NAME: public CApplication{
+//a triangle on the screen, each vertex has R, G or B color. Fragment color is interpolated
 public:
 	std::vector<Vertex2D> vertices = {
 		{ { 0.0f, -0.5f},{ 1.0f, 0.0f, 0.0f }},

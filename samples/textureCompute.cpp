@@ -11,6 +11,7 @@ class TEST_CLASS_NAME: public CApplication{
 //but why mvp? why color attachment?
 //no need bind graphics pipeline?
 //TODO: improve this sample, there is still something unknown for this test; something can be simplified
+//A texture image is presented on the screen. Image is blured. char is blue/white. background is yellow.
 public:
 	static const int KernelRunNumber = 1;
 
