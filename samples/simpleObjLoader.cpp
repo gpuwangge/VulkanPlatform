@@ -2,10 +2,7 @@
 #define TEST_CLASS_NAME CSimpleObjLoader
 class TEST_CLASS_NAME: public CApplication{
 public:
-	std::vector<VkClearValue> clearValues{ {  1.0f, 1.0f, 1.0f, 1.0f  },  { 1.0f, 0 } };
-
 	CObject object;
-
     void initialize(){
 		mainCamera.setPosition(glm::vec3(0.0f, -2.5f, -2.5f));
     	mainCamera.setRotation(glm::vec3(45.0f, 0.0f, 0.0f));
@@ -85,11 +82,7 @@ public:
 	}
 
 	void recordGraphicsCommandBuffer(){
-		START_GRAPHICS_RECORD(0)
-
 		drawObject(0);
-
-		END_GRAPHICS_RECORD
 	}
 
 	void drawObject(int objectId){

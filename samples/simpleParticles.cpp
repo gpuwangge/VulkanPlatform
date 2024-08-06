@@ -227,8 +227,7 @@ public:
 	}
 
 	void recordGraphicsCommandBuffer(){
-		START_GRAPHICS_RECORD(0)
-		//actually this sample doesn't need BindDescriptorSets
+		//this sample doesn't need BindDescriptorSets
 
 		//VkBuffer vertexBuffers[] = {vertexDataBuffer.buffer };
 
@@ -237,12 +236,9 @@ public:
 
 		renderer.Draw(PARTICLE_COUNT);
 		
-		END_GRAPHICS_RECORD
 	}
 
 	void recordComputeCommandBuffer(){
-		START_COMPUTE_RECORD(1)
-
 		std::vector<std::vector<VkDescriptorSet>> dsSets; 
 		dsSets.push_back(computeDescriptorManager.descriptorSets);
 
@@ -252,8 +248,6 @@ public:
 		static int counter = 0;
 		if(counter % 1000 == 0)std::cout<<"Dispatched Counter: "<<counter<<std::endl;
 		counter++;
-
-		END_COMPUTE_RECORD
 	}
 
 	void postUpdate(){

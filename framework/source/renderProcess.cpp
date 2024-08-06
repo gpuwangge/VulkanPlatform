@@ -23,12 +23,20 @@ CRenderProcess::~CRenderProcess(){
 void CRenderProcess::createSubpass(){ 
 	uint32_t attachmentCount = 0;
 	if(bUseColorAttachment){
+		//clear values for each attachment. The array is indexed by attachment number
+		//Only elements corresponding to cleared attachments are used. Other elements of pClearValues are ignored.
+		clearValues.push_back({0.0f, 0.0f, 0.0f, 1.0f}); //color attachment: the background color is set to black (0,0,0,1)
+
 		colorAttachmentRef.attachment = attachmentCount++;
 		colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 		subpass.pColorAttachments = &colorAttachmentRef;
 	}
 	if(bUseDepthAttachment){
 		//added for model
+
+		//The range of depths in the depth buffer is 0.0 to 1.0 in Vulkan, where 1.0 lies at the far view plane and 0.0 at the near view plane.
+		clearValues.push_back({1.0f, 0}); 
+		
 		depthAttachmentRef.attachment = attachmentCount++;
 		depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 		subpass.pDepthStencilAttachment = &depthAttachmentRef; //added for model

@@ -48,12 +48,8 @@ public:
 	}
 
 	void recordComputeCommandBuffer(){
-		START_COMPUTE_RECORD(0)
-
 		//std::cout<<"Record Compute command buffer. "<<std::endl;
 		renderer.Dispatch(1, 1, 1); //dispatch an empty compute shader. TODO: need add some compute here
-
-		END_COMPUTE_RECORD
 	}
 
 	void postUpdate(){

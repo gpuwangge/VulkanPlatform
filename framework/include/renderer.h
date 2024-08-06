@@ -48,7 +48,6 @@ public:
     void StartRecordGraphicsCommandBuffer(VkPipeline &pipeline, VkPipelineLayout &pipelineLayout, 
         VkRenderPass &renderPass, 
         std::vector<VkFramebuffer> &swapChainFramebuffers, VkExtent2D &extent,
-        std::vector<VkDescriptorSet> &descriptorSets,
         std::vector<VkClearValue> &clearValues);
     void EndRecordGraphicsCommandBuffer();
 
@@ -90,7 +89,7 @@ public:
     //void drawComputeFrame(VkPipeline &computePipeline, VkPipelineLayout &pipelineLayout_compute, std::vector<VkDescriptorSet> &descriptorSets_compute);
     //void recordComputeCommandBuffer0(VkPipeline &computePipeline, VkPipelineLayout &pipelineLayout_compute, std::vector<VkDescriptorSet> &descriptorSets_compute);
     
-    void StartRecordComputeCommandBuffer(VkPipeline &pipeline, VkPipelineLayout &pipelineLayout, std::vector<VkDescriptorSet> &descriptorSets);
+    void StartRecordComputeCommandBuffer(VkPipeline &pipeline, VkPipelineLayout &pipelineLayout);
     void EndRecordComputeCommandBuffer();
 
     void Dispatch(int numWorkGroupsX, int numWorkGroupsY, int numWorkGroupsZ);

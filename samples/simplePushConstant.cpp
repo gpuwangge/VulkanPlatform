@@ -9,7 +9,6 @@ public:
 		{ { -0.5f, 0.5f, 0.0f },{ 1.0f, 1.0f, 1.0f },{ 1.0f, 1.0f },{ 0.0f, 0.0f, 1.0f } }
 	};
 	std::vector<uint32_t> indices3D = { 0, 1, 2, 2, 3, 0};
-	std::vector<VkClearValue> clearValues{ {  1.0f, 1.0f, 1.0f, 1.0f  } };
  
 	CObject triangleObject;
 
@@ -82,8 +81,6 @@ public:
 	}
 
 	void recordGraphicsCommandBuffer(){
-		START_GRAPHICS_RECORD(0)
-
 		ModelPushConstants pushConstants;
 		// pushConstants.model = glm::mat4(1, 0, 0, 0,
 		// 							    0, 1, 0, 0,
@@ -93,8 +90,6 @@ public:
 		renderer.PushConstantToCommand<ModelPushConstants>(pushConstants, renderProcess.graphicsPipelineLayout, shaderManager.pushConstantRange);
 
 		drawObject(0);
-
-		END_GRAPHICS_RECORD
 	}
 
 	void drawObject(int objectId){

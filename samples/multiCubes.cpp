@@ -15,8 +15,6 @@ public:
 
 	CCube cubes[2];
 
-	std::vector<VkClearValue> clearValues{ {  1.0f, 1.0f, 1.0f, 1.0f  },  { 1.0f, 0 } };
-
     void initialize(){
 		mainCamera.setPosition(glm::vec3(0.0f, -8.5f, -8.5f));
     	mainCamera.setRotation(glm::vec3(45.0f, 0.0f, 0.0f));
@@ -151,11 +149,7 @@ public:
 	}
 
 	void recordGraphicsCommandBuffer(){
-		START_GRAPHICS_RECORD(0)
-
 		for(int i = 0; i < 2; i++) drawObject(i); //draw object id = i
-		
-		END_GRAPHICS_RECORD
 	}
 
 	void drawObject(int objectId){

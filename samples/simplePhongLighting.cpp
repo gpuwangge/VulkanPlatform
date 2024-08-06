@@ -17,8 +17,6 @@ public:
 	};
 	CustomUniformBufferObject customUBO{};
 
-	std::vector<VkClearValue> clearValues{ {  0.0f, 0.0f, 0.0f, 1.0f  },  { 1.0f, 0 } };
-
 	CObject object;
 
     void initialize(){
@@ -118,11 +116,7 @@ public:
 	}
 
 	void recordGraphicsCommandBuffer(){
-		START_GRAPHICS_RECORD(0)
-
 		drawObject(0);
-
-		END_GRAPHICS_RECORD
 	}
 
 	void drawObject(int objectId){

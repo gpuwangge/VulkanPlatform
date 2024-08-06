@@ -33,6 +33,8 @@ public:
     VkSubpassDependency dependency{};
     VkRenderPass renderPass = VK_NULL_HANDLE; 
 
+    std::vector<VkClearValue> clearValues;
+
     void createSubpass();
     void createDependency(
         VkPipelineStageFlags srcPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, 

@@ -19,16 +19,18 @@
 #include "..\\..\\windowsFramework\\include\\glfwManager.h"
 #endif
 
-#define START_GRAPHICS_RECORD(descriptorIdx) { \
-    renderer.StartRecordGraphicsCommandBuffer(renderProcess.graphicsPipeline, renderProcess.graphicsPipelineLayout, \
-    renderProcess.renderPass,   \
-    swapchain.swapChainFramebuffers,swapchain.swapChainExtent,   \
-    descriptors[descriptorIdx].descriptorSets,  \
-    clearValues);}
-#define END_GRAPHICS_RECORD renderer.EndRecordGraphicsCommandBuffer();
+//Decide not to use macro
+// #define START_GRAPHICS_RECORD(descriptorIdx) { \
+//     renderer.StartRecordGraphicsCommandBuffer(renderProcess.graphicsPipeline, renderProcess.graphicsPipelineLayout, \
+//     renderProcess.renderPass,   \
+//     swapchain.swapChainFramebuffers,swapchain.swapChainExtent,   \
+//     descriptors[descriptorIdx].descriptorSets,  \
+//     clearValues);}
+// #define END_GRAPHICS_RECORD renderer.EndRecordGraphicsCommandBuffer();
 
-#define START_COMPUTE_RECORD(descriptorIdx) renderer.StartRecordComputeCommandBuffer(renderProcess.computePipeline, renderProcess.computePipelineLayout, descriptors[descriptorIdx].descriptorSets);
-#define END_COMPUTE_RECORD renderer.EndRecordComputeCommandBuffer();
+//Decide not to use macro
+//#define START_COMPUTE_RECORD(descriptorIdx) renderer.StartRecordComputeCommandBuffer(renderProcess.computePipeline, renderProcess.computePipelineLayout, descriptors[descriptorIdx].descriptorSets);
+//#define END_COMPUTE_RECORD renderer.EndRecordComputeCommandBuffer();
 
 class CApplication{
 public:
@@ -57,7 +59,6 @@ public:
     //std::vector<CTextureImage> textureImages1; //temp
     //std::vector<CTextureImage> textureImages2; //temp
     CTextureManager textureManager;
-
 
     //std::chrono::_V2::system_clock::time_point lastTime;
 

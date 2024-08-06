@@ -83,8 +83,6 @@ public:
 	}
 
 	void recordComputeCommandBuffer(){
-		START_COMPUTE_RECORD(0)
-
 		std::vector<std::vector<VkDescriptorSet>> dsSets; 
 		dsSets.push_back(computeDescriptorManager.descriptorSets);
 
@@ -93,8 +91,6 @@ public:
 		//std::cout<<"Record Compute command buffer. "<<std::endl;
 		renderer.Dispatch(1, 1, 1);
 		std::cout<<"Dispatched."<<std::endl;
-
-		END_COMPUTE_RECORD
 	}
 
 	void postUpdate(){

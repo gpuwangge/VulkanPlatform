@@ -134,7 +134,7 @@ public:
             //if (vkBeginCommandBuffer(commandBuffers[i], &beginInfo) != VK_SUCCESS) {
             //    throw std::runtime_error("failed to begin recording command buffer!");
             //}
-			renderer.StartRecordComputeCommandBuffer(renderProcess.computePipeline, renderProcess.computePipelineLayout, computeDescriptorManager.descriptorSets);
+			renderer.StartRecordComputeCommandBuffer(renderProcess.computePipeline, renderProcess.computePipelineLayout);
 
 			std::vector<std::vector<VkDescriptorSet>> dsSets; 
 			dsSets.push_back(computeDescriptorManager.descriptorSets);

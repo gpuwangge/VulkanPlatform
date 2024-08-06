@@ -9,8 +9,6 @@ public:
 		{ { -0.5f, 0.5f},{ 0.0f, 0.0f, 1.0f }}		
 	};
 
-	std::vector<VkClearValue> clearValues{ {  0.0f, 0.0f, 0.0f, 1.0f  } };
-
 	CObject triangleObject;
 
 	void initialize(){
@@ -59,12 +57,8 @@ public:
 	}
 
 	void recordGraphicsCommandBuffer(){
-		START_GRAPHICS_RECORD(0)
-
 		renderer.BindVertexBuffer(0);
 		renderer.Draw(3);
-
-		END_GRAPHICS_RECORD
 	}
 };
 

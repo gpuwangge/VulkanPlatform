@@ -139,7 +139,12 @@ void CApplication::UpdateRecordRender(){
 
             vkResetCommandBuffer(renderer.commandBuffers[renderer.graphicsCmdId][renderer.currentFrame], /*VkCommandBufferResetFlagBits*/ 0);
 
+            renderer.StartRecordGraphicsCommandBuffer(
+                renderProcess.graphicsPipeline, renderProcess.graphicsPipelineLayout, renderProcess.renderPass, 
+                swapchain.swapChainFramebuffers,swapchain.swapChainExtent, 
+                renderProcess.clearValues);
             recordGraphicsCommandBuffer();
+            renderer.EndRecordGraphicsCommandBuffer();
 
             renderer.SubmitGraphics();
 
@@ -154,7 +159,9 @@ void CApplication::UpdateRecordRender(){
             vkResetCommandBuffer(renderer.commandBuffers[renderer.computeCmdId][renderer.currentFrame], /*VkCommandBufferResetFlagBits*/ 0);
             //std::cout<<"Application: vkResetCommandBuffer"<<std::endl;
 
+            renderer.StartRecordComputeCommandBuffer(renderProcess.computePipeline, renderProcess.computePipelineLayout);
             recordComputeCommandBuffer();
+            renderer.EndRecordComputeCommandBuffer();
             //std::cout<<"Application: recordComputeCommandBuffer()"<<std::endl;
 
             renderer.SubmitCompute();
@@ -173,7 +180,10 @@ void CApplication::UpdateRecordRender(){
 
             //vkResetCommandBuffer(renderer.commandBuffers[renderer.computeCmdId][renderer.currentFrame], /*VkCommandBufferResetFlagBits*/ 0);
 
-            recordComputeCommandBuffer();
+            //in this mode, nothing is recorded(all commands are pre-recorded), for NOW. But still, swapchain will be presented.
+            //renderer.StartRecordComputeCommandBuffer(renderProcess.computePipeline, renderProcess.computePipelineLayout);
+            //recordComputeCommandBuffer();
+            //renderer.EndRecordComputeCommandBuffer();
 
             renderer.SubmitCompute(); 
 
@@ -188,9 +198,16 @@ void CApplication::UpdateRecordRender(){
             vkResetCommandBuffer(renderer.commandBuffers[renderer.graphicsCmdId][renderer.currentFrame], /*VkCommandBufferResetFlagBits*/ 0);
             vkResetCommandBuffer(renderer.commandBuffers[renderer.computeCmdId][renderer.currentFrame], /*VkCommandBufferResetFlagBits*/ 0);
             
-
+            renderer.StartRecordComputeCommandBuffer(renderProcess.computePipeline, renderProcess.computePipelineLayout);
             recordComputeCommandBuffer();
+            renderer.EndRecordComputeCommandBuffer();
+
+            renderer.StartRecordGraphicsCommandBuffer(
+                renderProcess.graphicsPipeline, renderProcess.graphicsPipelineLayout, renderProcess.renderPass, 
+                swapchain.swapChainFramebuffers,swapchain.swapChainExtent, 
+                renderProcess.clearValues);
             recordGraphicsCommandBuffer();
+            renderer.EndRecordGraphicsCommandBuffer();
             
             renderer.SubmitCompute(); 
             renderer.SubmitGraphics(); 

@@ -3,8 +3,6 @@
 #define TEST_CLASS_NAME CSimpleTriangle
 class TEST_CLASS_NAME: public CApplication{
 public:
-	std::vector<VkClearValue> clearValues{ {  0.0f, 1.0f, 0.0f, 1.0f  } };
-
 	void initialize(){
 		renderer.CreateCommandPool(surface);
 		renderer.CreateGraphicsCommandBuffer();
@@ -51,16 +49,10 @@ public:
 	}
 
 	void recordGraphicsCommandBuffer(){
-		START_GRAPHICS_RECORD(0)
-		//actually this sample doesn't need BindDescriptorSets
-		
+		// this sample doesn't need BindDescriptorSets
 		renderer.Draw(3);
-		
 		//std::cout<<"renderer.currentFrame: "<<renderer.currentFrame<<std::endl;
 		//std::cout<<"renderer.graphicsCmdId: "<<renderer.graphicsCmdId<<std::endl;
-
-
-		END_GRAPHICS_RECORD
 	}
 };
 

@@ -11,8 +11,6 @@ public:
 	};
 
 	std::vector<uint32_t> indices3D = { 0, 1, 2, 2, 3, 0};
-
-	std::vector<VkClearValue> clearValues{ {  0.0f, 0.0f, 0.0f, 1.0f  } };
  
 	struct CustomUniformBufferObject {
 		//glm::vec3 color;
@@ -122,11 +120,7 @@ public:
 	}
 
 	void recordGraphicsCommandBuffer(){
-		START_GRAPHICS_RECORD(0)
-
 		drawObject(0);
-
-		END_GRAPHICS_RECORD
 	}
 
 	void drawObject(int objectId){

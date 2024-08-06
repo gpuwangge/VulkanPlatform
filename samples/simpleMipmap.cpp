@@ -2,10 +2,7 @@
 #define TEST_CLASS_NAME CSimpleMipmap
 class TEST_CLASS_NAME: public CApplication{
 public:
-	std::vector<VkClearValue> clearValues{ {  0.0f, 0.0f, 0.0f, 1.0f  },  { 1.0f, 0 } };
-
 	CObject object;
-
     void initialize(){
 		mainCamera.type = Camera::CameraType::firstperson;
 		mainCamera.setPosition(glm::vec3(0.0f, -0.8f, 0.0f));
@@ -107,11 +104,7 @@ public:
 	}
 
 	void recordGraphicsCommandBuffer(){
-		START_GRAPHICS_RECORD(0)
-
 		drawObject(0);
-
-		END_GRAPHICS_RECORD
 	}
 
 	void drawObject(int objectId){

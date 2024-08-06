@@ -25,7 +25,6 @@ public:
 		{ { -0.5f, 0.5f, 0.0f },{ 1.0f, 1.0f, 1.0f },{ 1.0f, 1.0f } ,{ 0.0f, 0.0f, 1.0f }}
 	};
 	std::vector<uint32_t> indices3D = { 0, 1, 2, 2, 3, 0};
-	std::vector<VkClearValue> clearValues{ {  0.0f, 1.0f, 0.0f, 1.0f  } };
 
 	CTextureCompute(){
 		swapchain.imageSize = MAX_FRAMES_IN_FLIGHT;
@@ -153,8 +152,7 @@ public:
 	}
 
 	void recordGraphicsCommandBuffer(){
-		START_GRAPHICS_RECORD(0)
-		//actually this sample doesn't need BindDescriptorSets
+		//this sample doesn't need BindDescriptorSets
 
 		//VkBuffer vertexBuffers[] = {vertexDataBuffer.buffer };
 
@@ -164,7 +162,6 @@ public:
 		//renderer.BindIndexBuffer();
 		//renderer.DrawIndexed(indices3D);
 		
-		END_GRAPHICS_RECORD
 	}
 
 	void recordComputeCommandBuffer(){
@@ -247,7 +244,7 @@ public:
             //if (vkBeginCommandBuffer(commandBuffers[i], &beginInfo) != VK_SUCCESS) {
             //    throw std::runtime_error("failed to begin recording command buffer!");
             //}
-			renderer.StartRecordComputeCommandBuffer(renderProcess.computePipeline, renderProcess.computePipelineLayout, computeDescriptorManager.descriptorSets);
+			renderer.StartRecordComputeCommandBuffer(renderProcess.computePipeline, renderProcess.computePipelineLayout);
 
 			std::vector<std::vector<VkDescriptorSet>> dsSets; 
 			dsSets.push_back(computeDescriptorManager.descriptorSets);

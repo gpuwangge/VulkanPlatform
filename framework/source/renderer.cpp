@@ -394,7 +394,6 @@ void CRenderer::CreateSyncObjects(int swapchainSize) {
 void CRenderer::StartRecordGraphicsCommandBuffer(VkPipeline &pipeline, VkPipelineLayout &pipelineLayout, 
         VkRenderPass &renderPass, 
         std::vector<VkFramebuffer> &swapChainFramebuffers, VkExtent2D &extent,
-        std::vector<VkDescriptorSet> &descriptorSets,
         std::vector<VkClearValue> &clearValues){
     //std::cout<<"start record start"<<std::endl;
     BeginCommandBuffer(graphicsCmdId);
@@ -645,7 +644,7 @@ void CRenderer::postRecordComputeCommandBuffer(CSwapchain &swapchain){
     
 }*/
 
-void CRenderer::StartRecordComputeCommandBuffer(VkPipeline &pipeline, VkPipelineLayout &pipelineLayout, std::vector<VkDescriptorSet> &descriptorSets){
+void CRenderer::StartRecordComputeCommandBuffer(VkPipeline &pipeline, VkPipelineLayout &pipelineLayout){
     BeginCommandBuffer(computeCmdId);
     //BeginRenderPass(renderPass, swapChainFramebuffers, extent, clearValues);
     BindPipeline(pipeline, VK_PIPELINE_BIND_POINT_COMPUTE, computeCmdId);
