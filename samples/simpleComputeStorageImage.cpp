@@ -23,19 +23,7 @@ public:
 
 		renderer.CreateCommandPool(surface);
 		renderer.CreateComputeCommandBuffer();
-		///renderer.CreateGraphicsCommandBuffer();
 
-		///renderProcess.addColorAttachment(swapchain.swapChainImageFormat); //add this function will enable color attachment (bUseColorAttachment = true)
-		///renderProcess.createSubpass();
-		///renderProcess.createDependency();
-		///renderProcess.createRenderPass();
-
-		///swapchain.CreateFramebuffers(renderProcess.renderPass);
-
-		//shaderManager.CreateVertexShader("simpleTriangle/vert.spv");
-		//shaderManager.CreateFragmentShader("simpleTriangle/frag.spv");
-		//shaderManager.CreateShader("simpleTriangle/vert.spv", shaderManager.VERT);
-		//shaderManager.CreateShader("simpleTriangle/frag.spv", shaderManager.FRAG); 
 
 		shaderManager.CreateShader("simpleComputeStorageImage/comp.spv", shaderManager.COMP);
 		std::cout<<"compute shader created."<<std::endl;

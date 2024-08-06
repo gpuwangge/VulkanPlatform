@@ -47,11 +47,8 @@ public:
 		renderer.CreateGraphicsCommandBuffer(); 
 
 		VkImageUsageFlags usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT;
-		//textureImages[0].imageFormat = swapchain.swapChainImageFormat;
-		//textureImages[0].CreateTextureImage("texture.jpg", usage, renderer.commandPool);
-		//textureImages[0].CreateImageView(VK_IMAGE_ASPECT_COLOR_BIT);
-		textureManager.CreateTextureImage("texture.jpg", usage, renderer.commandPool, false, swapchain.swapChainImageFormat);
-		//textureManager.textureImages[0].imageFormat = swapchain.swapChainImageFormat;
+		textureManager.CreateTextureImage("texture.jpg", usage, renderer.commandPool, false, 
+			swapchain.swapChainImageFormat);
 
 		//For Compute
 		renderer.m_renderMode = renderer.RENDER_COMPUTE_SWAPCHAIN_Mode;
@@ -62,9 +59,7 @@ public:
 		renderProcess.createSubpass();
 		renderProcess.createDependency();
 		renderProcess.createRenderPass();
-		//renderProcess.addColorBlendAttachment(
-		//	VK_BLEND_OP_ADD, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,
-		//	VK_BLEND_OP_ADD, VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO);
+
 		swapchain.CreateFramebuffers(renderProcess.renderPass);
 		shaderManager.CreateShader("textureCompute/vert.spv", shaderManager.VERT);
 		shaderManager.CreateShader("textureCompute/frag.spv", shaderManager.FRAG); 
@@ -74,11 +69,9 @@ public:
 		std::cout<<"compute shader created."<<std::endl;
 
 
-
-
 		CGraphicsDescriptorManager::addMVPUniformBuffer();
-		CGraphicsDescriptorManager::addImageSamplerUniformBuffer(textureManager.textureImages[0].mipLevels);
-
+		uint32_t mipLevels = textureManager.textureImages[0].mipLevels;
+		CGraphicsDescriptorManager::addImageSamplerUniformBuffer(mipLevels);
 		CComputeDescriptorManager::addStorageImage(UNIFORM_IMAGE_STORAGE_TEXTURE_BIT); //as input
 		CComputeDescriptorManager::addStorageImage(UNIFORM_IMAGE_STORAGE_SWAPCHAIN_BIT); //as output
 
@@ -95,29 +88,6 @@ public:
 			CGraphicsDescriptorManager::textureDescriptorSetLayout,
 			CGraphicsDescriptorManager::textureSamplers[0]);
 		computeDescriptorManager.createDescriptorSets(&textureManager.textureImages, &(swapchain.views));
-
-
-
-		/*
-		descriptors.resize(2);//you can have many descriptor sets. Here I use ds[0] for graphics pipeline and ds[1] for compute pipeline
-		//For Graphics
-		descriptors[0].addMVPUniformBuffer();
-		descriptors[0].addImageSamplerUniformBuffer(textureImages[0].mipLevels);
-		descriptors[0].createDescriptorPool();
-		descriptors[0].createDescriptorSetLayout();
-		descriptors[0].createDescriptorSets(&textureImages);
-		std::cout<<"graphcis descriptor created."<<std::endl;
-
-		//For Compute
-		descriptors[1].addStorageImage(UNIFORM_IMAGE_STORAGE_TEXTURE_BIT); //as input
-		descriptors[1].addStorageImage(UNIFORM_IMAGE_STORAGE_SWAPCHAIN_BIT); //as output
-		descriptors[1].createDescriptorPool();
-		std::cout<<"createDescriptorPool() done."<<std::endl;
-		descriptors[1].createDescriptorSetLayout();
-		std::cout<<"createDescriptorSetLayout() done."<<std::endl;
-		//descriptors[1].createDescriptorSets(&textureImages);
-		descriptors[1].createDescriptorSets(&textureImages, &(swapchain.views));
-		std::cout<<"compute descriptor created."<<std::endl;*/
 
 		//support multiple descriptors in one piplines: bind multiple descriptor layouts in one pipeline
 		std::vector<VkDescriptorSetLayout> dsLayouts;
@@ -153,26 +123,9 @@ public:
 	}
 
 	void recordGraphicsCommandBuffer(){
-		//this sample doesn't need BindDescriptorSets
-
-		//VkBuffer vertexBuffers[] = {vertexDataBuffer.buffer };
-
-		//renderer.Draw(3);
-
-		//renderer.BindVertexBuffer();
-		//renderer.BindIndexBuffer();
-		//renderer.DrawIndexed(indices3D);
-		
 	}
 
 	void recordComputeCommandBuffer(){
-		//START_COMPUTE_RECORD(1)
-
-		//std::cout<<"Record Compute command buffer. "<<std::endl;
-		//renderer.Dispatch(100, 1, 1);
-		//std::cout<<"Dispatched."<<std::endl;
-
-		//END_COMPUTE_RECORD
 	}
 
 	void postUpdate(){

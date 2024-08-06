@@ -35,8 +35,6 @@ public:
 		renderer.CreateGraphicsCommandBuffer();
 
 		VkImageUsageFlags usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
-		//textureImages[0].CreateTextureImage("viking_room.png", usage, renderer.commandPool);
-		//textureImages[0].CreateImageView(VK_IMAGE_ASPECT_COLOR_BIT);
 		textureManager.CreateTextureImage("viking_room.png", usage, renderer.commandPool);
 
 		if(swapchain.bEnableMSAA){
@@ -63,23 +61,18 @@ public:
 		renderProcess.createRenderPass();
 
 		swapchain.CreateFramebuffers(renderProcess.renderPass);
-
-		//shaderManager.CreateVertexShader("simplePhoneLighting/vert.spv");
-		//shaderManager.CreateFragmentShader("simplePhoneLighting/frag.spv");   
+  
 		shaderManager.CreateShader("simplePhoneLighting/vert.spv", shaderManager.VERT);
 		shaderManager.CreateShader("simplePhoneLighting/frag.spv", shaderManager.FRAG); 
 	
-		// descriptors[0].addImageSamplerUniformBuffer(textureImages[0].mipLevels);
-		// descriptors[0].addMVPUniformBuffer();
-		// descriptors[0].addCustomUniformBuffer(sizeof(CustomUniformBufferObject));
-		// descriptors[0].createDescriptorPool();
-		// VkDescriptorSetLayoutBinding customBinding = CustomUniformBufferObject::GetBinding();
-		// descriptors[0].createDescriptorSetLayout(&customBinding); 
-		// descriptors[0].createDescriptorSets(&textureImages);
+
 		CGraphicsDescriptorManager::addMVPUniformBuffer();
-		CGraphicsDescriptorManager::addImageSamplerUniformBuffer(textureManager.textureImages[0].mipLevels);
+		uint32_t mipLevels = textureManager.textureImages[0].mipLevels;
+		CGraphicsDescriptorManager::addImageSamplerUniformBuffer(mipLevels);
 		CGraphicsDescriptorManager::addCustomUniformBuffer(sizeof(CustomUniformBufferObject));
+
 		CDescriptorManager::createDescriptorPool();
+
 		VkDescriptorSetLayoutBinding customBinding = CustomUniformBufferObject::GetBinding();
 		CGraphicsDescriptorManager::createDescriptorSetLayout(&customBinding);
 		CGraphicsDescriptorManager::createTextureDescriptorSetLayout();
@@ -94,7 +87,6 @@ public:
 
 		//support multiple descriptors in one piplines: bind multiple descriptor layouts in one pipeline
 		std::vector<VkDescriptorSetLayout> dsLayouts;
-		//dsLayouts.push_back(descriptors[0].descriptorSetLayout);
 		dsLayouts.push_back(CGraphicsDescriptorManager::descriptorSetLayout);
 		dsLayouts.push_back(CGraphicsDescriptorManager::textureDescriptorSetLayout); //set = 1
 
@@ -121,7 +113,6 @@ public:
 
 	void drawObject(int objectId){
 		std::vector<std::vector<VkDescriptorSet>> dsSets; 
-		//dsSets.push_back(descriptors[0].descriptorSets);
 		dsSets.push_back(graphicsDescriptorManager.descriptorSets);
 		dsSets.push_back(object.descriptorSets); //set = 1
 

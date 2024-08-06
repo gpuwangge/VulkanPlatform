@@ -24,8 +24,6 @@ public:
 		renderer.CreateGraphicsCommandBuffer();
 
 		VkImageUsageFlags usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
-		//textureImages[0].CreateTextureImage("texture.jpg", usage, renderer.commandPool);
-		//textureImages[0].CreateImageView(VK_IMAGE_ASPECT_COLOR_BIT);
 		textureManager.CreateTextureImage("texture.jpg", usage, renderer.commandPool);	
 
 		renderProcess.addColorAttachment(swapchain.swapChainImageFormat); //add this function will enable color attachment (bUseColorAttachment = true)
@@ -35,21 +33,17 @@ public:
 
 		swapchain.CreateFramebuffers(renderProcess.renderPass);
 
-		//shaderManager.CreateVertexShader("simplePushConstant/vert.spv");
-		//shaderManager.CreateFragmentShader("simplePushConstant/frag.spv");
 		shaderManager.CreateShader("simplePushConstant/vert.spv", shaderManager.VERT);
 		shaderManager.CreateShader("simplePushConstant/frag.spv", shaderManager.FRAG); 
 		
 		shaderManager.CreatePushConstantRange<ModelPushConstants>(VK_SHADER_STAGE_VERTEX_BIT, 0);
 
-		//descriptors[0].addVPUniformBuffer();
-		//descriptors[0].addImageSamplerUniformBuffer(textureImages[0].mipLevels);
-		//descriptors[0].createDescriptorPool();
-		//descriptors[0].createDescriptorSetLayout();
-		//descriptors[0].createDescriptorSets(&textureImages);
 		CGraphicsDescriptorManager::addVPUniformBuffer();
-		CGraphicsDescriptorManager::addImageSamplerUniformBuffer(textureManager.textureImages[0].mipLevels);
+		uint32_t mipLevels = textureManager.textureImages[0].mipLevels;
+		CGraphicsDescriptorManager::addImageSamplerUniformBuffer(mipLevels);
+
 		CDescriptorManager::createDescriptorPool(); 
+
 		CGraphicsDescriptorManager::createDescriptorSetLayout(); 
 		CGraphicsDescriptorManager::createTextureDescriptorSetLayout(); 
 
@@ -62,7 +56,6 @@ public:
 
 		//support multiple descriptors in one piplines: bind multiple descriptor layouts in one pipeline
 		std::vector<VkDescriptorSetLayout> dsLayouts;
-		//dsLayouts.push_back(descriptors[0].descriptorSetLayout);
 		dsLayouts.push_back(CGraphicsDescriptorManager::descriptorSetLayout);
 		dsLayouts.push_back(CGraphicsDescriptorManager::textureDescriptorSetLayout); //set = 1
 
@@ -94,7 +87,6 @@ public:
 
 	void drawObject(int objectId){
 		std::vector<std::vector<VkDescriptorSet>> dsSets; 
-		//dsSets.push_back(descriptors[0].descriptorSets);
 		dsSets.push_back(graphicsDescriptorManager.descriptorSets);
 		dsSets.push_back(triangleObject.descriptorSets); //set = 1
 

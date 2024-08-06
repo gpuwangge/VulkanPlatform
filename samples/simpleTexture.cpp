@@ -29,8 +29,6 @@ public:
 
 		VkImageUsageFlags usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
 		textureManager.CreateTextureImage("texture.jpg", usage, renderer.commandPool);
-		//textureManager.textureImages[0].CreateTextureImage("texture.jpg", usage, renderer.commandPool);
-		//textureManager.textureImages[0].CreateImageView(VK_IMAGE_ASPECT_COLOR_BIT);
 
 		renderProcess.addColorAttachment(swapchain.swapChainImageFormat); //add this function will enable color attachment (bUseColorAttachment = true)
 		renderProcess.createSubpass();
@@ -43,24 +41,22 @@ public:
 		shaderManager.CreateShader("simpleTexture/frag.spv", shaderManager.FRAG); 
 
 		CGraphicsDescriptorManager::addMVPUniformBuffer();
-		CGraphicsDescriptorManager::addImageSamplerUniformBuffer(textureManager.textureImages[0].mipLevels);
+		uint32_t mipLevels = textureManager.textureImages[0].mipLevels;
+		CGraphicsDescriptorManager::addImageSamplerUniformBuffer(mipLevels);
 		CDescriptorManager::createDescriptorPool(); //pool size = 2
-		//CDescriptor::createMVPDescriptorSetLayout();
+
 		CGraphicsDescriptorManager::createDescriptorSetLayout(); //layout size = 1
 		CGraphicsDescriptorManager::createTextureDescriptorSetLayout(); //layout size = 1
-		//descriptors[0].createMVPDescriptorSets();
-		//descriptors[0].createDescriptorSets(); //set size = 1
+
 		graphicsDescriptorManager.createDescriptorSets();
 		triangleObject.createTextureDescriptorSets(
 			textureManager.textureImages[triangleObject.id], 
 			CGraphicsDescriptorManager::descriptorPool,
 			CGraphicsDescriptorManager::textureDescriptorSetLayout,
 			CGraphicsDescriptorManager::textureSamplers[0]);
-		//textureDescriptor.createTextureDescriptorSets(textureManager.textureImages[0], textureDescriptor.descriptorSets); //set size = 1
-		
+
 		//support multiple descriptors in one piplines: bind multiple descriptor layouts in one pipeline
 		std::vector<VkDescriptorSetLayout> dsLayouts;
-		//dsLayouts.push_back(CDescriptor::mvpDescriptorSetLayout); //set = 0
 		dsLayouts.push_back(CGraphicsDescriptorManager::descriptorSetLayout); //set = 0
 		dsLayouts.push_back(CGraphicsDescriptorManager::textureDescriptorSetLayout); //set = 1
 

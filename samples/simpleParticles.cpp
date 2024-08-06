@@ -86,14 +86,6 @@ public:
 		renderProcess.addColorBlendAttachment(
 			VK_BLEND_OP_ADD, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,
 			VK_BLEND_OP_ADD, VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO);
-		//default value
-		//renderProcess.addColorBlendAttachment(
-		// 	VK_BLEND_OP_ADD, VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO,
-		// 	VK_BLEND_OP_ADD, VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO);
-		//vulkan tutorial value
-		//renderProcess.addColorBlendAttachment(
-		//	VK_BLEND_OP_ADD, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,
-		//	VK_BLEND_OP_ADD, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA, VK_BLEND_FACTOR_ZERO);
 		swapchain.CreateFramebuffers(renderProcess.renderPass);
 		shaderManager.CreateShader("simpleParticles/vert.spv", shaderManager.VERT);
 		shaderManager.CreateShader("simpleParticles/frag.spv", shaderManager.FRAG); 
@@ -117,33 +109,6 @@ public:
 
 		graphicsDescriptorManager.createDescriptorSets();
 		computeDescriptorManager.createDescriptorSets();
-
-
-		///descriptors.resize(2);//you can have many descriptor sets. Here I use ds[0] for graphics pipeline and ds[1] for compute pipeline
-		//For Graphics
-		///descriptors[0].createDescriptorPool();
-		///descriptors[0].createDescriptorSetLayout();
-		///descriptors[0].createDescriptorSets();
-
-		///std::cout<<"graphcis descriptor created."<<std::endl;
-
-		//For Compute
-		///descriptors[1].addCustomUniformBuffer(sizeof(StructCustomUniformBuffer));
-		///VkBufferUsageFlags usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
-		///descriptors[1].addStorageBuffer(sizeof(StructStorageBuffer), usage);
-		//std::cout<<"storageBufferObjectInput added. Size = "<<DIM_M * DIM_K * 8.0f * 2 / 1024 / 1024<<"mb."<<std::endl;
-		//descriptors[1].addStorageBuffer(sizeof(StructStorageBufferOutput), usage);
-		//std::cout<<"storageBufferObjectOutput added. Size = "<<DIM_M * DIM_K * 8.0f / 1024 / 1024<<"mb."<<std::endl;
-		///std::cout<<"add storage buffer done."<<std::endl;
-		///descriptors[1].createDescriptorPool(); std::cout<<"createDescriptorPool done."<<std::endl;
-		///VkDescriptorSetLayoutBinding customBinding = StructCustomUniformBuffer::GetBinding();
-		///descriptors[1].createDescriptorSetLayout(&customBinding); 
-		///std::cout<<"createDescriptorSetLayout done."<<std::endl;
-		///descriptors[1].createDescriptorSets(); 
-		///std::cout<<"createDescriptorSets done."<<std::endl;
-
-		///std::cout<<"compute descriptor created."<<std::endl;
-
 
 
 		//support multiple descriptors in one piplines: bind multiple descriptor layouts in one pipeline

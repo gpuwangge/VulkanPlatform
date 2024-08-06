@@ -32,15 +32,8 @@ public:
 
 		VkImageUsageFlags usage_texture = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
 		textureManager.CreateTextureImage("48bpt.png", usage_texture, renderer.commandPool, true, VK_FORMAT_R16G16B16A16_UNORM, 16);
-		//textureManager.textureImages[0].bEnableMipMap = true;
 		textureManager.textureImages[0].generateMipmaps();
-		
-
-		//textureImages[0].imageFormat = VK_FORMAT_R16G16B16A16_UNORM;//VK_FORMAT_R16G16B16A16_UNORM or VK_FORMAT_R16G16B16A16_SFLOAT(need frac_float16())
-		//textureImages[0].CreateTextureImage("48bpt.png", usage_texture, renderer.commandPool, 16);
-		//textureImages[0].CreateImageView(VK_IMAGE_ASPECT_COLOR_BIT);
-
-		//textureImages[0].generateMipmaps(); 
+		 
 		
 		VkImageUsageFlags usage;
 		if(swapchain.bEnableMSAA){
@@ -68,17 +61,16 @@ public:
 
 		swapchain.CreateFramebuffers(renderProcess.renderPass);
 
-		//shaderManager.CreateVertexShader("simpleTexture/vert.spv");
-		//shaderManager.CreateFragmentShader("simpleTexture/frag.spv");
 		shaderManager.CreateShader("bptpc16Texture/vert.spv", shaderManager.VERT);
 		shaderManager.CreateShader("bptpc16Texture/frag.spv", shaderManager.FRAG);
 
 
 		CGraphicsDescriptorManager::addMVPUniformBuffer();
-		CGraphicsDescriptorManager::addImageSamplerUniformBuffer(textureManager.textureImages[0].mipLevels);
-		//CGraphicsDescriptorManager::addCustomUniformBuffer(sizeof(CustomUniformBufferObject));
+		uint32_t mipLevels = textureManager.textureImages[0].mipLevels;
+		CGraphicsDescriptorManager::addImageSamplerUniformBuffer(mipLevels);
+		
 		CDescriptorManager::createDescriptorPool(); //pool size = 2
-		//VkDescriptorSetLayoutBinding customBinding = CustomUniformBufferObject::GetBinding();
+
 		CGraphicsDescriptorManager::createDescriptorSetLayout(); //layout size = 1 (exclude sampler)
 		CGraphicsDescriptorManager::createTextureDescriptorSetLayout(); //layout size = 1
 
@@ -88,12 +80,6 @@ public:
 			CGraphicsDescriptorManager::descriptorPool,
 			CGraphicsDescriptorManager::textureDescriptorSetLayout,
 			CGraphicsDescriptorManager::textureSamplers[0]);
-
-		//descriptors[0].addMVPUniformBuffer();
-		//descriptors[0].addImageSamplerUniformBuffer(textureImages[0].mipLevels);
-		//descriptors[0].createDescriptorPool();
-		//descriptors[0].createDescriptorSetLayout();
-		//descriptors[0].createDescriptorSets(&textureImages);
 
 		//support multiple descriptors in one piplines: bind multiple descriptor layouts in one pipeline
 		std::vector<VkDescriptorSetLayout> dsLayouts;

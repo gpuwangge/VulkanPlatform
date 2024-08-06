@@ -18,6 +18,7 @@ public:
 		float MatC[DIM_M * DIM_N];
 	};
 	StructStorageBuffer storageBufferObject;
+	// no need create a separate output
 	// struct StructStorageBufferOutput {
 	// 	float MatC[DIM_M * DIM_N];
 	// };
@@ -34,13 +35,6 @@ public:
 		shaderManager.CreateShader("gemmCompute/comp.spv", shaderManager.COMP);
 		std::cout<<"compute shader created."<<std::endl;
 
-		///descriptors[0].addStorageBuffer(sizeof(StructStorageBuffer));
-		//std::cout<<"storageBufferObjectInput added. Size = "<<DIM_M * DIM_K * 8.0f * 3 / 1024 / 1024<<"mb."<<std::endl;
-		//descriptors[0].addStorageBuffer(sizeof(StructStorageBufferOutput));
-		//std::cout<<"storageBufferObjectOutput added. Size = "<<DIM_M * DIM_K * 8.0f / 1024 / 1024<<"mb."<<std::endl;
-		//descriptors[0].createDescriptorPool();
-		//descriptors[0].createDescriptorSetLayout();
-		//descriptors[0].createDescriptorSets();
 		CComputeDescriptorManager::addStorageBuffer(sizeof(StructStorageBuffer));
 		CDescriptorManager::createDescriptorPool();
 		CComputeDescriptorManager::createDescriptorSetLayout();

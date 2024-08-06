@@ -41,14 +41,6 @@ public:
 		renderer.CreateCommandPool(surface);
 		renderer.CreateGraphicsCommandBuffer();
 
-        // textureImages.resize(3);
-		// VkImageUsageFlags usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
-		// textureImages[0].CreateTextureImage("fur.jpg", usage, renderer.commandPool);	
-		// textureImages[0].CreateImageView(VK_IMAGE_ASPECT_COLOR_BIT);
-        // textureImages[1].CreateTextureImage("noise.png", usage, renderer.commandPool);	
-		// textureImages[1].CreateImageView(VK_IMAGE_ASPECT_COLOR_BIT);
-        // textureImages[2].CreateTextureImage("wall.jpg", usage, renderer.commandPool);	
-		// textureImages[2].CreateImageView(VK_IMAGE_ASPECT_COLOR_BIT);
 		VkImageUsageFlags usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
 		textureManager.CreateTextureImage("fur.jpg", usage, renderer.commandPool);	
 		textureManager.CreateTextureImage("noise.png", usage, renderer.commandPool);	
@@ -61,39 +53,26 @@ public:
 
 		swapchain.CreateFramebuffers(renderProcess.renderPass);
 
-		//shaderManager.CreateVertexShader("furMark/vert.spv");
-		//shaderManager.CreateFragmentShader("furMark/frag.spv");
 		shaderManager.CreateShader("furMark/vert.spv", shaderManager.VERT);
 		shaderManager.CreateShader("furMark/frag.spv", shaderManager.FRAG);
 
-		//CGraphicsDescriptorManager::addMVPUniformBuffer();
-		//CGraphicsDescriptorManager::textureSamplers.resize(3);
 		CGraphicsDescriptorManager::addImageSamplerUniformBuffer(textureManager.textureImages[0].mipLevels);
 		CGraphicsDescriptorManager::addImageSamplerUniformBuffer(textureManager.textureImages[1].mipLevels);
 		CGraphicsDescriptorManager::addImageSamplerUniformBuffer(textureManager.textureImages[2].mipLevels);
 		CGraphicsDescriptorManager::addCustomUniformBuffer(sizeof(CustomUniformBufferObject));
+
 		CDescriptorManager::createDescriptorPool(); 
+
 		VkDescriptorSetLayoutBinding customBinding = CustomUniformBufferObject::GetBinding();
 		CGraphicsDescriptorManager::createDescriptorSetLayout(&customBinding); 
 		CGraphicsDescriptorManager::createTextureDescriptorSetLayout(); 
+
 		graphicsDescriptorManager.createDescriptorSets();
 		squareObject.createTextureDescriptorSets(
 			textureManager.textureImages, 
 			CGraphicsDescriptorManager::descriptorPool,
 			CGraphicsDescriptorManager::textureDescriptorSetLayout,
 			CGraphicsDescriptorManager::textureSamplers);
-
-
-        // descriptors[0].textureSamplers.resize(3);
-		// descriptors[0].addImageSamplerUniformBuffer(textureImages[0].mipLevels);
-        // descriptors[0].addImageSamplerUniformBuffer(textureImages[1].mipLevels);
-        // descriptors[0].addImageSamplerUniformBuffer(textureImages[2].mipLevels);
-		// //descriptor.addMVPUniformBuffer();
-		// descriptors[0].addCustomUniformBuffer(sizeof(CustomUniformBufferObject));
-		// descriptors[0].createDescriptorPool();
-		// VkDescriptorSetLayoutBinding customBinding = CustomUniformBufferObject::GetBinding();
-		// descriptors[0].createDescriptorSetLayout(&customBinding);
-		// descriptors[0].createDescriptorSets(&textureImages);
 
 		//support multiple descriptors in one piplines: bind multiple descriptor layouts in one pipeline
 		std::vector<VkDescriptorSetLayout> dsLayouts;

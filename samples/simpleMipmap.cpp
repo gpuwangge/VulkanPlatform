@@ -56,23 +56,18 @@ public:
 
 		swapchain.CreateFramebuffers(renderProcess.renderPass);
 
-		//shaderManager.CreateVertexShader("simpleObjLoader/vert.spv");
-		//shaderManager.CreateFragmentShader("simpleObjLoader/frag.spv");
 		shaderManager.CreateShader("simpleMipmap/vert.spv", shaderManager.VERT);
 		shaderManager.CreateShader("simpleMipmap/frag.spv", shaderManager.FRAG);
 
-		//descriptors[0].addMVPUniformBuffer();
-		//descriptors[0].addImageSamplerUniformBuffer(textureImages[0].mipLevels);
-		//descriptors[0].createDescriptorPool();
-		//descriptors[0].createDescriptorSetLayout();
-		//descriptors[0].createDescriptorSets(&textureImages);
+
 		CGraphicsDescriptorManager::addMVPUniformBuffer();
-		CGraphicsDescriptorManager::addImageSamplerUniformBuffer(textureManager.textureImages[0].mipLevels);
+		uint32_t mipLevels = textureManager.textureImages[0].mipLevels;
+		CGraphicsDescriptorManager::addImageSamplerUniformBuffer(mipLevels);
+
 		CDescriptorManager::createDescriptorPool();
-		//CDescriptor::createMVPDescriptorSetLayout();
+
 		CGraphicsDescriptorManager::createDescriptorSetLayout();
 		CGraphicsDescriptorManager::createTextureDescriptorSetLayout();
-		//descriptors[0].createMVPDescriptorSets();
 
 		graphicsDescriptorManager.createDescriptorSets();
 		object.createTextureDescriptorSets(

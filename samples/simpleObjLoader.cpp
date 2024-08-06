@@ -18,8 +18,6 @@ public:
 		renderer.CreateGraphicsCommandBuffer();
 
 		VkImageUsageFlags usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;	
-		//textureImages[0].CreateTextureImage("viking_room.png", usage, renderer.commandPool);
-		//textureImages[0].CreateImageView(VK_IMAGE_ASPECT_COLOR_BIT);
 		textureManager.CreateTextureImage("viking_room.png", usage, renderer.commandPool);
 
 		VkFormat depthFormat = renderProcess.findDepthFormat();
@@ -37,19 +35,15 @@ public:
 
 		swapchain.CreateFramebuffers(renderProcess.renderPass);
 
-		//shaderManager.CreateVertexShader("simpleObjLoader/vert.spv");
-		//shaderManager.CreateFragmentShader("simpleObjLoader/frag.spv");
 		shaderManager.CreateShader("simpleObjLoader/vert.spv", shaderManager.VERT);
 		shaderManager.CreateShader("simpleObjLoader/frag.spv", shaderManager.FRAG);
 
-		// descriptors[0].addMVPUniformBuffer();
-		// descriptors[0].addImageSamplerUniformBuffer(textureImages[0].mipLevels);
-		// descriptors[0].createDescriptorPool();
-		// descriptors[0].createDescriptorSetLayout();
-		// descriptors[0].createDescriptorSets(&textureImages);
 		CGraphicsDescriptorManager::addMVPUniformBuffer();
-		CGraphicsDescriptorManager::addImageSamplerUniformBuffer(textureManager.textureImages[0].mipLevels);
+		uint32_t mipLevels = textureManager.textureImages[0].mipLevels;
+		CGraphicsDescriptorManager::addImageSamplerUniformBuffer(mipLevels);
+
 		CDescriptorManager::createDescriptorPool();
+
 		CGraphicsDescriptorManager::createDescriptorSetLayout();
 		CGraphicsDescriptorManager::createTextureDescriptorSetLayout();
 
@@ -63,7 +57,6 @@ public:
 
 		//support multiple descriptors in one piplines: bind multiple descriptor layouts in one pipeline
 		std::vector<VkDescriptorSetLayout> dsLayouts;
-		//dsLayouts.push_back(descriptors[0].descriptorSetLayout);
 		dsLayouts.push_back(CGraphicsDescriptorManager::descriptorSetLayout);
 		dsLayouts.push_back(CGraphicsDescriptorManager::textureDescriptorSetLayout); //set = 1
 
@@ -87,7 +80,6 @@ public:
 
 	void drawObject(int objectId){
 		std::vector<std::vector<VkDescriptorSet>> dsSets; 
-		//dsSets.push_back(descriptors[0].descriptorSets);
 		dsSets.push_back(graphicsDescriptorManager.descriptorSets);
 		dsSets.push_back(object.descriptorSets); //set = 1
 

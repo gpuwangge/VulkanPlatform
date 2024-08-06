@@ -12,8 +12,6 @@ public:
 
 	std::vector<uint32_t> indices3D = { 0, 1, 2, 2, 3, 0};
 
-	
- 
 	struct CustomUniformBufferObject {
 		glm::vec3 color;
 
@@ -43,8 +41,7 @@ public:
 
 		VkImageUsageFlags usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
 		textureManager.CreateTextureImage("texture.jpg", usage, renderer.commandPool);	
-		//textureImages[0].CreateImageView(VK_IMAGE_ASPECT_COLOR_BIT);
-
+		
 		renderProcess.addColorAttachment(swapchain.swapChainImageFormat); //add this function will enable color attachment (bUseColorAttachment = true)
 		renderProcess.createSubpass();
 		renderProcess.createDependency();
@@ -52,22 +49,19 @@ public:
 
 		swapchain.CreateFramebuffers(renderProcess.renderPass);
 
-		//shaderManager.CreateVertexShader("basicTriangles/vert.spv");
-		//shaderManager.CreateFragmentShader("basicTriangles/frag.spv");
 		shaderManager.CreateShader("basicTriangles/vert.spv", shaderManager.VERT);
 		shaderManager.CreateShader("basicTriangles/frag.spv", shaderManager.FRAG);
 
-
 		CGraphicsDescriptorManager::addMVPUniformBuffer();
-		CGraphicsDescriptorManager::addImageSamplerUniformBuffer(textureManager.textureImages[0].mipLevels);
+		uint32_t mipLevels = textureManager.textureImages[0].mipLevels;
+		CGraphicsDescriptorManager::addImageSamplerUniformBuffer(mipLevels);
 		CGraphicsDescriptorManager::addCustomUniformBuffer(sizeof(CustomUniformBufferObject));
 		CDescriptorManager::createDescriptorPool(); //pool size = 3
 		VkDescriptorSetLayoutBinding customBinding = CustomUniformBufferObject::GetBinding();
 		CGraphicsDescriptorManager::createDescriptorSetLayout(&customBinding); //layout size = 2 (exclude sampler)
 		CGraphicsDescriptorManager::createTextureDescriptorSetLayout(); //layout size = 1
-		//descriptors[0].createDescriptorSets(); //set size = 2
+
 		graphicsDescriptorManager.createDescriptorSets();
-		//textureDescriptor.createTextureDescriptorSets(textureManager.textureImages[0], textureDescriptor.descriptorSets); //set size = 1
 		triangleObject.createTextureDescriptorSets(
 			textureManager.textureImages[triangleObject.id], 
 			CGraphicsDescriptorManager::descriptorPool,

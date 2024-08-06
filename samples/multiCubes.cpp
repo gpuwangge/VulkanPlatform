@@ -35,16 +35,9 @@ public:
 		renderer.CreateCommandPool(surface);
 		renderer.CreateGraphicsCommandBuffer();
 
-		//TODO: Add texture for different objects
-		//textureImages.resize(2);
 		VkImageUsageFlags usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
 		textureManager.CreateTextureImage("viking_room.png", usage, renderer.commandPool);
 		textureManager.CreateTextureImage("fur.jpg", 		 usage, renderer.commandPool);
-		//textureManager.textureImages.resize(2);
-		//textureManager.textureImages[0].CreateTextureImage("viking_room.png", usage, renderer.commandPool);
-		//textureManager.textureImages[0].CreateImageView(VK_IMAGE_ASPECT_COLOR_BIT);
-		//textureManager.textureImages[1].CreateTextureImage("fur.jpg", usage, renderer.commandPool);	
-		//textureManager.textureImages[1].CreateImageView(VK_IMAGE_ASPECT_COLOR_BIT);
 
 		if(swapchain.bEnableMSAA){
 			swapchain.GetMaxUsableSampleCount();
@@ -74,28 +67,17 @@ public:
 		shaderManager.CreateShader("multiCubes/vert.spv", shaderManager.VERT);
 		shaderManager.CreateShader("multiCubes/frag.spv", shaderManager.FRAG);
 
-		//descriptors[0].addMVPUniformBuffer();
-		//descriptors[0].addImageSamplerUniformBuffer(textureImages[0].mipLevels);
-		//descriptors[0].createDescriptorPool();
-		//descriptors[0].createDescriptorSetLayout();
-		//descriptors[0].createDescriptorSets(); //&textureImages
-
-		//create independent texture descriptor
-		//textureDescriptor.addImageSamplerUniformBuffer(textureImages[0].mipLevels);
-		//textureDescriptor.createDescriptorPool();
-		//textureDescriptor.createDescriptorSetLayout();
-		//textureDescriptor.createDescriptorSets(&textureImages);
 
 		CGraphicsDescriptorManager::addMVPUniformBuffer();
-		CGraphicsDescriptorManager::addImageSamplerUniformBuffer(textureManager.textureImages[0].mipLevels);
+		uint32_t mipLevels = textureManager.textureImages[0].mipLevels;
+		CGraphicsDescriptorManager::addImageSamplerUniformBuffer(mipLevels);
+
 		CDescriptorManager::createDescriptorPool();
-		//CDescriptor::createMVPDescriptorSetLayout();
+
 		CGraphicsDescriptorManager::createDescriptorSetLayout();
 		CGraphicsDescriptorManager::createTextureDescriptorSetLayout();
-		//descriptors[0].createMVPDescriptorSets();
-
+	
 		graphicsDescriptorManager.createDescriptorSets();
-		//std::cout<<"create descriptor set done"<<std::endl;
 		for(int i = 0; i < 2; i++){
 			cubes[i].createTextureDescriptorSets(
 				textureManager.textureImages[cubes[i].id], 
@@ -105,18 +87,10 @@ public:
 				);
 		}
 	
-		//cubes[0].textureDescriptor.createTextureDescriptorSets(textureManager.textureImages[0], cubes[0].textureDescriptor.descriptorSets);
-		//cubes[1].textureDescriptor.createTextureDescriptorSets(textureManager.textureImages[1], cubes[1].textureDescriptor.descriptorSets);//...
-		//std::cout<<"create texture descriptor set done"<<std::endl;
-
 		//support multiple descriptors in one piplines: bind multiple descriptor layouts in one pipeline
 		std::vector<VkDescriptorSetLayout> dsLayouts;
-		//dsLayouts.push_back(CDescriptor::mvpDescriptorSetLayout); //set = 0
 		dsLayouts.push_back(CGraphicsDescriptorManager::descriptorSetLayout); //set = 0
 		dsLayouts.push_back(CGraphicsDescriptorManager::textureDescriptorSetLayout); //set = 1
-		//dsLayouts.push_back(descriptors[0].descriptorSetLayout); //set = 0
-		//dsLayouts.push_back(textureDescriptor.descriptorSetLayout); //set = 1
-		//dsLayouts.push_back(cubes[0].textureDescriptor.descriptorSetLayout); //set = 1
 		//!!!Different cube can share the same texture descriptor.
 		//suppose we have 100 objects, 100 different textures. cube x 50, sphere x 50. How many texture layouts? How many texture descriptor?
 		//obviously, every objects need a different texture, so bind with objectId
@@ -126,17 +100,11 @@ public:
 		//all objects share the same descriptor pool and descriptor layout, they are universal
 		//sampler should also be universal
 
-		//support multiple descriptors in one piplines: bind multiple descriptor layouts in one pipeline
-		//std::vector<VkDescriptorSetLayout> dsLayouts;
-		//dsLayouts.push_back(descriptors[0].descriptorSetLayout);
-
 		renderProcess.createGraphicsPipelineLayout(dsLayouts);
 		renderProcess.createGraphicsPipeline<Vertex3D>(
 			VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
 			shaderManager.vertShaderModule, 
 			shaderManager.fragShaderModule);
-
-		//cubes[0].CleanUp();//can not clean up texture descriptor
 
 		CApplication::initialize();
 	}
@@ -144,7 +112,7 @@ public:
 	void update(){
 		CGraphicsDescriptorManager::mvpUBO.mvpData[0].model = glm::rotate(glm::mat4(1.0f), durationTime * glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 		CGraphicsDescriptorManager::mvpUBO.mvpData[1].model = glm::rotate(glm::mat4(1.0f), durationTime * glm::radians(-45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-		//descriptors[0].mvpUBO.mvpData[1].model = glm::mat4(1.0f); //identity matrix
+		//mvpUBO.mvpData[1].model = glm::mat4(1.0f); //identity matrix
 		CApplication::update();
 	}
 
@@ -155,11 +123,7 @@ public:
 	void drawObject(int objectId){
 		std::vector<std::vector<VkDescriptorSet>> dsSets; 
 		dsSets.push_back(graphicsDescriptorManager.descriptorSets); //set = 0
-		//dsSets.push_back(textureDescriptor.descriptorSets); //set = 1
 		dsSets.push_back(cubes[objectId].descriptorSets); //set = 1
-
-		//std::vector<std::vector<VkDescriptorSet>> dsSets; 
-		//dsSets.push_back(descriptors[0].descriptorSets);
 
 		//If shader is the same, can reuse the same descriptor for different objects.
 		//The offset index can be different than object id. Different offset index means different MVP uniforms.

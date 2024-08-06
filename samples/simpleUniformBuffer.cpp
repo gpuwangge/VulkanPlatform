@@ -30,16 +30,8 @@ public:
 
 		swapchain.CreateFramebuffers(renderProcess.renderPass);
 
-		//shaderManager.CreateVertexShader("simpleUniformBuffer/vert.spv");
-		//shaderManager.CreateFragmentShader("simpleUniformBuffer/frag.spv");
 		shaderManager.CreateShader("simpleUniformBuffer/vert.spv", shaderManager.VERT);
 		shaderManager.CreateShader("simpleUniformBuffer/frag.spv", shaderManager.FRAG); 
-
-		// descriptors[0].addCustomUniformBuffer(sizeof(StructCustomUniformBuffer));
-		// descriptors[0].createDescriptorPool();
-		// VkDescriptorSetLayoutBinding customBinding = StructCustomUniformBuffer::GetBinding();
-		// descriptors[0].createDescriptorSetLayout(&customBinding);
-		// descriptors[0].createDescriptorSets();
 
 		CGraphicsDescriptorManager::addCustomUniformBuffer(sizeof(StructCustomUniformBuffer));
 		CDescriptorManager::createDescriptorPool();

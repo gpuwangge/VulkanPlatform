@@ -15,14 +15,9 @@ public:
 
 		swapchain.CreateFramebuffers(renderProcess.renderPass);
 
-		//shaderManager.CreateVertexShader("simpleTriangle/vert.spv");
-		//shaderManager.CreateFragmentShader("simpleTriangle/frag.spv");
 		shaderManager.CreateShader("simpleTriangle/vert.spv", shaderManager.VERT);
 		shaderManager.CreateShader("simpleTriangle/frag.spv", shaderManager.FRAG); 
 
-		//descriptors[0].createDescriptorPool();
-		//descriptors[0].createDescriptorSetLayout();
-		//descriptors[0].createDescriptorSets();
 		CDescriptorManager::createDescriptorPool(); 
 		CGraphicsDescriptorManager::createDescriptorSetLayout(); 
 		CGraphicsDescriptorManager::createTextureDescriptorSetLayout();
