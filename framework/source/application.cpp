@@ -8,6 +8,8 @@ CApplication::CApplication(){
 
     descriptors.resize(1);
     textureImages.resize(1);
+    //textureImages1.resize(1);
+    //textureImages2.resize(1);
 
     mainCamera.type = Camera::CameraType::firstperson;
     mainCamera.setPosition(glm::vec3(0.0f, 0.0f, -2.0f));
@@ -110,6 +112,7 @@ void CApplication::update(){
         descriptors[i].updateMVPUniformBuffer(renderer.currentFrame, durationTime, mainCamera);
         descriptors[i].updateVPUniformBuffer(renderer.currentFrame, durationTime, mainCamera);
     }
+    graphicsDescriptorManager.updateMVPUniformBuffer(renderer.currentFrame, durationTime, mainCamera);
 }
 
 void CApplication::recordGraphicsCommandBuffer(){}
@@ -238,11 +241,15 @@ void CApplication::DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUti
 void CApplication::CleanUp(){
     swapchain.CleanUp();
     renderProcess.Cleanup();
-    for(int i = 0; i < descriptors.size(); i++)
-        descriptors[i].DestroyAndFree();
-    textureDescriptor.DestroyAndFree();
-    for(int i = 0; i < textureImages.size(); i++)
-        textureImages[i].Destroy();
+   //for(int i = 0; i < descriptors.size(); i++)
+    //    descriptors[i].DestroyAndFree();
+    graphicsDescriptorManager.DestroyAndFree();
+    computeDescriptorManager.DestroyAndFree();
+    //textureDescriptor.DestroyAndFree();
+    for(int i = 0; i < textureImages.size(); i++) textureImages[i].Destroy();
+    //for(int i = 0; i < textureImages1.size(); i++) textureImages1[i].Destroy();
+    //for(int i = 0; i < textureImages2.size(); i++) textureImages2[i].Destroy();
+    textureManager.Destroy();
     renderer.Destroy();
 
     vkDestroyDevice(CContext::GetHandle().GetLogicalDevice(), nullptr);

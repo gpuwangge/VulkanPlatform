@@ -2,6 +2,15 @@
 
 #define TEST_CLASS_NAME CTextureCompute
 class TEST_CLASS_NAME: public CApplication{
+//This test is similar to simpleComputeStorageImage, but instead use 2 texture image, one as input, the other as output
+//It also render the result to swapchain
+//simpleComputeStorageImage: write result to texture image and show to swapchain
+//textureCompute: read texture image, make changes(use compute shader to do blur effect), and write to texture image, and show to swapchain
+//This test use graphics pipeline but does not draw anything with it, because result is drawn directly to swap chain
+//The reason for graphics pipeline is to load texture to texture image
+//but why mvp? why color attachment?
+//no need bind graphics pipeline?
+//TODO: improve this sample, there is still something unknown for this test; something can be simplified
 public:
 	static const int KernelRunNumber = 1;
 
@@ -23,19 +32,26 @@ public:
 		swapchain.bComputeSwapChainImage = true;
 	}
 
+	CObject triangleObject;
 	void initialize(){
+		triangleObject.InitVertices3D(vertices3D);
+		triangleObject.InitIndices3D(indices3D);
+
 		//For Grapics
-		renderer.CreateVertexBuffer<Vertex3D>(vertices3D);
-		renderer.CreateIndexBuffer(indices3D);
+		renderer.CreateVertexBuffer<Vertex3D>(triangleObject.vertices3D);
+		renderer.CreateIndexBuffer(triangleObject.indices3D);
 
 		renderer.CreateCommandPool(surface);
 		
 		//For Graphics
 		renderer.CreateGraphicsCommandBuffer(); 
+
 		VkImageUsageFlags usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT;
-		textureImages[0].imageFormat = swapchain.swapChainImageFormat;
-		textureImages[0].CreateTextureImage("texture.jpg", usage, renderer.commandPool);
-		textureImages[0].CreateImageView(VK_IMAGE_ASPECT_COLOR_BIT);
+		//textureImages[0].imageFormat = swapchain.swapChainImageFormat;
+		//textureImages[0].CreateTextureImage("texture.jpg", usage, renderer.commandPool);
+		//textureImages[0].CreateImageView(VK_IMAGE_ASPECT_COLOR_BIT);
+		textureManager.CreateTextureImage("texture.jpg", usage, renderer.commandPool, false, swapchain.swapChainImageFormat);
+		//textureManager.textureImages[0].imageFormat = swapchain.swapChainImageFormat;
 
 		//For Compute
 		renderer.m_renderMode = renderer.RENDER_COMPUTE_SWAPCHAIN_Mode;
@@ -58,6 +74,31 @@ public:
 		std::cout<<"compute shader created."<<std::endl;
 
 
+
+
+		CGraphicsDescriptorManager::addMVPUniformBuffer();
+		CGraphicsDescriptorManager::addImageSamplerUniformBuffer(textureManager.textureImages[0].mipLevels);
+
+		CComputeDescriptorManager::addStorageImage(UNIFORM_IMAGE_STORAGE_TEXTURE_BIT); //as input
+		CComputeDescriptorManager::addStorageImage(UNIFORM_IMAGE_STORAGE_SWAPCHAIN_BIT); //as output
+
+		CDescriptorManager::createDescriptorPool(); //size = 4(mvp:1, sampler:1, storage image:2)
+
+		CGraphicsDescriptorManager::createDescriptorSetLayout();
+		CGraphicsDescriptorManager::createTextureDescriptorSetLayout();
+		CComputeDescriptorManager::createDescriptorSetLayout();
+
+		graphicsDescriptorManager.createDescriptorSets(&textureManager.textureImages);
+		triangleObject.createTextureDescriptorSets(
+			textureManager.textureImages[triangleObject.id], 
+			CGraphicsDescriptorManager::descriptorPool,
+			CGraphicsDescriptorManager::textureDescriptorSetLayout,
+			CGraphicsDescriptorManager::textureSamplers[0]);
+		computeDescriptorManager.createDescriptorSets(&textureManager.textureImages, &(swapchain.views));
+
+
+
+		/*
 		descriptors.resize(2);//you can have many descriptor sets. Here I use ds[0] for graphics pipeline and ds[1] for compute pipeline
 		//For Graphics
 		descriptors[0].addMVPUniformBuffer();
@@ -76,11 +117,12 @@ public:
 		std::cout<<"createDescriptorSetLayout() done."<<std::endl;
 		//descriptors[1].createDescriptorSets(&textureImages);
 		descriptors[1].createDescriptorSets(&textureImages, &(swapchain.views));
-		std::cout<<"compute descriptor created."<<std::endl;
+		std::cout<<"compute descriptor created."<<std::endl;*/
 
 		//support multiple descriptors in one piplines: bind multiple descriptor layouts in one pipeline
 		std::vector<VkDescriptorSetLayout> dsLayouts;
-		dsLayouts.push_back(descriptors[0].descriptorSetLayout);
+		dsLayouts.push_back(CGraphicsDescriptorManager::descriptorSetLayout);
+		dsLayouts.push_back(CGraphicsDescriptorManager::textureDescriptorSetLayout); 
 
 		//for Graphics: when create graphics pipeline, use descriptor set 0 layout
 		renderProcess.createGraphicsPipelineLayout(dsLayouts);
@@ -92,7 +134,7 @@ public:
 		std::cout<<"graphics pipeline created."<<std::endl;
 
 		//For Compute: when create compute pipeline, use descriptor set 1 layout
-		renderProcess.createComputePipelineLayout(descriptors[1].descriptorSetLayout);
+		renderProcess.createComputePipelineLayout(CComputeDescriptorManager::descriptorSetLayout);
 		renderProcess.createComputePipeline(shaderManager.compShaderModule);
 
 		CApplication::initialize();
@@ -205,10 +247,10 @@ public:
             //if (vkBeginCommandBuffer(commandBuffers[i], &beginInfo) != VK_SUCCESS) {
             //    throw std::runtime_error("failed to begin recording command buffer!");
             //}
-			renderer.StartRecordComputeCommandBuffer(renderProcess.computePipeline, renderProcess.computePipelineLayout, descriptors[1].descriptorSets);
+			renderer.StartRecordComputeCommandBuffer(renderProcess.computePipeline, renderProcess.computePipelineLayout, computeDescriptorManager.descriptorSets);
 
 			std::vector<std::vector<VkDescriptorSet>> dsSets; 
-			dsSets.push_back(descriptors[1].descriptorSets);
+			dsSets.push_back(computeDescriptorManager.descriptorSets);
 
 			renderer.BindComputeDescriptorSets(renderProcess.computePipelineLayout, dsSets, -1); //-1 to offset means no dynamic offset
 

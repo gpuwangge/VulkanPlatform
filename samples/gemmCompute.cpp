@@ -34,15 +34,19 @@ public:
 		shaderManager.CreateShader("gemmCompute/comp.spv", shaderManager.COMP);
 		std::cout<<"compute shader created."<<std::endl;
 
-		descriptors[0].addStorageBuffer(sizeof(StructStorageBuffer));
+		///descriptors[0].addStorageBuffer(sizeof(StructStorageBuffer));
 		//std::cout<<"storageBufferObjectInput added. Size = "<<DIM_M * DIM_K * 8.0f * 3 / 1024 / 1024<<"mb."<<std::endl;
 		//descriptors[0].addStorageBuffer(sizeof(StructStorageBufferOutput));
 		//std::cout<<"storageBufferObjectOutput added. Size = "<<DIM_M * DIM_K * 8.0f / 1024 / 1024<<"mb."<<std::endl;
-		descriptors[0].createDescriptorPool();
-		descriptors[0].createDescriptorSetLayout();
-		descriptors[0].createDescriptorSets();
+		//descriptors[0].createDescriptorPool();
+		//descriptors[0].createDescriptorSetLayout();
+		//descriptors[0].createDescriptorSets();
+		CComputeDescriptorManager::addStorageBuffer(sizeof(StructStorageBuffer));
+		CDescriptorManager::createDescriptorPool();
+		CComputeDescriptorManager::createDescriptorSetLayout();
+		computeDescriptorManager.createDescriptorSets();
 
-		renderProcess.createComputePipelineLayout(descriptors[0].descriptorSetLayout);
+		renderProcess.createComputePipelineLayout(CComputeDescriptorManager::descriptorSetLayout);
 		renderProcess.createComputePipeline(shaderManager.compShaderModule);
 
 		CApplication::initialize();
@@ -62,8 +66,8 @@ public:
 		std::cout<<"Initialized A and B."<<std::endl;
 
 		//Host >> Device
-		descriptors[0].updateStorageBuffer<StructStorageBuffer>(renderer.currentFrame, durationTime, storageBufferObject); //1 TODO: fill all inflight, update input only
-		descriptors[0].updateStorageBuffer<StructStorageBuffer>(renderer.currentFrame+1, durationTime, storageBufferObject); //1
+		computeDescriptorManager.updateStorageBuffer<StructStorageBuffer>(renderer.currentFrame, durationTime, storageBufferObject); //1 TODO: fill all inflight, update input only
+		computeDescriptorManager.updateStorageBuffer<StructStorageBuffer>(renderer.currentFrame+1, durationTime, storageBufferObject); //1
 		
 	}
 
@@ -82,7 +86,7 @@ public:
 		START_COMPUTE_RECORD(0)
 
 		std::vector<std::vector<VkDescriptorSet>> dsSets; 
-		dsSets.push_back(descriptors[0].descriptorSets);
+		dsSets.push_back(computeDescriptorManager.descriptorSets);
 
 		renderer.BindComputeDescriptorSets(renderProcess.computePipelineLayout, dsSets, -1); //-1 to offset means no dynamic offset
 
@@ -103,7 +107,7 @@ public:
 
 		//Device >> Host
 		//if(bVerbose) memcpy(storageBufferObject.MatC, descriptors[0].storageBuffersMapped[renderer.currentFrame], sizeof(storageBufferObject.MatC));//2
-		if(bVerbose) memcpy(&storageBufferObject, descriptors[0].storageBuffersMapped[renderer.currentFrame], sizeof(storageBufferObject));//2 TODO: how to copy only MatC
+		if(bVerbose) memcpy(&storageBufferObject, computeDescriptorManager.storageBuffersMapped[renderer.currentFrame], sizeof(storageBufferObject));//2 TODO: how to copy only MatC
 		//if(bVerbose) printMatrix(storageBufferObjectOutput.MatC, DIM_M, DIM_N, "C");
 		if(bVerbose) PRINT("C: ", storageBufferObject.MatC, DIM_M*DIM_N);
 
@@ -114,6 +118,7 @@ public:
 			CPUSingleThreadMatMul(DIM_M, DIM_N, DIM_K, storageBufferObject.MatA, storageBufferObject.MatB, cpu_result, DIM_M*DIM_N);
 			//printMatrix(cpu_result, DIM_M, DIM_N, "cpu_C");
 			PRINT("cpu_C: ", cpu_result, DIM_M*DIM_N);
+			std::cout<<"Please manually check validation. "<<std::endl; //TODO: automate verification
 		}
 
 		if(bVerbose) PRINT("");
@@ -143,6 +148,7 @@ public:
 	}
 */
 	void CPUSingleThreadMatMul(int M, int N, int K, float *matrixA, float *matrixB, float *outputMatrix, int sampleNum){
+		std::cout<<"Running CPU single thread mat mul for verification purpose..."<<std::endl;
 		int count = 0;
 		int printDelta = sampleNum / 1;
 		for(int n = 0; n < N; n++){ //col
@@ -157,7 +163,7 @@ public:
 				if(count % printDelta == 0){
 					float completeRate = (count * 100.0)/sampleNum ;
 					PRINT("Completed: %f%%", completeRate);
-					//std::cout<<"Completed: "<<completeRate<<"%"<<std::endl;
+					std::cout<<"Completed: "<<completeRate<<"%"<<" (sampleNum="<<sampleNum<<", count="<<count<<")"<<std::endl;
 				}
 				
 				if(count >= sampleNum) return;

@@ -25,7 +25,7 @@ Prepare:
 mkdir build  
 cd build  
 cmake -G "MinGW Makefiles" ..   
-make  
+make -j  
 ```
 
 ### for one sample  
@@ -33,7 +33,7 @@ make
 mkdir build  
 cd build  
 cmake -G "MinGW Makefiles" -D SINGLE=true ..  
-make
+make -j
 ```
 - [Optional] Edit CMakeLists.txt to tell compiler which sample to build   
 

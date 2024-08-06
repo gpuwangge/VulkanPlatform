@@ -36,11 +36,18 @@ public:
 		shaderManager.CreateShader("simpleUniformBuffer/vert.spv", shaderManager.VERT);
 		shaderManager.CreateShader("simpleUniformBuffer/frag.spv", shaderManager.FRAG); 
 
-		descriptors[0].addCustomUniformBuffer(sizeof(StructCustomUniformBuffer));
-		descriptors[0].createDescriptorPool();
+		// descriptors[0].addCustomUniformBuffer(sizeof(StructCustomUniformBuffer));
+		// descriptors[0].createDescriptorPool();
+		// VkDescriptorSetLayoutBinding customBinding = StructCustomUniformBuffer::GetBinding();
+		// descriptors[0].createDescriptorSetLayout(&customBinding);
+		// descriptors[0].createDescriptorSets();
+
+		CGraphicsDescriptorManager::addCustomUniformBuffer(sizeof(StructCustomUniformBuffer));
+		CDescriptorManager::createDescriptorPool();
 		VkDescriptorSetLayoutBinding customBinding = StructCustomUniformBuffer::GetBinding();
-		descriptors[0].createDescriptorSetLayout(&customBinding);
-		descriptors[0].createDescriptorSets();
+		CGraphicsDescriptorManager::createDescriptorSetLayout(&customBinding);
+
+		graphicsDescriptorManager.createDescriptorSets();
 
 		//support multiple descriptors in one piplines: bind multiple descriptor layouts in one pipeline
 		std::vector<VkDescriptorSetLayout> dsLayouts;
@@ -58,7 +65,7 @@ public:
 	void update(){
 		//printf("%f\n", durationTime);
 		customUniformBufferObject.color = {(sin(durationTime*3) + 1.0f) / 2.0f, (cos(durationTime*3) + 1.0f) / 2.0f, 0.0f, 1.0f};
-		descriptors[0].updateCustomUniformBuffer<StructCustomUniformBuffer>(renderer.currentFrame, durationTime, customUniformBufferObject);
+		graphicsDescriptorManager.updateCustomUniformBuffer<StructCustomUniformBuffer>(renderer.currentFrame, durationTime, customUniformBufferObject);
 		CApplication::update();
 	}
 
@@ -72,7 +79,7 @@ public:
 
 	void drawObject(int objectId){
 		std::vector<std::vector<VkDescriptorSet>> dsSets; 
-		dsSets.push_back(descriptors[0].descriptorSets);
+		dsSets.push_back(graphicsDescriptorManager.descriptorSets);
 
 		renderer.BindGraphicsDescriptorSets(renderProcess.graphicsPipelineLayout, dsSets, -1);
 		//renderer.BindVertexBuffer(objectId);

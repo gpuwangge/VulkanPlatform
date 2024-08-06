@@ -13,25 +13,36 @@ public:
 
 	std::vector<VkClearValue> clearValues{ {  0.0f, 0.0f, 0.0f, 1.0f  },  { 1.0f, 0 } };
 
+	CObject triangleObject;
+
     void initialize(){
 		mainCamera.setPosition(glm::vec3(0.0f, 0.0f, -3.0f));
 		mainCamera.setPerspective(90.0f, (float)windowWidth /  (float)windowHeight, 0.1f, 256.0f);
 
 		swapchain.bEnableDepthTest = true;
 		swapchain.bEnableMSAA = true; //!To enable MSAA, make sure it has depth test first (call wxjCreateDepthAttachment())
-		textureImages[0].bEnableMipMap = true;
+		//textureImages[0].bEnableMipMap = true;
 
-		renderer.CreateVertexBuffer<Vertex3D>(vertices3D);
-		renderer.CreateIndexBuffer(indices3D);
+		triangleObject.InitVertices3D(vertices3D);
+		triangleObject.InitIndices3D(indices3D);
+
+		renderer.CreateVertexBuffer<Vertex3D>(triangleObject.vertices3D);
+		renderer.CreateIndexBuffer(triangleObject.indices3D);
+
 		renderer.CreateCommandPool(surface);
 		renderer.CreateGraphicsCommandBuffer();
 
 		VkImageUsageFlags usage_texture = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
-		textureImages[0].imageFormat = VK_FORMAT_R16G16B16A16_UNORM;//VK_FORMAT_R16G16B16A16_UNORM or VK_FORMAT_R16G16B16A16_SFLOAT(need frac_float16())
-		textureImages[0].CreateTextureImage("48bpt.png", usage_texture, renderer.commandPool, 16);
-		textureImages[0].CreateImageView(VK_IMAGE_ASPECT_COLOR_BIT);
+		textureManager.CreateTextureImage("48bpt.png", usage_texture, renderer.commandPool, true, VK_FORMAT_R16G16B16A16_UNORM, 16);
+		//textureManager.textureImages[0].bEnableMipMap = true;
+		textureManager.textureImages[0].generateMipmaps();
+		
 
-		textureImages[0].generateMipmaps(); 
+		//textureImages[0].imageFormat = VK_FORMAT_R16G16B16A16_UNORM;//VK_FORMAT_R16G16B16A16_UNORM or VK_FORMAT_R16G16B16A16_SFLOAT(need frac_float16())
+		//textureImages[0].CreateTextureImage("48bpt.png", usage_texture, renderer.commandPool, 16);
+		//textureImages[0].CreateImageView(VK_IMAGE_ASPECT_COLOR_BIT);
+
+		//textureImages[0].generateMipmaps(); 
 		
 		VkImageUsageFlags usage;
 		if(swapchain.bEnableMSAA){
@@ -61,18 +72,35 @@ public:
 
 		//shaderManager.CreateVertexShader("simpleTexture/vert.spv");
 		//shaderManager.CreateFragmentShader("simpleTexture/frag.spv");
-		shaderManager.CreateShader("simpleTexture/vert.spv", shaderManager.VERT);
-		shaderManager.CreateShader("simpleTexture/frag.spv", shaderManager.FRAG);
+		shaderManager.CreateShader("bptpc16Texture/vert.spv", shaderManager.VERT);
+		shaderManager.CreateShader("bptpc16Texture/frag.spv", shaderManager.FRAG);
 
-		descriptors[0].addMVPUniformBuffer();
-		descriptors[0].addImageSamplerUniformBuffer(textureImages[0].mipLevels);
-		descriptors[0].createDescriptorPool();
-		descriptors[0].createDescriptorSetLayout();
-		descriptors[0].createDescriptorSets(&textureImages);
+
+		CGraphicsDescriptorManager::addMVPUniformBuffer();
+		CGraphicsDescriptorManager::addImageSamplerUniformBuffer(textureManager.textureImages[0].mipLevels);
+		//CGraphicsDescriptorManager::addCustomUniformBuffer(sizeof(CustomUniformBufferObject));
+		CDescriptorManager::createDescriptorPool(); //pool size = 2
+		//VkDescriptorSetLayoutBinding customBinding = CustomUniformBufferObject::GetBinding();
+		CGraphicsDescriptorManager::createDescriptorSetLayout(); //layout size = 1 (exclude sampler)
+		CGraphicsDescriptorManager::createTextureDescriptorSetLayout(); //layout size = 1
+
+		graphicsDescriptorManager.createDescriptorSets();
+		triangleObject.createTextureDescriptorSets(
+			textureManager.textureImages[triangleObject.id], 
+			CGraphicsDescriptorManager::descriptorPool,
+			CGraphicsDescriptorManager::textureDescriptorSetLayout,
+			CGraphicsDescriptorManager::textureSamplers[0]);
+
+		//descriptors[0].addMVPUniformBuffer();
+		//descriptors[0].addImageSamplerUniformBuffer(textureImages[0].mipLevels);
+		//descriptors[0].createDescriptorPool();
+		//descriptors[0].createDescriptorSetLayout();
+		//descriptors[0].createDescriptorSets(&textureImages);
 
 		//support multiple descriptors in one piplines: bind multiple descriptor layouts in one pipeline
 		std::vector<VkDescriptorSetLayout> dsLayouts;
-		dsLayouts.push_back(descriptors[0].descriptorSetLayout);
+		dsLayouts.push_back(CGraphicsDescriptorManager::descriptorSetLayout);
+		dsLayouts.push_back(CGraphicsDescriptorManager::textureDescriptorSetLayout); //set = 1
 
 		renderProcess.createGraphicsPipelineLayout(dsLayouts);
 		renderProcess.createGraphicsPipeline<Vertex3D>(
@@ -97,7 +125,8 @@ public:
 
 	void drawObject(int objectId){
 		std::vector<std::vector<VkDescriptorSet>> dsSets; 
-		dsSets.push_back(descriptors[0].descriptorSets);
+		dsSets.push_back(graphicsDescriptorManager.descriptorSets);
+		dsSets.push_back(triangleObject.descriptorSets); //set = 1
 
 		renderer.BindGraphicsDescriptorSets(renderProcess.graphicsPipelineLayout, dsSets, objectId);
 		renderer.BindVertexBuffer(objectId);

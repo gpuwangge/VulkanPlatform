@@ -47,12 +47,18 @@ public:
 	CSwapchain swapchain;
     CRenderProcess renderProcess;
     CShaderManager shaderManager;
-    std::vector<CDescriptor> descriptors;
-    CTextureDescriptor textureDescriptor;
+    std::vector<CGraphicsDescriptorManager> descriptors;//to be remove
+    CGraphicsDescriptorManager graphicsDescriptorManager;
+    CComputeDescriptorManager computeDescriptorManager;
+    //CTextureDescriptor textureDescriptor;
     CRenderer renderer;
-    std::vector<CTextureImage> textureImages;
+    std::vector<CTextureImage> textureImages; //temp
     CModelManager modelManager;
-    
+    //std::vector<CTextureImage> textureImages1; //temp
+    //std::vector<CTextureImage> textureImages2; //temp
+    CTextureManager textureManager;
+
+
     //std::chrono::_V2::system_clock::time_point lastTime;
 
     void CleanUp();

@@ -21,13 +21,17 @@ public:
 		shaderManager.CreateShader("simpleTriangle/vert.spv", shaderManager.VERT);
 		shaderManager.CreateShader("simpleTriangle/frag.spv", shaderManager.FRAG); 
 
-		descriptors[0].createDescriptorPool();
-		descriptors[0].createDescriptorSetLayout();
-		descriptors[0].createDescriptorSets();
+		//descriptors[0].createDescriptorPool();
+		//descriptors[0].createDescriptorSetLayout();
+		//descriptors[0].createDescriptorSets();
+		CDescriptorManager::createDescriptorPool(); 
+		CGraphicsDescriptorManager::createDescriptorSetLayout(); 
+		CGraphicsDescriptorManager::createTextureDescriptorSetLayout();
+		graphicsDescriptorManager.createDescriptorSets();
 
 		//support multiple descriptors in one piplines: bind multiple descriptor layouts in one pipeline
 		std::vector<VkDescriptorSetLayout> dsLayouts;
-		dsLayouts.push_back(descriptors[0].descriptorSetLayout);
+		dsLayouts.push_back(CGraphicsDescriptorManager::descriptorSetLayout);
 
 		renderProcess.createGraphicsPipelineLayout(dsLayouts);
 		renderProcess.createGraphicsPipeline(

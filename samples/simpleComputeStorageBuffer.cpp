@@ -2,6 +2,9 @@
 
 #define TEST_CLASS_NAME CSimpleComputeStorageBuffer
 class TEST_CLASS_NAME: public CApplication{
+//A sample to test storage buffer (for compute)	
+//This sample write 1, 2, 3, 4, 5 to storage buffer and read back
+//storage buffer can be used for gemm
 public:
 	const int KernelRunNumber = 5;
 	struct StructStorageBuffer {
@@ -17,12 +20,12 @@ public:
 
 		shaderManager.CreateShader("simpleComputeStorageBuffer/comp.spv", shaderManager.COMP);
 
-		descriptors[0].addStorageBuffer(sizeof(StructStorageBuffer));
-		descriptors[0].createDescriptorPool();
-		descriptors[0].createDescriptorSetLayout();
-		descriptors[0].createDescriptorSets();
+		CComputeDescriptorManager::addStorageBuffer(sizeof(StructStorageBuffer));
+		CDescriptorManager::createDescriptorPool();
+		CComputeDescriptorManager::createDescriptorSetLayout();
+		computeDescriptorManager.createDescriptorSets();
 
-		renderProcess.createComputePipelineLayout(descriptors[0].descriptorSetLayout);
+		renderProcess.createComputePipelineLayout(CComputeDescriptorManager::descriptorSetLayout);
 		renderProcess.createComputePipeline(shaderManager.compShaderModule);
 
 		CApplication::initialize();
@@ -35,10 +38,10 @@ public:
 		storageBufferObject.data = {counter+0.0f, counter+0.1f, counter+0.2f, counter+0.3f};
 
 		//Host >> Device
-		descriptors[0].updateStorageBuffer<StructStorageBuffer>(renderer.currentFrame, durationTime, storageBufferObject);
+		computeDescriptorManager.updateStorageBuffer<StructStorageBuffer>(renderer.currentFrame, durationTime, storageBufferObject);
 		//std::cout<<"update(): Delta Time: "<<deltaTime<<", Duration Time: "<<durationTime<<std::endl;
 
-		if(counter==KernelRunNumber) NeedToExit = true;
+		if(counter==KernelRunNumber) NeedToExit = true; 
 		counter++;
 
 		CApplication::update(); //update time
@@ -59,7 +62,7 @@ public:
 		//Device >> Host
 		float data[4] = {0};
 		//std::cout<<"compute(): Current Frame = "<<renderer.currentFrame<<": "<<std::endl;
-		memcpy(data, descriptors[0].storageBuffersMapped[renderer.currentFrame], sizeof(data));
+		memcpy(data, computeDescriptorManager.storageBuffersMapped[renderer.currentFrame], sizeof(data));
 
 		PRINT("compute() read data: ", data, 4);
 	}

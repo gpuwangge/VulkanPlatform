@@ -2,14 +2,17 @@
 
 #define TEST_CLASS_NAME CSimpleComputeStorageImage
 class TEST_CLASS_NAME: public CApplication{
+//This test draws on the swapchain images, with the use of storage image
+//The size of swapchain must be equal to MAX_FRAMES_IN_FLIGHT
+//Because number of descriptor is MAX_FRAMES_IN_FLIGHT, each swapchain imageview must attach to a descriptor
+//Thus no graphics pipeline is needed here
+//When run, a purple rectangle will show on the screen
+
 	//static const int KernelRunNumber = 1;
 public:
 	std::vector<VkClearValue> clearValues{ {  0.0f, 1.0f, 0.0f, 1.0f  } };
 
-	//This test draws on the swapchain images.
-	//The size of swapchain must be equal to MAX_FRAMES_IN_FLIGHT
-	//Because number of descriptor is MAX_FRAMES_IN_FLIGHT, each swapchain imageview must attach to a descriptor
-	//Thus no graphics pipeline is needed here
+	
 	CSimpleComputeStorageImage(){
 		swapchain.imageSize = MAX_FRAMES_IN_FLIGHT;
 		swapchain.bComputeSwapChainImage = true;
@@ -37,13 +40,13 @@ public:
 		shaderManager.CreateShader("simpleComputeStorageImage/comp.spv", shaderManager.COMP);
 		std::cout<<"compute shader created."<<std::endl;
 
-		descriptors[0].addStorageImage(UNIFORM_IMAGE_STORAGE_SWAPCHAIN_BIT); //as output
+		CComputeDescriptorManager::addStorageImage(UNIFORM_IMAGE_STORAGE_SWAPCHAIN_BIT); //as output
 		std::cout<<"descriptor 1."<<std::endl;
-		descriptors[0].createDescriptorPool();
+		CDescriptorManager::createDescriptorPool();
 		std::cout<<"descriptor 2."<<std::endl;
-		descriptors[0].createDescriptorSetLayout();
+		CComputeDescriptorManager::createDescriptorSetLayout();
 		std::cout<<"descriptor 3."<<std::endl;
-		descriptors[0].createDescriptorSets(NULL, &(swapchain.views));
+		computeDescriptorManager.createDescriptorSets(NULL, &(swapchain.views));
 		std::cout<<"descriptor created."<<std::endl;
 
 		///renderProcess.createGraphicsPipelineLayout(descriptors[0].descriptorSetLayout);
@@ -52,7 +55,7 @@ public:
 			///shaderManager.vertShaderModule, 
 			///shaderManager.fragShaderModule);
 
-		renderProcess.createComputePipelineLayout(descriptors[0].descriptorSetLayout);
+		renderProcess.createComputePipelineLayout(CComputeDescriptorManager::descriptorSetLayout);
 		renderProcess.createComputePipeline(shaderManager.compShaderModule);
 
 		CApplication::initialize();
@@ -131,10 +134,10 @@ public:
             //if (vkBeginCommandBuffer(commandBuffers[i], &beginInfo) != VK_SUCCESS) {
             //    throw std::runtime_error("failed to begin recording command buffer!");
             //}
-			renderer.StartRecordComputeCommandBuffer(renderProcess.computePipeline, renderProcess.computePipelineLayout, descriptors[0].descriptorSets);
+			renderer.StartRecordComputeCommandBuffer(renderProcess.computePipeline, renderProcess.computePipelineLayout, computeDescriptorManager.descriptorSets);
 
 			std::vector<std::vector<VkDescriptorSet>> dsSets; 
-			dsSets.push_back(descriptors[0].descriptorSets);
+			dsSets.push_back(computeDescriptorManager.descriptorSets);
 
 			renderer.BindComputeDescriptorSets(renderProcess.computePipelineLayout, dsSets, -1); //-1 to offset means no dynamic offset
 

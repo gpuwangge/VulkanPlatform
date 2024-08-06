@@ -1,11 +1,11 @@
 #version 450
 
-layout(binding = 0) uniform UniformCustomBufferObject { 
+layout(set = 0, binding = 0) uniform UniformCustomBufferObject { 
     vec3 lightPos;
 	mat4 lightSpace;
 } customUBO;
 
-layout(binding = 1) uniform UniformBufferObject {
+layout(set = 0, binding = 1) uniform UniformBufferObject {
     mat4 model;
     mat4 view;
     mat4 proj;

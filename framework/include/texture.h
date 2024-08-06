@@ -40,4 +40,20 @@ public:
     bool bEnableMipMap = false;
 };
 
+
+class CTextureManager{
+public:
+    std::vector<CTextureImage> textureImages;
+    //unsigned int textureImageCount = 0;
+    CTextureManager();
+    ~CTextureManager();
+    void CreateTextureImage(
+        const std::string texturePath, VkImageUsageFlags usage, VkCommandPool &commandPool, 
+        bool bEnableMipmap = false,
+        VkFormat imageFormat = VK_FORMAT_R8G8B8A8_SRGB, 
+        unsigned short bitPerTexelPerChannel = 8);
+    void Destroy();
+};
+
+
 #endif

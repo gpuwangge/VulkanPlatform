@@ -102,32 +102,53 @@ public:
 		shaderManager.CreateShader("simpleParticles/comp.spv", shaderManager.COMP);
 		std::cout<<"compute shader created."<<std::endl;
 
-		descriptors.resize(2);//you can have many descriptor sets. Here I use ds[0] for graphics pipeline and ds[1] for compute pipeline
-		//For Graphics
-		descriptors[0].createDescriptorPool();
-		descriptors[0].createDescriptorSetLayout();
-		descriptors[0].createDescriptorSets();
 
-		std::cout<<"graphcis descriptor created."<<std::endl;
+		//need make change for custom uniform: both graphics/compute should support custom uniform, their' layer/set code should contain source code
+		//or, move the source code to parent manager?... (better not do this, because cant)
+		CComputeDescriptorManager::addCustomUniformBuffer(sizeof(StructCustomUniformBuffer));
+		VkBufferUsageFlags usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+		CComputeDescriptorManager::addStorageBuffer(sizeof(StructStorageBuffer), usage);
+
+		CDescriptorManager::createDescriptorPool(); //size = 3(custom:1, storage:2)
+
+		CGraphicsDescriptorManager::createDescriptorSetLayout();//!should not count custom here, because thats for compute
+		VkDescriptorSetLayoutBinding customBinding = StructCustomUniformBuffer::GetBinding();
+		CComputeDescriptorManager::createDescriptorSetLayout(&customBinding);
+
+		graphicsDescriptorManager.createDescriptorSets();
+		computeDescriptorManager.createDescriptorSets();
+
+
+		///descriptors.resize(2);//you can have many descriptor sets. Here I use ds[0] for graphics pipeline and ds[1] for compute pipeline
+		//For Graphics
+		///descriptors[0].createDescriptorPool();
+		///descriptors[0].createDescriptorSetLayout();
+		///descriptors[0].createDescriptorSets();
+
+		///std::cout<<"graphcis descriptor created."<<std::endl;
 
 		//For Compute
-		descriptors[1].addCustomUniformBuffer(sizeof(StructCustomUniformBuffer));
-		VkBufferUsageFlags usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
-		descriptors[1].addStorageBuffer(sizeof(StructStorageBuffer), usage);
+		///descriptors[1].addCustomUniformBuffer(sizeof(StructCustomUniformBuffer));
+		///VkBufferUsageFlags usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+		///descriptors[1].addStorageBuffer(sizeof(StructStorageBuffer), usage);
 		//std::cout<<"storageBufferObjectInput added. Size = "<<DIM_M * DIM_K * 8.0f * 2 / 1024 / 1024<<"mb."<<std::endl;
 		//descriptors[1].addStorageBuffer(sizeof(StructStorageBufferOutput), usage);
 		//std::cout<<"storageBufferObjectOutput added. Size = "<<DIM_M * DIM_K * 8.0f / 1024 / 1024<<"mb."<<std::endl;
-		std::cout<<"add storage buffer done."<<std::endl;
-		descriptors[1].createDescriptorPool(); std::cout<<"createDescriptorPool done."<<std::endl;
-		VkDescriptorSetLayoutBinding customBinding = StructCustomUniformBuffer::GetBinding();
-		descriptors[1].createDescriptorSetLayout(&customBinding); std::cout<<"createDescriptorSetLayout done."<<std::endl;
-		descriptors[1].createDescriptorSets(); std::cout<<"createDescriptorSets done."<<std::endl;
+		///std::cout<<"add storage buffer done."<<std::endl;
+		///descriptors[1].createDescriptorPool(); std::cout<<"createDescriptorPool done."<<std::endl;
+		///VkDescriptorSetLayoutBinding customBinding = StructCustomUniformBuffer::GetBinding();
+		///descriptors[1].createDescriptorSetLayout(&customBinding); 
+		///std::cout<<"createDescriptorSetLayout done."<<std::endl;
+		///descriptors[1].createDescriptorSets(); 
+		///std::cout<<"createDescriptorSets done."<<std::endl;
 
-		std::cout<<"compute descriptor created."<<std::endl;
+		///std::cout<<"compute descriptor created."<<std::endl;
+
+
 
 		//support multiple descriptors in one piplines: bind multiple descriptor layouts in one pipeline
 		std::vector<VkDescriptorSetLayout> dsLayouts;
-		dsLayouts.push_back(descriptors[0].descriptorSetLayout);
+		dsLayouts.push_back(CGraphicsDescriptorManager::descriptorSetLayout);
 
 		//for Graphics: when create graphics pipeline, use descriptor set 0 layout
 		renderProcess.createGraphicsPipelineLayout(dsLayouts);
@@ -139,7 +160,7 @@ public:
 		std::cout<<"graphics pipeline created."<<std::endl;
 
 		//For Compute: when create compute pipeline, use descriptor set 1 layout
-		renderProcess.createComputePipelineLayout(descriptors[1].descriptorSetLayout);
+		renderProcess.createComputePipelineLayout(CComputeDescriptorManager::descriptorSetLayout);
 		renderProcess.createComputePipeline(shaderManager.compShaderModule);
 
 		std::cout<<"compute pipeline created."<<std::endl;
@@ -186,7 +207,7 @@ public:
 		// Copy initial particle data to all storage buffers
 		// Alternative: create particle info in a buffer, and copybuffer to all storage buffers
         for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) 
-			descriptors[1].updateStorageBuffer<StructStorageBuffer>(i, durationTime, storageBufferObject);
+			computeDescriptorManager.updateStorageBuffer<StructStorageBuffer>(i, durationTime, storageBufferObject);
 		//descriptors[1].updateStorageBuffer<StructStorageBuffer>(renderer.currentFrame+1, durationTime, storageBufferObject);
 		
 		std::cout<<"Host >> Device done."<<std::endl;
@@ -199,7 +220,7 @@ public:
 		customUniformBufferObject.deltaTime = deltaTime * 1000;
 		//std::cout<<deltaTime<<std::endl;
 		//customUniformBufferObject.color = {(sin(durationTime*3) + 1.0f) / 2.0f, (cos(durationTime*3) + 1.0f) / 2.0f, 0.0f, 1.0f};
-		descriptors[1].updateCustomUniformBuffer<StructCustomUniformBuffer>(renderer.currentFrame, durationTime, customUniformBufferObject);
+		computeDescriptorManager.updateCustomUniformBuffer<StructCustomUniformBuffer>(renderer.currentFrame, durationTime, customUniformBufferObject);
 
 		CApplication::update(); //update deltaTime and durationTime (and mainCamera and MVP, VP)
 		//PRINT("update(): Delta Time: %f, Duration Time: %f", deltaTime, durationTime);
@@ -212,7 +233,7 @@ public:
 		//VkBuffer vertexBuffers[] = {vertexDataBuffer.buffer };
 
 		VkDeviceSize offsets[] = { 0 };
-		vkCmdBindVertexBuffers(renderer.commandBuffers[renderer.graphicsCmdId][renderer.currentFrame], 0, 1, &descriptors[1].storageBuffers[renderer.currentFrame].buffer, offsets);
+		vkCmdBindVertexBuffers(renderer.commandBuffers[renderer.graphicsCmdId][renderer.currentFrame], 0, 1, &computeDescriptorManager.storageBuffers[renderer.currentFrame].buffer, offsets);
 
 		renderer.Draw(PARTICLE_COUNT);
 		
@@ -223,7 +244,7 @@ public:
 		START_COMPUTE_RECORD(1)
 
 		std::vector<std::vector<VkDescriptorSet>> dsSets; 
-		dsSets.push_back(descriptors[1].descriptorSets);
+		dsSets.push_back(computeDescriptorManager.descriptorSets);
 
 		renderer.BindComputeDescriptorSets(renderProcess.computePipelineLayout, dsSets, -1); //-1 to offset means no dynamic offset
 

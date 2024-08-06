@@ -2,10 +2,9 @@
 #define TEST_CLASS_NAME CSimpleObjLoader
 class TEST_CLASS_NAME: public CApplication{
 public:
-	std::vector<Vertex3D> vertices3D;
-	std::vector<uint32_t> indices3D;
-
 	std::vector<VkClearValue> clearValues{ {  1.0f, 1.0f, 1.0f, 1.0f  },  { 1.0f, 0 } };
+
+	CObject object;
 
     void initialize(){
 		mainCamera.setPosition(glm::vec3(0.0f, -2.5f, -2.5f));
@@ -14,16 +13,17 @@ public:
 		
 		swapchain.bEnableDepthTest = true; 
 		
-		modelManager.LoadObjModel("viking_room.obj", vertices3D, indices3D);
+		modelManager.LoadObjModel("viking_room.obj", object.vertices3D, object.indices3D);
 
-		renderer.CreateVertexBuffer<Vertex3D>(vertices3D);
-		renderer.CreateIndexBuffer(indices3D);
+		renderer.CreateVertexBuffer<Vertex3D>(object.vertices3D);
+		renderer.CreateIndexBuffer(object.indices3D);
 		renderer.CreateCommandPool(surface);
 		renderer.CreateGraphicsCommandBuffer();
 
 		VkImageUsageFlags usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;	
-		textureImages[0].CreateTextureImage("viking_room.png", usage, renderer.commandPool);
-		textureImages[0].CreateImageView(VK_IMAGE_ASPECT_COLOR_BIT);
+		//textureImages[0].CreateTextureImage("viking_room.png", usage, renderer.commandPool);
+		//textureImages[0].CreateImageView(VK_IMAGE_ASPECT_COLOR_BIT);
+		textureManager.CreateTextureImage("viking_room.png", usage, renderer.commandPool);
 
 		VkFormat depthFormat = renderProcess.findDepthFormat();
 		usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
@@ -45,15 +45,30 @@ public:
 		shaderManager.CreateShader("simpleObjLoader/vert.spv", shaderManager.VERT);
 		shaderManager.CreateShader("simpleObjLoader/frag.spv", shaderManager.FRAG);
 
-		descriptors[0].addMVPUniformBuffer();
-		descriptors[0].addImageSamplerUniformBuffer(textureImages[0].mipLevels);
-		descriptors[0].createDescriptorPool();
-		descriptors[0].createDescriptorSetLayout();
-		descriptors[0].createDescriptorSets(&textureImages);
+		// descriptors[0].addMVPUniformBuffer();
+		// descriptors[0].addImageSamplerUniformBuffer(textureImages[0].mipLevels);
+		// descriptors[0].createDescriptorPool();
+		// descriptors[0].createDescriptorSetLayout();
+		// descriptors[0].createDescriptorSets(&textureImages);
+		CGraphicsDescriptorManager::addMVPUniformBuffer();
+		CGraphicsDescriptorManager::addImageSamplerUniformBuffer(textureManager.textureImages[0].mipLevels);
+		CDescriptorManager::createDescriptorPool();
+		CGraphicsDescriptorManager::createDescriptorSetLayout();
+		CGraphicsDescriptorManager::createTextureDescriptorSetLayout();
+
+		graphicsDescriptorManager.createDescriptorSets();
+		object.createTextureDescriptorSets(
+			textureManager.textureImages[object.id], 
+			CGraphicsDescriptorManager::descriptorPool,
+			CGraphicsDescriptorManager::textureDescriptorSetLayout,
+			CGraphicsDescriptorManager::textureSamplers[0]
+		);
 
 		//support multiple descriptors in one piplines: bind multiple descriptor layouts in one pipeline
 		std::vector<VkDescriptorSetLayout> dsLayouts;
-		dsLayouts.push_back(descriptors[0].descriptorSetLayout);
+		//dsLayouts.push_back(descriptors[0].descriptorSetLayout);
+		dsLayouts.push_back(CGraphicsDescriptorManager::descriptorSetLayout);
+		dsLayouts.push_back(CGraphicsDescriptorManager::textureDescriptorSetLayout); //set = 1
 
 		renderProcess.createGraphicsPipelineLayout(dsLayouts);
 		renderProcess.createGraphicsPipeline<Vertex3D>(
@@ -65,7 +80,7 @@ public:
 	}
 
 	void update(){
-		descriptors[0].mvpUBO.mvpData[0].model = glm::rotate(glm::mat4(1.0f), durationTime * glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		CGraphicsDescriptorManager::mvpUBO.mvpData[0].model = glm::rotate(glm::mat4(1.0f), durationTime * glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 		CApplication::update();
 	}
 
@@ -79,12 +94,14 @@ public:
 
 	void drawObject(int objectId){
 		std::vector<std::vector<VkDescriptorSet>> dsSets; 
-		dsSets.push_back(descriptors[0].descriptorSets);
+		//dsSets.push_back(descriptors[0].descriptorSets);
+		dsSets.push_back(graphicsDescriptorManager.descriptorSets);
+		dsSets.push_back(object.descriptorSets); //set = 1
 
 		renderer.BindGraphicsDescriptorSets(renderProcess.graphicsPipelineLayout, dsSets, objectId);
 		renderer.BindVertexBuffer(objectId);
 		renderer.BindIndexBuffer(objectId);
-		renderer.DrawIndexed(indices3D);
+		renderer.DrawIndexed(object.indices3D);
 	}	
 };
 

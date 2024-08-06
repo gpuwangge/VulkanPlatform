@@ -2,34 +2,36 @@
 #define TEST_CLASS_NAME CSimpleMipmap
 class TEST_CLASS_NAME: public CApplication{
 public:
-	std::vector<Vertex3D> vertices3D;
-	std::vector<uint32_t> indices3D;
-
 	std::vector<VkClearValue> clearValues{ {  0.0f, 0.0f, 0.0f, 1.0f  },  { 1.0f, 0 } };
 
-    void initialize(){
-		swapchain.bEnableDepthTest = true;
-		swapchain.bEnableMSAA = true; //!To enable MSAA, make sure it has depth test first (call wxjCreateDepthAttachment())
-		textureImages[0].bEnableMipMap = true;
+	CObject object;
 
+    void initialize(){
 		mainCamera.type = Camera::CameraType::firstperson;
 		mainCamera.setPosition(glm::vec3(0.0f, -0.8f, 0.0f));
 		mainCamera.setRotation(glm::vec3(0.0f, 90.00001f, 0.0f));
 		mainCamera.setPerspective(60.0f, (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 256.0f);
 
-		modelManager.LoadObjModel("hallway.obj", vertices3D, indices3D);
+		swapchain.bEnableDepthTest = true;
+		swapchain.bEnableMSAA = true; //!To enable MSAA, make sure it has depth test first (call wxjCreateDepthAttachment())
 
-		renderer.CreateVertexBuffer<Vertex3D>(vertices3D);
-		renderer.CreateIndexBuffer(indices3D);
+		modelManager.LoadObjModel("hallway.obj", object.vertices3D, object.indices3D);
+
+		renderer.CreateVertexBuffer<Vertex3D>(object.vertices3D);
+		renderer.CreateIndexBuffer(object.indices3D);
 		renderer.CreateCommandPool(surface);
 		renderer.CreateGraphicsCommandBuffer();
 
 		VkImageUsageFlags usage_texture = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
-		textureImages[0].CreateTextureImage("checkerboard_marble.jpg", usage_texture, renderer.commandPool);
-		textureImages[0].CreateImageView(VK_IMAGE_ASPECT_COLOR_BIT);
-
+		//VkImageUsageFlags usage_texture = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+		textureManager.CreateTextureImage("checkerboard_marble.jpg", usage_texture, renderer.commandPool, true);
+		textureManager.textureImages[0].generateMipmaps("checkerboard", usage_texture); //mix mipmap: "checkerboard", usage_texture
+		//VkImageUsageFlags usage_texture = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+		//textureImages[0].CreateTextureImage("checkerboard_marble.jpg", usage_texture, renderer.commandPool);
+		//textureImages[0].CreateImageView(VK_IMAGE_ASPECT_COLOR_BIT);
 		//textureImages[0].generateMipmaps();//normal mipmap 
-		textureImages[0].generateMipmaps("checkerboard", usage_texture); //mix mipmap
+		//textureManager.textureImages[0].bEnableMipMap = true;
+		
 		
 		VkImageUsageFlags usage;
 		if(swapchain.bEnableMSAA){
@@ -59,18 +61,34 @@ public:
 
 		//shaderManager.CreateVertexShader("simpleObjLoader/vert.spv");
 		//shaderManager.CreateFragmentShader("simpleObjLoader/frag.spv");
-		shaderManager.CreateShader("simpleObjLoader/vert.spv", shaderManager.VERT);
-		shaderManager.CreateShader("simpleObjLoader/frag.spv", shaderManager.FRAG);
+		shaderManager.CreateShader("simpleMipmap/vert.spv", shaderManager.VERT);
+		shaderManager.CreateShader("simpleMipmap/frag.spv", shaderManager.FRAG);
 
-		descriptors[0].addMVPUniformBuffer();
-		descriptors[0].addImageSamplerUniformBuffer(textureImages[0].mipLevels);
-		descriptors[0].createDescriptorPool();
-		descriptors[0].createDescriptorSetLayout();
-		descriptors[0].createDescriptorSets(&textureImages);
+		//descriptors[0].addMVPUniformBuffer();
+		//descriptors[0].addImageSamplerUniformBuffer(textureImages[0].mipLevels);
+		//descriptors[0].createDescriptorPool();
+		//descriptors[0].createDescriptorSetLayout();
+		//descriptors[0].createDescriptorSets(&textureImages);
+		CGraphicsDescriptorManager::addMVPUniformBuffer();
+		CGraphicsDescriptorManager::addImageSamplerUniformBuffer(textureManager.textureImages[0].mipLevels);
+		CDescriptorManager::createDescriptorPool();
+		//CDescriptor::createMVPDescriptorSetLayout();
+		CGraphicsDescriptorManager::createDescriptorSetLayout();
+		CGraphicsDescriptorManager::createTextureDescriptorSetLayout();
+		//descriptors[0].createMVPDescriptorSets();
+
+		graphicsDescriptorManager.createDescriptorSets();
+		object.createTextureDescriptorSets(
+			textureManager.textureImages[object.id], 
+			CGraphicsDescriptorManager::descriptorPool,
+			CGraphicsDescriptorManager::textureDescriptorSetLayout,
+			CGraphicsDescriptorManager::textureSamplers[0]
+			);
 
 		//support multiple descriptors in one piplines: bind multiple descriptor layouts in one pipeline
 		std::vector<VkDescriptorSetLayout> dsLayouts;
-		dsLayouts.push_back(descriptors[0].descriptorSetLayout);
+		dsLayouts.push_back(CGraphicsDescriptorManager::descriptorSetLayout);
+		dsLayouts.push_back(CGraphicsDescriptorManager::textureDescriptorSetLayout); //set = 1
 
 		renderProcess.createGraphicsPipelineLayout(dsLayouts);
 		renderProcess.createGraphicsPipeline<Vertex3D>(
@@ -98,12 +116,13 @@ public:
 
 	void drawObject(int objectId){
 		std::vector<std::vector<VkDescriptorSet>> dsSets; 
-		dsSets.push_back(descriptors[0].descriptorSets);
+		dsSets.push_back(graphicsDescriptorManager.descriptorSets);
+		dsSets.push_back(object.descriptorSets); //set = 1
 
 		renderer.BindGraphicsDescriptorSets(renderProcess.graphicsPipelineLayout, dsSets, objectId);
 		renderer.BindVertexBuffer(objectId);
 		renderer.BindIndexBuffer(objectId);
-		renderer.DrawIndexed(indices3D);
+		renderer.DrawIndexed(object.indices3D);
 	}
 };
 

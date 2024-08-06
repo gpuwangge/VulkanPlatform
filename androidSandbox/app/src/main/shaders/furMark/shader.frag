@@ -2,13 +2,13 @@
 
 layout(location = 0) out vec4 fragColor;
 
-layout(binding = 0) uniform UniformCustomBufferObject { 
+layout(set = 0, binding = 0) uniform UniformCustomBufferObject { 
     vec2 u_resolution;
 	float u_time;
 } customUBO;
-layout(binding = 1) uniform sampler2D u_texture1;
-layout(binding = 2) uniform sampler2D u_texture2;
-layout(binding = 3) uniform sampler2D u_texture3;
+layout(set = 1, binding = 0) uniform sampler2D u_texture1;
+layout(set = 1, binding = 1) uniform sampler2D u_texture2;
+layout(set = 1, binding = 2) uniform sampler2D u_texture3;
 
 const float PI = 3.1416;
 const float TAU = 2 * PI;

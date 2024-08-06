@@ -1,6 +1,6 @@
 #version 450
 
-layout(binding = 0) uniform UniformCustomBufferObject { 
+layout(set = 0, binding = 0) uniform UniformCustomBufferObject { 
     vec3 color;
 } customUBO;
 
@@ -8,7 +8,7 @@ layout(binding = 0) uniform UniformCustomBufferObject {
 //vertex buffer: each vertex has different buffer(store different attributes)
 //ubo: universal same
 //If you need different attribute for each vertex, use vertex buffer; otherwise use ubo
-layout(binding = 1) uniform UniformMVPBufferObject { 
+layout(set = 0, binding = 1) uniform UniformMVPBufferObject { 
     mat4 model;
     mat4 view;
     mat4 proj;

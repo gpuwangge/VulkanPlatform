@@ -353,3 +353,35 @@ void CTextureImage::Destroy(){
     textureImageBuffer.destroy();
 }
 
+
+
+CTextureManager::CTextureManager(){
+	std::cout<<"CTextureManager::CTextureManager()"<<std::endl;
+	//textureImages.resize(1);
+}
+CTextureManager::~CTextureManager(){
+	std::cout<<"CTextureManager::~CTextureManager()"<<std::endl;
+}
+
+void CTextureManager::CreateTextureImage(
+		const std::string texturePath, VkImageUsageFlags usage, VkCommandPool &commandPool, 
+		bool bEnableMipmap,
+		VkFormat imageFormat, 
+		unsigned short bitPerTexelPerChannel){
+	CTextureImage textureImage;
+	textureImage.imageFormat = imageFormat;
+	textureImage.bEnableMipMap = bEnableMipmap; 
+	textureImage.CreateTextureImage(texturePath, usage, commandPool, bitPerTexelPerChannel);
+	textureImage.CreateImageView(VK_IMAGE_ASPECT_COLOR_BIT);
+	textureImages.push_back(textureImage);
+	//textureImages[0].CreateTextureImage("texture.jpg", usage, renderer.commandPool);
+	//textureImages[0].CreateImageView(VK_IMAGE_ASPECT_COLOR_BIT);
+}
+
+
+
+
+void CTextureManager::Destroy(){
+	std::cout<<"CTextureManager::Destroy()"<<std::endl;
+	for(int i = 0; i < textureImages.size(); i++) textureImages[i].Destroy();
+}
