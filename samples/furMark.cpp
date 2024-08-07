@@ -1,5 +1,5 @@
 #include "..\\framework\\include\\application.h"
-
+#include "object.h"
 #define TEST_CLASS_NAME CFurMark
 class TEST_CLASS_NAME: public CApplication{
 public:
@@ -29,14 +29,16 @@ public:
 	};
 	CustomUniformBufferObject customUBO{};
 
-	CObject squareObject;
+	CObject object;
 
 	void initialize(){
-		squareObject.InitVertices3D(vertices3D);
-		squareObject.InitIndices3D(indices3D);
+		object.Init((CApplication*)this, vertices3D, indices3D);
 
-		renderer.CreateVertexBuffer<Vertex3D>(squareObject.vertices3D);
-		renderer.CreateIndexBuffer(squareObject.indices3D);
+		//squareObject.InitVertices3D(vertices3D);
+		//squareObject.InitIndices3D(indices3D);
+
+		//renderer.CreateVertexBuffer<Vertex3D>(squareObject.vertices3D);
+		//renderer.CreateIndexBuffer(squareObject.indices3D);
 
 		renderer.CreateCommandPool(surface);
 		renderer.CreateGraphicsCommandBuffer();
@@ -56,6 +58,7 @@ public:
 		shaderManager.CreateShader("furMark/vert.spv", shaderManager.VERT);
 		shaderManager.CreateShader("furMark/frag.spv", shaderManager.FRAG);
 
+		//Uniform List:
 		CGraphicsDescriptorManager::addImageSamplerUniformBuffer(textureManager.textureImages[0].mipLevels);
 		CGraphicsDescriptorManager::addImageSamplerUniformBuffer(textureManager.textureImages[1].mipLevels);
 		CGraphicsDescriptorManager::addImageSamplerUniformBuffer(textureManager.textureImages[2].mipLevels);
@@ -68,11 +71,12 @@ public:
 		CGraphicsDescriptorManager::createTextureDescriptorSetLayout(); 
 
 		graphicsDescriptorManager.createDescriptorSets();
-		squareObject.createTextureDescriptorSets(
+		object.CreateTextureDescriptorSets(
 			textureManager.textureImages, 
 			CGraphicsDescriptorManager::descriptorPool,
 			CGraphicsDescriptorManager::textureDescriptorSetLayout,
-			CGraphicsDescriptorManager::textureSamplers);
+			CGraphicsDescriptorManager::textureSamplers,
+			CGraphicsDescriptorManager::CheckMVP());
 
 		//support multiple descriptors in one piplines: bind multiple descriptor layouts in one pipeline
 		std::vector<VkDescriptorSetLayout> dsLayouts;
@@ -99,19 +103,19 @@ public:
 	}
 
 	void recordGraphicsCommandBuffer(){
-		drawObject(0);
+		object.RecordDrawIndexCmd(); //TODO: add offset
 	}
 
-	void drawObject(int objectId){
-		std::vector<std::vector<VkDescriptorSet>> dsSets; 
-		dsSets.push_back(graphicsDescriptorManager.descriptorSets);
-		dsSets.push_back(squareObject.descriptorSets); //set = 1
+	// void drawObject(int objectId){
+	// 	std::vector<std::vector<VkDescriptorSet>> dsSets; 
+	// 	dsSets.push_back(graphicsDescriptorManager.descriptorSets);
+	// 	dsSets.push_back(object.descriptorSets); //set = 1
 
-		renderer.BindGraphicsDescriptorSets(renderProcess.graphicsPipelineLayout, dsSets, -1); //-1 to offset means no dynamic offset
-		renderer.BindVertexBuffer(objectId);
-		renderer.BindIndexBuffer(objectId);
-		renderer.DrawIndexed(indices3D);
-	}
+	// 	renderer.BindGraphicsDescriptorSets(renderProcess.graphicsPipelineLayout, dsSets, -1); //-1 to offset means no dynamic offset
+	// 	renderer.BindVertexBuffer(objectId);
+	// 	renderer.BindIndexBuffer(objectId);
+	// 	renderer.DrawIndexed(indices3D);
+	// }
 
 };
 

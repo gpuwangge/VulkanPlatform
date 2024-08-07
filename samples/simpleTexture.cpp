@@ -1,5 +1,6 @@
 #include "..\\framework\\include\\application.h"
 #define TEST_CLASS_NAME CSimpleTexture
+#include "object.h"
 class TEST_CLASS_NAME: public CApplication{
 public:
 	std::vector<Vertex3D> vertices3D = {
@@ -11,18 +12,19 @@ public:
 
 	std::vector<uint32_t> indices3D = { 0, 1, 2, 2, 3, 0};
 
-	CObject triangleObject;
+	CObject object;
 
     void initialize(){
 		mainCamera.setPosition(glm::vec3(0.0f, -2.5f, -2.5f));
     	mainCamera.setRotation(glm::vec3(45.0f, 0.0f, 0.0f));
     	mainCamera.setPerspective(60.0f, (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 256.0f);
 
-		triangleObject.InitVertices3D(vertices3D);
-		triangleObject.InitIndices3D(indices3D);
+		object.Init((CApplication*)this, vertices3D, indices3D);
+		//triangleObject.InitVertices3D(vertices3D);
+		//triangleObject.InitIndices3D(indices3D);
 
-		renderer.CreateVertexBuffer<Vertex3D>(triangleObject.vertices3D);
-		renderer.CreateIndexBuffer(triangleObject.indices3D);
+		//renderer.CreateVertexBuffer<Vertex3D>(triangleObject.vertices3D);
+		//renderer.CreateIndexBuffer(triangleObject.indices3D);
 
 		renderer.CreateCommandPool(surface);
 		renderer.CreateGraphicsCommandBuffer();
@@ -49,11 +51,12 @@ public:
 		CGraphicsDescriptorManager::createTextureDescriptorSetLayout(); //layout size = 1
 
 		graphicsDescriptorManager.createDescriptorSets();
-		triangleObject.createTextureDescriptorSets(
-			textureManager.textureImages[triangleObject.id], 
+		object.CreateTextureDescriptorSets(
+			textureManager.textureImages[object.GetID()], 
 			CGraphicsDescriptorManager::descriptorPool,
 			CGraphicsDescriptorManager::textureDescriptorSetLayout,
-			CGraphicsDescriptorManager::textureSamplers[0]);
+			CGraphicsDescriptorManager::textureSamplers[0],
+			CGraphicsDescriptorManager::CheckMVP());
 
 		//support multiple descriptors in one piplines: bind multiple descriptor layouts in one pipeline
 		std::vector<VkDescriptorSetLayout> dsLayouts;
@@ -77,21 +80,21 @@ public:
 	}
 
 	void recordGraphicsCommandBuffer(){
-		drawObject(0);
+		object.RecordDrawIndexCmd();
 	}
 
-	void drawObject(int objectId){
-		//2d vector: dsSets[different sets][host resources]
-		std::vector<std::vector<VkDescriptorSet>> dsSets; 
-		dsSets.push_back(graphicsDescriptorManager.descriptorSets); //set = 0
-		dsSets.push_back(triangleObject.descriptorSets); //set = 1
+	// void drawObject(int objectId){
+	// 	//2d vector: dsSets[different sets][host resources]
+	// 	std::vector<std::vector<VkDescriptorSet>> dsSets; 
+	// 	dsSets.push_back(graphicsDescriptorManager.descriptorSets); //set = 0
+	// 	dsSets.push_back(object.descriptorSets); //set = 1
 
-		//support multiple descriptors in one piplines: bind multiple descriptor sets in one pipeline
-		renderer.BindGraphicsDescriptorSets(renderProcess.graphicsPipelineLayout, dsSets, objectId);//descriptors[0].descriptorSets
-		renderer.BindVertexBuffer(objectId);
-		renderer.BindIndexBuffer(objectId);
-		renderer.DrawIndexed(indices3D);
-	}	
+	// 	//support multiple descriptors in one piplines: bind multiple descriptor sets in one pipeline
+	// 	renderer.BindGraphicsDescriptorSets(renderProcess.graphicsPipelineLayout, dsSets, objectId);//descriptors[0].descriptorSets
+	// 	renderer.BindVertexBuffer(objectId);
+	// 	renderer.BindIndexBuffer(objectId);
+	// 	renderer.DrawIndexed(indices3D);
+	// }	
 };
 
 #ifndef ANDROID

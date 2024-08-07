@@ -63,13 +63,13 @@ public:
     static void addMVPUniformBuffer();
     static MVPUniformBufferObject mvpUBO;
     void updateMVPUniformBuffer(uint32_t currentFrame, float durationTime, Camera &mainCamera);
-
     //bool bUseVP;
     static std::vector<CWxjBuffer> vpUniformBuffers; 
 	static std::vector<void*> vpUniformBuffersMapped;
     static void addVPUniformBuffer();
     static VPUniformBufferObject vpUBO;
     void updateVPUniformBuffer(uint32_t currentFrame, float durationTime, Camera &mainCamera);
+    static bool CheckMVP(); //to check if all objects associate this graphcis descriptor use MVP/VP or not. If return true, means it will use dynamic descriptor offset
 
     //bool bUseSampler;
     //static int textureSamplerCount;

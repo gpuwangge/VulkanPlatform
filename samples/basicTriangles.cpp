@@ -1,4 +1,5 @@
 #include "..\\framework\\include\\application.h"
+#include "object.h"
 
 #define TEST_CLASS_NAME CBasicTriangles
 class TEST_CLASS_NAME: public CApplication{
@@ -27,14 +28,15 @@ public:
 	};
 	CustomUniformBufferObject customUBO{};
 
-	CObject triangleObject;
+	CObject object;
 
 	void initialize(){
-		triangleObject.InitVertices3D(vertices3D);
-		triangleObject.InitIndices3D(indices3D);
-
-		renderer.CreateVertexBuffer<Vertex3D>(triangleObject.vertices3D);
-		renderer.CreateIndexBuffer(triangleObject.indices3D);
+		//triangleObject.Init(renderer, renderProcess.graphicsPipelineLayout, graphicsDescriptorManager.descriptorSets);
+		//triangleObject.InitVertices3D(vertices3D);
+		//triangleObject.InitIndices3D(indices3D);
+		object.Init((CApplication*)this, vertices3D, indices3D);
+		//renderer.CreateVertexBuffer<Vertex3D>(triangleObject.vertices3D);
+		//renderer.CreateIndexBuffer(triangleObject.indices3D);
 
 		renderer.CreateCommandPool(surface);
 		renderer.CreateGraphicsCommandBuffer();
@@ -62,11 +64,13 @@ public:
 		CGraphicsDescriptorManager::createTextureDescriptorSetLayout(); //layout size = 1
 
 		graphicsDescriptorManager.createDescriptorSets();
-		triangleObject.createTextureDescriptorSets(
-			textureManager.textureImages[triangleObject.id], 
+		object.CreateTextureDescriptorSets(
+			textureManager.textureImages[object.GetID()], 
 			CGraphicsDescriptorManager::descriptorPool,
 			CGraphicsDescriptorManager::textureDescriptorSetLayout,
-			CGraphicsDescriptorManager::textureSamplers[0]);
+			CGraphicsDescriptorManager::textureSamplers[0],
+			CGraphicsDescriptorManager::CheckMVP()
+			);
 
 		//support multiple descriptors in one piplines: bind multiple descriptor layouts in one pipeline
 		std::vector<VkDescriptorSetLayout> dsLayouts;
@@ -91,18 +95,7 @@ public:
 	}
 
 	void recordGraphicsCommandBuffer(){
-		drawObject(0);
-	}
-
-	void drawObject(int objectId){
-		std::vector<std::vector<VkDescriptorSet>> dsSets; 
-		dsSets.push_back(graphicsDescriptorManager.descriptorSets);
-		dsSets.push_back(triangleObject.descriptorSets); //set = 1
-
-		renderer.BindGraphicsDescriptorSets(renderProcess.graphicsPipelineLayout, dsSets, objectId);
-		renderer.BindVertexBuffer(objectId);
-		renderer.BindIndexBuffer(objectId);
-		renderer.DrawIndexed(indices3D);
+		object.RecordDrawIndexCmd();
 	}
 };
 

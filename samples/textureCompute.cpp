@@ -1,5 +1,5 @@
 #include "..\\framework\\include\\application.h"
-
+#include "object.h"
 #define TEST_CLASS_NAME CTextureCompute
 class TEST_CLASS_NAME: public CApplication{
 //This test is similar to simpleComputeStorageImage, but instead use 2 texture image, one as input, the other as output
@@ -32,14 +32,16 @@ public:
 		swapchain.bComputeSwapChainImage = true;
 	}
 
-	CObject triangleObject;
+	CObject object;
+
 	void initialize(){
-		triangleObject.InitVertices3D(vertices3D);
-		triangleObject.InitIndices3D(indices3D);
+		object.Init((CApplication*)this, vertices3D, indices3D);
+		//triangleObject.InitVertices3D(vertices3D);
+		//triangleObject.InitIndices3D(indices3D);
 
 		//For Grapics
-		renderer.CreateVertexBuffer<Vertex3D>(triangleObject.vertices3D);
-		renderer.CreateIndexBuffer(triangleObject.indices3D);
+		//renderer.CreateVertexBuffer<Vertex3D>(triangleObject.vertices3D);
+		//renderer.CreateIndexBuffer(triangleObject.indices3D);
 
 		renderer.CreateCommandPool(surface);
 		
@@ -82,11 +84,12 @@ public:
 		CComputeDescriptorManager::createDescriptorSetLayout();
 
 		graphicsDescriptorManager.createDescriptorSets(&textureManager.textureImages);
-		triangleObject.createTextureDescriptorSets(
-			textureManager.textureImages[triangleObject.id], 
+		object.CreateTextureDescriptorSets(
+			textureManager.textureImages[object.GetID()], 
 			CGraphicsDescriptorManager::descriptorPool,
 			CGraphicsDescriptorManager::textureDescriptorSetLayout,
-			CGraphicsDescriptorManager::textureSamplers[0]);
+			CGraphicsDescriptorManager::textureSamplers[0],
+			CGraphicsDescriptorManager::CheckMVP());
 		computeDescriptorManager.createDescriptorSets(&textureManager.textureImages, &(swapchain.views));
 
 		//support multiple descriptors in one piplines: bind multiple descriptor layouts in one pipeline

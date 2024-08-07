@@ -1,7 +1,6 @@
 #include "../include/object.h"
 
 CObject::CObject(){
-    id = 0;
 }
 void CObject::CleanUp(){
         //textureDescriptor.DestroyAndFree();
@@ -19,14 +18,15 @@ void CObject::InitIndices3D(std::vector<uint32_t> &input_indices3D){
     indices3D = input_indices3D;
 }
 
-void CObject::createTextureDescriptorSets(CTextureImage &textureImage, VkDescriptorPool &descriptorPool, VkDescriptorSetLayout &descriptorSetLayout, VkSampler &sampler, std::vector<VkImageView> *swapchainImageViews){
+void CObject::CreateTextureDescriptorSets(CTextureImage &textureImage, VkDescriptorPool &descriptorPool, VkDescriptorSetLayout &descriptorSetLayout, VkSampler &sampler, bool bCheckMVP, std::vector<VkImageView> *swapchainImageViews){
     std::vector<CTextureImage> textureImages{textureImage};
     std::vector<VkSampler> samplers{sampler};
-    createTextureDescriptorSets(textureImages, descriptorPool, descriptorSetLayout, samplers, swapchainImageViews);
+    CreateTextureDescriptorSets(textureImages, descriptorPool, descriptorSetLayout, samplers, bCheckMVP, swapchainImageViews);
 }
 
-void CObject::createTextureDescriptorSets(std::vector<CTextureImage> &textureImages, VkDescriptorPool &descriptorPool, VkDescriptorSetLayout &descriptorSetLayout, std::vector<VkSampler> &samplers, std::vector<VkImageView> *swapchainImageViews){
+void CObject::CreateTextureDescriptorSets(std::vector<CTextureImage> &textureImages, VkDescriptorPool &descriptorPool, VkDescriptorSetLayout &descriptorSetLayout, std::vector<VkSampler> &samplers, bool bCheckMVP, std::vector<VkImageView> *swapchainImageViews){
     //std::cout<<"TextureDescriptor::createDescriptorSets."<<std::endl;
+    bUseMVP_VP = bCheckMVP;
 
     int descriptorSize = samplers.size();//getDescriptorSize();
     //std::cout<<"createTextureDescriptorSets::samplers.size(): "<<samplers.size()<<std::endl;
@@ -57,7 +57,6 @@ void CObject::createTextureDescriptorSets(std::vector<CTextureImage> &textureIma
         std::vector<VkDescriptorImageInfo> imageInfo{}; //for texture sampler
         //if(uniformBufferUsageFlags & UNIFORM_BUFFER_SAMPLER_BIT){
         imageInfo.resize(samplers.size());
-        //imageInfo.resize(1);
         for(int j = 0; j < samplers.size(); j++){
             imageInfo[j].imageLayout = VK_IMAGE_LAYOUT_GENERAL; //test compute storage image: ?need figure this out. VK_IMAGE_LAYOUT_GENERAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
             imageInfo[j].imageView = textureImages[j].textureImageBuffer.view;

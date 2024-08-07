@@ -1,5 +1,6 @@
 #include "..\\framework\\include\\application.h"
 #define TEST_CLASS_NAME CSimplePhongLighting
+#include "object.h"
 class TEST_CLASS_NAME: public CApplication{
 public:
 	struct CustomUniformBufferObject {
@@ -27,10 +28,11 @@ public:
 		swapchain.bEnableMSAA = true;//!To enable MSAA, make sure to enable depth test 
 		swapchain.bEnableDepthTest = true; 
 
-		modelManager.LoadObjModel("viking_room.obj", object.vertices3D, object.indices3D);
-		 
-		renderer.CreateVertexBuffer<Vertex3D>(object.vertices3D);
-		renderer.CreateIndexBuffer(object.indices3D);
+		object.Init((CApplication*)this, "viking_room.obj");
+		//modelManager.LoadObjModel("viking_room.obj", object.vertices3D, object.indices3D);
+		//renderer.CreateVertexBuffer<Vertex3D>(object.vertices3D);
+		//renderer.CreateIndexBuffer(object.indices3D);
+
 		renderer.CreateCommandPool(surface);
 		renderer.CreateGraphicsCommandBuffer();
 
@@ -78,11 +80,12 @@ public:
 		CGraphicsDescriptorManager::createTextureDescriptorSetLayout();
 
 		graphicsDescriptorManager.createDescriptorSets();
-		object.createTextureDescriptorSets(
-			textureManager.textureImages[object.id], 
+		object.CreateTextureDescriptorSets(
+			textureManager.textureImages[object.GetID()], 
 			CGraphicsDescriptorManager::descriptorPool,
 			CGraphicsDescriptorManager::textureDescriptorSetLayout,
-			CGraphicsDescriptorManager::textureSamplers[0]
+			CGraphicsDescriptorManager::textureSamplers[0],
+			CGraphicsDescriptorManager::CheckMVP()
 		);
 
 		//support multiple descriptors in one piplines: bind multiple descriptor layouts in one pipeline
@@ -108,19 +111,19 @@ public:
 	}
 
 	void recordGraphicsCommandBuffer(){
-		drawObject(0);
+		object.RecordDrawIndexCmd();
 	}
 
-	void drawObject(int objectId){
-		std::vector<std::vector<VkDescriptorSet>> dsSets; 
-		dsSets.push_back(graphicsDescriptorManager.descriptorSets);
-		dsSets.push_back(object.descriptorSets); //set = 1
+	// void drawObject(int objectId){
+	// 	std::vector<std::vector<VkDescriptorSet>> dsSets; 
+	// 	dsSets.push_back(graphicsDescriptorManager.descriptorSets);
+	// 	dsSets.push_back(object.descriptorSets); //set = 1
 
-		renderer.BindGraphicsDescriptorSets(renderProcess.graphicsPipelineLayout, dsSets, objectId);
-		renderer.BindVertexBuffer(objectId);
-		renderer.BindIndexBuffer(objectId);
-		renderer.DrawIndexed(object.indices3D);
-	}		
+	// 	renderer.BindGraphicsDescriptorSets(renderProcess.graphicsPipelineLayout, dsSets, objectId);
+	// 	renderer.BindVertexBuffer(objectId);
+	// 	renderer.BindIndexBuffer(objectId);
+	// 	renderer.DrawIndexed(object.indices3D);
+	// }		
 };
 
 #ifndef ANDROID

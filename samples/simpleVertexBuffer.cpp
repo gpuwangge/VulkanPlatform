@@ -1,5 +1,5 @@
 #include "..\\framework\\include\\application.h"
-
+#include "object.h"
 #define TEST_CLASS_NAME CSimpleVertexBuffer
 class TEST_CLASS_NAME: public CApplication{
 //a triangle on the screen, each vertex has R, G or B color. Fragment color is interpolated
@@ -10,12 +10,13 @@ public:
 		{ { -0.5f, 0.5f},{ 0.0f, 0.0f, 1.0f }}		
 	};
 
-	CObject triangleObject;
+	CObject object;
 
 	void initialize(){
-		triangleObject.InitVertices2D(vertices);
+		object.Init((CApplication*)this, vertices);
+		//triangleObject.InitVertices2D(vertices);
+		//renderer.CreateVertexBuffer<Vertex2D>(triangleObject.vertices2D);
 
-		renderer.CreateVertexBuffer<Vertex2D>(triangleObject.vertices2D);
 		renderer.CreateCommandPool(surface);
 		renderer.CreateGraphicsCommandBuffer();
 

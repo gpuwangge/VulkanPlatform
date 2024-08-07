@@ -4,6 +4,7 @@
  * *********** */
 
 #include "..\\framework\\include\\application.h"
+#include "object.h"
 #define TEST_CLASS_NAME CMultiCubes
 class TEST_CLASS_NAME: public CApplication{
 public:
@@ -25,12 +26,17 @@ public:
 
 		//multiple models, multiple vertex buffers, multiple index buffers
 		std::vector<std::string> modelNames = {"cube.obj", "hallway.obj"}; //"viking_room.obj"
-		for(unsigned int i = 0; i < 2; i++){
-			cubes[i].id = i;
-			modelManager.LoadObjModel(modelNames[i], cubes[i].vertices3D, cubes[i].indices3D);
-			renderer.CreateVertexBuffer<Vertex3D>(cubes[i].vertices3D); //the first buffer index is 0(so renderer will use object id to access buffer)
-			renderer.CreateIndexBuffer(cubes[i].indices3D);
-		}
+		for(unsigned int i = 0; i < 2; i++)
+			cubes[i].Init((CApplication*)this, modelNames[i], i);
+
+		//{
+			//cubes[i].id = i;
+			//modelManager.LoadObjModel(modelNames[i], cubes[i].vertices3D, cubes[i].indices3D);
+			//cubes[i].Init(renderer, renderProcess.graphicsPipelineLayout, graphicsDescriptorManager.descriptorSets);
+			
+			//renderer.CreateVertexBuffer<Vertex3D>(cubes[i].vertices3D); //the first buffer index is 0(so renderer will use object id to access buffer)
+			//renderer.CreateIndexBuffer(cubes[i].indices3D);
+		//}
 
 		renderer.CreateCommandPool(surface);
 		renderer.CreateGraphicsCommandBuffer();
@@ -67,7 +73,7 @@ public:
 		shaderManager.CreateShader("multiCubes/vert.spv", shaderManager.VERT);
 		shaderManager.CreateShader("multiCubes/frag.spv", shaderManager.FRAG);
 
-
+		//Uniform List:
 		CGraphicsDescriptorManager::addMVPUniformBuffer();
 		uint32_t mipLevels = textureManager.textureImages[0].mipLevels;
 		CGraphicsDescriptorManager::addImageSamplerUniformBuffer(mipLevels);
@@ -79,11 +85,12 @@ public:
 	
 		graphicsDescriptorManager.createDescriptorSets();
 		for(int i = 0; i < 2; i++){
-			cubes[i].createTextureDescriptorSets(
-				textureManager.textureImages[cubes[i].id], 
+			cubes[i].CreateTextureDescriptorSets(
+				textureManager.textureImages[cubes[i].GetID()], 
 				CGraphicsDescriptorManager::descriptorPool,
 				CGraphicsDescriptorManager::textureDescriptorSetLayout,
-				CGraphicsDescriptorManager::textureSamplers[0]
+				CGraphicsDescriptorManager::textureSamplers[0],
+				CGraphicsDescriptorManager::CheckMVP()
 				);
 		}
 	
@@ -117,21 +124,7 @@ public:
 	}
 
 	void recordGraphicsCommandBuffer(){
-		for(int i = 0; i < 2; i++) drawObject(i); //draw object id = i
-	}
-
-	void drawObject(int objectId){
-		std::vector<std::vector<VkDescriptorSet>> dsSets; 
-		dsSets.push_back(graphicsDescriptorManager.descriptorSets); //set = 0
-		dsSets.push_back(cubes[objectId].descriptorSets); //set = 1
-
-		//If shader is the same, can reuse the same descriptor for different objects.
-		//The offset index can be different than object id. Different offset index means different MVP uniforms.
-		renderer.BindGraphicsDescriptorSets(renderProcess.graphicsPipelineLayout, dsSets, objectId);
-		
-		renderer.BindVertexBuffer(objectId);
-		renderer.BindIndexBuffer(objectId);
-		renderer.DrawIndexed(cubes[objectId].indices3D);
+		for(int i = 0; i < 2; i++) cubes[i].RecordDrawIndexCmd();
 	}
 
 	~TEST_CLASS_NAME(){

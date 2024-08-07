@@ -379,31 +379,6 @@ void CGraphicsDescriptorManager::createDescriptorSetLayout(VkDescriptorSetLayout
 	//REPORT("vkCreateDescriptorSetLayout");
 }
 
-/*
-void CGraphicsDescriptorManager::createMVPDescriptorSetLayout(){//to be remove
-    //bindings.resize(getDescriptorSize());
-    bindings.resize(1);
-	int counter = 0;
-
-    if(uniformBufferUsageFlags & UNIFORM_BUFFER_MVP_BIT){
-        VkDescriptorSetLayoutBinding binding = MVPUniformBufferObject::GetBinding();
-        bindings[counter].binding = counter;
-		bindings[counter].descriptorCount = binding.descriptorCount;
-		bindings[counter].descriptorType = binding.descriptorType;
-		bindings[counter].pImmutableSamplers = binding.pImmutableSamplers;
-		bindings[counter].stageFlags = binding.stageFlags;
-		counter++;
-    }    
-
-    VkDescriptorSetLayoutCreateInfo layoutInfo{};
-	layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
-	layoutInfo.bindingCount = static_cast<uint32_t>(bindings.size());
-	layoutInfo.pBindings = bindings.data();
-
-	VkResult result = vkCreateDescriptorSetLayout(CContext::GetHandle().GetLogicalDevice(), &layoutInfo, nullptr, OUT &mvpDescriptorSetLayout);
-	if (result != VK_SUCCESS) throw std::runtime_error("failed to create descriptor set layout!");
-}*/
-
 void CGraphicsDescriptorManager::createTextureDescriptorSetLayout(){
     graphicsBindings.resize(textureSamplers.size());//sampleCount?
     std::cout<<"Texture descriptor layout size = "<<textureSamplers.size()<<std::endl;
@@ -428,60 +403,6 @@ void CGraphicsDescriptorManager::createTextureDescriptorSetLayout(){
 	VkResult result = vkCreateDescriptorSetLayout(CContext::GetHandle().GetLogicalDevice(), &layoutInfo, nullptr, OUT &textureDescriptorSetLayout);
 	if (result != VK_SUCCESS) throw std::runtime_error("failed to create descriptor set layout!");
 }
-
-// void CGraphicsDescriptorManager::createMVPDescritorSets(){
-//     createDescriptorSets();
-// }
-
-/*
-void CGraphicsDescriptorManager::createMVPDescriptorSets(){//to be remove
-    //int descriptorSize = getDescriptorSize();
-    int descriptorSize = 1;
-    //std::cout<<"descriptorSize: "<<descriptorSize<<std::endl;
-
-    VkResult result = VK_SUCCESS;
-
-    std::vector<VkDescriptorSetLayout> layouts(MAX_FRAMES_IN_FLIGHT, mvpDescriptorSetLayout);///!!!
-    VkDescriptorSetAllocateInfo allocInfo{};
-    allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
-    allocInfo.descriptorPool = descriptorPool;
-    allocInfo.descriptorSetCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);///!!!
-    allocInfo.pSetLayouts = layouts.data();
-
-    descriptorSets.resize(MAX_FRAMES_IN_FLIGHT);///!!!
-    //Step 3
-    result = vkAllocateDescriptorSets(CContext::GetHandle().GetLogicalDevice(), &allocInfo, descriptorSets.data());
-    if (result != VK_SUCCESS) throw std::runtime_error("failed to allocate descriptor sets!");
-
-    for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {///!!!
-        std::vector<VkWriteDescriptorSet> descriptorWrites;
-
-        descriptorWrites.resize(descriptorSize);
-        int counter = 0;
-
-        VkDescriptorBufferInfo mvpBufferInfo{}; //for mvp
-        if(uniformBufferUsageFlags & UNIFORM_BUFFER_MVP_BIT){
-            mvpBufferInfo.buffer = mvpUniformBuffers[i].buffer;
-            mvpBufferInfo.offset = 0;
-            //sizeof(MVPUniformBufferObject) is 512, including 2 mvp matrices. We only use one at a time.
-            //spec requires alighment to be multiple of 256 (1080 TI). Maybe change this later?
-            mvpBufferInfo.range = 256;
-            descriptorWrites[counter].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-            descriptorWrites[counter].dstSet = descriptorSets[i];
-            descriptorWrites[counter].dstBinding = counter;
-            descriptorWrites[counter].dstArrayElement = 0;
-            descriptorWrites[counter].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
-            descriptorWrites[counter].descriptorCount = 1;
-            descriptorWrites[counter].pBufferInfo = &mvpBufferInfo;
-            counter++;
-        }
-
-        //Step 4
-        vkUpdateDescriptorSets(CContext::GetHandle().GetLogicalDevice(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
-
-    }
-
-}*/
 
 void CGraphicsDescriptorManager::createDescriptorSets(std::vector<CTextureImage> *textureImages, std::vector<VkImageView> *swapchainImageViews){
     //Descriptor Step 3/3
@@ -528,7 +449,7 @@ void CGraphicsDescriptorManager::createDescriptorSets(std::vector<CTextureImage>
             counter++;
         }
         VkDescriptorBufferInfo mvpBufferInfo{}; //for mvp
-        if(uniformBufferUsageFlags & UNIFORM_BUFFER_MVP_BIT){
+        if(uniformBufferUsageFlags & UNIFORM_BUFFER_MVP_BIT){ //TODO: Getbinding
             mvpBufferInfo.buffer = mvpUniformBuffers[i].buffer;
             mvpBufferInfo.offset = 0;
             //sizeof(MVPUniformBufferObject) is 512, including 2 mvp matrices. We only use one at a time.
@@ -729,6 +650,9 @@ void CGraphicsDescriptorManager::updateVPUniformBuffer(uint32_t currentFrame, fl
     }
 }
 
+bool CGraphicsDescriptorManager::CheckMVP(){
+    return ((uniformBufferUsageFlags & UNIFORM_BUFFER_MVP_BIT) || (uniformBufferUsageFlags & UNIFORM_BUFFER_VP_BIT));
+}
 
 
 int CDescriptorManager::getPoolSize(){
