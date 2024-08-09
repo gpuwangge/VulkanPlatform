@@ -99,8 +99,10 @@ public:
 	}
 
 	void update(){
-		CGraphicsDescriptorManager::mvpUBO.mvpData[0].model = glm::rotate(glm::mat4(1.0f), durationTime * glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-		CGraphicsDescriptorManager::mvpUBO.mvpData[1].model = glm::rotate(glm::mat4(1.0f), durationTime * glm::radians(-45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		//CGraphicsDescriptorManager::mvpUBO.mvpData[0].model = glm::rotate(glm::mat4(1.0f), durationTime * glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		//CGraphicsDescriptorManager::mvpUBO.mvpData[1].model = glm::rotate(glm::mat4(1.0f), durationTime * glm::radians(-45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+		cubes[0].SetRotation(glm::rotate(glm::mat4(1.0f), durationTime * glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
+		cubes[1].SetRotation(glm::rotate(glm::mat4(1.0f), durationTime * glm::radians(-45.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
 		//mvpUBO.mvpData[1].model = glm::mat4(1.0f); //identity matrix
 		CApplication::update();
 	}
@@ -109,10 +111,10 @@ public:
 		for(int i = 0; i < 2; i++) cubes[i].Draw();
 	}
 
-	~TEST_CLASS_NAME(){
-		cubes[0].CleanUp();
-		cubes[1].CleanUp();
-	}
+	// ~TEST_CLASS_NAME(){
+	// 	cubes[0].CleanUp();
+	// 	cubes[1].CleanUp();
+	// }
 };
 
 #ifndef ANDROID

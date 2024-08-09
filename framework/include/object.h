@@ -42,8 +42,8 @@ public:
 
     void Register(CApplication *p_app, int id = 0){
         m_id = id;
-
-         //Prepare pointers for drawcall
+        
+        //Prepare pointers for drawcall
         p_renderer = &(p_app->renderer);
         p_graphicsPipelineLayout = &(p_app->renderProcess.graphicsPipelineLayout);
 		p_graphicsDescriptorSets = &(p_app->graphicsDescriptorManager.descriptorSets);
@@ -101,7 +101,7 @@ public:
         //Create texture descriptor set
         bUseTextureSampler = true; //assume model has texture coordinate information
         CreateTextureDescriptorSets(
-			p_app->textureManager.textureImages[GetID()], 
+			p_app->textureManager.textureImages[m_id], //GetID()
 			CGraphicsDescriptorManager::descriptorPool,
 			CGraphicsDescriptorManager::textureDescriptorSetLayout,
 			CGraphicsDescriptorManager::textureSamplers[0],
@@ -139,6 +139,12 @@ public:
         bool bCheckMVP,
         std::vector<VkImageView> *swapchainImageViews = NULL);
     
+
+    void SetRotation(glm::mat4 m){
+        CGraphicsDescriptorManager::mvpUBO.mvpData[m_id].model = m;
+    }
+
+
     //draw with renderer's buffer, or no buffer
     void Draw(uint32_t n = 0){
 		std::vector<std::vector<VkDescriptorSet>> dsSets; 
