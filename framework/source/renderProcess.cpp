@@ -89,14 +89,20 @@ void CRenderProcess::createRenderPass(){
 
 
 void CRenderProcess::addColorAttachment(VkFormat swapChainImageFormat, VkSampleCountFlagBits msaaSamples, VkImageLayout imageLayout){  
+	m_msaaSamples = msaaSamples;
+    m_swapChainImageFormat = swapChainImageFormat;
+
+	if(msaaSamples > 1) {//msaaSamples > 1 means swapchains'MSAA feature is enabled
+		imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+		addColorAttachmentResolve();
+		std::cout<<"MSAA enabled. Color Attachment Resolve added. msaaSamples = "<<msaaSamples<<std::endl;
+	}
+
     //Concept of attachment in Vulkan is like render target in OpenGL
 	//Subpass is a procedure to write/read attachments (a render process can has many subpasses, aka a render pass)
 	//Subpass is designed for mobile TBDR architecture
 	//At the beginning of subpass, attachment is loaded; at the end of attachment, attachment is stored
 	bUseColorAttachment = true;
-
-    m_msaaSamples = msaaSamples;
-    m_swapChainImageFormat = swapChainImageFormat;
 
 	colorAttachment.format = m_swapChainImageFormat;
 	colorAttachment.samples = m_msaaSamples;

@@ -236,6 +236,14 @@ void CSwapchain::createDepthImageViews(VkFormat format, VkImageAspectFlags aspec
     depthImageBuffer.createImageView(format, aspectFlags, 1);
 }
 
+void CSwapchain::EnableMSAA(){
+    bEnableMSAA = true;
+    GetMaxUsableSampleCount();
+	VkImageUsageFlags usage = VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
+	createMSAAImages(VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+	createMSAAImageViews(VK_IMAGE_ASPECT_COLOR_BIT);
+}
+
 void CSwapchain::CreateFramebuffers(VkRenderPass &renderPass){
 	//HERE_I_AM("CreateFramebuffers");
 
@@ -273,6 +281,7 @@ void CSwapchain::CreateFramebuffers(VkRenderPass &renderPass){
 
 void CSwapchain::GetMaxUsableSampleCount(){
 	msaaSamples = CContext::GetHandle().physicalDevice->get()->getMaxUsableSampleCount();
+    //std::cout<<"msaaSamples = "<<msaaSamples<<std::endl;
 	//msaaSamples = VK_SAMPLE_COUNT_1_BIT;
 }
 

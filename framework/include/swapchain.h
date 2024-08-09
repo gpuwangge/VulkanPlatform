@@ -52,6 +52,7 @@ public:
     VkSampleCountFlagBits msaaSamples;
     CWxjImageBuffer msaaColorImageBuffer;
 	//VkImageView msaaColorImageView;
+    void EnableMSAA();
 
 	VkFormat swapChainImageFormat;//08
 	VkExtent2D swapChainExtent;//08
