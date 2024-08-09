@@ -229,11 +229,43 @@ void CSwapchain::createMSAAImages(VkImageTiling tiling, VkImageUsageFlags usage,
 void CSwapchain::createMSAAImageViews(VkImageAspectFlags aspectFlags){
     msaaColorImageBuffer.createImageView(swapChainImageFormat, aspectFlags, 1);
 }
-void CSwapchain::createDepthImages(VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties){
-    depthImageBuffer.createImage(swapChainExtent.width,swapChainExtent.height, 1, msaaSamples, format, tiling, usage, properties);
+void CSwapchain::createDepthImages(VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties){
+    depthImageBuffer.createImage(swapChainExtent.width,swapChainExtent.height, 1, msaaSamples, depthFormat, tiling, usage, properties);
 }
 void CSwapchain::createDepthImageViews(VkFormat format, VkImageAspectFlags aspectFlags){
     depthImageBuffer.createImageView(format, aspectFlags, 1);
+}
+
+VkFormat CSwapchain::findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) {
+    for (VkFormat format : candidates) {
+        VkFormatProperties props;
+        vkGetPhysicalDeviceFormatProperties(CContext::GetHandle().GetPhysicalDevice(), format, &props);
+
+        if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features) {
+            return format;
+        }
+        else if (tiling == VK_IMAGE_TILING_OPTIMAL && (props.optimalTilingFeatures & features) == features) {
+            return format;
+        }
+    }
+
+    throw std::runtime_error("failed to find supported format!");
+}
+
+VkFormat CSwapchain::findDepthFormat() {
+    return findSupportedFormat(
+        { VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT },
+        VK_IMAGE_TILING_OPTIMAL,
+        VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT
+    );
+}
+
+void CSwapchain::EnableDepthTest(){
+    bEnableDepthTest = true;
+    depthFormat = findDepthFormat();
+	VkImageUsageFlags usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
+	createDepthImages(VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+	createDepthImageViews(depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT);
 }
 
 void CSwapchain::EnableMSAA(){
@@ -242,6 +274,8 @@ void CSwapchain::EnableMSAA(){
 	VkImageUsageFlags usage = VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 	createMSAAImages(VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 	createMSAAImageViews(VK_IMAGE_ASPECT_COLOR_BIT);
+
+    EnableDepthTest(); //If enable MSAA, must also enable Depth Test
 }
 
 void CSwapchain::CreateFramebuffers(VkRenderPass &renderPass){

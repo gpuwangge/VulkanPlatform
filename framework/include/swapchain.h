@@ -29,7 +29,7 @@ public:
 
     void createMSAAImages(VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties);
     void createMSAAImageViews(VkImageAspectFlags aspectFlags);
-    void createDepthImages(VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties);
+    void createDepthImages(VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties);
     void createDepthImageViews(VkFormat format, VkImageAspectFlags aspectFlags);
 
 
@@ -44,8 +44,12 @@ public:
 
     //Resource for Depth Test
     bool bEnableDepthTest = false;
+    VkFormat depthFormat;
 	CWxjImageBuffer depthImageBuffer;
 	//VkImageView depthImageView;
+    VkFormat findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) ;
+    VkFormat findDepthFormat();
+    void EnableDepthTest();
 
     //Resource for MSAA
     bool bEnableMSAA;

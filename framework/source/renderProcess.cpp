@@ -88,9 +88,14 @@ void CRenderProcess::createRenderPass(){
 }
 
 
-void CRenderProcess::addColorAttachment(VkFormat swapChainImageFormat, VkSampleCountFlagBits msaaSamples, VkImageLayout imageLayout){  
+void CRenderProcess::addColorAttachment(VkFormat swapChainImageFormat, bool bEnableDepthTest, VkFormat depthFormat, VkSampleCountFlagBits msaaSamples, VkImageLayout imageLayout){  
 	m_msaaSamples = msaaSamples;
     m_swapChainImageFormat = swapChainImageFormat;
+	
+	if(bEnableDepthTest) {
+		addDepthAttachment(depthFormat);
+		std::cout<<"Depth Test enabled. Depth Attachment added. "<<std::endl;
+	}
 
 	if(msaaSamples > 1) {//msaaSamples > 1 means swapchains'MSAA feature is enabled
 		imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
@@ -105,6 +110,7 @@ void CRenderProcess::addColorAttachment(VkFormat swapChainImageFormat, VkSampleC
 	bUseColorAttachment = true;
 
 	colorAttachment.format = m_swapChainImageFormat;
+	std::cout<<"addColorAttachment::colorAttachment.format = "<<colorAttachment.format<<std::endl;
 	colorAttachment.samples = m_msaaSamples;
 	colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 	colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
@@ -112,12 +118,15 @@ void CRenderProcess::addColorAttachment(VkFormat swapChainImageFormat, VkSampleC
 	colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
 	colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 	colorAttachment.finalLayout = imageLayout;
+
+	std::cout<<"Color Attachment added. "<<std::endl;
 }
-void CRenderProcess::addDepthAttachment(){  
+void CRenderProcess::addDepthAttachment(VkFormat depthFormat){  
 	bUseDepthAttachment = true;
 
 	//added for model
-	depthAttachment.format = findDepthFormat();
+	depthAttachment.format = depthFormat;//findDepthFormat();
+	std::cout<<"addDepthAttachment::depthAttachment.format = "<<depthAttachment.format<<std::endl;
 	depthAttachment.samples = m_msaaSamples;
 	depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 	depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
@@ -169,29 +178,29 @@ void CRenderProcess::addColorBlendAttachment(VkBlendOp colorBlendOp, VkBlendFact
 
 
 
-VkFormat CRenderProcess::findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) {
-    for (VkFormat format : candidates) {
-        VkFormatProperties props;
-        vkGetPhysicalDeviceFormatProperties(CContext::GetHandle().GetPhysicalDevice(), format, &props);
+// VkFormat CRenderProcess::findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) {
+//     for (VkFormat format : candidates) {
+//         VkFormatProperties props;
+//         vkGetPhysicalDeviceFormatProperties(CContext::GetHandle().GetPhysicalDevice(), format, &props);
 
-        if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features) {
-            return format;
-        }
-        else if (tiling == VK_IMAGE_TILING_OPTIMAL && (props.optimalTilingFeatures & features) == features) {
-            return format;
-        }
-    }
+//         if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features) {
+//             return format;
+//         }
+//         else if (tiling == VK_IMAGE_TILING_OPTIMAL && (props.optimalTilingFeatures & features) == features) {
+//             return format;
+//         }
+//     }
 
-    throw std::runtime_error("failed to find supported format!");
-}
+//     throw std::runtime_error("failed to find supported format!");
+// }
 
-VkFormat CRenderProcess::findDepthFormat() {
-    return findSupportedFormat(
-        { VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT },
-        VK_IMAGE_TILING_OPTIMAL,
-        VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT
-    );
-}
+// VkFormat CRenderProcess::findDepthFormat() {
+//     return findSupportedFormat(
+//         { VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT },
+//         VK_IMAGE_TILING_OPTIMAL,
+//         VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT
+//     );
+// }
 
 void CRenderProcess::createComputePipelineLayout(VkDescriptorSetLayout &descriptorSetLayout){
 	VkPipelineLayoutCreateInfo pipelineLayoutInfo{};

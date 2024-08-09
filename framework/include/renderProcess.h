@@ -41,17 +41,20 @@ public:
         VkPipelineStageFlags dstPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
     void createRenderPass();
 
-    void addColorAttachment(VkFormat swapChainImageFormat,
+    void addColorAttachment(
+        VkFormat swapChainImageFormat,
+        bool bEnableDepthTest = false,
+        VkFormat depthFormat = VK_FORMAT_UNDEFINED,
         VkSampleCountFlagBits msaaSamples = VK_SAMPLE_COUNT_1_BIT, 
         VkImageLayout imageLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
-    void addDepthAttachment();
+    void addDepthAttachment(VkFormat depthFormat);
     void addColorAttachmentResolve();
 
     void addColorBlendAttachment(VkBlendOp colorBlendOp, VkBlendFactor srcColorBlendFactor, VkBlendFactor dstColorBlendFactor, 
 								 VkBlendOp alphaBlendOp, VkBlendFactor srcAlphaBlendFactor, VkBlendFactor dstAlphaBlendFactor);
 
-    VkFormat findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
-    VkFormat findDepthFormat();
+    // VkFormat findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
+    // VkFormat findDepthFormat();
 
     VkSampleCountFlagBits m_msaaSamples;
     VkFormat m_swapChainImageFormat;
