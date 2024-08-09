@@ -13,10 +13,6 @@ public:
 	CObject object;
 
 	void initialize(){
-		object.Init((CApplication*)this, vertices);
-		//triangleObject.InitVertices2D(vertices);
-		//renderer.CreateVertexBuffer<Vertex2D>(triangleObject.vertices2D);
-
 		renderer.CreateCommandPool(surface);
 		renderer.CreateGraphicsCommandBuffer();
 
@@ -30,15 +26,15 @@ public:
 		shaderManager.CreateShader("simpleVertexBuffer/vert.spv", shaderManager.VERT);
 		shaderManager.CreateShader("simpleVertexBuffer/frag.spv", shaderManager.FRAG); 
 
-		CDescriptorManager::createDescriptorPool(); 
-		CGraphicsDescriptorManager::createDescriptorSetLayout(); 
-		CGraphicsDescriptorManager::createTextureDescriptorSetLayout();
-		graphicsDescriptorManager.createDescriptorSets();
+		//CDescriptorManager::createDescriptorPool(); 
+		//CGraphicsDescriptorManager::createDescriptorSetLayout(); 
+		//CGraphicsDescriptorManager::createTextureDescriptorSetLayout();
+		
+		//if(graphicsDescriptorManager.getSetSize() > 0)graphicsDescriptorManager.createDescriptorSets();
+		object.Register((CApplication*)this, vertices);
 
-		//support multiple descriptors in one piplines: bind multiple descriptor layouts in one pipeline
 		std::vector<VkDescriptorSetLayout> dsLayouts;
-		dsLayouts.push_back(CGraphicsDescriptorManager::descriptorSetLayout);
-
+		//if(graphicsDescriptorManager.getSetSize() > 0)dsLayouts.push_back(CGraphicsDescriptorManager::descriptorSetLayout);
 		renderProcess.createGraphicsPipelineLayout(dsLayouts);
 		renderProcess.createGraphicsPipeline<Vertex2D>(
 			VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
@@ -53,8 +49,7 @@ public:
 	}
 
 	void recordGraphicsCommandBuffer(){
-		renderer.BindVertexBuffer(0);
-		renderer.Draw(3);
+		object.Draw(3);
 	}
 };
 

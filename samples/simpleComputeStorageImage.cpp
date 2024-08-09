@@ -82,11 +82,6 @@ public:
 	}
 
 	///void recordGraphicsCommandBuffer(){
-		///START_GRAPHICS_RECORD(0)
-		
-		///renderer.Draw(3);
-		
-		///END_GRAPHICS_RECORD
 	///}
 
 	void recordImageBarrier(VkCommandBuffer buffer, VkImage image, VkImageLayout oldLayout, VkImageLayout newLayout,

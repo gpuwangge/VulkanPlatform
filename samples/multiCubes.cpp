@@ -24,20 +24,6 @@ public:
 		swapchain.bEnableMSAA = true;//!To enable MSAA, make sure it has depth test (call addDepthAttachment())
 		swapchain.bEnableDepthTest = true; 
 
-		//multiple models, multiple vertex buffers, multiple index buffers
-		std::vector<std::string> modelNames = {"cube.obj", "hallway.obj"}; //"viking_room.obj"
-		for(unsigned int i = 0; i < 2; i++)
-			cubes[i].Init((CApplication*)this, modelNames[i], i);
-
-		//{
-			//cubes[i].id = i;
-			//modelManager.LoadObjModel(modelNames[i], cubes[i].vertices3D, cubes[i].indices3D);
-			//cubes[i].Init(renderer, renderProcess.graphicsPipelineLayout, graphicsDescriptorManager.descriptorSets);
-			
-			//renderer.CreateVertexBuffer<Vertex3D>(cubes[i].vertices3D); //the first buffer index is 0(so renderer will use object id to access buffer)
-			//renderer.CreateIndexBuffer(cubes[i].indices3D);
-		//}
-
 		renderer.CreateCommandPool(surface);
 		renderer.CreateGraphicsCommandBuffer();
 
@@ -84,15 +70,11 @@ public:
 		CGraphicsDescriptorManager::createTextureDescriptorSetLayout();
 	
 		graphicsDescriptorManager.createDescriptorSets();
-		for(int i = 0; i < 2; i++){
-			cubes[i].CreateTextureDescriptorSets(
-				textureManager.textureImages[cubes[i].GetID()], 
-				CGraphicsDescriptorManager::descriptorPool,
-				CGraphicsDescriptorManager::textureDescriptorSetLayout,
-				CGraphicsDescriptorManager::textureSamplers[0],
-				CGraphicsDescriptorManager::CheckMVP()
-				);
-		}
+
+		std::vector<std::string> modelNames = {"cube.obj", "hallway.obj"}; //"viking_room.obj"
+		for(unsigned int i = 0; i < 2; i++)
+			cubes[i].Register((CApplication*)this, modelNames[i], i);
+
 	
 		//support multiple descriptors in one piplines: bind multiple descriptor layouts in one pipeline
 		std::vector<VkDescriptorSetLayout> dsLayouts;
@@ -124,7 +106,7 @@ public:
 	}
 
 	void recordGraphicsCommandBuffer(){
-		for(int i = 0; i < 2; i++) cubes[i].RecordDrawIndexCmd();
+		for(int i = 0; i < 2; i++) cubes[i].Draw();
 	}
 
 	~TEST_CLASS_NAME(){

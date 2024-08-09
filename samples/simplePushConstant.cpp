@@ -16,14 +16,6 @@ public:
     void initialize(){
 		mainCamera.setPosition(glm::vec3(0.0f, 0.0f, -1.5f));
 
-		//triangleObject.InitVertices3D(vertices3D);
-		//triangleObject.InitIndices3D(indices3D);
-
-		//renderer.CreateVertexBuffer<Vertex3D>(triangleObject.vertices3D);
-		//renderer.CreateIndexBuffer(triangleObject.indices3D);
-
-		object.Init((CApplication*)this, vertices3D, indices3D);
-
 		renderer.CreateCommandPool(surface);
 		renderer.CreateGraphicsCommandBuffer();
 
@@ -52,12 +44,7 @@ public:
 		CGraphicsDescriptorManager::createTextureDescriptorSetLayout(); 
 
 		graphicsDescriptorManager.createDescriptorSets();
-		object.CreateTextureDescriptorSets(
-			textureManager.textureImages[object.GetID()], 
-			CGraphicsDescriptorManager::descriptorPool,
-			CGraphicsDescriptorManager::textureDescriptorSetLayout,
-			CGraphicsDescriptorManager::textureSamplers[0],
-			CGraphicsDescriptorManager::CheckMVP());
+		object.Register((CApplication*)this, vertices3D, indices3D);
 
 		//support multiple descriptors in one piplines: bind multiple descriptor layouts in one pipeline
 		std::vector<VkDescriptorSetLayout> dsLayouts;
@@ -87,20 +74,9 @@ public:
 		pushConstants.model = glm::rotate(glm::mat4(1.0f), durationTime * glm::radians(45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 		renderer.PushConstantToCommand<ModelPushConstants>(pushConstants, renderProcess.graphicsPipelineLayout, shaderManager.pushConstantRange);
 
-		//drawObject(0);
-		object.RecordDrawIndexCmd();
+		object.Draw();
 	}
 
-	// void drawObject(int objectId){
-	// 	std::vector<std::vector<VkDescriptorSet>> dsSets; 
-	// 	dsSets.push_back(graphicsDescriptorManager.descriptorSets);
-	// 	dsSets.push_back(object.descriptorSets); //set = 1
-
-	// 	renderer.BindGraphicsDescriptorSets(renderProcess.graphicsPipelineLayout, dsSets, objectId);
-	// 	renderer.BindVertexBuffer(objectId);
-	// 	renderer.BindIndexBuffer(objectId);
-	// 	renderer.DrawIndexed(triangleObject.indices3D);
-	// }
 };
 
 #ifndef ANDROID

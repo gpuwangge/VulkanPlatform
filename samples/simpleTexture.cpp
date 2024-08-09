@@ -19,13 +19,6 @@ public:
     	mainCamera.setRotation(glm::vec3(45.0f, 0.0f, 0.0f));
     	mainCamera.setPerspective(60.0f, (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 256.0f);
 
-		object.Init((CApplication*)this, vertices3D, indices3D);
-		//triangleObject.InitVertices3D(vertices3D);
-		//triangleObject.InitIndices3D(indices3D);
-
-		//renderer.CreateVertexBuffer<Vertex3D>(triangleObject.vertices3D);
-		//renderer.CreateIndexBuffer(triangleObject.indices3D);
-
 		renderer.CreateCommandPool(surface);
 		renderer.CreateGraphicsCommandBuffer();
 
@@ -51,12 +44,7 @@ public:
 		CGraphicsDescriptorManager::createTextureDescriptorSetLayout(); //layout size = 1
 
 		graphicsDescriptorManager.createDescriptorSets();
-		object.CreateTextureDescriptorSets(
-			textureManager.textureImages[object.GetID()], 
-			CGraphicsDescriptorManager::descriptorPool,
-			CGraphicsDescriptorManager::textureDescriptorSetLayout,
-			CGraphicsDescriptorManager::textureSamplers[0],
-			CGraphicsDescriptorManager::CheckMVP());
+		object.Register((CApplication*)this, vertices3D, indices3D);
 
 		//support multiple descriptors in one piplines: bind multiple descriptor layouts in one pipeline
 		std::vector<VkDescriptorSetLayout> dsLayouts;
@@ -80,21 +68,8 @@ public:
 	}
 
 	void recordGraphicsCommandBuffer(){
-		object.RecordDrawIndexCmd();
-	}
-
-	// void drawObject(int objectId){
-	// 	//2d vector: dsSets[different sets][host resources]
-	// 	std::vector<std::vector<VkDescriptorSet>> dsSets; 
-	// 	dsSets.push_back(graphicsDescriptorManager.descriptorSets); //set = 0
-	// 	dsSets.push_back(object.descriptorSets); //set = 1
-
-	// 	//support multiple descriptors in one piplines: bind multiple descriptor sets in one pipeline
-	// 	renderer.BindGraphicsDescriptorSets(renderProcess.graphicsPipelineLayout, dsSets, objectId);//descriptors[0].descriptorSets
-	// 	renderer.BindVertexBuffer(objectId);
-	// 	renderer.BindIndexBuffer(objectId);
-	// 	renderer.DrawIndexed(indices3D);
-	// }	
+		object.Draw();
+	}	
 };
 
 #ifndef ANDROID

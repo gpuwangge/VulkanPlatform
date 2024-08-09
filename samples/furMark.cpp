@@ -32,14 +32,6 @@ public:
 	CObject object;
 
 	void initialize(){
-		object.Init((CApplication*)this, vertices3D, indices3D);
-
-		//squareObject.InitVertices3D(vertices3D);
-		//squareObject.InitIndices3D(indices3D);
-
-		//renderer.CreateVertexBuffer<Vertex3D>(squareObject.vertices3D);
-		//renderer.CreateIndexBuffer(squareObject.indices3D);
-
 		renderer.CreateCommandPool(surface);
 		renderer.CreateGraphicsCommandBuffer();
 
@@ -71,12 +63,8 @@ public:
 		CGraphicsDescriptorManager::createTextureDescriptorSetLayout(); 
 
 		graphicsDescriptorManager.createDescriptorSets();
-		object.CreateTextureDescriptorSets(
-			textureManager.textureImages, 
-			CGraphicsDescriptorManager::descriptorPool,
-			CGraphicsDescriptorManager::textureDescriptorSetLayout,
-			CGraphicsDescriptorManager::textureSamplers,
-			CGraphicsDescriptorManager::CheckMVP());
+
+		object.Register((CApplication*)this, vertices3D, indices3D, 0, true);
 
 		//support multiple descriptors in one piplines: bind multiple descriptor layouts in one pipeline
 		std::vector<VkDescriptorSetLayout> dsLayouts;
@@ -103,19 +91,8 @@ public:
 	}
 
 	void recordGraphicsCommandBuffer(){
-		object.RecordDrawIndexCmd(); //TODO: add offset
+		object.Draw(); 
 	}
-
-	// void drawObject(int objectId){
-	// 	std::vector<std::vector<VkDescriptorSet>> dsSets; 
-	// 	dsSets.push_back(graphicsDescriptorManager.descriptorSets);
-	// 	dsSets.push_back(object.descriptorSets); //set = 1
-
-	// 	renderer.BindGraphicsDescriptorSets(renderProcess.graphicsPipelineLayout, dsSets, -1); //-1 to offset means no dynamic offset
-	// 	renderer.BindVertexBuffer(objectId);
-	// 	renderer.BindIndexBuffer(objectId);
-	// 	renderer.DrawIndexed(indices3D);
-	// }
 
 };
 

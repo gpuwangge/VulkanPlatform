@@ -474,12 +474,18 @@ void CRenderer::BindVertexBuffer(int objectId){
 void CRenderer::BindIndexBuffer(int objectId){
 	vkCmdBindIndexBuffer(commandBuffers[graphicsCmdId][currentFrame], indexDataBuffers[objectId].buffer, 0, VK_INDEX_TYPE_UINT32);
 }
+void CRenderer::BindExternalBuffer(std::vector<CWxjBuffer> &buffer){
+    VkDeviceSize offsets[] = { 0 };
+	vkCmdBindVertexBuffers(commandBuffers[graphicsCmdId][currentFrame], 0, 1, &buffer[currentFrame].buffer, offsets);
+
+}
 void CRenderer::BindDescriptorSets(VkPipelineLayout &pipelineLayout, std::vector<std::vector<VkDescriptorSet>> &descriptorSets, VkPipelineBindPoint pipelineBindPoint, uint32_t commandBufferIndex, uint32_t offsetIndex){
     //you can bind many descriptor sets for one mesh, they are identified in shader by set index
     //also, each descriptor set can have multiple writes, they are identified in shader by binding index
     //unsigned int setCount = 1;
     //VkDescriptorSet sets[setCount] = { descriptorSets[currentFrame] };
     unsigned int setCount = descriptorSets.size();
+    //std::cout<<"setCount = "<<setCount<<std::endl;
     //VkDescriptorSet sets[setCount] = { descriptorSets[0][currentFrame] };
     //VkDescriptorSet sets[setCount] = { descriptorSets[0][currentFrame], descriptorSets[1][currentFrame] };
     VkDescriptorSet sets[setCount];

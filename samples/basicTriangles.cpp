@@ -31,13 +31,6 @@ public:
 	CObject object;
 
 	void initialize(){
-		//triangleObject.Init(renderer, renderProcess.graphicsPipelineLayout, graphicsDescriptorManager.descriptorSets);
-		//triangleObject.InitVertices3D(vertices3D);
-		//triangleObject.InitIndices3D(indices3D);
-		object.Init((CApplication*)this, vertices3D, indices3D);
-		//renderer.CreateVertexBuffer<Vertex3D>(triangleObject.vertices3D);
-		//renderer.CreateIndexBuffer(triangleObject.indices3D);
-
 		renderer.CreateCommandPool(surface);
 		renderer.CreateGraphicsCommandBuffer();
 
@@ -64,14 +57,9 @@ public:
 		CGraphicsDescriptorManager::createTextureDescriptorSetLayout(); //layout size = 1
 
 		graphicsDescriptorManager.createDescriptorSets();
-		object.CreateTextureDescriptorSets(
-			textureManager.textureImages[object.GetID()], 
-			CGraphicsDescriptorManager::descriptorPool,
-			CGraphicsDescriptorManager::textureDescriptorSetLayout,
-			CGraphicsDescriptorManager::textureSamplers[0],
-			CGraphicsDescriptorManager::CheckMVP()
-			);
 
+		object.Register((CApplication*)this, vertices3D, indices3D);
+	
 		//support multiple descriptors in one piplines: bind multiple descriptor layouts in one pipeline
 		std::vector<VkDescriptorSetLayout> dsLayouts;
 		dsLayouts.push_back(CGraphicsDescriptorManager::descriptorSetLayout);
@@ -95,7 +83,7 @@ public:
 	}
 
 	void recordGraphicsCommandBuffer(){
-		object.RecordDrawIndexCmd();
+		object.Draw();
 	}
 };
 

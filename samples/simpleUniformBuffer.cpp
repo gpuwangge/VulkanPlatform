@@ -1,5 +1,5 @@
 #include "..\\framework\\include\\application.h"
-
+#include "object.h"
 #define TEST_CLASS_NAME CSimpleUniformBuffer
 class TEST_CLASS_NAME: public CApplication{
 //a changeing color triangle on the screen
@@ -18,6 +18,8 @@ public:
 		}
 	};
 	StructCustomUniformBuffer customUniformBufferObject{};
+
+	CObject object;
 
 	void initialize(){
 		renderer.CreateCommandPool(surface);
@@ -40,6 +42,8 @@ public:
 
 		graphicsDescriptorManager.createDescriptorSets();
 
+		object.Register((CApplication*)this);
+
 		//support multiple descriptors in one piplines: bind multiple descriptor layouts in one pipeline
 		std::vector<VkDescriptorSetLayout> dsLayouts;
 		dsLayouts.push_back(CGraphicsDescriptorManager::descriptorSetLayout);
@@ -61,17 +65,7 @@ public:
 	}
 
 	void recordGraphicsCommandBuffer(){
-		drawObject(0);
-	}
-
-	void drawObject(int objectId){
-		std::vector<std::vector<VkDescriptorSet>> dsSets; 
-		dsSets.push_back(graphicsDescriptorManager.descriptorSets);
-
-		renderer.BindGraphicsDescriptorSets(renderProcess.graphicsPipelineLayout, dsSets, -1);
-		//renderer.BindVertexBuffer(objectId);
-		//renderer.BindIndexBuffer(objectId);
-		renderer.Draw(3);
+		object.Draw(3);
 	}	
 };
 

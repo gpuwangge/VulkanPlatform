@@ -29,10 +29,8 @@ public:
 		swapchain.bEnableMSAA = true;//!To enable MSAA, make sure to enable depth test 
 		swapchain.bEnableDepthTest = true; 
 
-		object.Init((CApplication*)this, "viking_room.obj");
-		//modelManager.LoadObjModel("viking_room.obj", object.vertices3D, object.indices3D);
-		//renderer.CreateVertexBuffer<Vertex3D>(object.vertices3D);
-		//renderer.CreateIndexBuffer(object.indices3D);
+		
+
 
 		renderer.CreateCommandPool(surface); 
 		renderer.CreateGraphicsCommandBuffer();
@@ -81,13 +79,7 @@ public:
 		CGraphicsDescriptorManager::createTextureDescriptorSetLayout();
 
 		graphicsDescriptorManager.createDescriptorSets();
-		object.CreateTextureDescriptorSets(
-			textureManager.textureImages[object.GetID()], 
-			CGraphicsDescriptorManager::descriptorPool,
-			CGraphicsDescriptorManager::textureDescriptorSetLayout,
-			CGraphicsDescriptorManager::textureSamplers[0],
-			CGraphicsDescriptorManager::CheckMVP()
-		);
+		object.Register((CApplication*)this, "viking_room.obj");
 
 
 		//support multiple descriptors in one piplines: bind multiple descriptor layouts in one pipeline
@@ -131,19 +123,8 @@ public:
 	}
 
 	void recordGraphicsCommandBuffer(){
-		object.RecordDrawIndexCmd();
+		object.Draw();
 	}
-
-	// void drawObject(int objectId){
-	// 	std::vector<std::vector<VkDescriptorSet>> dsSets; 
-	// 	dsSets.push_back(graphicsDescriptorManager.descriptorSets);
-	// 	dsSets.push_back(object.descriptorSets); //set = 1
-
-	// 	renderer.BindGraphicsDescriptorSets(renderProcess.graphicsPipelineLayout, dsSets, objectId);
-	// 	renderer.BindVertexBuffer(objectId);
-	// 	renderer.BindIndexBuffer(objectId);
-	// 	renderer.DrawIndexed(object.indices3D);
-	// }	
 };
 
 #ifndef ANDROID

@@ -1,6 +1,6 @@
 #include "..\\framework\\include\\application.h"
 #include <random>
-
+#include "object.h"
 #define TEST_CLASS_NAME CSimpleParticles
 class TEST_CLASS_NAME: public CApplication{
 public:
@@ -52,7 +52,6 @@ public:
 		}
 	};
 
-
 	struct StructStorageBuffer {
 		Particle particles[PARTICLE_COUNT];
 	};
@@ -66,6 +65,8 @@ public:
 	bool bVerify = false;
 
 	std::vector<VkClearValue> clearValues{ {  0.0f, 0.0f, 0.0f, 1.0f  } };
+	
+	CObject object;
 
 	void initialize(){
 		renderer.m_renderMode = renderer.RENDER_COMPUTE_GRAPHICS_Mode;
@@ -110,6 +111,7 @@ public:
 		graphicsDescriptorManager.createDescriptorSets();
 		computeDescriptorManager.createDescriptorSets();
 
+		object.Register((CApplication*)this);
 
 		//support multiple descriptors in one piplines: bind multiple descriptor layouts in one pipeline
 		std::vector<VkDescriptorSetLayout> dsLayouts;
@@ -196,11 +198,11 @@ public:
 
 		//VkBuffer vertexBuffers[] = {vertexDataBuffer.buffer };
 
-		VkDeviceSize offsets[] = { 0 };
-		vkCmdBindVertexBuffers(renderer.commandBuffers[renderer.graphicsCmdId][renderer.currentFrame], 0, 1, &computeDescriptorManager.storageBuffers[renderer.currentFrame].buffer, offsets);
+		//VkDeviceSize offsets[] = { 0 };
+		//vkCmdBindVertexBuffers(renderer.commandBuffers[renderer.graphicsCmdId][renderer.currentFrame], 0, 1, &computeDescriptorManager.storageBuffers[renderer.currentFrame].buffer, offsets);
 
-		renderer.Draw(PARTICLE_COUNT);
-		
+		//renderer.Draw(PARTICLE_COUNT);
+		object.Draw(computeDescriptorManager.storageBuffers, PARTICLE_COUNT);
 	}
 
 	void recordComputeCommandBuffer(){

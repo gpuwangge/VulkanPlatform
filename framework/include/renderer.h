@@ -59,6 +59,7 @@ public:
     void SetScissor(VkExtent2D &extent);
     void BindVertexBuffer(int objectId);
     void BindIndexBuffer(int objectId);
+    void BindExternalBuffer(std::vector<CWxjBuffer> &buffer);
     void BindDescriptorSets(VkPipelineLayout &pipelineLayout, std::vector<std::vector<VkDescriptorSet>> &descriptorSets, VkPipelineBindPoint pipelineBindPoint, uint32_t commandBufferIndex, uint32_t dynamicOffsetCount);
     void BindGraphicsDescriptorSets(VkPipelineLayout &pipelineLayout, std::vector<std::vector<VkDescriptorSet>> &descriptorSets, int dynamicOffsetCount);
     void BindComputeDescriptorSets(VkPipelineLayout &pipelineLayout,  std::vector<std::vector<VkDescriptorSet>> &descriptorSets, int dynamicOffsetCount);

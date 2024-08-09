@@ -1,6 +1,8 @@
 #include "../include/object.h"
 
 CObject::CObject(){
+    bUseMVP_VP = false;
+    bUseTextureSampler = false;
 }
 void CObject::CleanUp(){
         //textureDescriptor.DestroyAndFree();

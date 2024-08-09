@@ -22,9 +22,8 @@ public:
 		swapchain.bEnableMSAA = true; //!To enable MSAA, make sure it has depth test first (call wxjCreateDepthAttachment())
 		//textureImages[0].bEnableMipMap = true;
 
-		object.Init((CApplication*)this, vertices3D, indices3D);
-		//triangleObject.InitVertices3D(vertices3D);
-		//triangleObject.InitIndices3D(indices3D);
+		
+
 
 		//renderer.CreateVertexBuffer<Vertex3D>(triangleObject.vertices3D);
 		//renderer.CreateIndexBuffer(triangleObject.indices3D);
@@ -77,13 +76,7 @@ public:
 		CGraphicsDescriptorManager::createTextureDescriptorSetLayout(); //layout size = 1
 
 		graphicsDescriptorManager.createDescriptorSets();
-		object.CreateTextureDescriptorSets(
-			textureManager.textureImages[object.GetID()], 
-			CGraphicsDescriptorManager::descriptorPool,
-			CGraphicsDescriptorManager::textureDescriptorSetLayout,
-			CGraphicsDescriptorManager::textureSamplers[0],
-			CGraphicsDescriptorManager::CheckMVP()
-		);
+		object.Register((CApplication*)this, vertices3D, indices3D);
 
 		//support multiple descriptors in one piplines: bind multiple descriptor layouts in one pipeline
 		std::vector<VkDescriptorSetLayout> dsLayouts;
@@ -104,20 +97,8 @@ public:
 	}
 
 	void recordGraphicsCommandBuffer(){
-		//drawObject(0);
-		object.RecordDrawIndexCmd();
+		object.Draw();
 	}
-
-	// void drawObject(int objectId){
-	// 	std::vector<std::vector<VkDescriptorSet>> dsSets; 
-	// 	dsSets.push_back(graphicsDescriptorManager.descriptorSets);
-	// 	dsSets.push_back(object.descriptorSets); //set = 1
-
-	// 	renderer.BindGraphicsDescriptorSets(renderProcess.graphicsPipelineLayout, dsSets, objectId);
-	// 	renderer.BindVertexBuffer(objectId);
-	// 	renderer.BindIndexBuffer(objectId);
-	// 	renderer.DrawIndexed(indices3D);
-	// }
 
 };
 

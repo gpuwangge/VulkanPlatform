@@ -35,14 +35,6 @@ public:
 	CObject object;
 
 	void initialize(){
-		object.Init((CApplication*)this, vertices3D, indices3D);
-		//triangleObject.InitVertices3D(vertices3D);
-		//triangleObject.InitIndices3D(indices3D);
-
-		//For Grapics
-		//renderer.CreateVertexBuffer<Vertex3D>(triangleObject.vertices3D);
-		//renderer.CreateIndexBuffer(triangleObject.indices3D);
-
 		renderer.CreateCommandPool(surface);
 		
 		//For Graphics
@@ -84,12 +76,7 @@ public:
 		CComputeDescriptorManager::createDescriptorSetLayout();
 
 		graphicsDescriptorManager.createDescriptorSets(&textureManager.textureImages);
-		object.CreateTextureDescriptorSets(
-			textureManager.textureImages[object.GetID()], 
-			CGraphicsDescriptorManager::descriptorPool,
-			CGraphicsDescriptorManager::textureDescriptorSetLayout,
-			CGraphicsDescriptorManager::textureSamplers[0],
-			CGraphicsDescriptorManager::CheckMVP());
+		object.Register((CApplication*)this, vertices3D, indices3D);
 		computeDescriptorManager.createDescriptorSets(&textureManager.textureImages, &(swapchain.views));
 
 		//support multiple descriptors in one piplines: bind multiple descriptor layouts in one pipeline

@@ -1,8 +1,10 @@
 #include "..\\framework\\include\\application.h"
+#include "object.h"
 
 #define TEST_CLASS_NAME CSimpleTriangle
 class TEST_CLASS_NAME: public CApplication{
 //a blue triangle on the screen
+CObject object;
 public:
 	void initialize(){
 		renderer.CreateCommandPool(surface);
@@ -18,15 +20,16 @@ public:
 		shaderManager.CreateShader("simpleTriangle/vert.spv", shaderManager.VERT);
 		shaderManager.CreateShader("simpleTriangle/frag.spv", shaderManager.FRAG); 
 
-		CDescriptorManager::createDescriptorPool(); 
-		CGraphicsDescriptorManager::createDescriptorSetLayout(); 
-		CGraphicsDescriptorManager::createTextureDescriptorSetLayout();
-		graphicsDescriptorManager.createDescriptorSets();
+		//CDescriptorManager::createDescriptorPool(); 
+		//CGraphicsDescriptorManager::createDescriptorSetLayout(); 
+		//CGraphicsDescriptorManager::createTextureDescriptorSetLayout();
+		//graphicsDescriptorManager.createDescriptorSets();
+
+		object.Register((CApplication*)this);
 
 		//support multiple descriptors in one piplines: bind multiple descriptor layouts in one pipeline
 		std::vector<VkDescriptorSetLayout> dsLayouts;
-		dsLayouts.push_back(CGraphicsDescriptorManager::descriptorSetLayout);
-
+		//dsLayouts.push_back(CGraphicsDescriptorManager::descriptorSetLayout);
 		renderProcess.createGraphicsPipelineLayout(dsLayouts);
 		renderProcess.createGraphicsPipeline(
 			VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
@@ -45,10 +48,7 @@ public:
 	}
 
 	void recordGraphicsCommandBuffer(){
-		// this sample doesn't need BindDescriptorSets
-		renderer.Draw(3);
-		//std::cout<<"renderer.currentFrame: "<<renderer.currentFrame<<std::endl;
-		//std::cout<<"renderer.graphicsCmdId: "<<renderer.graphicsCmdId<<std::endl;
+		object.Draw(3);
 	}
 };
 
