@@ -84,7 +84,7 @@ CGraphicsDescriptorManager::~CGraphicsDescriptorManager(){
 void CGraphicsDescriptorManager::addCustomUniformBuffer(VkDeviceSize customUniformBufferSize){
 	//bUseCustomUniformBuffer = true;
     uniformBufferUsageFlags |= UNIFORM_BUFFER_CUSTOM_GRAPHICS_BIT;
-    std::cout<<"addCustomUniformBuffer::uniformBufferUsageFlags = " << uniformBufferUsageFlags<<std::endl;
+    //std::cout<<"addCustomUniformBuffer::uniformBufferUsageFlags = " << uniformBufferUsageFlags<<std::endl;
 
 	customUniformBuffers.resize(MAX_FRAMES_IN_FLIGHT);
 	customUniformBuffersMapped.resize(MAX_FRAMES_IN_FLIGHT);
@@ -100,7 +100,7 @@ void CGraphicsDescriptorManager::addCustomUniformBuffer(VkDeviceSize customUnifo
 void CComputeDescriptorManager::addCustomUniformBuffer(VkDeviceSize customUniformBufferSize){
 	//bUseCustomUniformBuffer = true;
     uniformBufferUsageFlags |= UNIFORM_BUFFER_CUSTOM_COMPUTE_BIT;
-    std::cout<<"addCustomUniformBuffer::uniformBufferUsageFlags = " << uniformBufferUsageFlags<<std::endl;
+    //std::cout<<"addCustomUniformBuffer::uniformBufferUsageFlags = " << uniformBufferUsageFlags<<std::endl;
 
 	customUniformBuffers.resize(MAX_FRAMES_IN_FLIGHT);
 	customUniformBuffersMapped.resize(MAX_FRAMES_IN_FLIGHT);
@@ -116,7 +116,7 @@ void CComputeDescriptorManager::addCustomUniformBuffer(VkDeviceSize customUnifor
 void CGraphicsDescriptorManager::addMVPUniformBuffer(){
     //bUseMVP = true;
     uniformBufferUsageFlags |= UNIFORM_BUFFER_MVP_BIT;
-    std::cout<<"addMVPUniformBuffer::uniformBufferUsageFlags = " << uniformBufferUsageFlags<<std::endl;
+    //std::cout<<"addMVPUniformBuffer::uniformBufferUsageFlags = " << uniformBufferUsageFlags<<std::endl;
 	
     mvpUniformBuffers.resize(MAX_FRAMES_IN_FLIGHT);
     mvpUniformBuffersMapped.resize(MAX_FRAMES_IN_FLIGHT);
@@ -150,7 +150,7 @@ void CGraphicsDescriptorManager::addVPUniformBuffer(){
 void CGraphicsDescriptorManager::addImageSamplerUniformBuffer(uint32_t mipLevels){
     //bUseSampler = true;
     uniformBufferUsageFlags |= UNIFORM_BUFFER_SAMPLER_BIT;//non-static content
-    std::cout<<"addImageSamplerUniformBuffer::uniformBufferUsageFlags = " << uniformBufferUsageFlags<<std::endl;
+    //std::cout<<"addImageSamplerUniformBuffer::uniformBufferUsageFlags = " << uniformBufferUsageFlags<<std::endl;
 
 	VkPhysicalDeviceProperties properties{};
 	vkGetPhysicalDeviceProperties(CContext::GetHandle().GetPhysicalDevice(), &properties);
@@ -170,6 +170,7 @@ void CGraphicsDescriptorManager::addImageSamplerUniformBuffer(uint32_t mipLevels
 	samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
 	
 	if (mipLevels > 1) {
+        std::cout<<"Sampler MipLevels = "<< mipLevels<<"(>1). Enable mipmap for all textures using this sampler"<<std::endl;
 		samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;// VK_SAMPLER_MIPMAP_MODE_NEAREST;
 	 	samplerInfo.minLod = 0.0f;
 	 	samplerInfo.maxLod = static_cast<float>(mipLevels / 2);
@@ -189,7 +190,7 @@ void CComputeDescriptorManager::addStorageBuffer(VkDeviceSize storageBufferSize,
 
     //if(!(uniformBufferUsageFlags & UNIFORM_BUFFER_STORAGE_1_BIT)){
     uniformBufferUsageFlags |= UNIFORM_BUFFER_STORAGE_BIT;
-    std::cout<<"addStorageBuffer::uniformBufferUsageFlags = " << uniformBufferUsageFlags<<std::endl;
+    //std::cout<<"addStorageBuffer::uniformBufferUsageFlags = " << uniformBufferUsageFlags<<std::endl;
 
     storageBuffers.resize(MAX_FRAMES_IN_FLIGHT);
     storageBuffersMapped.resize(MAX_FRAMES_IN_FLIGHT);
@@ -235,19 +236,22 @@ void CDescriptorManager::createDescriptorPool(){//VkDescriptorType type
 	poolSizes.resize(getPoolSize());
 	int counter = 0;
     //std::cout<<"createDescriptorPool::textureSamplers.size() = " << textureSamplers.size()<<std::endl;
-    std::cout<<"Unique uniform(PoolSize) = " << getPoolSize()<<std::endl;
+    std::cout<<"Pool size = " << getPoolSize();//std::endl;
 
 	if((uniformBufferUsageFlags & UNIFORM_BUFFER_CUSTOM_GRAPHICS_BIT) ||(uniformBufferUsageFlags & UNIFORM_BUFFER_CUSTOM_COMPUTE_BIT)){
+        std::cout<<": Custom Buffer";
         poolSizes[counter].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 	 	poolSizes[counter].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
 		counter++;
 	}
     if(uniformBufferUsageFlags & UNIFORM_BUFFER_MVP_BIT || uniformBufferUsageFlags & UNIFORM_BUFFER_VP_BIT){
+        std::cout<<": MVP";
         poolSizes[counter].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
 	 	poolSizes[counter].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
 		counter++;
     }
     if(uniformBufferUsageFlags & UNIFORM_BUFFER_SAMPLER_BIT){
+        std::cout<<": Sampler("<<samplerCount<<")";
         for(int i = 0; i < samplerCount; i++){
             poolSizes[counter].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 	 	    poolSizes[counter].descriptorCount = 2*static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);///TODO
@@ -255,6 +259,7 @@ void CDescriptorManager::createDescriptorPool(){//VkDescriptorType type
         }
     }
     if(uniformBufferUsageFlags & UNIFORM_BUFFER_STORAGE_BIT){
+        std::cout<<": Storage Buffer(2)";
         poolSizes[counter].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
 	    poolSizes[counter].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT); 
         counter++;
@@ -265,15 +270,18 @@ void CDescriptorManager::createDescriptorPool(){//VkDescriptorType type
         counter++;
     }
     if(uniformBufferUsageFlags & UNIFORM_IMAGE_STORAGE_TEXTURE_BIT){
+        std::cout<<": Storage Image";
         poolSizes[counter].type = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
 	    poolSizes[counter].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT); ///!!!
         counter++;
     }
     if(uniformBufferUsageFlags & UNIFORM_IMAGE_STORAGE_SWAPCHAIN_BIT){
+        std::cout<<": Storage Image(for Swapchain)";
         poolSizes[counter].type = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
 	    poolSizes[counter].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT); ///!!!
         counter++;
     }
+    std::cout<<std::endl;
 
 	VkDescriptorPoolCreateInfo poolInfo{};
 	poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
@@ -295,8 +303,8 @@ void CGraphicsDescriptorManager::createDescriptorSetLayout(VkDescriptorSetLayout
     graphicsBindings.resize(getLayoutSize());
     //graphicsBindings.resize(0);
 	int counter = 0;
-    std::cout<<"Non-texture descriptor layout size = " << graphicsBindings.size()<<std::endl;
-    std::cout.flush();
+    std::cout<<"Layout(Graphics, Non-sampler) size = " << graphicsBindings.size()<<std::endl;
+    //std::cout.flush();
 
 	if(uniformBufferUsageFlags & UNIFORM_BUFFER_CUSTOM_GRAPHICS_BIT){
         graphicsBindings[counter].binding = counter;
@@ -381,7 +389,7 @@ void CGraphicsDescriptorManager::createDescriptorSetLayout(VkDescriptorSetLayout
 
 void CGraphicsDescriptorManager::createTextureDescriptorSetLayout(){
     graphicsBindings.resize(textureSamplers.size());//sampleCount?
-    std::cout<<"Texture descriptor layout size = "<<textureSamplers.size()<<std::endl;
+    std::cout<<"Layout(Sampler) size = "<<textureSamplers.size()<<std::endl;
 	int counter = 0;
 
     if(uniformBufferUsageFlags & UNIFORM_BUFFER_SAMPLER_BIT){
@@ -409,7 +417,7 @@ void CGraphicsDescriptorManager::createDescriptorSets(std::vector<CTextureImage>
     //HERE_I_AM("wxjCreateDescriptorSets");
 
     int descriptorSize = getSetSize();
-    std::cout<<"Non-texture descriptor set size = "<<getSetSize()<<std::endl;
+    std::cout<<"Set(Graphics, Non-sampler) size = "<<getSetSize()<<std::endl;
 
     VkResult result = VK_SUCCESS;
 
@@ -740,7 +748,7 @@ void CComputeDescriptorManager::createDescriptorSetLayout(VkDescriptorSetLayoutB
 
     computeBindings.resize(getLayoutSize());
 	int counter = 0;
-    std::cout<<"Non-texture descriptor layout size = " << getLayoutSize()<<std::endl;
+    std::cout<<"Layout(Compute) size = " << getLayoutSize()<<std::endl;
     std::cout.flush();
 
     if(uniformBufferUsageFlags & UNIFORM_BUFFER_CUSTOM_COMPUTE_BIT){
@@ -801,7 +809,7 @@ void CComputeDescriptorManager::createDescriptorSets(std::vector<CTextureImage> 
     //HERE_I_AM("wxjCreateDescriptorSets");
 
     int descriptorSize = getSetSize();
-    std::cout<<"Non-texture descriptor set size = "<<getSetSize()<<std::endl;
+    std::cout<<"Set(Compute) size = "<<getSetSize()<<std::endl;
 
     VkResult result = VK_SUCCESS;
 

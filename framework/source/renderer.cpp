@@ -31,6 +31,7 @@ void CRenderer::CreateIndexBuffer(std::vector<uint32_t> &indices3D){
 	indexDataBuffer.fill((void *)(indices3D.data()));
 
     indexDataBuffers.push_back(indexDataBuffer);
+    indices3Ds.push_back(indices3D);
 }
 
 /**************************
@@ -530,8 +531,9 @@ void CRenderer::BindComputeDescriptorSets(VkPipelineLayout &pipelineLayout, std:
     BindDescriptorSets(pipelineLayout, descriptorSets, VK_PIPELINE_BIND_POINT_COMPUTE, computeCmdId, offsetIndex);
 }
 
-void CRenderer::DrawIndexed(std::vector<uint32_t> &indices3D){
-	vkCmdDrawIndexed(commandBuffers[graphicsCmdId][currentFrame], static_cast<uint32_t>(indices3D.size()), 1, 0, 0, 0);
+void CRenderer::DrawIndexed(int model_id){
+	//vkCmdDrawIndexed(commandBuffers[graphicsCmdId][currentFrame], static_cast<uint32_t>(indices3D.size()), 1, 0, 0, 0);
+    vkCmdDrawIndexed(commandBuffers[graphicsCmdId][currentFrame], static_cast<uint32_t>(indices3Ds[model_id].size()), 1, 0, 0, 0);
 }
 void CRenderer::Draw(uint32_t n){
 	vkCmdDraw(commandBuffers[graphicsCmdId][currentFrame], n, 1, 0, 0);

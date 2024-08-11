@@ -1,5 +1,6 @@
 #include "..\\framework\\include\\application.h"
 #include "object.h"
+#include "supervisor.h"
 #define TEST_CLASS_NAME CSimpleVertexBuffer
 class TEST_CLASS_NAME: public CApplication{
 //a triangle on the screen, each vertex has R, G or B color. Fragment color is interpolated
@@ -12,7 +13,15 @@ public:
 
 	CObject object;
 
+	std::vector<std::pair<std::string, bool>> textureNames = {}; //first: textureName, second: mipmap
+	std::string vertexShader = "simpleVertexBuffer/vert.spv";
+	std::string fragmentShader = "simpleVertexBuffer/frag.spv";
+
 	void initialize(){
+		CSkyvision::Register((CApplication*)this);
+		CSkyvision::LoadResources(vertices, textureNames, vertexShader, fragmentShader, 0);
+
+		/*
 		renderer.CreateCommandPool(surface);
 		renderer.CreateGraphicsCommandBuffer();
 
@@ -31,9 +40,14 @@ public:
 		//CGraphicsDescriptorManager::createTextureDescriptorSetLayout();
 		
 		//if(graphicsDescriptorManager.getSetSize() > 0)graphicsDescriptorManager.createDescriptorSets();
-		object.Register((CApplication*)this, vertices);
+		*/
+
+		//object.Register((CApplication*)this, vertices);
+		object.Register((CApplication*)this, -1, 0, 0); //no texture, no model, id=0
 
 		std::vector<VkDescriptorSetLayout> dsLayouts;
+		dsLayouts.push_back(CGraphicsDescriptorManager::descriptorSetLayout);
+
 		//if(graphicsDescriptorManager.getSetSize() > 0)dsLayouts.push_back(CGraphicsDescriptorManager::descriptorSetLayout);
 		renderProcess.createGraphicsPipelineLayout(dsLayouts);
 		renderProcess.createGraphicsPipeline<Vertex2D>(

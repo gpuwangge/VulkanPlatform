@@ -69,7 +69,7 @@ public:
     void PushConstantToCommand(T &pc, VkPipelineLayout graphicsPipelineLayout, VkPushConstantRange &pushConstantRange){
         vkCmdPushConstants(commandBuffers[graphicsCmdId][currentFrame], graphicsPipelineLayout, pushConstantRange.stageFlags, pushConstantRange.offset, pushConstantRange.size, &pc);
     }
-    void DrawIndexed(std::vector<uint32_t> &indices3D);
+    void DrawIndexed(int model_id);//std::vector<uint32_t> &indices3D
     void Draw(uint32_t n);
 
     //End()
@@ -137,6 +137,7 @@ public:
 
     std::vector<CWxjBuffer> vertexDataBuffers;  //each buffer object is for one model object, the index in this vector is object.id
 	std::vector<CWxjBuffer> indexDataBuffers; 
+    std::vector<std::vector<uint32_t>> indices3Ds;
     std::vector<std::vector<VkCommandBuffer>> commandBuffers;  //commandBuffers[Size][MAX_FRAMES_IN_FLIGHT or currentFrame]
     VkCommandPool commandPool;
 

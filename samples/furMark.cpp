@@ -1,5 +1,6 @@
 #include "..\\framework\\include\\application.h"
 #include "object.h"
+#include "supervisor.h"
 #define TEST_CLASS_NAME CFurMark
 class TEST_CLASS_NAME: public CApplication{
 public:
@@ -31,10 +32,23 @@ public:
 
 	CObject object;
 
-	void initialize(){
-		renderer.CreateCommandPool(surface);
-		renderer.CreateGraphicsCommandBuffer();
+	std::vector<std::pair<std::string, bool>> textureNames = {
+		{"fur.jpg", false},
+		{"noise.png", false},
+		{"wall.jpg", false}
+		}; 
+	std::string vertexShader = "furMark/vert.spv";
+	std::string fragmentShader = "furMark/frag.spv";
 
+	void initialize(){
+		//renderer.CreateCommandPool(surface);
+		//renderer.CreateGraphicsCommandBuffer();
+
+		CSkyvision::Register((CApplication*)this);
+		CSkyvision::LoadResources(vertices3D, indices3D, textureNames, vertexShader, fragmentShader, textureNames.size(),
+			sizeof(CustomUniformBufferObject), CustomUniformBufferObject::GetBinding());
+
+		/*
 		VkImageUsageFlags usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
 		textureManager.CreateTextureImage("fur.jpg", usage, renderer.commandPool);	
 		textureManager.CreateTextureImage("noise.png", usage, renderer.commandPool);	
@@ -63,8 +77,9 @@ public:
 		CGraphicsDescriptorManager::createTextureDescriptorSetLayout(); 
 
 		graphicsDescriptorManager.createDescriptorSets();
+		*/
 
-		object.Register((CApplication*)this, vertices3D, indices3D, 0, true);
+		object.Register((CApplication*)this, INT_MAX);//INT_MAX means use all samplers
 
 		//support multiple descriptors in one piplines: bind multiple descriptor layouts in one pipeline
 		std::vector<VkDescriptorSetLayout> dsLayouts;

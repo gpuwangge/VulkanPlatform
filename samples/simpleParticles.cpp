@@ -111,7 +111,7 @@ public:
 		graphicsDescriptorManager.createDescriptorSets();
 		computeDescriptorManager.createDescriptorSets();
 
-		object.Register((CApplication*)this);
+		object.Register((CApplication*)this, -1, -1);
 
 		//support multiple descriptors in one piplines: bind multiple descriptor layouts in one pipeline
 		std::vector<VkDescriptorSetLayout> dsLayouts;

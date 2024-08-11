@@ -25,11 +25,13 @@ void CTextureImage::CreateTextureImage(const std::string texturePath, VkImageUsa
 #ifndef ANDROID
 	std::string fullTexturePath = TEXTURE_PATH + texturePath;
 	for(short i = 0; i < 2; i++){
-		if(bitPerTexelPerChannel == 16)
+		if(bitPerTexelPerChannel == 16){
 			texels = stbi_load_16(fullTexturePath.c_str(), &texWidth, &texHeight, &texChannels, dstTexChannels);
-		else
+			std::cout<<"Load 48bpt texture."<<std::endl;
+		}else{
 			texels = stbi_load(fullTexturePath.c_str(), &texWidth, &texHeight, &texChannels, dstTexChannels);
-		if(texels) break;
+			std::cout<<"Load 24bpt texture."<<std::endl;
+		}if(texels) break;
 		fullTexturePath = "textures/" + texturePath; 
 	}
 	if (!texels) throw std::runtime_error("failed to load texture image!");
@@ -356,11 +358,11 @@ void CTextureImage::Destroy(){
 
 
 CTextureManager::CTextureManager(){
-	std::cout<<"CTextureManager::CTextureManager()"<<std::endl;
+	//std::cout<<"CTextureManager::CTextureManager()"<<std::endl;
 	//textureImages.resize(1);
 }
 CTextureManager::~CTextureManager(){
-	std::cout<<"CTextureManager::~CTextureManager()"<<std::endl;
+	//std::cout<<"CTextureManager::~CTextureManager()"<<std::endl;
 }
 
 void CTextureManager::CreateTextureImage(
@@ -382,6 +384,6 @@ void CTextureManager::CreateTextureImage(
 
 
 void CTextureManager::Destroy(){
-	std::cout<<"CTextureManager::Destroy()"<<std::endl;
+	//std::cout<<"CTextureManager::Destroy()"<<std::endl;
 	for(int i = 0; i < textureImages.size(); i++) textureImages[i].Destroy();
 }

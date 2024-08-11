@@ -1,6 +1,7 @@
 #include "..\\framework\\include\\application.h"
 #define TEST_CLASS_NAME CSimplePushConstant
 #include "object.h"
+#include "supervisor.h"
 class TEST_CLASS_NAME: public CApplication{
 public:
 	std::vector<Vertex3D> vertices3D = {
@@ -13,9 +14,19 @@ public:
  
 	CObject object;
 
+	std::vector<std::pair<std::string, bool>> textureNames = {{"texture.jpg", false}}; //first: textureName, second: mipmap
+	std::string vertexShader = "simplePushConstant/vert.spv";
+	std::string fragmentShader = "simplePushConstant/frag.spv";
+
     void initialize(){
 		mainCamera.setPosition(glm::vec3(0.0f, 0.0f, -1.5f));
 
+		CSkyvision::Register((CApplication*)this);
+		CSkyvision::ActivatePushConstant(); //Use Push Constant to pass Model matrix
+		CSkyvision::ActivateVP(); //Use VP matrix instead of MVP
+		CSkyvision::LoadResources(vertices3D, indices3D, textureNames, vertexShader, fragmentShader);
+
+		/*
 		renderer.CreateCommandPool(surface);
 		renderer.CreateGraphicsCommandBuffer();
 
@@ -44,7 +55,11 @@ public:
 		CGraphicsDescriptorManager::createTextureDescriptorSetLayout(); 
 
 		graphicsDescriptorManager.createDescriptorSets();
-		object.Register((CApplication*)this, vertices3D, indices3D);
+		*/
+
+
+
+		object.Register((CApplication*)this);//, vertices3D, indices3D
 
 		//support multiple descriptors in one piplines: bind multiple descriptor layouts in one pipeline
 		std::vector<VkDescriptorSetLayout> dsLayouts;

@@ -8,31 +8,30 @@ void CObject::CleanUp(){
         //textureDescriptor.DestroyAndFree();
 }
 
-void CObject::InitVertices2D(std::vector<Vertex2D> &input_verticices2D){
-    vertices2D = input_verticices2D;
-}
+// void CObject::InitVertices2D(std::vector<Vertex2D> &input_verticices2D){
+//     vertices2D = input_verticices2D;
+// }
 
-void CObject::InitVertices3D(std::vector<Vertex3D> &input_verticices3D){
-    vertices3D = input_verticices3D;
-}
+// void CObject::InitVertices3D(std::vector<Vertex3D> &input_verticices3D){
+//     vertices3D = input_verticices3D;
+// }
 
-void CObject::InitIndices3D(std::vector<uint32_t> &input_indices3D){
-    indices3D = input_indices3D;
-}
+// void CObject::InitIndices3D(std::vector<uint32_t> &input_indices3D){
+//     indices3D = input_indices3D;
+// }
 
-void CObject::CreateTextureDescriptorSets(CTextureImage &textureImage, VkDescriptorPool &descriptorPool, VkDescriptorSetLayout &descriptorSetLayout, VkSampler &sampler, bool bCheckMVP, std::vector<VkImageView> *swapchainImageViews){
+void CObject::CreateTextureDescriptorSets(CTextureImage &textureImage, VkDescriptorPool &descriptorPool, VkDescriptorSetLayout &descriptorSetLayout, VkSampler &sampler, std::vector<VkImageView> *swapchainImageViews){
     std::vector<CTextureImage> textureImages{textureImage};
     std::vector<VkSampler> samplers{sampler};
-    CreateTextureDescriptorSets(textureImages, descriptorPool, descriptorSetLayout, samplers, bCheckMVP, swapchainImageViews);
+    CreateTextureDescriptorSets(textureImages, descriptorPool, descriptorSetLayout, samplers, swapchainImageViews);
 }
 
-void CObject::CreateTextureDescriptorSets(std::vector<CTextureImage> &textureImages, VkDescriptorPool &descriptorPool, VkDescriptorSetLayout &descriptorSetLayout, std::vector<VkSampler> &samplers, bool bCheckMVP, std::vector<VkImageView> *swapchainImageViews){
+void CObject::CreateTextureDescriptorSets(std::vector<CTextureImage> &textureImages, VkDescriptorPool &descriptorPool, VkDescriptorSetLayout &descriptorSetLayout, std::vector<VkSampler> &samplers, std::vector<VkImageView> *swapchainImageViews){
     //std::cout<<"TextureDescriptor::createDescriptorSets."<<std::endl;
-    bUseMVP_VP = bCheckMVP;
-
+    
     int descriptorSize = samplers.size();//getDescriptorSize();
     //std::cout<<"createTextureDescriptorSets::samplers.size(): "<<samplers.size()<<std::endl;
-    std::cout<<"Texture set size = "<<descriptorSize<<std::endl;
+    std::cout<<"Set(Sampler) size = "<<descriptorSize<<std::endl;
 
     VkResult result = VK_SUCCESS;
 

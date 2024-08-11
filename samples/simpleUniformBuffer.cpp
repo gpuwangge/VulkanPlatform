@@ -1,10 +1,11 @@
 #include "..\\framework\\include\\application.h"
 #include "object.h"
+#include "supervisor.h"
 #define TEST_CLASS_NAME CSimpleUniformBuffer
 class TEST_CLASS_NAME: public CApplication{
 //a changeing color triangle on the screen
 public:
-	struct StructCustomUniformBuffer {
+	struct CustomUniformBufferObject {
 		glm::vec4 color;
 
 		static VkDescriptorSetLayoutBinding GetBinding(){
@@ -17,11 +18,19 @@ public:
 			return binding;
 		}
 	};
-	StructCustomUniformBuffer customUniformBufferObject{};
+	CustomUniformBufferObject customUBO{};
 
 	CObject object;
 
+	std::vector<std::pair<std::string, bool>> textureNames = {}; //first: textureName, second: mipmap
+	std::string vertexShader = "simpleUniformBuffer/vert.spv";
+	std::string fragmentShader = "simpleUniformBuffer/frag.spv";
+
 	void initialize(){
+		CSkyvision::Register((CApplication*)this);
+		CSkyvision::LoadResources(textureNames, vertexShader, fragmentShader, 0, //0: no use sampler
+			sizeof(CustomUniformBufferObject), CustomUniformBufferObject::GetBinding());
+		/*
 		renderer.CreateCommandPool(surface);
 		renderer.CreateGraphicsCommandBuffer();
 
@@ -41,8 +50,9 @@ public:
 		CGraphicsDescriptorManager::createDescriptorSetLayout(&customBinding);
 
 		graphicsDescriptorManager.createDescriptorSets();
+		*/
 
-		object.Register((CApplication*)this);
+		object.Register((CApplication*)this, -1, -1, 0); //no texture, no model, id=0
 
 		//support multiple descriptors in one piplines: bind multiple descriptor layouts in one pipeline
 		std::vector<VkDescriptorSetLayout> dsLayouts;
@@ -59,8 +69,8 @@ public:
 
 	void update(){
 		//printf("%f\n", durationTime);
-		customUniformBufferObject.color = {(sin(durationTime*3) + 1.0f) / 2.0f, (cos(durationTime*3) + 1.0f) / 2.0f, 0.0f, 1.0f};
-		graphicsDescriptorManager.updateCustomUniformBuffer<StructCustomUniformBuffer>(renderer.currentFrame, durationTime, customUniformBufferObject);
+		customUBO.color = {(sin(durationTime*3) + 1.0f) / 2.0f, (cos(durationTime*3) + 1.0f) / 2.0f, 0.0f, 1.0f};
+		graphicsDescriptorManager.updateCustomUniformBuffer<CustomUniformBufferObject>(renderer.currentFrame, durationTime, customUBO);
 		CApplication::update();
 	}
 

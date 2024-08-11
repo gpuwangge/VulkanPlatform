@@ -1,14 +1,26 @@
 #include "..\\framework\\include\\application.h"
 #include "object.h"
+#include "supervisor.h"
 #define TEST_CLASS_NAME CSimpleMSAA
 class TEST_CLASS_NAME: public CApplication{
 public:
 	CObject object;
+
+	std::vector<std::string> modelNames = {"viking_room.obj"}; 
+	std::vector<std::pair<std::string, bool>> textureNames = {{"viking_room.png", false}}; //first: textureName, second: mipmap
+	std::string vertexShader = "simpleMSAA/vert.spv";
+	std::string fragmentShader = "simpleMSAA/frag.spv";	
+
     void initialize(){
 		mainCamera.setPosition(glm::vec3(0.0f, -2.5f, -2.5f));
     	mainCamera.setRotation(glm::vec3(45.0f, 0.0f, 0.0f));
     	mainCamera.setPerspective(60.0f, (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 256.0f);
 		
+		CSkyvision::Register((CApplication*)this);
+		CSkyvision::ActivateMSAA();
+		CSkyvision::LoadResources(modelNames, textureNames, vertexShader, fragmentShader);
+
+		/*
 		swapchain.EnableMSAA();
 		//swapchain.EnableDepthTest();
 
@@ -42,7 +54,10 @@ public:
 		CGraphicsDescriptorManager::createTextureDescriptorSetLayout();
 
 		graphicsDescriptorManager.createDescriptorSets();
-		object.Register((CApplication*)this, "viking_room.obj");
+		*/
+
+	
+		object.Register((CApplication*)this);
 
 		//support multiple descriptors in one piplines: bind multiple descriptor layouts in one pipeline
 		std::vector<VkDescriptorSetLayout> dsLayouts;

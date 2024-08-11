@@ -76,7 +76,7 @@ public:
 		CComputeDescriptorManager::createDescriptorSetLayout();
 
 		graphicsDescriptorManager.createDescriptorSets(&textureManager.textureImages);
-		object.Register((CApplication*)this, vertices3D, indices3D);
+		object.Register((CApplication*)this);//, vertices3D, indices3D
 		computeDescriptorManager.createDescriptorSets(&textureManager.textureImages, &(swapchain.views));
 
 		//support multiple descriptors in one piplines: bind multiple descriptor layouts in one pipeline

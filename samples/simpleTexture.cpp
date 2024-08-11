@@ -1,6 +1,7 @@
 #include "..\\framework\\include\\application.h"
 #define TEST_CLASS_NAME CSimpleTexture
 #include "object.h"
+#include "supervisor.h"
 class TEST_CLASS_NAME: public CApplication{
 public:
 	std::vector<Vertex3D> vertices3D = {
@@ -14,11 +15,20 @@ public:
 
 	CObject object;
 
+	std::vector<std::pair<std::string, bool>> textureNames = {{"texture.jpg", false}}; //first: textureName, second: mipmap
+	std::string vertexShader = "simpleTexture/vert.spv";
+	std::string fragmentShader = "simpleTexture/frag.spv";
+
     void initialize(){
 		mainCamera.setPosition(glm::vec3(0.0f, -2.5f, -2.5f));
     	mainCamera.setRotation(glm::vec3(45.0f, 0.0f, 0.0f));
     	mainCamera.setPerspective(60.0f, (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 256.0f);
 
+		CSkyvision::Register((CApplication*)this);
+		CSkyvision::LoadResources(vertices3D, indices3D, textureNames, vertexShader, fragmentShader);
+
+
+		/*
 		renderer.CreateCommandPool(surface);
 		renderer.CreateGraphicsCommandBuffer();
 
@@ -44,7 +54,9 @@ public:
 		CGraphicsDescriptorManager::createTextureDescriptorSetLayout(); //layout size = 1
 
 		graphicsDescriptorManager.createDescriptorSets();
-		object.Register((CApplication*)this, vertices3D, indices3D);
+		*/
+
+		object.Register((CApplication*)this); 
 
 		//support multiple descriptors in one piplines: bind multiple descriptor layouts in one pipeline
 		std::vector<VkDescriptorSetLayout> dsLayouts;

@@ -1,6 +1,6 @@
 #include "..\\framework\\include\\application.h"
 #include "object.h"
-
+#include "supervisor.h"
 #define TEST_CLASS_NAME CBasicTriangles
 class TEST_CLASS_NAME: public CApplication{
 public:
@@ -10,7 +10,6 @@ public:
 		{ { 0.5f, 0.5f, 0.0f },{ 0.0f, 0.0f, 1.0f },{ 0.0f, 1.0f } ,{ 0.0f, 0.0f, 1.0f }},
 		{ { -0.5f, 0.5f, 0.0f },{ 1.0f, 1.0f, 1.0f },{ 1.0f, 1.0f } ,{ 0.0f, 0.0f, 1.0f }}
 	};
-
 	std::vector<uint32_t> indices3D = { 0, 1, 2, 2, 3, 0};
 
 	struct CustomUniformBufferObject {
@@ -30,7 +29,17 @@ public:
 
 	CObject object;
 
+	std::vector<std::pair<std::string, bool>> textureNames = {{"texture.jpg", false}}; 
+	std::string vertexShader = "basicTriangles/vert.spv";
+	std::string fragmentShader = "basicTriangles/frag.spv";
+
 	void initialize(){
+		CSkyvision::Register((CApplication*)this);
+		//CSkyvision::ActivateMSAA();
+		CSkyvision::LoadResources(vertices3D, indices3D, textureNames, vertexShader, fragmentShader, textureNames.size(),
+			sizeof(CustomUniformBufferObject), CustomUniformBufferObject::GetBinding());
+
+		/*
 		renderer.CreateCommandPool(surface);
 		renderer.CreateGraphicsCommandBuffer();
 
@@ -56,9 +65,9 @@ public:
 		CGraphicsDescriptorManager::createDescriptorSetLayout(&customBinding); //layout size = 2 (exclude sampler)
 		CGraphicsDescriptorManager::createTextureDescriptorSetLayout(); //layout size = 1
 
-		graphicsDescriptorManager.createDescriptorSets();
+		graphicsDescriptorManager.createDescriptorSets();*/
 
-		object.Register((CApplication*)this, vertices3D, indices3D);
+		object.Register((CApplication*)this); //, vertices3D, indices3D
 	
 		//support multiple descriptors in one piplines: bind multiple descriptor layouts in one pipeline
 		std::vector<VkDescriptorSetLayout> dsLayouts;

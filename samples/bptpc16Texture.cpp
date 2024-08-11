@@ -1,5 +1,6 @@
 #include "..\\framework\\include\\application.h"
 #include "object.h"
+#include "supervisor.h"
 #define TEST_CLASS_NAME CBptpc16Texture
 class TEST_CLASS_NAME: public CApplication{
 public:
@@ -9,15 +10,24 @@ public:
 		{ { 1.0f, 1.0f, 0.0f },{ 0.0f, 0.0f, 1.0f },{ 1.0f, 1.0f } ,{ 0.0f, 0.0f, 1.0f }},
 		{ { -1.0f, 1.0f, 0.0f },{ 1.0f, 1.0f, 1.0f },{ 0.0f, 1.0f } ,{ 0.0f, 0.0f, 1.0f }}
 	};
-
 	std::vector<uint32_t> indices3D = { 0, 1, 2, 2, 3, 0};
 
 	CObject object;
+
+	std::vector<std::pair<std::string, bool>> textureNames = {{"48bpt.png", true}}; //first: textureName, second: mipmap
+	std::string vertexShader = "bptpc16Texture/vert.spv";
+	std::string fragmentShader = "bptpc16Texture/frag.spv";
 
     void initialize(){
 		mainCamera.setPosition(glm::vec3(0.0f, 0.0f, -3.0f));
 		mainCamera.setPerspective(90.0f, (float)windowWidth /  (float)windowHeight, 0.1f, 256.0f);
 
+		CSkyvision::Register((CApplication*)this);
+		CSkyvision::ActivateMSAA();
+		CSkyvision::Activate48BPT();
+		CSkyvision::LoadResources(vertices3D, indices3D, textureNames, vertexShader, fragmentShader);
+
+		/*
 		swapchain.EnableMSAA();
 
 		renderer.CreateCommandPool(surface);
@@ -50,7 +60,11 @@ public:
 		CGraphicsDescriptorManager::createTextureDescriptorSetLayout(); //layout size = 1
 
 		graphicsDescriptorManager.createDescriptorSets();
-		object.Register((CApplication*)this, vertices3D, indices3D);
+		*/
+
+
+
+		object.Register((CApplication*)this); //, vertices3D, indices3D
 
 		//support multiple descriptors in one piplines: bind multiple descriptor layouts in one pipeline
 		std::vector<VkDescriptorSetLayout> dsLayouts;
