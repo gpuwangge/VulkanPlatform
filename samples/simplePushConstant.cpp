@@ -21,10 +21,11 @@ public:
     void initialize(){
 		mainCamera.setPosition(glm::vec3(0.0f, 0.0f, -1.5f));
 
-		CSkyvision::Register((CApplication*)this);
-		CSkyvision::ActivatePushConstant(); //Use Push Constant to pass Model matrix
-		CSkyvision::ActivateVP(); //Use VP matrix instead of MVP
-		CSkyvision::LoadResources(vertices3D, indices3D, textureNames, vertexShader, fragmentShader);
+		CMastermind::Register((CApplication*)this);
+		CMastermind::ActivateSampler();
+		CMastermind::ActivatePushConstant(); //Use Push Constant to pass Model matrix
+		CMastermind::ActivateVP(); //Use VP matrix instead of MVP
+		CMastermind::LoadResources(vertices3D, indices3D, vertexShader, fragmentShader, &textureNames);
 
 		/*
 		renderer.CreateCommandPool(surface);

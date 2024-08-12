@@ -275,7 +275,7 @@ void CSwapchain::EnableMSAA(){
 	createMSAAImages(VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 	createMSAAImageViews(VK_IMAGE_ASPECT_COLOR_BIT);
 
-    EnableDepthTest(); //If enable MSAA, must also enable Depth Test
+    //EnableDepthTest(); //If enable MSAA, must also enable Depth Test
 }
 
 void CSwapchain::CreateFramebuffers(VkRenderPass &renderPass){

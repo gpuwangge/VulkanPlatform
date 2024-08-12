@@ -22,10 +22,12 @@ public:
 		mainCamera.setPosition(glm::vec3(0.0f, 0.0f, -3.0f));
 		mainCamera.setPerspective(90.0f, (float)windowWidth /  (float)windowHeight, 0.1f, 256.0f);
 
-		CSkyvision::Register((CApplication*)this);
-		CSkyvision::ActivateMSAA();
-		CSkyvision::Activate48BPT();
-		CSkyvision::LoadResources(vertices3D, indices3D, textureNames, vertexShader, fragmentShader);
+		CMastermind::Register((CApplication*)this);
+		CMastermind::ActivateSampler();
+		CMastermind::ActivateMVP();
+		CMastermind::ActivateMSAA();
+		CMastermind::Activate48BPT();
+		CMastermind::LoadResources(vertices3D, indices3D, vertexShader, fragmentShader, &textureNames);
 
 		/*
 		swapchain.EnableMSAA();

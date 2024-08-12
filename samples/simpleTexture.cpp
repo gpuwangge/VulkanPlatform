@@ -24,8 +24,10 @@ public:
     	mainCamera.setRotation(glm::vec3(45.0f, 0.0f, 0.0f));
     	mainCamera.setPerspective(60.0f, (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 256.0f);
 
-		CSkyvision::Register((CApplication*)this);
-		CSkyvision::LoadResources(vertices3D, indices3D, textureNames, vertexShader, fragmentShader);
+		CMastermind::Register((CApplication*)this);
+		CMastermind::ActivateMVP();
+		CMastermind::ActivateSampler();
+		CMastermind::LoadResources(vertices3D, indices3D, vertexShader, fragmentShader, &textureNames);
 
 
 		/*

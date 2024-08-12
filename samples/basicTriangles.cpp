@@ -34,9 +34,11 @@ public:
 	std::string fragmentShader = "basicTriangles/frag.spv";
 
 	void initialize(){
-		CSkyvision::Register((CApplication*)this);
-		//CSkyvision::ActivateMSAA();
-		CSkyvision::LoadResources(vertices3D, indices3D, textureNames, vertexShader, fragmentShader, textureNames.size(),
+		CMastermind::Register((CApplication*)this);
+		CMastermind::ActivateSampler();
+		CMastermind::ActivateMVP();
+		CMastermind::ActivateGraphcisCustom();
+		CMastermind::LoadResources(vertices3D, indices3D, vertexShader, fragmentShader, &textureNames,
 			sizeof(CustomUniformBufferObject), CustomUniformBufferObject::GetBinding());
 
 		/*

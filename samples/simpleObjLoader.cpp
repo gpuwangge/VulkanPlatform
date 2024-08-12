@@ -16,9 +16,11 @@ public:
     	mainCamera.setRotation(glm::vec3(45.0f, 0.0f, 0.0f));
     	mainCamera.setPerspective(60.0f, (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 256.0f);
 		
-		CSkyvision::Register((CApplication*)this);
-		CSkyvision::ActivateDepthTest();
-		CSkyvision::LoadResources(modelNames, textureNames, vertexShader, fragmentShader);
+		CMastermind::Register((CApplication*)this);
+		CMastermind::ActivateMVP();
+		CMastermind::ActivateSampler();
+		CMastermind::ActivateDepthTest();
+		CMastermind::LoadResources(modelNames, vertexShader, fragmentShader, &textureNames);
 
 		/*
 		swapchain.EnableDepthTest();

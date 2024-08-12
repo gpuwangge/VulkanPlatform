@@ -44,8 +44,11 @@ public:
 		//renderer.CreateCommandPool(surface);
 		//renderer.CreateGraphicsCommandBuffer();
 
-		CSkyvision::Register((CApplication*)this);
-		CSkyvision::LoadResources(vertices3D, indices3D, textureNames, vertexShader, fragmentShader, textureNames.size(),
+		CMastermind::Register((CApplication*)this);
+		CMastermind::ActivateSampler(textureNames.size());
+		CMastermind::ActivateMVP();
+		CMastermind::ActivateGraphcisCustom();
+		CMastermind::LoadResources(vertices3D, indices3D, vertexShader, fragmentShader, &textureNames,
 			sizeof(CustomUniformBufferObject), CustomUniformBufferObject::GetBinding());
 
 		/*

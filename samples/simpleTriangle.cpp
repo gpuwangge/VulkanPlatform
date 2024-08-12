@@ -6,14 +6,14 @@ class TEST_CLASS_NAME: public CApplication{
 	//a blue triangle on the screen
 	CObject object;
 
-	std::vector<std::pair<std::string, bool>> textureNames = {}; //first: textureName, second: mipmap
 	std::string vertexShader = "simpleTriangle/vert.spv";
 	std::string fragmentShader = "simpleTriangle/frag.spv";
 
 public:
 	void initialize(){
-		CSkyvision::Register((CApplication*)this);
-		CSkyvision::LoadResources(textureNames, vertexShader, fragmentShader, 0); //0: no use sampler
+		CMastermind::Register((CApplication*)this);
+		//CMastermind::ActivateMVP();
+		CMastermind::LoadResources(vertexShader, fragmentShader); 
 
 		/*
 		renderer.CreateCommandPool(surface);

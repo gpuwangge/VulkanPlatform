@@ -22,13 +22,13 @@ public:
 
 	CObject object;
 
-	std::vector<std::pair<std::string, bool>> textureNames = {}; //first: textureName, second: mipmap
 	std::string vertexShader = "simpleUniformBuffer/vert.spv";
 	std::string fragmentShader = "simpleUniformBuffer/frag.spv";
 
 	void initialize(){
-		CSkyvision::Register((CApplication*)this);
-		CSkyvision::LoadResources(textureNames, vertexShader, fragmentShader, 0, //0: no use sampler
+		CMastermind::Register((CApplication*)this);
+		CMastermind::ActivateGraphcisCustom();
+		CMastermind::LoadResources(vertexShader, fragmentShader, NULL, //NULL: no texture
 			sizeof(CustomUniformBufferObject), CustomUniformBufferObject::GetBinding());
 		/*
 		renderer.CreateCommandPool(surface);
