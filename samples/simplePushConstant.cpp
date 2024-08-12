@@ -22,10 +22,12 @@ public:
 		mainCamera.setPosition(glm::vec3(0.0f, 0.0f, -1.5f));
 
 		CMastermind::Register((CApplication*)this);
+		CMastermind::VertexShader = vertexShader;
+		CMastermind::FragmentShader = fragmentShader;
 		CMastermind::ActivateSampler();
 		CMastermind::ActivatePushConstant(); //Use Push Constant to pass Model matrix
 		CMastermind::ActivateVP(); //Use VP matrix instead of MVP
-		CMastermind::LoadResources(vertices3D, indices3D, vertexShader, fragmentShader, &textureNames);
+		CMastermind::LoadResources(vertices3D, indices3D, &textureNames);
 
 		/*
 		renderer.CreateCommandPool(surface);

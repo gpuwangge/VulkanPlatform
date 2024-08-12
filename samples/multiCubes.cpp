@@ -30,10 +30,12 @@ public:
     	mainCamera.setPerspective(60.0f, (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 256.0f);
 		
 		CMastermind::Register((CApplication*)this);
+		CMastermind::VertexShader = vertexShader;
+		CMastermind::FragmentShader = fragmentShader;
 		CMastermind::ActivateSampler();
 		CMastermind::ActivateMVP();
 		CMastermind::ActivateMSAA();
-		CMastermind::LoadResources(modelNames, vertexShader, fragmentShader, &textureNames);
+		CMastermind::LoadResources(modelNames, &textureNames);
 
 		for(unsigned int i = 0; i < 2; i++)
 			cubes[i].Register((CApplication*)this, i, i, i);

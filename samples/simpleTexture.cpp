@@ -25,9 +25,11 @@ public:
     	mainCamera.setPerspective(60.0f, (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 256.0f);
 
 		CMastermind::Register((CApplication*)this);
+		CMastermind::VertexShader = vertexShader;
+		CMastermind::FragmentShader = fragmentShader;
 		CMastermind::ActivateMVP();
 		CMastermind::ActivateSampler();
-		CMastermind::LoadResources(vertices3D, indices3D, vertexShader, fragmentShader, &textureNames);
+		CMastermind::LoadResources(vertices3D, indices3D, &textureNames);
 
 
 		/*

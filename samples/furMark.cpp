@@ -45,11 +45,12 @@ public:
 		//renderer.CreateGraphicsCommandBuffer();
 
 		CMastermind::Register((CApplication*)this);
+		CMastermind::VertexShader = vertexShader;
+		CMastermind::FragmentShader = fragmentShader;
 		CMastermind::ActivateSampler(textureNames.size());
 		CMastermind::ActivateMVP();
-		CMastermind::ActivateGraphcisCustom();
-		CMastermind::LoadResources(vertices3D, indices3D, vertexShader, fragmentShader, &textureNames,
-			sizeof(CustomUniformBufferObject), CustomUniformBufferObject::GetBinding());
+		CMastermind::ActivateGraphcisCustom(sizeof(CustomUniformBufferObject), CustomUniformBufferObject::GetBinding());
+		CMastermind::LoadResources(vertices3D, indices3D, &textureNames);
 
 		/*
 		VkImageUsageFlags usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;

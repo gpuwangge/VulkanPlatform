@@ -18,10 +18,12 @@ public:
 		mainCamera.setPerspective(60.0f, (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 256.0f);
 
 		CMastermind::Register((CApplication*)this);
+		CMastermind::VertexShader = vertexShader;
+		CMastermind::FragmentShader = fragmentShader;
 		CMastermind::ActivateMVP();
 		CMastermind::ActivateMSAA();
 		CMastermind::ActivateSampler();
-		CMastermind::LoadResources(modelNames, vertexShader, fragmentShader, &textureNames);
+		CMastermind::LoadResources(modelNames, &textureNames);
 
 		/*
 		swapchain.EnableMSAA();

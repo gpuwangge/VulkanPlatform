@@ -27,9 +27,11 @@ public:
 
 	void initialize(){
 		CMastermind::Register((CApplication*)this);
-		CMastermind::ActivateGraphcisCustom();
-		CMastermind::LoadResources(vertexShader, fragmentShader, NULL, //NULL: no texture
-			sizeof(CustomUniformBufferObject), CustomUniformBufferObject::GetBinding());
+		CMastermind::VertexShader = vertexShader;
+		CMastermind::FragmentShader = fragmentShader;
+		CMastermind::ActivateGraphcisCustom(sizeof(CustomUniformBufferObject), CustomUniformBufferObject::GetBinding());
+		CMastermind::LoadResources(); 
+
 		/*
 		renderer.CreateCommandPool(surface);
 		renderer.CreateGraphicsCommandBuffer();

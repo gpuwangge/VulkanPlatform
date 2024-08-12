@@ -35,11 +35,12 @@ public:
 
 	void initialize(){
 		CMastermind::Register((CApplication*)this);
+		CMastermind::VertexShader = vertexShader;
+		CMastermind::FragmentShader = fragmentShader;
 		CMastermind::ActivateSampler();
 		CMastermind::ActivateMVP();
-		CMastermind::ActivateGraphcisCustom();
-		CMastermind::LoadResources(vertices3D, indices3D, vertexShader, fragmentShader, &textureNames,
-			sizeof(CustomUniformBufferObject), CustomUniformBufferObject::GetBinding());
+		CMastermind::ActivateGraphcisCustom(sizeof(CustomUniformBufferObject), CustomUniformBufferObject::GetBinding());
+		CMastermind::LoadResources(vertices3D, indices3D, &textureNames);
 
 		/*
 		renderer.CreateCommandPool(surface);

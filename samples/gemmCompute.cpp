@@ -1,5 +1,5 @@
 #include "..\\framework\\include\\application.h"
-
+#include "supervisor.h"
 #define TEST_CLASS_NAME CGemmCompute
 class TEST_CLASS_NAME: public CApplication{
 public:
@@ -27,8 +27,17 @@ public:
 	bool bVerbose = true;
 	bool bVerify = true;
 
+	std::string computeShader = "gemmCompute/comp.spv";
+
 	void initialize(){
 		renderer.m_renderMode = renderer.RENDER_COMPUTE_Mode;
+		
+		CMastermind::Register((CApplication*)this);
+		CMastermind::ComputeShader = computeShader;
+		CMastermind::ActivateStorageBuffer(sizeof(StructStorageBuffer));
+		CMastermind::LoadResources();
+		
+		/*
 		renderer.CreateCommandPool(surface);
 		renderer.CreateComputeCommandBuffer();
 
@@ -39,6 +48,8 @@ public:
 		CDescriptorManager::createDescriptorPool();
 		CComputeDescriptorManager::createDescriptorSetLayout();
 		computeDescriptorManager.createDescriptorSets();
+		*/
+
 
 		renderProcess.createComputePipelineLayout(CComputeDescriptorManager::descriptorSetLayout);
 		renderProcess.createComputePipeline(shaderManager.compShaderModule);

@@ -18,7 +18,9 @@ public:
 
 	void initialize(){
 		CMastermind::Register((CApplication*)this);
-		CMastermind::LoadResources(vertices, vertexShader, fragmentShader);
+		CMastermind::VertexShader = vertexShader;
+		CMastermind::FragmentShader = fragmentShader;
+		CMastermind::LoadResources(vertices);
 
 		/*
 		renderer.CreateCommandPool(surface);

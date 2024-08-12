@@ -12,8 +12,9 @@ class TEST_CLASS_NAME: public CApplication{
 public:
 	void initialize(){
 		CMastermind::Register((CApplication*)this);
-		//CMastermind::ActivateMVP();
-		CMastermind::LoadResources(vertexShader, fragmentShader); 
+		CMastermind::VertexShader = vertexShader;
+		CMastermind::FragmentShader = fragmentShader;
+		CMastermind::LoadResources(); 
 
 		/*
 		renderer.CreateCommandPool(surface);
