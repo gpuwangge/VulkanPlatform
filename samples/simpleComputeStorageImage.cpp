@@ -1,5 +1,5 @@
 #include "..\\framework\\include\\application.h"
-
+#include "supervisor.h"
 #define TEST_CLASS_NAME CSimpleComputeStorageImage
 class TEST_CLASS_NAME: public CApplication{
 //This test draws on the swapchain images, with the use of storage image
@@ -12,7 +12,8 @@ class TEST_CLASS_NAME: public CApplication{
 public:
 	std::vector<VkClearValue> clearValues{ {  0.0f, 1.0f, 0.0f, 1.0f  } };
 
-	
+	std::string computeShader = "simpleComputeStorageImage/comp.spv";
+
 	CSimpleComputeStorageImage(){
 		swapchain.imageSize = MAX_FRAMES_IN_FLIGHT;
 		swapchain.bComputeSwapChainImage = true;
@@ -21,6 +22,13 @@ public:
 	void initialize(){
 		renderer.m_renderMode = renderer.RENDER_COMPUTE_SWAPCHAIN_Mode;
 
+		CMastermind::Register((CApplication*)this);
+		CMastermind::ComputeShader = computeShader;
+		//CMastermind::ActivateStorageBuffer(sizeof(StructStorageBuffer));
+		CMastermind::ActivateStorageImageSwapchain();
+		CMastermind::LoadResources();
+
+		/*
 		renderer.CreateCommandPool(surface);
 		renderer.CreateComputeCommandBuffer();
 
@@ -29,13 +37,13 @@ public:
 		std::cout<<"compute shader created."<<std::endl;
 
 		CComputeDescriptorManager::addStorageImage(UNIFORM_IMAGE_STORAGE_SWAPCHAIN_BIT); //as output
-		std::cout<<"descriptor 1."<<std::endl;
+		//std::cout<<"descriptor 1."<<std::endl;
 		CDescriptorManager::createDescriptorPool();
-		std::cout<<"descriptor 2."<<std::endl;
+		//std::cout<<"descriptor 2."<<std::endl;
 		CComputeDescriptorManager::createDescriptorSetLayout();
-		std::cout<<"descriptor 3."<<std::endl;
+		//std::cout<<"descriptor 3."<<std::endl;
 		computeDescriptorManager.createDescriptorSets(NULL, &(swapchain.views));
-		std::cout<<"descriptor created."<<std::endl;
+		//std::cout<<"descriptor created."<<std::endl;
 
 		///renderProcess.createGraphicsPipelineLayout(descriptors[0].descriptorSetLayout);
 		///renderProcess.createGraphicsPipeline(
@@ -43,8 +51,12 @@ public:
 			///shaderManager.vertShaderModule, 
 			///shaderManager.fragShaderModule);
 
+		*/
+
 		renderProcess.createComputePipelineLayout(CComputeDescriptorManager::descriptorSetLayout);
 		renderProcess.createComputePipeline(shaderManager.compShaderModule);
+
+
 
 		CApplication::initialize();
 		createComputeCommandBuffers(renderer.commandBuffers[renderer.computeCmdId], swapchain.images);

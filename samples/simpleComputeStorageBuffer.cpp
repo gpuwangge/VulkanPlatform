@@ -1,5 +1,5 @@
 #include "..\\framework\\include\\application.h"
-
+#include "supervisor.h"
 #define TEST_CLASS_NAME CSimpleComputeStorageBuffer
 class TEST_CLASS_NAME: public CApplication{
 //A sample to test storage buffer (for compute)	
@@ -12,9 +12,17 @@ public:
 	};
 	StructStorageBuffer storageBufferObject;
 
+	std::string computeShader = "simpleComputeStorageBuffer/comp.spv";
+
 	void initialize(){
 		renderer.m_renderMode = renderer.RENDER_COMPUTE_Mode;
-		
+
+		CMastermind::Register((CApplication*)this);
+		CMastermind::ComputeShader = computeShader;
+		CMastermind::ActivateStorageBuffer(sizeof(StructStorageBuffer));
+		CMastermind::LoadResources();
+
+		/*
 		renderer.CreateCommandPool(surface);
 		renderer.CreateComputeCommandBuffer();
 
@@ -24,6 +32,8 @@ public:
 		CDescriptorManager::createDescriptorPool();
 		CComputeDescriptorManager::createDescriptorSetLayout();
 		computeDescriptorManager.createDescriptorSets();
+
+		*/
 
 		renderProcess.createComputePipelineLayout(CComputeDescriptorManager::descriptorSetLayout);
 		renderProcess.createComputePipeline(shaderManager.compShaderModule);

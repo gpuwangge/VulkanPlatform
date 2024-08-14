@@ -34,7 +34,7 @@ public:
 
     //Graphcis Uniform
     static VkDeviceSize GraphicsCustomUniformBufferSize;
-    static VkDescriptorSetLayoutBinding GraphicsCustomBinding; //{0}
+    static VkDescriptorSetLayoutBinding GraphicsCustomBinding; 
     static void ActivateVP(){ CDescriptorManager::uniformBufferUsageFlags |= UNIFORM_BUFFER_VP_BIT; }
     static void ActivateMVP(){ CDescriptorManager::uniformBufferUsageFlags |= UNIFORM_BUFFER_MVP_BIT;}
     static void ActivateGraphcisCustom(VkDeviceSize graphicsCustomUniformBufferSize, VkDescriptorSetLayoutBinding graphicsCustomBinding){ 
@@ -44,34 +44,44 @@ public:
         }
     static int m_samplerCount;
     static void ActivateSampler(int samplerCount = 1){ m_samplerCount = samplerCount; CDescriptorManager::uniformBufferUsageFlags |= UNIFORM_BUFFER_SAMPLER_BIT;}
+    
     static bool QueryVP(){return CDescriptorManager::uniformBufferUsageFlags & UNIFORM_BUFFER_VP_BIT;}
     static bool QueryMVP(){return CDescriptorManager::uniformBufferUsageFlags & UNIFORM_BUFFER_MVP_BIT;}
     static bool QueryGraphicsCustom(){return CDescriptorManager::uniformBufferUsageFlags & UNIFORM_BUFFER_CUSTOM_GRAPHICS_BIT;}
     static bool QuerySampler(){return CDescriptorManager::uniformBufferUsageFlags & UNIFORM_BUFFER_SAMPLER_BIT;}
 
     //Compute Uniform
+    static VkDeviceSize ComputeCustomUniformBufferSize;
+    static VkDescriptorSetLayoutBinding ComputeCustomBinding;     
     static VkDeviceSize ComputeStorageBufferSize;
-    static void ActivateComputeCustom(){ CDescriptorManager::uniformBufferUsageFlags |= UNIFORM_BUFFER_CUSTOM_COMPUTE_BIT;}
-    static void ActivateStorageBuffer(VkDeviceSize computeStorageBufferSize){ 
+    static VkBufferUsageFlags ComputeStorageBufferUsage;
+    static void ActivateComputeCustom(VkDeviceSize graphicsCustomUniformBufferSize, VkDescriptorSetLayoutBinding graphicsCustomBinding){ 
+        CDescriptorManager::uniformBufferUsageFlags |= UNIFORM_BUFFER_CUSTOM_COMPUTE_BIT;
+        ComputeCustomUniformBufferSize = graphicsCustomUniformBufferSize;
+        ComputeCustomBinding = graphicsCustomBinding; 
+    }
+    static void ActivateStorageBuffer(VkDeviceSize computeStorageBufferSize, VkBufferUsageFlags storageBufferUsage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT){ 
         CDescriptorManager::uniformBufferUsageFlags |= UNIFORM_BUFFER_STORAGE_BIT;
         ComputeStorageBufferSize = computeStorageBufferSize;
-        }
-    static void ActivateStorageImage(bool bPresentSwapchain){ 
-        if(bPresentSwapchain) CDescriptorManager::uniformBufferUsageFlags |= UNIFORM_IMAGE_STORAGE_SWAPCHAIN_BIT;
-        else CDescriptorManager::uniformBufferUsageFlags |= UNIFORM_IMAGE_STORAGE_TEXTURE_BIT;
+        ComputeStorageBufferUsage = storageBufferUsage;
+    }
+    static void ActivateStorageImageTexture(){  //as input
+        CDescriptorManager::uniformBufferUsageFlags |= UNIFORM_IMAGE_STORAGE_TEXTURE_BIT;
+    }
+    static void ActivateStorageImageSwapchain(){ //as output
+        CDescriptorManager::uniformBufferUsageFlags |= UNIFORM_IMAGE_STORAGE_SWAPCHAIN_BIT;
     }
     static bool QueryComputeCustom(){return CDescriptorManager::uniformBufferUsageFlags & UNIFORM_BUFFER_CUSTOM_COMPUTE_BIT;}
     static bool QueryStorageBuffer(){return CDescriptorManager::uniformBufferUsageFlags & UNIFORM_BUFFER_STORAGE_BIT;}
-    static bool QueryStorageImage(bool bPresentSwapchain){
-        if(bPresentSwapchain) return CDescriptorManager::uniformBufferUsageFlags & UNIFORM_IMAGE_STORAGE_SWAPCHAIN_BIT;
-        return CDescriptorManager::uniformBufferUsageFlags | UNIFORM_IMAGE_STORAGE_TEXTURE_BIT;
-    }
+    static bool QueryStorageImageTexture(){ return CDescriptorManager::uniformBufferUsageFlags & UNIFORM_IMAGE_STORAGE_TEXTURE_BIT;}
+    static bool QueryStorageImageSwapchain(){ return CDescriptorManager::uniformBufferUsageFlags & UNIFORM_IMAGE_STORAGE_SWAPCHAIN_BIT;}
 
     //Graphcis Feature
     static bool bDepthTest;
     static bool bMSAA;
     static bool b48bpt;
     static bool bPushConstant;
+    static bool bBlend;
     static void ActivateDepthTest(){ bDepthTest = true; m_app->swapchain.EnableDepthTest();}
     static void ActivateMSAA(){ 
         bMSAA = true; m_app->swapchain.EnableMSAA();
@@ -79,6 +89,7 @@ public:
     }
     static void Activate48BPT(){ b48bpt = true;}
     static void ActivatePushConstant(){ bPushConstant = true;}
+    static void ActivateBlend(){ bBlend = true;}
     
 
     //Load 3D mesh resource from model files
@@ -119,13 +130,16 @@ public:
         if(QueryGraphicsPipeline()){
             if(textureNames){
                 VkImageUsageFlags usage;// = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+                //VkImageUsageFlags usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT;
                 for(int i = 0; i < textureNames->size(); i++){
                     if((*textureNames)[i].second) //mipmap
                         usage = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
                     else 
-                        usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+                        if(QueryStorageImageTexture()) usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT;
+                        else usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
                     if(!b48bpt) //24bpt
-                        m_app->textureManager.CreateTextureImage((*textureNames)[i].first, usage, m_app->renderer.commandPool, (*textureNames)[i].second); 
+                        if(QueryStorageImageSwapchain()) m_app->textureManager.CreateTextureImage((*textureNames)[i].first, usage, m_app->renderer.commandPool, (*textureNames)[i].second, m_app->swapchain.swapChainImageFormat);
+                        else m_app->textureManager.CreateTextureImage((*textureNames)[i].first, usage, m_app->renderer.commandPool, (*textureNames)[i].second);  
                     else //48bpt
                         m_app->textureManager.CreateTextureImage((*textureNames)[i].first, usage, m_app->renderer.commandPool, (*textureNames)[i].second, VK_FORMAT_R16G16B16A16_UNORM, 16); 
                     
@@ -156,6 +170,11 @@ public:
             }else m_app->renderProcess.createDependency();
             m_app->renderProcess.createRenderPass();
 
+            if(bBlend)
+                m_app->renderProcess.addColorBlendAttachment(
+                    VK_BLEND_OP_ADD, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,
+                    VK_BLEND_OP_ADD, VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO);
+
             m_app->swapchain.CreateFramebuffers(m_app->renderProcess.renderPass);
         }
 
@@ -185,9 +204,16 @@ public:
                     CGraphicsDescriptorManager::addImageSamplerUniformBuffer(m_app->textureManager.textureImages[i].mipLevels);
             if(QueryGraphicsCustom()) CGraphicsDescriptorManager::addCustomUniformBuffer(GraphicsCustomUniformBufferSize);
         }
-        if(QueryComputePipeline())
-            if(QueryStorageBuffer())CComputeDescriptorManager::addStorageBuffer(ComputeStorageBufferSize);
-		    
+        if(QueryComputePipeline()){
+            if(QueryStorageBuffer()) {
+                //VkBufferUsageFlags usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT
+                CComputeDescriptorManager::addStorageBuffer(ComputeStorageBufferSize, ComputeStorageBufferUsage);
+            }
+            if(QueryStorageImageTexture()) CComputeDescriptorManager::addStorageImage(UNIFORM_IMAGE_STORAGE_TEXTURE_BIT);
+            if(QueryStorageImageSwapchain()) CComputeDescriptorManager::addStorageImage(UNIFORM_IMAGE_STORAGE_SWAPCHAIN_BIT);
+            if(QueryComputeCustom()) CComputeDescriptorManager::addCustomUniformBuffer(ComputeCustomUniformBufferSize);
+        }
+
         //Pool
 		CDescriptorManager::createDescriptorPool(); 
 
@@ -198,15 +224,25 @@ public:
             }else CGraphicsDescriptorManager::createDescriptorSetLayout();
             if(QuerySampler())CGraphicsDescriptorManager::createTextureDescriptorSetLayout(); 
         }
-        if(QueryComputePipeline())
-            CComputeDescriptorManager::createDescriptorSetLayout();
+        if(QueryComputePipeline()){
+            if(QueryComputeCustom()){
+                CComputeDescriptorManager::createDescriptorSetLayout(&ComputeCustomBinding);
+            }else CComputeDescriptorManager::createDescriptorSetLayout();
+        }
 
         //Set
-        if(QueryGraphicsPipeline())
-		    m_app->graphicsDescriptorManager.createDescriptorSets();
-        if(QueryComputePipeline())
-            m_app->computeDescriptorManager.createDescriptorSets();
-        
+        if(QueryGraphicsPipeline()){
+		    if(QueryStorageImageTexture())
+                m_app->graphicsDescriptorManager.createDescriptorSets(&(m_app->textureManager.textureImages));
+            else m_app->graphicsDescriptorManager.createDescriptorSets();
+        }
+        if(QueryComputePipeline()){
+            if(QueryStorageImageSwapchain()) {
+                if(QueryStorageImageTexture())
+                    m_app->computeDescriptorManager.createDescriptorSets(&(m_app->textureManager.textureImages), &(m_app->swapchain.views));
+                else m_app->computeDescriptorManager.createDescriptorSets(NULL, &(m_app->swapchain.views));
+            }else m_app->computeDescriptorManager.createDescriptorSets();
+        }
     }
 
 
@@ -223,11 +259,15 @@ std::vector<uint32_t> CMastermind::indices3D;
 VkDeviceSize CMastermind::GraphicsCustomUniformBufferSize;
 VkDescriptorSetLayoutBinding CMastermind::GraphicsCustomBinding;
 VkDeviceSize CMastermind::ComputeStorageBufferSize;
+VkBufferUsageFlags CMastermind::ComputeStorageBufferUsage;
+VkDeviceSize CMastermind::ComputeCustomUniformBufferSize;
+VkDescriptorSetLayoutBinding CMastermind::ComputeCustomBinding;
 int CMastermind::m_samplerCount;
 bool CMastermind::bDepthTest;
 bool CMastermind::bMSAA;
 bool CMastermind::b48bpt;
 bool CMastermind::bPushConstant;
+bool CMastermind::bBlend;
 
 
 // class CMastermind { //compute helper

@@ -270,13 +270,13 @@ void CDescriptorManager::createDescriptorPool(){//VkDescriptorType type
         counter++;
     }
     if(uniformBufferUsageFlags & UNIFORM_IMAGE_STORAGE_TEXTURE_BIT){
-        std::cout<<": Storage Image";
+        std::cout<<": Storage Image(for Texture)";
         poolSizes[counter].type = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
 	    poolSizes[counter].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT); ///!!!
         counter++;
     }
     if(uniformBufferUsageFlags & UNIFORM_IMAGE_STORAGE_SWAPCHAIN_BIT){
-        std::cout<<": Storage Image(for Swapchain)";
+        std::cout<<": Storage Image(for Swapchain Presentation)";
         poolSizes[counter].type = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
 	    poolSizes[counter].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT); ///!!!
         counter++;

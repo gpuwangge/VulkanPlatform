@@ -1,5 +1,6 @@
 #include "..\\framework\\include\\application.h"
 #include "object.h"
+#include "supervisor.h"
 #define TEST_CLASS_NAME CTextureCompute
 class TEST_CLASS_NAME: public CApplication{
 //This test is similar to simpleComputeStorageImage, but instead use 2 texture image, one as input, the other as output
@@ -34,7 +35,25 @@ public:
 
 	CObject object;
 
+	std::vector<std::pair<std::string, bool>> textureNames = {{"texture.jpg", false}}; //first: textureName, second: mipmap
+	std::string vertexShader = "textureCompute/vert.spv";
+	std::string fragmentShader = "textureCompute/frag.spv";
+	std::string computeShader = "textureCompute/comp.spv";
+
 	void initialize(){
+		renderer.m_renderMode = renderer.RENDER_COMPUTE_SWAPCHAIN_Mode;
+
+		CMastermind::Register((CApplication*)this);
+		CMastermind::ComputeShader = computeShader;
+		CMastermind::VertexShader = vertexShader;
+		CMastermind::FragmentShader = fragmentShader;
+		CMastermind::ActivateMVP();
+		CMastermind::ActivateSampler();
+		CMastermind::ActivateStorageImageSwapchain();
+		CMastermind::ActivateStorageImageTexture();
+		CMastermind::LoadResources(&textureNames);
+
+		/*
 		renderer.CreateCommandPool(surface);
 		
 		//For Graphics
@@ -45,7 +64,7 @@ public:
 			swapchain.swapChainImageFormat);
 
 		//For Compute
-		renderer.m_renderMode = renderer.RENDER_COMPUTE_SWAPCHAIN_Mode;
+		
 		renderer.CreateComputeCommandBuffer();
 
 		//For Graphics
@@ -74,10 +93,12 @@ public:
 		CGraphicsDescriptorManager::createDescriptorSetLayout();
 		CGraphicsDescriptorManager::createTextureDescriptorSetLayout();
 		CComputeDescriptorManager::createDescriptorSetLayout();
+*/
+		//graphicsDescriptorManager.createDescriptorSets(&textureManager.textureImages);
+		
 
-		graphicsDescriptorManager.createDescriptorSets(&textureManager.textureImages);
 		object.Register((CApplication*)this);//, vertices3D, indices3D
-		computeDescriptorManager.createDescriptorSets(&textureManager.textureImages, &(swapchain.views));
+		//computeDescriptorManager.createDescriptorSets(&textureManager.textureImages, &(swapchain.views));
 
 		//support multiple descriptors in one piplines: bind multiple descriptor layouts in one pipeline
 		std::vector<VkDescriptorSetLayout> dsLayouts;

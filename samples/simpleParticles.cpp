@@ -1,12 +1,13 @@
 #include "..\\framework\\include\\application.h"
 #include <random>
 #include "object.h"
+#include "supervisor.h"
 #define TEST_CLASS_NAME CSimpleParticles
 class TEST_CLASS_NAME: public CApplication{
 public:
 	static const uint32_t PARTICLE_COUNT = 4096;//8192 will fail on Pixel 7 Pro
 
-	struct StructCustomUniformBuffer {
+	struct CustomUniformBufferObject {
 		float deltaTime = 1.0f;
 
 		static VkDescriptorSetLayoutBinding GetBinding(){
@@ -19,7 +20,7 @@ public:
 			return binding;
 		}
 	};
-	StructCustomUniformBuffer customUniformBufferObject{};
+	CustomUniformBufferObject customUniformBufferObject{};
 
 	struct Particle {
 		glm::vec2 position;
@@ -68,9 +69,23 @@ public:
 	
 	CObject object;
 
+	std::string vertexShader = "simpleParticles/vert.spv";
+	std::string fragmentShader = "simpleParticles/frag.spv";
+	std::string computeShader = "simpleParticles/comp.spv";
+
 	void initialize(){
 		renderer.m_renderMode = renderer.RENDER_COMPUTE_GRAPHICS_Mode;
 
+		CMastermind::Register((CApplication*)this);
+		CMastermind::ComputeShader = computeShader;
+		CMastermind::VertexShader = vertexShader;
+		CMastermind::FragmentShader = fragmentShader;
+		CMastermind::ActivateBlend();
+		CMastermind::ActivateComputeCustom(sizeof(CustomUniformBufferObject), CustomUniformBufferObject::GetBinding());
+		CMastermind::ActivateStorageBuffer(sizeof(StructStorageBuffer), VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT);
+		CMastermind::LoadResources();
+
+		/*
 		renderer.CreateCommandPool(surface);
 		
 		//For Graphics
@@ -98,18 +113,20 @@ public:
 
 		//need make change for custom uniform: both graphics/compute should support custom uniform, their' layer/set code should contain source code
 		//or, move the source code to parent manager?... (better not do this, because cant)
-		CComputeDescriptorManager::addCustomUniformBuffer(sizeof(StructCustomUniformBuffer));
+		CComputeDescriptorManager::addCustomUniformBuffer(sizeof(CustomUniformBufferObject));
 		VkBufferUsageFlags usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 		CComputeDescriptorManager::addStorageBuffer(sizeof(StructStorageBuffer), usage);
 
 		CDescriptorManager::createDescriptorPool(); //size = 3(custom:1, storage:2)
 
 		CGraphicsDescriptorManager::createDescriptorSetLayout();//!should not count custom here, because thats for compute
-		VkDescriptorSetLayoutBinding customBinding = StructCustomUniformBuffer::GetBinding();
+		VkDescriptorSetLayoutBinding customBinding = CustomUniformBufferObject::GetBinding();
 		CComputeDescriptorManager::createDescriptorSetLayout(&customBinding);
 
 		graphicsDescriptorManager.createDescriptorSets();
 		computeDescriptorManager.createDescriptorSets();
+
+		*/
 
 		object.Register((CApplication*)this, -1, -1);
 
@@ -187,7 +204,7 @@ public:
 		customUniformBufferObject.deltaTime = deltaTime * 1000;
 		//std::cout<<deltaTime<<std::endl;
 		//customUniformBufferObject.color = {(sin(durationTime*3) + 1.0f) / 2.0f, (cos(durationTime*3) + 1.0f) / 2.0f, 0.0f, 1.0f};
-		computeDescriptorManager.updateCustomUniformBuffer<StructCustomUniformBuffer>(renderer.currentFrame, durationTime, customUniformBufferObject);
+		computeDescriptorManager.updateCustomUniformBuffer<CustomUniformBufferObject>(renderer.currentFrame, durationTime, customUniformBufferObject);
 
 		CApplication::update(); //update deltaTime and durationTime (and mainCamera and MVP, VP)
 		//PRINT("update(): Delta Time: %f, Duration Time: %f", deltaTime, durationTime);
