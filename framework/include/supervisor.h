@@ -77,24 +77,27 @@ public:
     static bool QueryStorageImageSwapchain(){ return CDescriptorManager::uniformBufferUsageFlags & UNIFORM_IMAGE_STORAGE_SWAPCHAIN_BIT;}
 
     //Graphcis Feature
-    static bool bDepthTest;
-    static bool bMSAA;
+    //static bool bDepthTest;
+    //static bool bMSAA;
     static bool b48bpt;
     static bool bPushConstant;
     static bool bBlend;
-    static void ActivateDepthTest(){ bDepthTest = true; m_app->swapchain.EnableDepthTest();}
+    static void ActivateDepthTest(){ m_app->swapchain.EnableDepthTest();} //bDepthTest = true; 
     static void ActivateMSAA(){ 
-        bMSAA = true; m_app->swapchain.EnableMSAA();
+        //bMSAA = true; 
+        m_app->swapchain.EnableMSAA();
         ActivateDepthTest();//If enable MSAA, must also enable Depth Test
     }
     static void Activate48BPT(){ b48bpt = true;}
     static void ActivatePushConstant(){ bPushConstant = true;}
     static void ActivateBlend(){ bBlend = true;}
-    
+    static VertexStructureTypes VertexStructureType;
+    static void ActivateVertexBuffer(VertexStructureTypes vertexStructureType){ VertexStructureType = vertexStructureType;}
 
     //Load 3D mesh resource from model files
     static void LoadResources(std::vector<std::string> &modelNames,  
             std::vector<std::pair<std::string, bool>> *textureNames = NULL){
+        ActivateVertexBuffer(VertexStructureTypes::ThreeDimension); //Model use Vertex3D buffer
         LoadResources(textureNames);
         for(int i = 0; i < modelNames.size(); i++){
             m_app->modelManager.LoadObjModel(modelNames[i], vertices3D, indices3D);
@@ -243,6 +246,58 @@ public:
                 else m_app->computeDescriptorManager.createDescriptorSets(NULL, &(m_app->swapchain.views));
             }else m_app->computeDescriptorManager.createDescriptorSets();
         }
+
+        //Pipeline
+        if(QueryGraphicsPipeline()){
+            std::vector<VkDescriptorSetLayout> dsLayouts;
+            dsLayouts.push_back(CGraphicsDescriptorManager::descriptorSetLayout);
+            if(QuerySampler()) dsLayouts.push_back(CGraphicsDescriptorManager::textureDescriptorSetLayout); //set = 1
+
+            //!!!Different cube can share the same texture descriptor.
+            //suppose we have 100 objects, 100 different textures. cube x 50, sphere x 50. How many texture layouts? How many texture descriptor?
+            //obviously, every objects need a different texture, so bind with objectId
+            //but for layout, can use one. That means texture layout should be object property, while the descriptor set(associate with image) should be cube[i]/sphere[i] bound
+
+            //each object can have muti texture image, multi descriptor set(when creating descritpor set, need a sampler)
+            //all objects share the same descriptor pool and descriptor layout, they are universal
+            //sampler should also be universal
+
+            
+            if(bPushConstant) 
+                m_app->renderProcess.createGraphicsPipelineLayout(dsLayouts,  m_app->shaderManager.pushConstantRange);
+            else
+                m_app->renderProcess.createGraphicsPipelineLayout(dsLayouts);
+            
+            switch(VertexStructureType){
+                case VertexStructureTypes::NoType:
+                    m_app->renderProcess.createGraphicsPipeline(
+                        VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
+                        m_app->shaderManager.vertShaderModule, 
+                        m_app->shaderManager.fragShaderModule);  
+                break;
+                case VertexStructureTypes::ThreeDimension:
+                    m_app->renderProcess.createGraphicsPipeline<Vertex3D>(
+                        VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
+                        m_app->shaderManager.vertShaderModule, 
+                        m_app->shaderManager.fragShaderModule);  
+                break;
+                case VertexStructureTypes::TwoDimension:
+                    m_app->renderProcess.createGraphicsPipeline<Vertex2D>(
+                        VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
+                        m_app->shaderManager.vertShaderModule, 
+                        m_app->shaderManager.fragShaderModule);
+                break;
+                case VertexStructureTypes::ParticleType:
+                    m_app->renderProcess.createGraphicsPipeline<Particle>(
+                        VK_PRIMITIVE_TOPOLOGY_POINT_LIST, 
+                        m_app->shaderManager.vertShaderModule, 
+                        m_app->shaderManager.fragShaderModule);  
+                break;
+                default:
+                break;
+            }
+
+        }
     }
 
 
@@ -263,11 +318,12 @@ VkBufferUsageFlags CMastermind::ComputeStorageBufferUsage;
 VkDeviceSize CMastermind::ComputeCustomUniformBufferSize;
 VkDescriptorSetLayoutBinding CMastermind::ComputeCustomBinding;
 int CMastermind::m_samplerCount;
-bool CMastermind::bDepthTest;
-bool CMastermind::bMSAA;
+//bool CMastermind::bDepthTest;
+//bool CMastermind::bMSAA;
 bool CMastermind::b48bpt;
 bool CMastermind::bPushConstant;
 bool CMastermind::bBlend;
+VertexStructureTypes CMastermind::VertexStructureType;
 
 
 // class CMastermind { //compute helper

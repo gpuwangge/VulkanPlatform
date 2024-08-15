@@ -2,6 +2,7 @@
 #include <random>
 #include "object.h"
 #include "supervisor.h"
+//#include "dataBuffer.hpp"
 #define TEST_CLASS_NAME CSimpleParticles
 class TEST_CLASS_NAME: public CApplication{
 public:
@@ -22,36 +23,7 @@ public:
 	};
 	CustomUniformBufferObject customUniformBufferObject{};
 
-	struct Particle {
-		glm::vec2 position;
-		glm::vec2 velocity;
-		glm::vec4 color;
-
-		static VkVertexInputBindingDescription getBindingDescription() {
-			VkVertexInputBindingDescription bindingDescription{};
-			bindingDescription.binding = 0;
-			bindingDescription.stride = sizeof(Particle);
-			bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
-
-			return bindingDescription;
-		}
-
-		static std::array<VkVertexInputAttributeDescription, 2> getAttributeDescriptions() {
-			std::array<VkVertexInputAttributeDescription, 2> attributeDescriptions{};
-
-			attributeDescriptions[0].binding = 0;
-			attributeDescriptions[0].location = 0;
-			attributeDescriptions[0].format = VK_FORMAT_R32G32_SFLOAT;
-			attributeDescriptions[0].offset = offsetof(Particle, position);
-
-			attributeDescriptions[1].binding = 0;
-			attributeDescriptions[1].location = 1;
-			attributeDescriptions[1].format = VK_FORMAT_R32G32B32A32_SFLOAT;
-			attributeDescriptions[1].offset = offsetof(Particle, color);
-
-			return attributeDescriptions;
-		}
-	};
+	
 
 	struct StructStorageBuffer {
 		Particle particles[PARTICLE_COUNT];
@@ -83,6 +55,7 @@ public:
 		CMastermind::ActivateBlend();
 		CMastermind::ActivateComputeCustom(sizeof(CustomUniformBufferObject), CustomUniformBufferObject::GetBinding());
 		CMastermind::ActivateStorageBuffer(sizeof(StructStorageBuffer), VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT);
+		CMastermind::ActivateVertexBuffer(VertexStructureTypes::ParticleType);
 		CMastermind::LoadResources();
 
 		/*
@@ -131,17 +104,17 @@ public:
 		object.Register((CApplication*)this, -1, -1);
 
 		//support multiple descriptors in one piplines: bind multiple descriptor layouts in one pipeline
-		std::vector<VkDescriptorSetLayout> dsLayouts;
-		dsLayouts.push_back(CGraphicsDescriptorManager::descriptorSetLayout);
+		// std::vector<VkDescriptorSetLayout> dsLayouts;
+		// dsLayouts.push_back(CGraphicsDescriptorManager::descriptorSetLayout);
 
-		//for Graphics: when create graphics pipeline, use descriptor set 0 layout
-		renderProcess.createGraphicsPipelineLayout(dsLayouts);
-		renderProcess.createGraphicsPipeline<Particle>(
-			VK_PRIMITIVE_TOPOLOGY_POINT_LIST, 
-			shaderManager.vertShaderModule, 
-			shaderManager.fragShaderModule);
+		// //for Graphics: when create graphics pipeline, use descriptor set 0 layout
+		// renderProcess.createGraphicsPipelineLayout(dsLayouts);
+		// renderProcess.createGraphicsPipeline<Particle>(
+		// 	VK_PRIMITIVE_TOPOLOGY_POINT_LIST, 
+		// 	shaderManager.vertShaderModule, 
+		// 	shaderManager.fragShaderModule);
 
-		std::cout<<"graphics pipeline created."<<std::endl;
+		// std::cout<<"graphics pipeline created."<<std::endl;
 
 		//For Compute: when create compute pipeline, use descriptor set 1 layout
 		renderProcess.createComputePipelineLayout(CComputeDescriptorManager::descriptorSetLayout);

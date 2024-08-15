@@ -57,14 +57,14 @@ public:
 		object.Register((CApplication*)this, -1, -1, 0); //no texture, no model, id=0
 
 		//support multiple descriptors in one piplines: bind multiple descriptor layouts in one pipeline
-		std::vector<VkDescriptorSetLayout> dsLayouts;
-		dsLayouts.push_back(CGraphicsDescriptorManager::descriptorSetLayout);
+		// std::vector<VkDescriptorSetLayout> dsLayouts;
+		// dsLayouts.push_back(CGraphicsDescriptorManager::descriptorSetLayout);
 
-		renderProcess.createGraphicsPipelineLayout(dsLayouts);
-		renderProcess.createGraphicsPipeline(
-			VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
-			shaderManager.vertShaderModule, 
-			shaderManager.fragShaderModule);
+		// renderProcess.createGraphicsPipelineLayout(dsLayouts);
+		// renderProcess.createGraphicsPipeline(
+		// 	VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
+		// 	shaderManager.vertShaderModule, 
+		// 	shaderManager.fragShaderModule);
 
 		CApplication::initialize();
 	}

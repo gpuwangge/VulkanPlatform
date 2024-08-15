@@ -42,23 +42,16 @@ public:
 
 	
 		//support multiple descriptors in one piplines: bind multiple descriptor layouts in one pipeline
-		std::vector<VkDescriptorSetLayout> dsLayouts;
-		dsLayouts.push_back(CGraphicsDescriptorManager::descriptorSetLayout); //set = 0
-		dsLayouts.push_back(CGraphicsDescriptorManager::textureDescriptorSetLayout); //set = 1
-		//!!!Different cube can share the same texture descriptor.
-		//suppose we have 100 objects, 100 different textures. cube x 50, sphere x 50. How many texture layouts? How many texture descriptor?
-		//obviously, every objects need a different texture, so bind with objectId
-		//but for layout, can use one. That means texture layout should be object property, while the descriptor set(associate with image) should be cube[i]/sphere[i] bound
+		// std::vector<VkDescriptorSetLayout> dsLayouts;
+		// dsLayouts.push_back(CGraphicsDescriptorManager::descriptorSetLayout); //set = 0
+		// dsLayouts.push_back(CGraphicsDescriptorManager::textureDescriptorSetLayout); //set = 1
+		
 
-		//each object can have muti texture image, multi descriptor set(when creating descritpor set, need a sampler)
-		//all objects share the same descriptor pool and descriptor layout, they are universal
-		//sampler should also be universal
-
-		renderProcess.createGraphicsPipelineLayout(dsLayouts);
-		renderProcess.createGraphicsPipeline<Vertex3D>(
-			VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
-			shaderManager.vertShaderModule, 
-			shaderManager.fragShaderModule);
+		// renderProcess.createGraphicsPipelineLayout(dsLayouts);
+		// renderProcess.createGraphicsPipeline<Vertex3D>(
+		// 	VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
+		// 	shaderManager.vertShaderModule, 
+		// 	shaderManager.fragShaderModule);
 
 		CApplication::initialize();
 	}

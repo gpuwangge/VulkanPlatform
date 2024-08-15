@@ -62,6 +62,8 @@ public:
 
     //std::chrono::_V2::system_clock::time_point lastTime;
 
+    //VertexStructureTypes vertexStructuretypes;
+
     void CleanUp();
 
     void UpdateRecordRender();

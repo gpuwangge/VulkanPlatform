@@ -51,6 +51,7 @@ public:
 		CMastermind::ActivateSampler();
 		CMastermind::ActivateStorageImageSwapchain();
 		CMastermind::ActivateStorageImageTexture();
+		CMastermind::ActivateVertexBuffer(VertexStructureTypes::ThreeDimension);
 		CMastermind::LoadResources(&textureNames);
 
 		/*
@@ -101,18 +102,18 @@ public:
 		//computeDescriptorManager.createDescriptorSets(&textureManager.textureImages, &(swapchain.views));
 
 		//support multiple descriptors in one piplines: bind multiple descriptor layouts in one pipeline
-		std::vector<VkDescriptorSetLayout> dsLayouts;
-		dsLayouts.push_back(CGraphicsDescriptorManager::descriptorSetLayout);
-		dsLayouts.push_back(CGraphicsDescriptorManager::textureDescriptorSetLayout); 
+		// std::vector<VkDescriptorSetLayout> dsLayouts;
+		// dsLayouts.push_back(CGraphicsDescriptorManager::descriptorSetLayout);
+		// dsLayouts.push_back(CGraphicsDescriptorManager::textureDescriptorSetLayout); 
 
-		//for Graphics: when create graphics pipeline, use descriptor set 0 layout
-		renderProcess.createGraphicsPipelineLayout(dsLayouts);
-		std::cout<<"createGraphicsPipelineLayout() done."<<std::endl;
-		renderProcess.createGraphicsPipeline<Vertex3D>(
-			VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
-			shaderManager.vertShaderModule, 
-			shaderManager.fragShaderModule);
-		std::cout<<"graphics pipeline created."<<std::endl;
+		// //for Graphics: when create graphics pipeline, use descriptor set 0 layout
+		// renderProcess.createGraphicsPipelineLayout(dsLayouts);
+		// std::cout<<"createGraphicsPipelineLayout() done."<<std::endl;
+		// renderProcess.createGraphicsPipeline<Vertex3D>(
+		// 	VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
+		// 	shaderManager.vertShaderModule, 
+		// 	shaderManager.fragShaderModule);
+		// std::cout<<"graphics pipeline created."<<std::endl;
 
 		//For Compute: when create compute pipeline, use descriptor set 1 layout
 		renderProcess.createComputePipelineLayout(CComputeDescriptorManager::descriptorSetLayout);

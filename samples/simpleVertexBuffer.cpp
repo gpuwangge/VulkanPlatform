@@ -20,6 +20,7 @@ public:
 		CMastermind::Register((CApplication*)this);
 		CMastermind::VertexShader = vertexShader;
 		CMastermind::FragmentShader = fragmentShader;
+		CMastermind::ActivateVertexBuffer(VertexStructureTypes::TwoDimension);
 		CMastermind::LoadResources(vertices);
 
 		/*
@@ -46,15 +47,15 @@ public:
 		//object.Register((CApplication*)this, vertices);
 		object.Register((CApplication*)this, -1, 0, 0); //no texture, no model, id=0
 
-		std::vector<VkDescriptorSetLayout> dsLayouts;
-		dsLayouts.push_back(CGraphicsDescriptorManager::descriptorSetLayout);
+		// std::vector<VkDescriptorSetLayout> dsLayouts;
+		// dsLayouts.push_back(CGraphicsDescriptorManager::descriptorSetLayout);
 
-		//if(graphicsDescriptorManager.getSetSize() > 0)dsLayouts.push_back(CGraphicsDescriptorManager::descriptorSetLayout);
-		renderProcess.createGraphicsPipelineLayout(dsLayouts);
-		renderProcess.createGraphicsPipeline<Vertex2D>(
-			VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
-			shaderManager.vertShaderModule, 
-			shaderManager.fragShaderModule);
+		// //if(graphicsDescriptorManager.getSetSize() > 0)dsLayouts.push_back(CGraphicsDescriptorManager::descriptorSetLayout);
+		// renderProcess.createGraphicsPipelineLayout(dsLayouts);
+		// renderProcess.createGraphicsPipeline<Vertex2D>(
+		// 	VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
+		// 	shaderManager.vertShaderModule, 
+		// 	shaderManager.fragShaderModule);
 
 		CApplication::initialize();
 	}

@@ -27,6 +27,7 @@ public:
 		CMastermind::ActivateSampler();
 		CMastermind::ActivatePushConstant(); //Use Push Constant to pass Model matrix
 		CMastermind::ActivateVP(); //Use VP matrix instead of MVP
+		CMastermind::ActivateVertexBuffer(VertexStructureTypes::ThreeDimension);
 		CMastermind::LoadResources(vertices3D, indices3D, &textureNames);
 
 		/*
@@ -65,15 +66,15 @@ public:
 		object.Register((CApplication*)this);//, vertices3D, indices3D
 
 		//support multiple descriptors in one piplines: bind multiple descriptor layouts in one pipeline
-		std::vector<VkDescriptorSetLayout> dsLayouts;
-		dsLayouts.push_back(CGraphicsDescriptorManager::descriptorSetLayout);
-		dsLayouts.push_back(CGraphicsDescriptorManager::textureDescriptorSetLayout); //set = 1
+		// std::vector<VkDescriptorSetLayout> dsLayouts;
+		// dsLayouts.push_back(CGraphicsDescriptorManager::descriptorSetLayout);
+		// dsLayouts.push_back(CGraphicsDescriptorManager::textureDescriptorSetLayout); //set = 1
 
-		renderProcess.createGraphicsPipelineLayout(dsLayouts, shaderManager.pushConstantRange);
-		renderProcess.createGraphicsPipeline<Vertex3D>(
-			VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
-			shaderManager.vertShaderModule, 
-			shaderManager.fragShaderModule);
+		// renderProcess.createGraphicsPipelineLayout(dsLayouts, shaderManager.pushConstantRange);
+		// renderProcess.createGraphicsPipeline<Vertex3D>(
+		// 	VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
+		// 	shaderManager.vertShaderModule, 
+		// 	shaderManager.fragShaderModule);
 		
 		CApplication::initialize();
 	}

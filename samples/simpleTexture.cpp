@@ -29,6 +29,7 @@ public:
 		CMastermind::FragmentShader = fragmentShader;
 		CMastermind::ActivateMVP();
 		CMastermind::ActivateSampler();
+		CMastermind::ActivateVertexBuffer(VertexStructureTypes::ThreeDimension);
 		CMastermind::LoadResources(vertices3D, indices3D, &textureNames);
 
 
@@ -63,15 +64,15 @@ public:
 		object.Register((CApplication*)this); 
 
 		//support multiple descriptors in one piplines: bind multiple descriptor layouts in one pipeline
-		std::vector<VkDescriptorSetLayout> dsLayouts;
-		dsLayouts.push_back(CGraphicsDescriptorManager::descriptorSetLayout); //set = 0
-		dsLayouts.push_back(CGraphicsDescriptorManager::textureDescriptorSetLayout); //set = 1
+		// std::vector<VkDescriptorSetLayout> dsLayouts;
+		// dsLayouts.push_back(CGraphicsDescriptorManager::descriptorSetLayout); //set = 0
+		// dsLayouts.push_back(CGraphicsDescriptorManager::textureDescriptorSetLayout); //set = 1
 
-		renderProcess.createGraphicsPipelineLayout(dsLayouts);
-		renderProcess.createGraphicsPipeline<Vertex3D>(
-			VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
-			shaderManager.vertShaderModule, 
-			shaderManager.fragShaderModule);
+		// renderProcess.createGraphicsPipelineLayout(dsLayouts);
+		// renderProcess.createGraphicsPipeline<Vertex3D>(
+		// 	VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
+		// 	shaderManager.vertShaderModule, 
+		// 	shaderManager.fragShaderModule);
 		
 		CApplication::initialize();
 	}
