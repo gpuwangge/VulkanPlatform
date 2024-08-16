@@ -35,8 +35,8 @@ public:
 
 		*/
 
-		renderProcess.createComputePipelineLayout(CComputeDescriptorManager::descriptorSetLayout);
-		renderProcess.createComputePipeline(shaderManager.compShaderModule);
+		//renderProcess.createComputePipelineLayout(CComputeDescriptorManager::descriptorSetLayout);
+		//renderProcess.createComputePipeline(shaderManager.compShaderModule);
 
 		CApplication::initialize();
 	}
@@ -59,7 +59,10 @@ public:
 
 	void recordComputeCommandBuffer(){
 		//std::cout<<"Record Compute command buffer. "<<std::endl;
-		renderer.Dispatch(1, 1, 1); //dispatch an empty compute shader. TODO: need add some compute here
+		//renderer.Dispatch(1, 1, 1); //dispatch an empty compute shader. TODO: need add some compute here
+
+		//In this test, there is no need to dispatch(and no need to bind descriptor).
+		//The storage buffer will work by itself.
 	}
 
 	void postUpdate(){

@@ -53,8 +53,8 @@ public:
 
 		*/
 
-		renderProcess.createComputePipelineLayout(CComputeDescriptorManager::descriptorSetLayout);
-		renderProcess.createComputePipeline(shaderManager.compShaderModule);
+		//renderProcess.createComputePipelineLayout(CComputeDescriptorManager::descriptorSetLayout);
+		//renderProcess.createComputePipeline(shaderManager.compShaderModule);
 
 
 
@@ -131,10 +131,10 @@ public:
             //}
 			renderer.StartRecordComputeCommandBuffer(renderProcess.computePipeline, renderProcess.computePipelineLayout);
 
-			std::vector<std::vector<VkDescriptorSet>> dsSets; 
-			dsSets.push_back(computeDescriptorManager.descriptorSets);
+			//std::vector<std::vector<VkDescriptorSet>> dsSets; 
+			//dsSets.push_back(computeDescriptorManager.descriptorSets);
 
-			renderer.BindComputeDescriptorSets(renderProcess.computePipelineLayout, dsSets, -1); //-1 to offset means no dynamic offset
+			//renderer.BindComputeDescriptorSets(renderProcess.computePipelineLayout, dsSets, -1); //-1 to offset means no dynamic offset
 
             recordImageBarrier(commandBuffers[i], swapChainImages[i],
                 VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_GENERAL,
@@ -145,7 +145,8 @@ public:
             //vkCmdBindPipeline(commandBuffers[i], VK_PIPELINE_BIND_POINT_COMPUTE, pipeline);
             //vkCmdBindDescriptorSets(commandBuffers[i], VK_PIPELINE_BIND_POINT_COMPUTE, pipelineLayout, 0, 1, &descriptorSets[i], 0, nullptr);
             //vkCmdDispatch(commandBuffers[i], 200, 300, 1);
-			renderer.Dispatch(200, 300, 1); 
+			//renderer.Dispatch(200, 300, 1); 
+			CMastermind::Dispatch(200,300,1);
          
             recordImageBarrier(commandBuffers[i], swapChainImages[i],
                 VK_IMAGE_LAYOUT_GENERAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,

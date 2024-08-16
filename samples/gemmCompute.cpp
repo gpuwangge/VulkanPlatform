@@ -51,8 +51,8 @@ public:
 		*/
 
 
-		renderProcess.createComputePipelineLayout(CComputeDescriptorManager::descriptorSetLayout);
-		renderProcess.createComputePipeline(shaderManager.compShaderModule);
+		//renderProcess.createComputePipelineLayout(CComputeDescriptorManager::descriptorSetLayout);
+		//renderProcess.createComputePipeline(shaderManager.compShaderModule);
 
 		CApplication::initialize();
 
@@ -88,14 +88,16 @@ public:
 	}
 
 	void recordComputeCommandBuffer(){
-		std::vector<std::vector<VkDescriptorSet>> dsSets; 
-		dsSets.push_back(computeDescriptorManager.descriptorSets);
+		CMastermind::Dispatch(1,1,1);
 
-		renderer.BindComputeDescriptorSets(renderProcess.computePipelineLayout, dsSets, -1); //-1 to offset means no dynamic offset
+		// std::vector<std::vector<VkDescriptorSet>> dsSets; 
+		// dsSets.push_back(computeDescriptorManager.descriptorSets);
 
-		//std::cout<<"Record Compute command buffer. "<<std::endl;
-		renderer.Dispatch(1, 1, 1);
-		std::cout<<"Dispatched."<<std::endl;
+		// renderer.BindComputeDescriptorSets(renderProcess.computePipelineLayout, dsSets, -1); //-1 to offset means no dynamic offset
+
+		// //std::cout<<"Record Compute command buffer. "<<std::endl;
+		// renderer.Dispatch(1, 1, 1);
+		// std::cout<<"Dispatched."<<std::endl;
 	}
 
 	void postUpdate(){

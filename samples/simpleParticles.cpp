@@ -117,10 +117,10 @@ public:
 		// std::cout<<"graphics pipeline created."<<std::endl;
 
 		//For Compute: when create compute pipeline, use descriptor set 1 layout
-		renderProcess.createComputePipelineLayout(CComputeDescriptorManager::descriptorSetLayout);
-		renderProcess.createComputePipeline(shaderManager.compShaderModule);
+		//renderProcess.createComputePipelineLayout(CComputeDescriptorManager::descriptorSetLayout);
+		//renderProcess.createComputePipeline(shaderManager.compShaderModule);
 
-		std::cout<<"compute pipeline created."<<std::endl;
+		//std::cout<<"compute pipeline created."<<std::endl;
 
 		CApplication::initialize();
 		
@@ -196,12 +196,15 @@ public:
 	}
 
 	void recordComputeCommandBuffer(){
-		std::vector<std::vector<VkDescriptorSet>> dsSets; 
-		dsSets.push_back(computeDescriptorManager.descriptorSets);
+		// std::vector<std::vector<VkDescriptorSet>> dsSets; 
+		// dsSets.push_back(computeDescriptorManager.descriptorSets);
 
-		renderer.BindComputeDescriptorSets(renderProcess.computePipelineLayout, dsSets, -1); //-1 to offset means no dynamic offset
+		// renderer.BindComputeDescriptorSets(renderProcess.computePipelineLayout, dsSets, -1); //-1 to offset means no dynamic offset
 
-		renderer.Dispatch(PARTICLE_COUNT / 256, 1, 1);
+		// renderer.Dispatch(PARTICLE_COUNT / 256, 1, 1);
+
+		CMastermind::Dispatch(PARTICLE_COUNT/256,1,1);
+
 		static int counter = 0;
 		if(counter % 1000 == 0)std::cout<<"Dispatched Counter: "<<counter<<std::endl;
 		counter++;

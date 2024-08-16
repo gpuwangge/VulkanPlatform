@@ -298,9 +298,21 @@ public:
             }
 
         }
+        if(QueryComputePipeline()){
+            m_app->renderProcess.createComputePipelineLayout(CComputeDescriptorManager::descriptorSetLayout);
+		    m_app->renderProcess.createComputePipeline(m_app->shaderManager.compShaderModule);
+        }
     }
 
+    static void Dispatch(int numWorkGroupsX, int numWorkGroupsY, int numWorkGroupsZ){
+        std::vector<std::vector<VkDescriptorSet>> dsSets; 
+		dsSets.push_back(m_app->computeDescriptorManager.descriptorSets);
 
+		m_app->renderer.BindComputeDescriptorSets(m_app->renderProcess.computePipelineLayout, dsSets, -1); //-1 to offset means no dynamic offset
+
+		//std::cout<<"Record Compute command buffer. "<<std::endl;
+		m_app->renderer.Dispatch(numWorkGroupsX, numWorkGroupsY, numWorkGroupsZ);
+    }
 };
 
 //Declare static variables here:
