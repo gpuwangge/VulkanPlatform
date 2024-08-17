@@ -33,47 +33,7 @@ public:
 		CSupervisor::Activate_Texture(&textureNames);
 		CSupervisor::Activate_Pipeline();
 
-
-		/*
-		renderer.CreateCommandPool(surface);
-		renderer.CreateGraphicsCommandBuffer();
-
-		VkImageUsageFlags usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
-		textureManager.CreateTextureImage("texture.jpg", usage, renderer.commandPool);
-
-		renderProcess.addColorAttachment(swapchain.swapChainImageFormat); //add this function will enable color attachment (bUseColorAttachment = true)
-		renderProcess.createSubpass();
-		renderProcess.createDependency();
-		renderProcess.createRenderPass();
-
-		swapchain.CreateFramebuffers(renderProcess.renderPass);
-
-		shaderManager.CreateShader("simpleTexture/vert.spv", shaderManager.VERT);
-		shaderManager.CreateShader("simpleTexture/frag.spv", shaderManager.FRAG); 
-
-		CGraphicsDescriptorManager::addMVPUniformBuffer();
-		uint32_t mipLevels = textureManager.textureImages[0].mipLevels;
-		CGraphicsDescriptorManager::addImageSamplerUniformBuffer(mipLevels);
-		CDescriptorManager::createDescriptorPool(); //pool size = 2
-
-		CGraphicsDescriptorManager::createDescriptorSetLayout(); //layout size = 1
-		CGraphicsDescriptorManager::createTextureDescriptorSetLayout(); //layout size = 1
-
-		graphicsDescriptorManager.createDescriptorSets();
-		*/
-
 		object.Register((CApplication*)this); 
-
-		//support multiple descriptors in one piplines: bind multiple descriptor layouts in one pipeline
-		// std::vector<VkDescriptorSetLayout> dsLayouts;
-		// dsLayouts.push_back(CGraphicsDescriptorManager::descriptorSetLayout); //set = 0
-		// dsLayouts.push_back(CGraphicsDescriptorManager::textureDescriptorSetLayout); //set = 1
-
-		// renderProcess.createGraphicsPipelineLayout(dsLayouts);
-		// renderProcess.createGraphicsPipeline<Vertex3D>(
-		// 	VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
-		// 	shaderManager.vertShaderModule, 
-		// 	shaderManager.fragShaderModule);
 		
 		CApplication::initialize();
 	}

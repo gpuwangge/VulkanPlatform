@@ -58,69 +58,7 @@ public:
 		CSupervisor::Activate_Buffer_Graphics_Vertex(VertexStructureTypes::ParticleType);
 		CSupervisor::Activate_Pipeline();
 
-		/*
-		renderer.CreateCommandPool(surface);
-		
-		//For Graphics
-		renderer.CreateGraphicsCommandBuffer(); 
-
-		//For Compute
-		renderer.CreateComputeCommandBuffer();
-
-		//For Graphics
-		renderProcess.addColorAttachment(swapchain.swapChainImageFormat); 
-		renderProcess.createSubpass();
-		renderProcess.createDependency();
-		renderProcess.createRenderPass();
-		renderProcess.addColorBlendAttachment(
-			VK_BLEND_OP_ADD, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,
-			VK_BLEND_OP_ADD, VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO);
-		swapchain.CreateFramebuffers(renderProcess.renderPass);
-		shaderManager.CreateShader("simpleParticles/vert.spv", shaderManager.VERT);
-		shaderManager.CreateShader("simpleParticles/frag.spv", shaderManager.FRAG); 
-
-		//For Compute
-		shaderManager.CreateShader("simpleParticles/comp.spv", shaderManager.COMP);
-		std::cout<<"compute shader created."<<std::endl;
-
-
-		//need make change for custom uniform: both graphics/compute should support custom uniform, their' layer/set code should contain source code
-		//or, move the source code to parent manager?... (better not do this, because cant)
-		CComputeDescriptorManager::addCustomUniformBuffer(sizeof(CustomUniformBufferObject));
-		VkBufferUsageFlags usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
-		CComputeDescriptorManager::addStorageBuffer(sizeof(StructStorageBuffer), usage);
-
-		CDescriptorManager::createDescriptorPool(); //size = 3(custom:1, storage:2)
-
-		CGraphicsDescriptorManager::createDescriptorSetLayout();//!should not count custom here, because thats for compute
-		VkDescriptorSetLayoutBinding customBinding = CustomUniformBufferObject::GetBinding();
-		CComputeDescriptorManager::createDescriptorSetLayout(&customBinding);
-
-		graphicsDescriptorManager.createDescriptorSets();
-		computeDescriptorManager.createDescriptorSets();
-
-		*/
-
 		object.Register((CApplication*)this, -1, -1);
-
-		//support multiple descriptors in one piplines: bind multiple descriptor layouts in one pipeline
-		// std::vector<VkDescriptorSetLayout> dsLayouts;
-		// dsLayouts.push_back(CGraphicsDescriptorManager::descriptorSetLayout);
-
-		// //for Graphics: when create graphics pipeline, use descriptor set 0 layout
-		// renderProcess.createGraphicsPipelineLayout(dsLayouts);
-		// renderProcess.createGraphicsPipeline<Particle>(
-		// 	VK_PRIMITIVE_TOPOLOGY_POINT_LIST, 
-		// 	shaderManager.vertShaderModule, 
-		// 	shaderManager.fragShaderModule);
-
-		// std::cout<<"graphics pipeline created."<<std::endl;
-
-		//For Compute: when create compute pipeline, use descriptor set 1 layout
-		//renderProcess.createComputePipelineLayout(CComputeDescriptorManager::descriptorSetLayout);
-		//renderProcess.createComputePipeline(shaderManager.compShaderModule);
-
-		//std::cout<<"compute pipeline created."<<std::endl;
 
 		CApplication::initialize();
 		
@@ -185,24 +123,10 @@ public:
 
 	void recordGraphicsCommandBuffer(){
 		//this sample doesn't need BindDescriptorSets
-
-		//VkBuffer vertexBuffers[] = {vertexDataBuffer.buffer };
-
-		//VkDeviceSize offsets[] = { 0 };
-		//vkCmdBindVertexBuffers(renderer.commandBuffers[renderer.graphicsCmdId][renderer.currentFrame], 0, 1, &computeDescriptorManager.storageBuffers[renderer.currentFrame].buffer, offsets);
-
-		//renderer.Draw(PARTICLE_COUNT);
 		object.Draw(computeDescriptorManager.storageBuffers, PARTICLE_COUNT);
 	}
 
 	void recordComputeCommandBuffer(){
-		// std::vector<std::vector<VkDescriptorSet>> dsSets; 
-		// dsSets.push_back(computeDescriptorManager.descriptorSets);
-
-		// renderer.BindComputeDescriptorSets(renderProcess.computePipelineLayout, dsSets, -1); //-1 to offset means no dynamic offset
-
-		// renderer.Dispatch(PARTICLE_COUNT / 256, 1, 1);
-
 		CSupervisor::Dispatch(PARTICLE_COUNT/256,1,1);
 
 		static int counter = 0;

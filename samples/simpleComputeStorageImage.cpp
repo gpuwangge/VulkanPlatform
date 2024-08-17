@@ -8,7 +8,6 @@ class TEST_CLASS_NAME: public CApplication{
 //Thus no graphics pipeline is needed here
 //When run, a purple rectangle will show on the screen
 
-	//static const int KernelRunNumber = 1;
 public:
 	std::vector<VkClearValue> clearValues{ {  0.0f, 1.0f, 0.0f, 1.0f  } };
 
@@ -27,73 +26,13 @@ public:
 		CSupervisor::Activate_Uniform_Compute_StorageImage_Swapchain();
 		CSupervisor::Activate_Pipeline();
 
-		/*
-		renderer.CreateCommandPool(surface);
-		renderer.CreateComputeCommandBuffer();
-
-
-		shaderManager.CreateShader("simpleComputeStorageImage/comp.spv", shaderManager.COMP);
-		std::cout<<"compute shader created."<<std::endl;
-
-		CComputeDescriptorManager::addStorageImage(UNIFORM_IMAGE_STORAGE_SWAPCHAIN_BIT); //as output
-		//std::cout<<"descriptor 1."<<std::endl;
-		CDescriptorManager::createDescriptorPool();
-		//std::cout<<"descriptor 2."<<std::endl;
-		CComputeDescriptorManager::createDescriptorSetLayout();
-		//std::cout<<"descriptor 3."<<std::endl;
-		computeDescriptorManager.createDescriptorSets(NULL, &(swapchain.views));
-		//std::cout<<"descriptor created."<<std::endl;
-
-		///renderProcess.createGraphicsPipelineLayout(descriptors[0].descriptorSetLayout);
-		///renderProcess.createGraphicsPipeline(
-			///VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
-			///shaderManager.vertShaderModule, 
-			///shaderManager.fragShaderModule);
-
-		*/
-
-		//renderProcess.createComputePipelineLayout(CComputeDescriptorManager::descriptorSetLayout);
-		//renderProcess.createComputePipeline(shaderManager.compShaderModule);
-
-
-
 		CApplication::initialize();
 		createComputeCommandBuffers(renderer.commandBuffers[renderer.computeCmdId], swapchain.images);
 	}
 
 	void update(){
 		CApplication::update();
-
-		//static int counter = 1;
-		//if(counter==KernelRunNumber) NeedToExit = true;
-		//counter++;
 	}
-
-	void recordComputeCommandBuffer(){
-		//std::cout<<"Record Compute command buffer. "<<std::endl;
-
-		
-	//command buffer recorded in init() so dont need to record here
-/*
-		START_COMPUTE_RECORD(0)
-
-		recordImageBarrier(renderer.commandBuffers[renderer.computeCmdId][renderer.currentFrame], swapchain.images[renderer.currentFrame],
-                VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_GENERAL,
-                VK_ACCESS_MEMORY_WRITE_BIT,VK_ACCESS_SHADER_WRITE_BIT,
-                VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT);
-
-		renderer.Dispatch(200, 300, 1); 
-
-		recordImageBarrier(renderer.commandBuffers[renderer.computeCmdId][renderer.currentFrame], swapchain.images[renderer.currentFrame],
-                VK_IMAGE_LAYOUT_GENERAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
-                VK_ACCESS_SHADER_WRITE_BIT, VK_ACCESS_MEMORY_READ_BIT,
-                VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT, VK_PIPELINE_STAGE_ALL_COMMANDS_BIT);
-
-		END_COMPUTE_RECORD*/
-	}
-
-	///void recordGraphicsCommandBuffer(){
-	///}
 
 	void recordImageBarrier(VkCommandBuffer buffer, VkImage image, VkImageLayout oldLayout, VkImageLayout newLayout,
         VkAccessFlags scrAccess, VkAccessFlags dstAccess, VkPipelineStageFlags srcBind, VkPipelineStageFlags dstBind) {
@@ -130,10 +69,6 @@ public:
             //}
 			renderer.StartRecordComputeCommandBuffer(renderProcess.computePipeline, renderProcess.computePipelineLayout);
 
-			//std::vector<std::vector<VkDescriptorSet>> dsSets; 
-			//dsSets.push_back(computeDescriptorManager.descriptorSets);
-
-			//renderer.BindComputeDescriptorSets(renderProcess.computePipelineLayout, dsSets, -1); //-1 to offset means no dynamic offset
 
             recordImageBarrier(commandBuffers[i], swapChainImages[i],
                 VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_GENERAL,
@@ -141,10 +76,6 @@ public:
                 VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT);
             
 			
-            //vkCmdBindPipeline(commandBuffers[i], VK_PIPELINE_BIND_POINT_COMPUTE, pipeline);
-            //vkCmdBindDescriptorSets(commandBuffers[i], VK_PIPELINE_BIND_POINT_COMPUTE, pipelineLayout, 0, 1, &descriptorSets[i], 0, nullptr);
-            //vkCmdDispatch(commandBuffers[i], 200, 300, 1);
-			//renderer.Dispatch(200, 300, 1); 
 			CSupervisor::Dispatch(200,300,1);
          
             recordImageBarrier(commandBuffers[i], swapChainImages[i],

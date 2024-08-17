@@ -22,22 +22,6 @@ public:
 		CSupervisor::Activate_Uniform_Compute_StorageBuffer(sizeof(StructStorageBuffer));
 		CSupervisor::Activate_Pipeline();
 
-		/*
-		renderer.CreateCommandPool(surface);
-		renderer.CreateComputeCommandBuffer();
-
-		shaderManager.CreateShader("simpleComputeStorageBuffer/comp.spv", shaderManager.COMP);
-
-		CComputeDescriptorManager::addStorageBuffer(sizeof(StructStorageBuffer));
-		CDescriptorManager::createDescriptorPool();
-		CComputeDescriptorManager::createDescriptorSetLayout();
-		computeDescriptorManager.createDescriptorSets();
-
-		*/
-
-		//renderProcess.createComputePipelineLayout(CComputeDescriptorManager::descriptorSetLayout);
-		//renderProcess.createComputePipeline(shaderManager.compShaderModule);
-
 		CApplication::initialize();
 	}
 

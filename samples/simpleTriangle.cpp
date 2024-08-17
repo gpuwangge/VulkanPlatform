@@ -15,34 +15,8 @@ public:
 		CSupervisor::VertexShader = vertexShader;
 		CSupervisor::FragmentShader = fragmentShader;
 		CSupervisor::Activate_Pipeline(); 
-
-		/*
-		renderer.CreateCommandPool(surface);
-		renderer.CreateGraphicsCommandBuffer();
-
-		renderProcess.addColorAttachment(swapchain.swapChainImageFormat); //add this function will enable color attachment (bUseColorAttachment = true)
-		renderProcess.createSubpass();
-		renderProcess.createDependency();
-		renderProcess.createRenderPass();
-
-		swapchain.CreateFramebuffers(renderProcess.renderPass);
-
-		shaderManager.CreateShader("simpleTriangle/vert.spv", shaderManager.VERT);
-		shaderManager.CreateShader("simpleTriangle/frag.spv", shaderManager.FRAG); 
-		*/
 		
 		object.Register((CApplication*)this, -1, -1, 0); //no texture, no model, id=0
-
-		//support multiple descriptors in one piplines: bind multiple descriptor layouts in one pipeline
-		// std::vector<VkDescriptorSetLayout> dsLayouts;
-		// dsLayouts.push_back(CGraphicsDescriptorManager::descriptorSetLayout);
-		// //dsLayouts.push_back(CGraphicsDescriptorManager::descriptorSetLayout); //set = 0
-		// //dsLayouts.push_back(CGraphicsDescriptorManager::textureDescriptorSetLayout); //set = 1
-		// renderProcess.createGraphicsPipelineLayout(dsLayouts);
-		// renderProcess.createGraphicsPipeline(
-		// 	VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
-		// 	shaderManager.vertShaderModule, 
-		// 	shaderManager.fragShaderModule);
 		
 		CApplication::initialize();
 	}

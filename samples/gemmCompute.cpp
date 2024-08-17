@@ -36,27 +36,9 @@ public:
 		CSupervisor::ComputeShader = computeShader;
 		CSupervisor::Activate_Uniform_Compute_StorageBuffer(sizeof(StructStorageBuffer));
 		CSupervisor::Activate_Pipeline();
-		
-		/*
-		renderer.CreateCommandPool(surface);
-		renderer.CreateComputeCommandBuffer();
-
-		shaderManager.CreateShader("gemmCompute/comp.spv", shaderManager.COMP);
-		std::cout<<"compute shader created."<<std::endl;
-
-		CComputeDescriptorManager::addStorageBuffer(sizeof(StructStorageBuffer));
-		CDescriptorManager::createDescriptorPool();
-		CComputeDescriptorManager::createDescriptorSetLayout();
-		computeDescriptorManager.createDescriptorSets();
-		*/
-
-
-		//renderProcess.createComputePipelineLayout(CComputeDescriptorManager::descriptorSetLayout);
-		//renderProcess.createComputePipeline(shaderManager.compShaderModule);
 
 		CApplication::initialize();
 
-		
 		//Initial Host data
 		storageBufferObject.M = DIM_M;
 		storageBufferObject.N = DIM_N;
@@ -89,15 +71,6 @@ public:
 
 	void recordComputeCommandBuffer(){
 		CSupervisor::Dispatch(1,1,1);
-
-		// std::vector<std::vector<VkDescriptorSet>> dsSets; 
-		// dsSets.push_back(computeDescriptorManager.descriptorSets);
-
-		// renderer.BindComputeDescriptorSets(renderProcess.computePipelineLayout, dsSets, -1); //-1 to offset means no dynamic offset
-
-		// //std::cout<<"Record Compute command buffer. "<<std::endl;
-		// renderer.Dispatch(1, 1, 1);
-		// std::cout<<"Dispatched."<<std::endl;
 	}
 
 	void postUpdate(){

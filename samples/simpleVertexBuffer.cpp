@@ -23,39 +23,7 @@ public:
 		CSupervisor::Activate_Buffer_Graphics_Vertex(vertices);
 		CSupervisor::Activate_Pipeline();
 
-		/*
-		renderer.CreateCommandPool(surface);
-		renderer.CreateGraphicsCommandBuffer();
-
-		renderProcess.addColorAttachment(swapchain.swapChainImageFormat); //add this function will enable color attachment (bUseColorAttachment = true)
-		renderProcess.createSubpass();
-		renderProcess.createDependency();
-		renderProcess.createRenderPass();
-
-		swapchain.CreateFramebuffers(renderProcess.renderPass);
-
-		shaderManager.CreateShader("simpleVertexBuffer/vert.spv", shaderManager.VERT);
-		shaderManager.CreateShader("simpleVertexBuffer/frag.spv", shaderManager.FRAG); 
-
-		//CDescriptorManager::createDescriptorPool(); 
-		//CGraphicsDescriptorManager::createDescriptorSetLayout(); 
-		//CGraphicsDescriptorManager::createTextureDescriptorSetLayout();
-		
-		//if(graphicsDescriptorManager.getSetSize() > 0)graphicsDescriptorManager.createDescriptorSets();
-		*/
-
-		//object.Register((CApplication*)this, vertices);
 		object.Register((CApplication*)this, -1, 0, 0); //no texture, no model, id=0
-
-		// std::vector<VkDescriptorSetLayout> dsLayouts;
-		// dsLayouts.push_back(CGraphicsDescriptorManager::descriptorSetLayout);
-
-		// //if(graphicsDescriptorManager.getSetSize() > 0)dsLayouts.push_back(CGraphicsDescriptorManager::descriptorSetLayout);
-		// renderProcess.createGraphicsPipelineLayout(dsLayouts);
-		// renderProcess.createGraphicsPipeline<Vertex2D>(
-		// 	VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
-		// 	shaderManager.vertShaderModule, 
-		// 	shaderManager.fragShaderModule);
 
 		CApplication::initialize();
 	}

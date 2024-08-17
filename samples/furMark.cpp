@@ -41,9 +41,6 @@ public:
 	std::string fragmentShader = "furMark/frag.spv";
 
 	void initialize(){
-		//renderer.CreateCommandPool(surface);
-		//renderer.CreateGraphicsCommandBuffer();
-
 		CSupervisor::Register((CApplication*)this);
 		CSupervisor::VertexShader = vertexShader;
 		CSupervisor::FragmentShader = fragmentShader;
@@ -54,49 +51,7 @@ public:
 		CSupervisor::Activate_Texture(&textureNames);
 		CSupervisor::Activate_Pipeline();
 
-		/*
-		VkImageUsageFlags usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
-		textureManager.CreateTextureImage("fur.jpg", usage, renderer.commandPool);	
-		textureManager.CreateTextureImage("noise.png", usage, renderer.commandPool);	
-		textureManager.CreateTextureImage("wall.jpg", usage, renderer.commandPool);	
-
-		renderProcess.addColorAttachment(swapchain.swapChainImageFormat); //add this function will enable color attachment (bUseColorAttachment = true)
-		renderProcess.createSubpass();
-		renderProcess.createDependency();
-		renderProcess.createRenderPass();
-
-		swapchain.CreateFramebuffers(renderProcess.renderPass);
-
-		shaderManager.CreateShader("furMark/vert.spv", shaderManager.VERT);
-		shaderManager.CreateShader("furMark/frag.spv", shaderManager.FRAG);
-
-		//Uniform List:
-		CGraphicsDescriptorManager::addImageSamplerUniformBuffer(textureManager.textureImages[0].mipLevels);
-		CGraphicsDescriptorManager::addImageSamplerUniformBuffer(textureManager.textureImages[1].mipLevels);
-		CGraphicsDescriptorManager::addImageSamplerUniformBuffer(textureManager.textureImages[2].mipLevels);
-		CGraphicsDescriptorManager::addCustomUniformBuffer(sizeof(CustomUniformBufferObject));
-
-		CDescriptorManager::createDescriptorPool(); 
-
-		VkDescriptorSetLayoutBinding customBinding = CustomUniformBufferObject::GetBinding();
-		CGraphicsDescriptorManager::createDescriptorSetLayout(&customBinding); 
-		CGraphicsDescriptorManager::createTextureDescriptorSetLayout(); 
-
-		graphicsDescriptorManager.createDescriptorSets();
-		*/
-
 		object.Register((CApplication*)this, INT_MAX);//INT_MAX means use all samplers
-
-		//support multiple descriptors in one piplines: bind multiple descriptor layouts in one pipeline
-		// std::vector<VkDescriptorSetLayout> dsLayouts;
-		// dsLayouts.push_back(CGraphicsDescriptorManager::descriptorSetLayout);
-		// dsLayouts.push_back(CGraphicsDescriptorManager::textureDescriptorSetLayout); //set = 1
-
-		// renderProcess.createGraphicsPipelineLayout(dsLayouts);
-		// renderProcess.createGraphicsPipeline<Vertex3D>(
-		// 	VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
-		// 	shaderManager.vertShaderModule, 
-		// 	shaderManager.fragShaderModule);
 
 		CApplication::initialize();
 	}

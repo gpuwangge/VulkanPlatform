@@ -42,18 +42,6 @@ public:
 		for(unsigned int i = 0; i < 2; i++)
 			cubes[i].Register((CApplication*)this, i, i, i);
 
-	
-		//support multiple descriptors in one piplines: bind multiple descriptor layouts in one pipeline
-		// std::vector<VkDescriptorSetLayout> dsLayouts;
-		// dsLayouts.push_back(CGraphicsDescriptorManager::descriptorSetLayout); //set = 0
-		// dsLayouts.push_back(CGraphicsDescriptorManager::textureDescriptorSetLayout); //set = 1
-		
-
-		// renderProcess.createGraphicsPipelineLayout(dsLayouts);
-		// renderProcess.createGraphicsPipeline<Vertex3D>(
-		// 	VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
-		// 	shaderManager.vertShaderModule, 
-		// 	shaderManager.fragShaderModule);
 
 		CApplication::initialize();
 	}
