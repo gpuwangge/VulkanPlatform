@@ -22,10 +22,10 @@ public:
 	void initialize(){
 		renderer.m_renderMode = renderer.RENDER_COMPUTE_SWAPCHAIN_Mode;
 
-		CMastermind::Register((CApplication*)this);
-		CMastermind::ComputeShader = computeShader;
-		CMastermind::Activate_Uniform_Compute_StorageImage_Swapchain();
-		CMastermind::LoadResources();
+		CSupervisor::Register((CApplication*)this);
+		CSupervisor::ComputeShader = computeShader;
+		CSupervisor::Activate_Uniform_Compute_StorageImage_Swapchain();
+		CSupervisor::Activate_Pipeline();
 
 		/*
 		renderer.CreateCommandPool(surface);
@@ -145,7 +145,7 @@ public:
             //vkCmdBindDescriptorSets(commandBuffers[i], VK_PIPELINE_BIND_POINT_COMPUTE, pipelineLayout, 0, 1, &descriptorSets[i], 0, nullptr);
             //vkCmdDispatch(commandBuffers[i], 200, 300, 1);
 			//renderer.Dispatch(200, 300, 1); 
-			CMastermind::Dispatch(200,300,1);
+			CSupervisor::Dispatch(200,300,1);
          
             recordImageBarrier(commandBuffers[i], swapChainImages[i],
                 VK_IMAGE_LAYOUT_GENERAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,

@@ -17,11 +17,11 @@ public:
 	std::string fragmentShader = "simpleVertexBuffer/frag.spv";
 
 	void initialize(){
-		CMastermind::Register((CApplication*)this);
-		CMastermind::VertexShader = vertexShader;
-		CMastermind::FragmentShader = fragmentShader;
-		CMastermind::Activate_Buffer_Graphics_Vertex(VertexStructureTypes::TwoDimension);
-		CMastermind::LoadResources(vertices);
+		CSupervisor::Register((CApplication*)this);
+		CSupervisor::VertexShader = vertexShader;
+		CSupervisor::FragmentShader = fragmentShader;
+		CSupervisor::Activate_Buffer_Graphics_Vertex(vertices);
+		CSupervisor::Activate_Pipeline();
 
 		/*
 		renderer.CreateCommandPool(surface);

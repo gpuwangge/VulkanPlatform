@@ -14,11 +14,11 @@ regardless of the number of objects of the class. Static methods in a class can 
 other static methods or any methods outside the class.
 *****************/
 
-class CMastermind { //graphics helper
+class CSupervisor {
 public:
-    CMastermind(){}
+    CSupervisor(){}
     static CApplication *m_app;
-    static void Register(CApplication *app){ m_app = app;}
+    static void Register(CApplication *app){ m_app = app; m_app->renderer.CreateCommandPool(m_app->surface);} //need command pool for texture creation
 
     /*****************************
      * 
@@ -108,6 +108,7 @@ public:
     static bool b48bpt;
     static bool bPushConstant;
     static bool bBlend;
+    static bool bRainbowMipmap;
     static void Activate_Feature_Graphics_DepthTest(){ m_app->swapchain.EnableDepthTest();}  
     static void Activate_Feature_Graphics_MSAA(){ 
         m_app->swapchain.EnableMSAA();
@@ -116,76 +117,79 @@ public:
     static void Activate_Feature_Graphics_48BPT(){ b48bpt = true;}
     static void Activate_Feature_Graphics_PushConstant(){ bPushConstant = true;}
     static void Activate_Feature_Graphics_Blend(){ bBlend = true;}
-    
+    static void Activate_Feature_Graphics_RainbowMipmap(){ bRainbowMipmap = true;}
+
     /*****************************
      * 
      * Graphcis Buffer
      * 
      *****************************/    
     static VertexStructureTypes VertexStructureType;
-    static void Activate_Buffer_Graphics_Vertex(VertexStructureTypes vertexStructureType){ VertexStructureType = vertexStructureType;}
-
-    //Load 3D mesh resource from model files
-    static void LoadResources(std::vector<std::string> &modelNames,  
-            std::vector<std::pair<std::string, bool>> *textureNames = NULL){
-        Activate_Buffer_Graphics_Vertex(VertexStructureTypes::ThreeDimension); //Model use Vertex3D buffer
-        LoadResources(textureNames);
+    static void Activate_Buffer_Graphics_Vertex(std::vector<Vertex3D> &vertices3D, std::vector<uint32_t> &indices3D){ 
+        VertexStructureType = VertexStructureTypes::ThreeDimension;
+        m_app->renderer.CreateVertexBuffer<Vertex3D>(vertices3D); 
+        m_app->renderer.CreateIndexBuffer(indices3D);
+    }
+    static void Activate_Buffer_Graphics_Vertex(std::vector<Vertex2D> &vertices2D){ 
+        VertexStructureType = VertexStructureTypes::TwoDimension;
+        m_app->renderer.CreateVertexBuffer<Vertex2D>(vertices2D); 
+        //m_app->renderer.CreateIndexBuffer(indices3D);
+    }
+    static void Activate_Buffer_Graphics_Vertex(std::vector<std::string> &modelNames){ 
+        VertexStructureType = VertexStructureTypes::ThreeDimension;
         for(int i = 0; i < modelNames.size(); i++){
             m_app->modelManager.LoadObjModel(modelNames[i], vertices3D, indices3D);
             m_app->renderer.CreateVertexBuffer<Vertex3D>(vertices3D); 
             m_app->renderer.CreateIndexBuffer(indices3D);
         }
+    }        
+    static void Activate_Buffer_Graphics_Vertex(VertexStructureTypes vertexStructureType){ 
+        VertexStructureType = vertexStructureType;
+    }     
+
+    /*****************************
+     * 
+     * Texture
+     * 
+     *****************************/
+    static void Activate_Texture(std::vector<std::pair<std::string, bool>> *textureNames = NULL){
+        //Textures
+        //if(Query_Pipeline_Graphics()){ //remove this query because if present texutre to swapchain, no need graphics pipeline
+        if(textureNames){
+            VkImageUsageFlags usage;// = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+            //VkImageUsageFlags usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT;
+            for(int i = 0; i < textureNames->size(); i++){
+                if((*textureNames)[i].second) //mipmap
+                    usage = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+                else 
+                    if(Query_Uniform_Compute_StorageImage()) usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT;
+                    else usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+                if(!b48bpt) //24bpt
+                    if(Query_Uniform_Compute_StorageImage_Swapchain()) m_app->textureManager.CreateTextureImage((*textureNames)[i].first, usage, m_app->renderer.commandPool, (*textureNames)[i].second, m_app->swapchain.swapChainImageFormat);
+                    else m_app->textureManager.CreateTextureImage((*textureNames)[i].first, usage, m_app->renderer.commandPool, (*textureNames)[i].second);  
+                else //48bpt
+                    m_app->textureManager.CreateTextureImage((*textureNames)[i].first, usage, m_app->renderer.commandPool, (*textureNames)[i].second, VK_FORMAT_R16G16B16A16_UNORM, 16); 
+                
+                if(bRainbowMipmap){
+                    VkImageUsageFlags usage_mipmap = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+                    if((*textureNames)[i].second) m_app->textureManager.textureImages[i].generateMipmaps("checkerboard", usage_mipmap);
+                }else if((*textureNames)[i].second) m_app->textureManager.textureImages[i].generateMipmaps();
+            }
+            }
+       //}
     }
 
-    //Load 3D mesh resource from vertex buffer
-    static void LoadResources(std::vector<Vertex3D> &vertices3D, std::vector<uint32_t> &indices3D, 
-            std::vector<std::pair<std::string, bool>> *textureNames = NULL){
-        LoadResources(textureNames);
-        m_app->renderer.CreateVertexBuffer<Vertex3D>(vertices3D); 
-        m_app->renderer.CreateIndexBuffer(indices3D);
-    }
-
-    //Load 2D mesh resource from vertex buffer
-    static void LoadResources(std::vector<Vertex2D> &vertices2D, 
-            std::vector<std::pair<std::string, bool>> *textureNames = NULL){
-        LoadResources(textureNames);
-        m_app->renderer.CreateVertexBuffer<Vertex2D>(vertices2D); 
-        //m_app->renderer.CreateIndexBuffer(indices3D);
-    }
-
-    //No load mesh model
-    static void LoadResources(std::vector<std::pair<std::string, bool>> *textureNames = NULL){ //*customBinding = NULL
+    /*****************************
+     * 
+     * Pipeline
+     * 
+     *****************************/
+    static void Activate_Pipeline(){ //*customBinding = NULL
         //Command buffers
-        m_app->renderer.CreateCommandPool(m_app->surface);
+        //m_app->renderer.CreateCommandPool(m_app->surface);
         if(Query_Pipeline_Graphics()) m_app->renderer.CreateGraphicsCommandBuffer();
         if(Query_Pipeline_Compute()) m_app->renderer.CreateComputeCommandBuffer();
         
-        //Textures
-        if(Query_Pipeline_Graphics()){
-            if(textureNames){
-                VkImageUsageFlags usage;// = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
-                //VkImageUsageFlags usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT;
-                for(int i = 0; i < textureNames->size(); i++){
-                    if((*textureNames)[i].second) //mipmap
-                        usage = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
-                    else 
-                        if(Query_Uniform_Compute_StorageImage()) usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT;
-                        else usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
-                    if(!b48bpt) //24bpt
-                        if(Query_Uniform_Compute_StorageImage_Swapchain()) m_app->textureManager.CreateTextureImage((*textureNames)[i].first, usage, m_app->renderer.commandPool, (*textureNames)[i].second, m_app->swapchain.swapChainImageFormat);
-                        else m_app->textureManager.CreateTextureImage((*textureNames)[i].first, usage, m_app->renderer.commandPool, (*textureNames)[i].second);  
-                    else //48bpt
-                        m_app->textureManager.CreateTextureImage((*textureNames)[i].first, usage, m_app->renderer.commandPool, (*textureNames)[i].second, VK_FORMAT_R16G16B16A16_UNORM, 16); 
-                    
-                    if((*textureNames)[i].second) m_app->textureManager.textureImages[i].generateMipmaps();
-
-                    //To create rainbow mipmaps
-                    //VkImageUsageFlags usage_mipmap = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
-                    //if(textureNames[i].second) m_app->textureManager.textureImages[i].generateMipmaps("checkerboard", usage_mipmap);
-                }
-            }
-        }
-
         //Framebuffers
         if(Query_Pipeline_Graphics()){
             VkImageLayout imageLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
@@ -347,27 +351,27 @@ public:
 };
 
 //Declare static variables here:
-CApplication *CMastermind::m_app;
-std::string CMastermind::VertexShader;
-std::string CMastermind::FragmentShader;
-std::string CMastermind::ComputeShader;
-std::vector<Vertex2D> CMastermind::vertices2D;
-std::vector<Vertex3D> CMastermind::vertices3D;
-std::vector<uint32_t> CMastermind::indices3D;
-VkDeviceSize CMastermind::GraphicsCustomUniformBufferSize;
-VkDescriptorSetLayoutBinding CMastermind::GraphicsCustomBinding;
-VkDeviceSize CMastermind::ComputeStorageBufferSize;
-VkBufferUsageFlags CMastermind::ComputeStorageBufferUsage;
-VkDeviceSize CMastermind::ComputeCustomUniformBufferSize;
-VkDescriptorSetLayoutBinding CMastermind::ComputeCustomBinding;
-int CMastermind::m_samplerCount;
+CApplication *CSupervisor::m_app;
+std::string CSupervisor::VertexShader;
+std::string CSupervisor::FragmentShader;
+std::string CSupervisor::ComputeShader;
+std::vector<Vertex2D> CSupervisor::vertices2D;
+std::vector<Vertex3D> CSupervisor::vertices3D;
+std::vector<uint32_t> CSupervisor::indices3D;
+VkDeviceSize CSupervisor::GraphicsCustomUniformBufferSize;
+VkDescriptorSetLayoutBinding CSupervisor::GraphicsCustomBinding;
+VkDeviceSize CSupervisor::ComputeStorageBufferSize;
+VkBufferUsageFlags CSupervisor::ComputeStorageBufferUsage;
+VkDeviceSize CSupervisor::ComputeCustomUniformBufferSize;
+VkDescriptorSetLayoutBinding CSupervisor::ComputeCustomBinding;
+int CSupervisor::m_samplerCount;
 //bool CMastermind::bDepthTest;
 //bool CMastermind::bMSAA;
-bool CMastermind::b48bpt;
-bool CMastermind::bPushConstant;
-bool CMastermind::bBlend;
-VertexStructureTypes CMastermind::VertexStructureType;
-
+bool CSupervisor::b48bpt;
+bool CSupervisor::bPushConstant;
+bool CSupervisor::bBlend;
+VertexStructureTypes CSupervisor::VertexStructureType;
+bool CSupervisor::bRainbowMipmap;
 
 // class CMastermind { //compute helper
 // public:

@@ -34,14 +34,15 @@ public:
 	std::string fragmentShader = "basicTriangles/frag.spv";
 
 	void initialize(){
-		CMastermind::Register((CApplication*)this);
-		CMastermind::VertexShader = vertexShader;
-		CMastermind::FragmentShader = fragmentShader;
-		CMastermind::Activate_Uniform_Graphics_Sampler();
-		CMastermind::Activate_Uniform_Graphics_MVP();
-		CMastermind::Activate_Uniform_Graphics_Custom(sizeof(CustomUniformBufferObject), CustomUniformBufferObject::GetBinding());
-		CMastermind::Activate_Buffer_Graphics_Vertex(VertexStructureTypes::ThreeDimension);
-		CMastermind::LoadResources(vertices3D, indices3D, &textureNames);
+		CSupervisor::Register((CApplication*)this);
+		CSupervisor::VertexShader = vertexShader;
+		CSupervisor::FragmentShader = fragmentShader;
+		CSupervisor::Activate_Uniform_Graphics_Sampler();
+		CSupervisor::Activate_Uniform_Graphics_MVP();
+		CSupervisor::Activate_Uniform_Graphics_Custom(sizeof(CustomUniformBufferObject), CustomUniformBufferObject::GetBinding());
+		CSupervisor::Activate_Buffer_Graphics_Vertex(vertices3D, indices3D);
+		CSupervisor::Activate_Texture(&textureNames);
+		CSupervisor::Activate_Pipeline();
 
 		/*
 		renderer.CreateCommandPool(surface);

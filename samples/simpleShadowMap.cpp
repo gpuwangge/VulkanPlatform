@@ -32,14 +32,16 @@ public:
     	mainCamera.setRotation(glm::vec3(45.0f, 0.0f, 0.0f));
     	mainCamera.setPerspective(60.0f, (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 256.0f);
 		
-		CMastermind::Register((CApplication*)this);
-		CMastermind::VertexShader = vertexShader;
-		CMastermind::FragmentShader = fragmentShader;
-		CMastermind::Activate_Uniform_Graphics_Sampler();
-		CMastermind::Activate_Uniform_Graphics_MVP();
-		CMastermind::Activate_Uniform_Graphics_Custom(sizeof(CustomUniformBufferObject), CustomUniformBufferObject::GetBinding());
-		CMastermind::Activate_Feature_Graphics_MSAA();
-		CMastermind::LoadResources(modelNames, &textureNames);
+		CSupervisor::Register((CApplication*)this);
+		CSupervisor::VertexShader = vertexShader;
+		CSupervisor::FragmentShader = fragmentShader;
+		CSupervisor::Activate_Uniform_Graphics_Sampler();
+		CSupervisor::Activate_Uniform_Graphics_MVP();
+		CSupervisor::Activate_Uniform_Graphics_Custom(sizeof(CustomUniformBufferObject), CustomUniformBufferObject::GetBinding());
+		CSupervisor::Activate_Feature_Graphics_MSAA();
+		CSupervisor::Activate_Buffer_Graphics_Vertex(modelNames);
+		CSupervisor::Activate_Texture(&textureNames);
+		CSupervisor::Activate_Pipeline();
 
 		/*
 		swapchain.EnableMSAA(); 

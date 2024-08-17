@@ -14,45 +14,25 @@ class TEST_CLASS_NAME: public CApplication{
 //TODO: improve this sample, there is still something unknown for this test; something can be simplified
 //A texture image is presented on the screen. Image is blured. char is blue/white. background is yellow.
 public:
-	static const int KernelRunNumber = 1;
+	static const int KernelRunNumber = 100;
 
-	bool bVerbose = true;
-	bool bVerify = true;
+	std::vector<std::pair<std::string, bool>> textureNames = {{"texture.jpg", false}}; //first: textureName, second: mipmap
+	std::string computeShader = "textureCompute/comp.spv";
 
-	//Graphics Constants
-	std::vector<Vertex3D> vertices3D = {
-		{ { -0.5f, -0.5f, 0.0f },{ 1.0f, 0.0f, 0.0f },{ 1.0f, 0.0f } ,{ 0.0f, 0.0f, 1.0f }},
-		{ { 0.5f, -0.5f, 0.0f },{ 0.0f, 1.0f, 0.0f },{ 0.0f, 0.0f } ,{ 0.0f, 0.0f, 1.0f }},
-		{ { 0.5f, 0.5f, 0.0f },{ 0.0f, 0.0f, 1.0f },{ 0.0f, 1.0f } ,{ 0.0f, 0.0f, 1.0f }},
-		{ { -0.5f, 0.5f, 0.0f },{ 1.0f, 1.0f, 1.0f },{ 1.0f, 1.0f } ,{ 0.0f, 0.0f, 1.0f }}
-	};
-	std::vector<uint32_t> indices3D = { 0, 1, 2, 2, 3, 0};
-
-	CTextureCompute(){
+	TEST_CLASS_NAME(){//these must be updated before initialization
 		swapchain.imageSize = MAX_FRAMES_IN_FLIGHT;
 		swapchain.bComputeSwapChainImage = true;
 	}
 
-	CObject object;
-
-	std::vector<std::pair<std::string, bool>> textureNames = {{"texture.jpg", false}}; //first: textureName, second: mipmap
-	std::string vertexShader = "textureCompute/vert.spv";
-	std::string fragmentShader = "textureCompute/frag.spv";
-	std::string computeShader = "textureCompute/comp.spv";
-
 	void initialize(){
 		renderer.m_renderMode = renderer.RENDER_COMPUTE_SWAPCHAIN_Mode;
 
-		CMastermind::Register((CApplication*)this);
-		CMastermind::ComputeShader = computeShader;
-		CMastermind::VertexShader = vertexShader;
-		CMastermind::FragmentShader = fragmentShader;
-		CMastermind::Activate_Uniform_Graphics_MVP();
-		CMastermind::Activate_Uniform_Graphics_Sampler();
-		CMastermind::Activate_Uniform_Compute_StorageImage_Swapchain();
-		CMastermind::Activate_Uniform_Compute_StorageImage();
-		CMastermind::Activate_Buffer_Graphics_Vertex(VertexStructureTypes::ThreeDimension);
-		CMastermind::LoadResources(&textureNames);
+		CSupervisor::Register((CApplication*)this);
+		CSupervisor::ComputeShader = computeShader;
+		CSupervisor::Activate_Uniform_Compute_StorageImage_Swapchain();
+		CSupervisor::Activate_Uniform_Compute_StorageImage();
+		CSupervisor::Activate_Texture(&textureNames);
+		CSupervisor::Activate_Pipeline();
 
 		/*
 		renderer.CreateCommandPool(surface);
@@ -98,7 +78,7 @@ public:
 		//graphicsDescriptorManager.createDescriptorSets(&textureManager.textureImages);
 		
 
-		object.Register((CApplication*)this);//, vertices3D, indices3D
+		//object.Register((CApplication*)this);//, vertices3D, indices3D
 		//computeDescriptorManager.createDescriptorSets(&textureManager.textureImages, &(swapchain.views));
 
 		//support multiple descriptors in one piplines: bind multiple descriptor layouts in one pipeline
@@ -134,11 +114,6 @@ public:
 		PRINT("update(): Delta Time: %f, Duration Time: %f", deltaTime, durationTime);
 	}
 
-	void recordGraphicsCommandBuffer(){
-	}
-
-	void recordComputeCommandBuffer(){
-	}
 
 	void postUpdate(){
 		vkDeviceWaitIdle(CContext::GetHandle().GetLogicalDevice());
@@ -228,7 +203,7 @@ public:
             //vkCmdBindDescriptorSets(commandBuffers[i], VK_PIPELINE_BIND_POINT_COMPUTE, pipelineLayout, 0, 1, &descriptorSets[i], 0, nullptr);
             //vkCmdDispatch(commandBuffers[i], 200, 300, 1);
 			//renderer.Dispatch(300, 600, 1); 
-			CMastermind::Dispatch(300,600,1);
+			CSupervisor::Dispatch(300,600,1);
          
             recordImageBarrier(commandBuffers[i], swapChainImages[i],
                 VK_IMAGE_LAYOUT_GENERAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,

@@ -17,10 +17,10 @@ public:
 	void initialize(){
 		renderer.m_renderMode = renderer.RENDER_COMPUTE_Mode;
 
-		CMastermind::Register((CApplication*)this);
-		CMastermind::ComputeShader = computeShader;
-		CMastermind::Activate_Uniform_Compute_StorageBuffer(sizeof(StructStorageBuffer));
-		CMastermind::LoadResources();
+		CSupervisor::Register((CApplication*)this);
+		CSupervisor::ComputeShader = computeShader;
+		CSupervisor::Activate_Uniform_Compute_StorageBuffer(sizeof(StructStorageBuffer));
+		CSupervisor::Activate_Pipeline();
 
 		/*
 		renderer.CreateCommandPool(surface);

@@ -48,15 +48,15 @@ public:
 	void initialize(){
 		renderer.m_renderMode = renderer.RENDER_COMPUTE_GRAPHICS_Mode;
 
-		CMastermind::Register((CApplication*)this);
-		CMastermind::ComputeShader = computeShader;
-		CMastermind::VertexShader = vertexShader;
-		CMastermind::FragmentShader = fragmentShader;
-		CMastermind::Activate_Feature_Graphics_Blend();
-		CMastermind::Activate_Uniform_Compute_Custom(sizeof(CustomUniformBufferObject), CustomUniformBufferObject::GetBinding());
-		CMastermind::Activate_Uniform_Compute_StorageBuffer(sizeof(StructStorageBuffer), VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT);
-		CMastermind::Activate_Buffer_Graphics_Vertex(VertexStructureTypes::ParticleType);
-		CMastermind::LoadResources();
+		CSupervisor::Register((CApplication*)this);
+		CSupervisor::ComputeShader = computeShader;
+		CSupervisor::VertexShader = vertexShader;
+		CSupervisor::FragmentShader = fragmentShader;
+		CSupervisor::Activate_Feature_Graphics_Blend();
+		CSupervisor::Activate_Uniform_Compute_Custom(sizeof(CustomUniformBufferObject), CustomUniformBufferObject::GetBinding());
+		CSupervisor::Activate_Uniform_Compute_StorageBuffer(sizeof(StructStorageBuffer), VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT);
+		CSupervisor::Activate_Buffer_Graphics_Vertex(VertexStructureTypes::ParticleType);
+		CSupervisor::Activate_Pipeline();
 
 		/*
 		renderer.CreateCommandPool(surface);
@@ -203,7 +203,7 @@ public:
 
 		// renderer.Dispatch(PARTICLE_COUNT / 256, 1, 1);
 
-		CMastermind::Dispatch(PARTICLE_COUNT/256,1,1);
+		CSupervisor::Dispatch(PARTICLE_COUNT/256,1,1);
 
 		static int counter = 0;
 		if(counter % 1000 == 0)std::cout<<"Dispatched Counter: "<<counter<<std::endl;

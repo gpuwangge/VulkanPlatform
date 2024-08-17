@@ -21,14 +21,15 @@ public:
     void initialize(){
 		mainCamera.setPosition(glm::vec3(0.0f, 0.0f, -1.5f));
 
-		CMastermind::Register((CApplication*)this);
-		CMastermind::VertexShader = vertexShader;
-		CMastermind::FragmentShader = fragmentShader;
-		CMastermind::Activate_Uniform_Graphics_Sampler();
-		CMastermind::Activate_Feature_Graphics_PushConstant(); //Use Push Constant to pass Model matrix
-		CMastermind::Activate_Uniform_Graphics_VP(); //Use VP matrix instead of MVP
-		CMastermind::Activate_Buffer_Graphics_Vertex(VertexStructureTypes::ThreeDimension);
-		CMastermind::LoadResources(vertices3D, indices3D, &textureNames);
+		CSupervisor::Register((CApplication*)this);
+		CSupervisor::VertexShader = vertexShader;
+		CSupervisor::FragmentShader = fragmentShader;
+		CSupervisor::Activate_Uniform_Graphics_Sampler();
+		CSupervisor::Activate_Feature_Graphics_PushConstant(); //Use Push Constant to pass Model matrix
+		CSupervisor::Activate_Uniform_Graphics_VP(); //Use VP matrix instead of MVP
+		CSupervisor::Activate_Buffer_Graphics_Vertex(vertices3D, indices3D);
+		CSupervisor::Activate_Texture(&textureNames);
+		CSupervisor::Activate_Pipeline();
 
 		/*
 		renderer.CreateCommandPool(surface);

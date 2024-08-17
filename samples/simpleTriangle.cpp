@@ -11,10 +11,10 @@ class TEST_CLASS_NAME: public CApplication{
 
 public:
 	void initialize(){
-		CMastermind::Register((CApplication*)this);
-		CMastermind::VertexShader = vertexShader;
-		CMastermind::FragmentShader = fragmentShader;
-		CMastermind::LoadResources(); 
+		CSupervisor::Register((CApplication*)this);
+		CSupervisor::VertexShader = vertexShader;
+		CSupervisor::FragmentShader = fragmentShader;
+		CSupervisor::Activate_Pipeline(); 
 
 		/*
 		renderer.CreateCommandPool(surface);

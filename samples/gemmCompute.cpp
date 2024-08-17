@@ -32,10 +32,10 @@ public:
 	void initialize(){
 		renderer.m_renderMode = renderer.RENDER_COMPUTE_Mode;
 		
-		CMastermind::Register((CApplication*)this);
-		CMastermind::ComputeShader = computeShader;
-		CMastermind::Activate_Uniform_Compute_StorageBuffer(sizeof(StructStorageBuffer));
-		CMastermind::LoadResources();
+		CSupervisor::Register((CApplication*)this);
+		CSupervisor::ComputeShader = computeShader;
+		CSupervisor::Activate_Uniform_Compute_StorageBuffer(sizeof(StructStorageBuffer));
+		CSupervisor::Activate_Pipeline();
 		
 		/*
 		renderer.CreateCommandPool(surface);
@@ -88,7 +88,7 @@ public:
 	}
 
 	void recordComputeCommandBuffer(){
-		CMastermind::Dispatch(1,1,1);
+		CSupervisor::Dispatch(1,1,1);
 
 		// std::vector<std::vector<VkDescriptorSet>> dsSets; 
 		// dsSets.push_back(computeDescriptorManager.descriptorSets);

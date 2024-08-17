@@ -22,15 +22,16 @@ public:
 		mainCamera.setPosition(glm::vec3(0.0f, 0.0f, -3.0f));
 		mainCamera.setPerspective(90.0f, (float)windowWidth /  (float)windowHeight, 0.1f, 256.0f);
 
-		CMastermind::Register((CApplication*)this);
-		CMastermind::VertexShader = vertexShader;
-		CMastermind::FragmentShader = fragmentShader;
-		CMastermind::Activate_Uniform_Graphics_Sampler();
-		CMastermind::Activate_Uniform_Graphics_MVP();
-		CMastermind::Activate_Feature_Graphics_MSAA();
-		CMastermind::Activate_Feature_Graphics_48BPT();
-		CMastermind::Activate_Buffer_Graphics_Vertex(VertexStructureTypes::ThreeDimension);
-		CMastermind::LoadResources(vertices3D, indices3D, &textureNames);
+		CSupervisor::Register((CApplication*)this);
+		CSupervisor::VertexShader = vertexShader;
+		CSupervisor::FragmentShader = fragmentShader;
+		CSupervisor::Activate_Uniform_Graphics_Sampler();
+		CSupervisor::Activate_Uniform_Graphics_MVP();
+		CSupervisor::Activate_Feature_Graphics_MSAA();
+		CSupervisor::Activate_Feature_Graphics_48BPT();
+		CSupervisor::Activate_Buffer_Graphics_Vertex(vertices3D, indices3D);
+		CSupervisor::Activate_Texture(&textureNames);
+		CSupervisor::Activate_Pipeline();
 
 		/*
 		swapchain.EnableMSAA();
