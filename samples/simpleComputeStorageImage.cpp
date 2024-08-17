@@ -24,8 +24,7 @@ public:
 
 		CMastermind::Register((CApplication*)this);
 		CMastermind::ComputeShader = computeShader;
-		//CMastermind::ActivateStorageBuffer(sizeof(StructStorageBuffer));
-		CMastermind::ActivateStorageImageSwapchain();
+		CMastermind::Activate_Uniform_Compute_StorageImage_Swapchain();
 		CMastermind::LoadResources();
 
 		/*

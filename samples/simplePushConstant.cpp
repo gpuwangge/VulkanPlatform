@@ -24,10 +24,10 @@ public:
 		CMastermind::Register((CApplication*)this);
 		CMastermind::VertexShader = vertexShader;
 		CMastermind::FragmentShader = fragmentShader;
-		CMastermind::ActivateSampler();
-		CMastermind::ActivatePushConstant(); //Use Push Constant to pass Model matrix
-		CMastermind::ActivateVP(); //Use VP matrix instead of MVP
-		CMastermind::ActivateVertexBuffer(VertexStructureTypes::ThreeDimension);
+		CMastermind::Activate_Uniform_Graphics_Sampler();
+		CMastermind::Activate_Feature_Graphics_PushConstant(); //Use Push Constant to pass Model matrix
+		CMastermind::Activate_Uniform_Graphics_VP(); //Use VP matrix instead of MVP
+		CMastermind::Activate_Buffer_Graphics_Vertex(VertexStructureTypes::ThreeDimension);
 		CMastermind::LoadResources(vertices3D, indices3D, &textureNames);
 
 		/*

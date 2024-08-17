@@ -19,9 +19,9 @@ public:
 		CMastermind::Register((CApplication*)this);
 		CMastermind::VertexShader = vertexShader;
 		CMastermind::FragmentShader = fragmentShader;
-		CMastermind::ActivateMVP();
-		CMastermind::ActivateMSAA();
-		CMastermind::ActivateSampler();
+		CMastermind::Activate_Uniform_Graphics_MVP();
+		CMastermind::Activate_Feature_Graphics_MSAA();
+		CMastermind::Activate_Uniform_Graphics_Sampler();
 		CMastermind::LoadResources(modelNames, &textureNames);
 
 		/*

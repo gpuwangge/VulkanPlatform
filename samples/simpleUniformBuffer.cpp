@@ -29,7 +29,7 @@ public:
 		CMastermind::Register((CApplication*)this);
 		CMastermind::VertexShader = vertexShader;
 		CMastermind::FragmentShader = fragmentShader;
-		CMastermind::ActivateGraphcisCustom(sizeof(CustomUniformBufferObject), CustomUniformBufferObject::GetBinding());
+		CMastermind::Activate_Uniform_Graphics_Custom(sizeof(CustomUniformBufferObject), CustomUniformBufferObject::GetBinding());
 		CMastermind::LoadResources(); 
 
 		/*

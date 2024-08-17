@@ -47,11 +47,11 @@ public:
 		CMastermind::ComputeShader = computeShader;
 		CMastermind::VertexShader = vertexShader;
 		CMastermind::FragmentShader = fragmentShader;
-		CMastermind::ActivateMVP();
-		CMastermind::ActivateSampler();
-		CMastermind::ActivateStorageImageSwapchain();
-		CMastermind::ActivateStorageImageTexture();
-		CMastermind::ActivateVertexBuffer(VertexStructureTypes::ThreeDimension);
+		CMastermind::Activate_Uniform_Graphics_MVP();
+		CMastermind::Activate_Uniform_Graphics_Sampler();
+		CMastermind::Activate_Uniform_Compute_StorageImage_Swapchain();
+		CMastermind::Activate_Uniform_Compute_StorageImage();
+		CMastermind::Activate_Buffer_Graphics_Vertex(VertexStructureTypes::ThreeDimension);
 		CMastermind::LoadResources(&textureNames);
 
 		/*

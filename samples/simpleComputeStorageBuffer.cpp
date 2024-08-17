@@ -19,7 +19,7 @@ public:
 
 		CMastermind::Register((CApplication*)this);
 		CMastermind::ComputeShader = computeShader;
-		CMastermind::ActivateStorageBuffer(sizeof(StructStorageBuffer));
+		CMastermind::Activate_Uniform_Compute_StorageBuffer(sizeof(StructStorageBuffer));
 		CMastermind::LoadResources();
 
 		/*
@@ -74,6 +74,7 @@ public:
 		memcpy(data, computeDescriptorManager.storageBuffersMapped[renderer.currentFrame], sizeof(data));
 
 		PRINT("compute() read data: ", data, 4);
+		std::cout<<"compute() read data: "<<data[0]<<", "<<data[1]<<", "<<data[2]<<", "<<data[3]<<", "<<std::endl;
 	}
 };
 

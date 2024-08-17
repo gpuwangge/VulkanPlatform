@@ -20,7 +20,7 @@ public:
 		CMastermind::Register((CApplication*)this);
 		CMastermind::VertexShader = vertexShader;
 		CMastermind::FragmentShader = fragmentShader;
-		CMastermind::ActivateVertexBuffer(VertexStructureTypes::TwoDimension);
+		CMastermind::Activate_Buffer_Graphics_Vertex(VertexStructureTypes::TwoDimension);
 		CMastermind::LoadResources(vertices);
 
 		/*

@@ -52,10 +52,10 @@ public:
 		CMastermind::ComputeShader = computeShader;
 		CMastermind::VertexShader = vertexShader;
 		CMastermind::FragmentShader = fragmentShader;
-		CMastermind::ActivateBlend();
-		CMastermind::ActivateComputeCustom(sizeof(CustomUniformBufferObject), CustomUniformBufferObject::GetBinding());
-		CMastermind::ActivateStorageBuffer(sizeof(StructStorageBuffer), VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT);
-		CMastermind::ActivateVertexBuffer(VertexStructureTypes::ParticleType);
+		CMastermind::Activate_Feature_Graphics_Blend();
+		CMastermind::Activate_Uniform_Compute_Custom(sizeof(CustomUniformBufferObject), CustomUniformBufferObject::GetBinding());
+		CMastermind::Activate_Uniform_Compute_StorageBuffer(sizeof(StructStorageBuffer), VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT);
+		CMastermind::Activate_Buffer_Graphics_Vertex(VertexStructureTypes::ParticleType);
 		CMastermind::LoadResources();
 
 		/*

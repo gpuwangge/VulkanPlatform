@@ -37,10 +37,10 @@ public:
 		CMastermind::Register((CApplication*)this);
 		CMastermind::VertexShader = vertexShader;
 		CMastermind::FragmentShader = fragmentShader;
-		CMastermind::ActivateSampler();
-		CMastermind::ActivateMVP();
-		CMastermind::ActivateGraphcisCustom(sizeof(CustomUniformBufferObject), CustomUniformBufferObject::GetBinding());
-		CMastermind::ActivateVertexBuffer(VertexStructureTypes::ThreeDimension);
+		CMastermind::Activate_Uniform_Graphics_Sampler();
+		CMastermind::Activate_Uniform_Graphics_MVP();
+		CMastermind::Activate_Uniform_Graphics_Custom(sizeof(CustomUniformBufferObject), CustomUniformBufferObject::GetBinding());
+		CMastermind::Activate_Buffer_Graphics_Vertex(VertexStructureTypes::ThreeDimension);
 		CMastermind::LoadResources(vertices3D, indices3D, &textureNames);
 
 		/*

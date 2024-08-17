@@ -25,11 +25,11 @@ public:
 		CMastermind::Register((CApplication*)this);
 		CMastermind::VertexShader = vertexShader;
 		CMastermind::FragmentShader = fragmentShader;
-		CMastermind::ActivateSampler();
-		CMastermind::ActivateMVP();
-		CMastermind::ActivateMSAA();
-		CMastermind::Activate48BPT();
-		CMastermind::ActivateVertexBuffer(VertexStructureTypes::ThreeDimension);
+		CMastermind::Activate_Uniform_Graphics_Sampler();
+		CMastermind::Activate_Uniform_Graphics_MVP();
+		CMastermind::Activate_Feature_Graphics_MSAA();
+		CMastermind::Activate_Feature_Graphics_48BPT();
+		CMastermind::Activate_Buffer_Graphics_Vertex(VertexStructureTypes::ThreeDimension);
 		CMastermind::LoadResources(vertices3D, indices3D, &textureNames);
 
 		/*

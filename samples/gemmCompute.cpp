@@ -34,7 +34,7 @@ public:
 		
 		CMastermind::Register((CApplication*)this);
 		CMastermind::ComputeShader = computeShader;
-		CMastermind::ActivateStorageBuffer(sizeof(StructStorageBuffer));
+		CMastermind::Activate_Uniform_Compute_StorageBuffer(sizeof(StructStorageBuffer));
 		CMastermind::LoadResources();
 		
 		/*
@@ -121,6 +121,8 @@ public:
 			CPUSingleThreadMatMul(DIM_M, DIM_N, DIM_K, storageBufferObject.MatA, storageBufferObject.MatB, cpu_result, DIM_M*DIM_N);
 			//printMatrix(cpu_result, DIM_M, DIM_N, "cpu_C");
 			PRINT("cpu_C: ", cpu_result, DIM_M*DIM_N);
+			std::cout<<"gpu_result[0] = "<<storageBufferObject.MatC[0]<<std::endl;
+			std::cout<<"cpu_result[0] = "<<cpu_result[0]<<std::endl;
 			std::cout<<"Please manually check validation. "<<std::endl; //TODO: automate verification
 		}
 

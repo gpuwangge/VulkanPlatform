@@ -32,9 +32,9 @@ public:
 		CMastermind::Register((CApplication*)this);
 		CMastermind::VertexShader = vertexShader;
 		CMastermind::FragmentShader = fragmentShader;
-		CMastermind::ActivateSampler();
-		CMastermind::ActivateMVP();
-		CMastermind::ActivateMSAA();
+		CMastermind::Activate_Uniform_Graphics_Sampler();
+		CMastermind::Activate_Uniform_Graphics_MVP();
+		CMastermind::Activate_Feature_Graphics_MSAA();
 		CMastermind::LoadResources(modelNames, &textureNames);
 
 		for(unsigned int i = 0; i < 2; i++)
