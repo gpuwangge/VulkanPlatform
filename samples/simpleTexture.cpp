@@ -1,7 +1,6 @@
 #include "..\\framework\\include\\application.h"
 #define TEST_CLASS_NAME CSimpleTexture
 #include "object.h"
-#include "supervisor.h"
 class TEST_CLASS_NAME: public CApplication{
 public:
 	std::vector<Vertex3D> vertices3D = {
@@ -24,14 +23,13 @@ public:
     	mainCamera.setRotation(glm::vec3(45.0f, 0.0f, 0.0f));
     	mainCamera.setPerspective(60.0f, (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 256.0f);
 
-		CSupervisor::Register((CApplication*)this);
 		CSupervisor::VertexShader = vertexShader;
 		CSupervisor::FragmentShader = fragmentShader;
-		CSupervisor::Activate_Uniform_Graphics_MVP();
-		CSupervisor::Activate_Uniform_Graphics_Sampler();
-		CSupervisor::Activate_Buffer_Graphics_Vertex(vertices3D, indices3D);
-		CSupervisor::Activate_Texture(&textureNames);
-		CSupervisor::Activate_Pipeline();
+		Activate_Uniform_Graphics_MVP();
+		Activate_Uniform_Graphics_Sampler();
+		Activate_Buffer_Graphics_Vertex(vertices3D, indices3D);
+		Activate_Texture(&textureNames);
+		Activate_Pipeline();
 
 		object.Register((CApplication*)this); 
 		

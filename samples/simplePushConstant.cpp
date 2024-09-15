@@ -1,7 +1,6 @@
 #include "..\\framework\\include\\application.h"
 #define TEST_CLASS_NAME CSimplePushConstant
 #include "object.h"
-#include "supervisor.h"
 class TEST_CLASS_NAME: public CApplication{
 public:
 	std::vector<Vertex3D> vertices3D = {
@@ -21,15 +20,14 @@ public:
     void initialize(){
 		mainCamera.setPosition(glm::vec3(0.0f, 0.0f, -1.5f));
 
-		CSupervisor::Register((CApplication*)this);
 		CSupervisor::VertexShader = vertexShader;
 		CSupervisor::FragmentShader = fragmentShader;
-		CSupervisor::Activate_Uniform_Graphics_Sampler();
-		CSupervisor::Activate_Feature_Graphics_PushConstant(); //Use Push Constant to pass Model matrix
-		CSupervisor::Activate_Uniform_Graphics_VP(); //Use VP matrix instead of MVP
-		CSupervisor::Activate_Buffer_Graphics_Vertex(vertices3D, indices3D);
-		CSupervisor::Activate_Texture(&textureNames);
-		CSupervisor::Activate_Pipeline();
+		Activate_Uniform_Graphics_Sampler();
+		Activate_Feature_Graphics_PushConstant(); //Use Push Constant to pass Model matrix
+		Activate_Uniform_Graphics_VP(); //Use VP matrix instead of MVP
+		Activate_Buffer_Graphics_Vertex(vertices3D, indices3D);
+		Activate_Texture(&textureNames);
+		Activate_Pipeline();
 
 		object.Register((CApplication*)this);//, vertices3D, indices3D
 		

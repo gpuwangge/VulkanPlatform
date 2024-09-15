@@ -62,6 +62,7 @@ void CApplication::run(){ //Entrance Function
     swapchain.createImages(surface, windowWidth, windowHeight);
 	swapchain.createImageViews(VK_IMAGE_ASPECT_COLOR_BIT);
 
+    CSupervisor::Register((CApplication*)this);
     initialize();
 
     while (!glfwWindowShouldClose(glfwManager.window)) {
@@ -287,3 +288,77 @@ CApplication::~CApplication(){
     CleanUp();
 }
 
+
+
+/*************
+ * Helper Functions
+ *******/
+void CApplication::Activate_Uniform_Graphics_VP(){
+    CSupervisor::Activate_Uniform_Graphics_VP();
+}
+void CApplication::Activate_Uniform_Graphics_MVP(){
+    CSupervisor::Activate_Uniform_Graphics_MVP();
+}
+void CApplication::Activate_Uniform_Graphics_Custom(VkDeviceSize graphicsCustomUniformBufferSize, VkDescriptorSetLayoutBinding graphicsCustomBinding){
+    CSupervisor::Activate_Uniform_Graphics_Custom(graphicsCustomUniformBufferSize, graphicsCustomBinding);
+}
+void CApplication::Activate_Uniform_Graphics_Sampler(int samplerCount){
+    CSupervisor::Activate_Uniform_Graphics_Sampler(samplerCount);
+}
+
+void CApplication::Activate_Uniform_Compute_Custom(VkDeviceSize graphicsCustomUniformBufferSize, VkDescriptorSetLayoutBinding graphicsCustomBinding){
+    CSupervisor::Activate_Uniform_Compute_Custom(graphicsCustomUniformBufferSize, graphicsCustomBinding);
+}
+void CApplication::Activate_Uniform_Compute_StorageBuffer(VkDeviceSize computeStorageBufferSize, VkBufferUsageFlags storageBufferUsage){
+    CSupervisor::Activate_Uniform_Compute_StorageBuffer(computeStorageBufferSize, storageBufferUsage);
+}
+void CApplication::Activate_Uniform_Compute_StorageImage(){
+    CSupervisor::Activate_Uniform_Compute_StorageImage();
+}
+void CApplication::Activate_Uniform_Compute_StorageImage_Swapchain(){
+    CSupervisor::Activate_Uniform_Compute_StorageImage_Swapchain();
+}
+
+void CApplication::Activate_Feature_Graphics_DepthTest(){
+    CSupervisor::Activate_Feature_Graphics_DepthTest();
+}
+void CApplication::Activate_Feature_Graphics_MSAA(){
+    CSupervisor::Activate_Feature_Graphics_MSAA();
+}
+void CApplication::Activate_Feature_Graphics_48BPT(){
+    CSupervisor::Activate_Feature_Graphics_48BPT();
+}
+void CApplication::Activate_Feature_Graphics_PushConstant(){
+    CSupervisor::Activate_Feature_Graphics_PushConstant();
+}
+void CApplication::Activate_Feature_Graphics_Blend(){
+    CSupervisor::Activate_Feature_Graphics_Blend();
+}
+void CApplication::Activate_Feature_Graphics_RainbowMipmap(){
+    CSupervisor::Activate_Feature_Graphics_RainbowMipmap();
+}
+
+void CApplication::Activate_Buffer_Graphics_Vertex(std::vector<Vertex3D> &vertices3D, std::vector<uint32_t> &indices3D){
+    CSupervisor::Activate_Buffer_Graphics_Vertex(vertices3D, indices3D);
+}
+void CApplication::Activate_Buffer_Graphics_Vertex(std::vector<Vertex2D> &vertices2D){
+    CSupervisor::Activate_Buffer_Graphics_Vertex(vertices2D);
+}
+void CApplication::Activate_Buffer_Graphics_Vertex(std::vector<std::string> &modelNames){
+    CSupervisor::Activate_Buffer_Graphics_Vertex(modelNames);
+}
+void CApplication::Activate_Buffer_Graphics_Vertex(VertexStructureTypes vertexStructureType){
+    CSupervisor::Activate_Buffer_Graphics_Vertex(vertexStructureType);
+}
+
+void CApplication::Activate_Texture(std::vector<std::pair<std::string, bool>> *textureNames){
+    CSupervisor::Activate_Texture(textureNames);
+}
+
+void CApplication::Activate_Pipeline(){
+    CSupervisor::Activate_Pipeline();
+}
+
+void CApplication::Dispatch(int numWorkGroupsX, int numWorkGroupsY, int numWorkGroupsZ){
+    CSupervisor::Dispatch(numWorkGroupsX, numWorkGroupsY, numWorkGroupsZ);
+}

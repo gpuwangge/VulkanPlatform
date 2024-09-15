@@ -1,7 +1,6 @@
 #include "..\\framework\\include\\application.h"
 #include <random>
 #include "object.h"
-#include "supervisor.h"
 //#include "dataBuffer.hpp"
 #define TEST_CLASS_NAME CSimpleParticles
 class TEST_CLASS_NAME: public CApplication{
@@ -48,15 +47,14 @@ public:
 	void initialize(){
 		renderer.m_renderMode = renderer.RENDER_COMPUTE_GRAPHICS_Mode;
 
-		CSupervisor::Register((CApplication*)this);
 		CSupervisor::ComputeShader = computeShader;
 		CSupervisor::VertexShader = vertexShader;
 		CSupervisor::FragmentShader = fragmentShader;
-		CSupervisor::Activate_Feature_Graphics_Blend();
-		CSupervisor::Activate_Uniform_Compute_Custom(sizeof(CustomUniformBufferObject), CustomUniformBufferObject::GetBinding());
-		CSupervisor::Activate_Uniform_Compute_StorageBuffer(sizeof(StructStorageBuffer), VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT);
-		CSupervisor::Activate_Buffer_Graphics_Vertex(VertexStructureTypes::ParticleType);
-		CSupervisor::Activate_Pipeline();
+		Activate_Feature_Graphics_Blend();
+		Activate_Uniform_Compute_Custom(sizeof(CustomUniformBufferObject), CustomUniformBufferObject::GetBinding());
+		Activate_Uniform_Compute_StorageBuffer(sizeof(StructStorageBuffer), VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT);
+		Activate_Buffer_Graphics_Vertex(VertexStructureTypes::ParticleType);
+		Activate_Pipeline();
 
 		object.Register((CApplication*)this, -1, -1);
 

@@ -1,5 +1,4 @@
 #include "..\\framework\\include\\application.h"
-#include "supervisor.h"
 #define TEST_CLASS_NAME CSimpleComputeStorageImage
 class TEST_CLASS_NAME: public CApplication{
 //This test draws on the swapchain images, with the use of storage image
@@ -21,10 +20,9 @@ public:
 	void initialize(){
 		renderer.m_renderMode = renderer.RENDER_COMPUTE_SWAPCHAIN_Mode;
 
-		CSupervisor::Register((CApplication*)this);
 		CSupervisor::ComputeShader = computeShader;
-		CSupervisor::Activate_Uniform_Compute_StorageImage_Swapchain();
-		CSupervisor::Activate_Pipeline();
+		Activate_Uniform_Compute_StorageImage_Swapchain();
+		Activate_Pipeline();
 
 		CApplication::initialize();
 		createComputeCommandBuffers(renderer.commandBuffers[renderer.computeCmdId], swapchain.images);

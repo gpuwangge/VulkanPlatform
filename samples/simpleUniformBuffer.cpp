@@ -1,6 +1,5 @@
 #include "..\\framework\\include\\application.h"
 #include "object.h"
-#include "supervisor.h"
 #define TEST_CLASS_NAME CSimpleUniformBuffer
 class TEST_CLASS_NAME: public CApplication{
 //a changeing color triangle on the screen
@@ -26,11 +25,10 @@ public:
 	std::string fragmentShader = "simpleUniformBuffer/frag.spv";
 
 	void initialize(){
-		CSupervisor::Register((CApplication*)this);
 		CSupervisor::VertexShader = vertexShader;
 		CSupervisor::FragmentShader = fragmentShader;
-		CSupervisor::Activate_Uniform_Graphics_Custom(sizeof(CustomUniformBufferObject), CustomUniformBufferObject::GetBinding());
-		CSupervisor::Activate_Pipeline(); 
+		Activate_Uniform_Graphics_Custom(sizeof(CustomUniformBufferObject), CustomUniformBufferObject::GetBinding());
+		Activate_Pipeline(); 
 
 		object.Register((CApplication*)this, -1, -1, 0); //no texture, no model, id=0
 

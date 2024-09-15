@@ -1,6 +1,5 @@
 #include "..\\framework\\include\\application.h"
 #include "object.h"
-#include "supervisor.h"
 #define TEST_CLASS_NAME CTextureCompute
 class TEST_CLASS_NAME: public CApplication{
 //This test is similar to simpleComputeStorageImage, but instead use 2 texture image, one as input, the other as output
@@ -27,12 +26,11 @@ public:
 	void initialize(){
 		renderer.m_renderMode = renderer.RENDER_COMPUTE_SWAPCHAIN_Mode;
 
-		CSupervisor::Register((CApplication*)this);
 		CSupervisor::ComputeShader = computeShader;
-		CSupervisor::Activate_Uniform_Compute_StorageImage_Swapchain();
-		CSupervisor::Activate_Uniform_Compute_StorageImage();
-		CSupervisor::Activate_Texture(&textureNames);
-		CSupervisor::Activate_Pipeline();
+		Activate_Uniform_Compute_StorageImage_Swapchain();
+		Activate_Uniform_Compute_StorageImage();
+		Activate_Texture(&textureNames);
+		Activate_Pipeline();
 
 		CApplication::initialize();
 

@@ -1,6 +1,5 @@
 #include "..\\framework\\include\\application.h"
 #include "object.h"
-#include "supervisor.h"
 #define TEST_CLASS_NAME CBasicTriangles
 class TEST_CLASS_NAME: public CApplication{
 public:
@@ -34,15 +33,14 @@ public:
 	std::string fragmentShader = "basicTriangles/frag.spv";
 
 	void initialize(){
-		CSupervisor::Register((CApplication*)this);
 		CSupervisor::VertexShader = vertexShader;
 		CSupervisor::FragmentShader = fragmentShader;
-		CSupervisor::Activate_Uniform_Graphics_Sampler();
-		CSupervisor::Activate_Uniform_Graphics_MVP();
-		CSupervisor::Activate_Uniform_Graphics_Custom(sizeof(CustomUniformBufferObject), CustomUniformBufferObject::GetBinding());
-		CSupervisor::Activate_Buffer_Graphics_Vertex(vertices3D, indices3D);
-		CSupervisor::Activate_Texture(&textureNames);
-		CSupervisor::Activate_Pipeline();
+		Activate_Uniform_Graphics_Sampler();
+		Activate_Uniform_Graphics_MVP();
+		Activate_Uniform_Graphics_Custom(sizeof(CustomUniformBufferObject), CustomUniformBufferObject::GetBinding());
+		Activate_Buffer_Graphics_Vertex(vertices3D, indices3D);
+		Activate_Texture(&textureNames);
+		Activate_Pipeline();
 		
 		object.Register((CApplication*)this); 
 		

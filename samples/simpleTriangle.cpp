@@ -1,6 +1,5 @@
 #include "..\\framework\\include\\application.h"
 #include "object.h"
-#include "supervisor.h"
 #define TEST_CLASS_NAME CSimpleTriangle
 class TEST_CLASS_NAME: public CApplication{
 	//a blue triangle on the screen
@@ -11,10 +10,9 @@ class TEST_CLASS_NAME: public CApplication{
 
 public:
 	void initialize(){
-		CSupervisor::Register((CApplication*)this);
 		CSupervisor::VertexShader = vertexShader;
 		CSupervisor::FragmentShader = fragmentShader;
-		CSupervisor::Activate_Pipeline(); 
+		Activate_Pipeline(); 
 		
 		object.Register((CApplication*)this, -1, -1, 0); //no texture, no model, id=0
 		

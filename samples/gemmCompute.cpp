@@ -1,5 +1,4 @@
 #include "..\\framework\\include\\application.h"
-#include "supervisor.h"
 #define TEST_CLASS_NAME CGemmCompute
 class TEST_CLASS_NAME: public CApplication{
 public:
@@ -32,10 +31,9 @@ public:
 	void initialize(){
 		renderer.m_renderMode = renderer.RENDER_COMPUTE_Mode;
 		
-		CSupervisor::Register((CApplication*)this);
 		CSupervisor::ComputeShader = computeShader;
-		CSupervisor::Activate_Uniform_Compute_StorageBuffer(sizeof(StructStorageBuffer));
-		CSupervisor::Activate_Pipeline();
+		Activate_Uniform_Compute_StorageBuffer(sizeof(StructStorageBuffer));
+		Activate_Pipeline();
 
 		CApplication::initialize();
 

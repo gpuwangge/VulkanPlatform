@@ -14,6 +14,7 @@
 #include "texture.h" //this includes imageManager.h
 #include "modelManager.h"
 
+#include "supervisor.h"
 
 #ifndef ANDROID
 #include "..\\..\\windowsFramework\\include\\glfwManager.h"
@@ -92,6 +93,38 @@ public:
 
     /*Pure virtual function(=0): base class not implment, derived class must implement*/
     //NA
+
+
+    /*************
+     * Helper Functions
+     *******/
+    void Activate_Uniform_Graphics_VP();
+    void Activate_Uniform_Graphics_MVP();
+    void Activate_Uniform_Graphics_Custom(VkDeviceSize graphicsCustomUniformBufferSize, VkDescriptorSetLayoutBinding graphicsCustomBinding);
+    void Activate_Uniform_Graphics_Sampler(int samplerCount = 1);
+
+    void Activate_Uniform_Compute_Custom(VkDeviceSize graphicsCustomUniformBufferSize, VkDescriptorSetLayoutBinding graphicsCustomBinding);
+    void Activate_Uniform_Compute_StorageBuffer(VkDeviceSize computeStorageBufferSize, VkBufferUsageFlags storageBufferUsage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT);
+    void Activate_Uniform_Compute_StorageImage();  //as input
+    void Activate_Uniform_Compute_StorageImage_Swapchain(); //as output
+
+    void Activate_Feature_Graphics_DepthTest();
+    void Activate_Feature_Graphics_MSAA();
+    void Activate_Feature_Graphics_48BPT();
+    void Activate_Feature_Graphics_PushConstant();
+    void Activate_Feature_Graphics_Blend();
+    void Activate_Feature_Graphics_RainbowMipmap();
+
+    void Activate_Buffer_Graphics_Vertex(std::vector<Vertex3D> &vertices3D, std::vector<uint32_t> &indices3D);
+    void Activate_Buffer_Graphics_Vertex(std::vector<Vertex2D> &vertices2D);
+    void Activate_Buffer_Graphics_Vertex(std::vector<std::string> &modelNames);
+    void Activate_Buffer_Graphics_Vertex(VertexStructureTypes vertexStructureType);
+
+    void Activate_Texture(std::vector<std::pair<std::string, bool>> *textureNames = NULL);
+
+    void Activate_Pipeline(); //*customBinding = NULL
+
+    void Dispatch(int numWorkGroupsX, int numWorkGroupsY, int numWorkGroupsZ);    
 };
 
 #endif
