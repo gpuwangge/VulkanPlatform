@@ -1,5 +1,4 @@
 #include "..\\framework\\include\\application.h"
-#include "object.h"
 #define TEST_CLASS_NAME CBasicTriangles
 class TEST_CLASS_NAME: public CApplication{
 public:
@@ -26,23 +25,25 @@ public:
 	};
 	CustomUniformBufferObject customUBO{};
 
-	CObject object;
-
 	std::vector<std::pair<std::string, bool>> textureNames = {{"texture.jpg", false}}; 
-	std::string vertexShader = "basicTriangles/vert.spv";
-	std::string fragmentShader = "basicTriangles/frag.spv";
+	std::vector<int> textureList = {0};
+	std::vector<int> modelList = {0}; //this 0 means vertex3D, not model
 
 	void initialize(){
-		CSupervisor::VertexShader = vertexShader;
-		CSupervisor::FragmentShader = fragmentShader;
-		Activate_Uniform_Graphics_Sampler();
-		Activate_Uniform_Graphics_MVP();
-		Activate_Uniform_Graphics_Custom(sizeof(CustomUniformBufferObject), CustomUniformBufferObject::GetBinding());
-		Activate_Buffer_Graphics_Vertex(vertices3D, indices3D);
-		Activate_Texture(&textureNames);
-		Activate_Pipeline();
-		
-		object.Register((CApplication*)this); 
+		appInfo.Object.Count = 1;
+		appInfo.Object.Model.List = &modelList;
+		appInfo.Object.Texture.Names = &textureNames;
+		appInfo.Object.Texture.List = &textureList;
+		appInfo.Shader.Vertex = "basicTriangles/vert.spv";
+		appInfo.Shader.Fragment = "basicTriangles/frag.spv";
+		appInfo.Uniform.GraphicsSampler.Enable = true;
+		appInfo.Uniform.EnableGraphicsMVP = true;
+		appInfo.Uniform.GraphicsCustom.Enable = true;
+		appInfo.Uniform.GraphicsCustom.Size = sizeof(CustomUniformBufferObject);
+		appInfo.Uniform.GraphicsCustom.Binding = CustomUniformBufferObject::GetBinding();
+		appInfo.Buffer.GraphicsVertex.Enable = true;
+		appInfo.Buffer.GraphicsVertex.Vertices3D = &vertices3D; 
+		appInfo.Buffer.GraphicsVertex.Indices3D = &indices3D;
 		
 		CApplication::initialize();
 	}
@@ -52,12 +53,12 @@ public:
 		graphicsDescriptorManager.updateCustomUniformBuffer<CustomUniformBufferObject>(renderer.currentFrame, durationTime, customUBO);
 
 		//graphicsDescriptorManager.mvpUBO.mvpData[0].model = glm::rotate(glm::mat4(1.0f), durationTime * glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-		object.SetRotation(glm::rotate(glm::mat4(1.0f), durationTime * glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
+		objectList[0].SetRotation(glm::rotate(glm::mat4(1.0f), durationTime * glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
 		CApplication::update();
 	}
 
 	void recordGraphicsCommandBuffer(){
-		object.Draw();
+		objectList[0].Draw();
 	}
 };
 

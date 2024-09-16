@@ -1,7 +1,5 @@
 #include "..\\framework\\include\\application.h"
 #include <random>
-#include "object.h"
-//#include "dataBuffer.hpp"
 #define TEST_CLASS_NAME CSimpleParticles
 class TEST_CLASS_NAME: public CApplication{
 public:
@@ -22,8 +20,6 @@ public:
 	};
 	CustomUniformBufferObject customUniformBufferObject{};
 
-	
-
 	struct StructStorageBuffer {
 		Particle particles[PARTICLE_COUNT];
 	};
@@ -36,27 +32,28 @@ public:
 	bool bVerbose = true;
 	bool bVerify = false;
 
-	std::vector<VkClearValue> clearValues{ {  0.0f, 0.0f, 0.0f, 1.0f  } };
-	
-	CObject object;
+	std::vector<int> modelList = {-1}; 
+	std::vector<int> textureList = {-1}; 
 
-	std::string vertexShader = "simpleParticles/vert.spv";
-	std::string fragmentShader = "simpleParticles/frag.spv";
-	std::string computeShader = "simpleParticles/comp.spv";
+	std::vector<VkClearValue> clearValues{ {  0.0f, 0.0f, 0.0f, 1.0f  } };
 
 	void initialize(){
-		renderer.m_renderMode = renderer.RENDER_COMPUTE_GRAPHICS_Mode;
-
-		CSupervisor::ComputeShader = computeShader;
-		CSupervisor::VertexShader = vertexShader;
-		CSupervisor::FragmentShader = fragmentShader;
-		Activate_Feature_Graphics_Blend();
-		Activate_Uniform_Compute_Custom(sizeof(CustomUniformBufferObject), CustomUniformBufferObject::GetBinding());
-		Activate_Uniform_Compute_StorageBuffer(sizeof(StructStorageBuffer), VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT);
-		Activate_Buffer_Graphics_Vertex(VertexStructureTypes::ParticleType);
-		Activate_Pipeline();
-
-		object.Register((CApplication*)this, -1, -1);
+		appInfo.Object.Count = 1;//One object, that is the particle generator
+		appInfo.Object.Model.List = &modelList;
+		appInfo.Object.Texture.List = &textureList;
+		appInfo.Render.Mode = CRenderer::RENDER_COMPUTE_GRAPHICS_Mode;
+		appInfo.Shader.Compute = "simpleParticles/comp.spv";
+		appInfo.Shader.Vertex = "simpleParticles/vert.spv";
+		appInfo.Shader.Fragment = "simpleParticles/frag.spv";
+		appInfo.Uniform.ComputeCustom.Enable = true;
+		appInfo.Uniform.ComputeCustom.Size = sizeof(CustomUniformBufferObject);
+		appInfo.Uniform.ComputeCustom.Binding = CustomUniformBufferObject::GetBinding();
+		appInfo.Uniform.ComputeStorageBuffer.Enable = true;
+		appInfo.Uniform.ComputeStorageBuffer.Size = sizeof(StructStorageBuffer);
+		appInfo.Uniform.ComputeStorageBuffer.Usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
+		appInfo.Feature.EnableGraphicsBlend = true;
+		appInfo.Buffer.GraphicsVertex.Enable = true;
+		appInfo.Buffer.GraphicsVertex.StructureType = VertexStructureTypes::ParticleType;
 
 		CApplication::initialize();
 		
@@ -121,7 +118,7 @@ public:
 
 	void recordGraphicsCommandBuffer(){
 		//this sample doesn't need BindDescriptorSets
-		object.Draw(computeDescriptorManager.storageBuffers, PARTICLE_COUNT);
+		objectList[0].Draw(computeDescriptorManager.storageBuffers, PARTICLE_COUNT);
 	}
 
 	void recordComputeCommandBuffer(){

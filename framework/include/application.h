@@ -15,6 +15,7 @@
 #include "modelManager.h"
 
 #include "supervisor.h"
+#include "object.h"
 
 #ifndef ANDROID
 #include "..\\..\\windowsFramework\\include\\glfwManager.h"
@@ -64,6 +65,10 @@ public:
     //std::chrono::_V2::system_clock::time_point lastTime;
 
     //VertexStructureTypes vertexStructuretypes;
+    std::vector<CObject> objectList;
+    //int ObjectCount = 0;
+	//std::vector<int> modelList = {}; 
+	//std::vector<int> textureList = {}; 
 
     void CleanUp();
 
@@ -124,7 +129,85 @@ public:
 
     void Activate_Pipeline(); //*customBinding = NULL
 
-    void Dispatch(int numWorkGroupsX, int numWorkGroupsY, int numWorkGroupsZ);    
+    void Dispatch(int numWorkGroupsX, int numWorkGroupsY, int numWorkGroupsZ);  
+
+    struct RenderInfo{
+        CRenderer::RenderModes Mode = CRenderer::RENDER_GRAPHICS_Mode;
+    };
+    struct UniformInfo{
+        bool EnableGraphicsVP = false;
+        bool EnableGraphicsMVP = false;
+        struct GraphicsCustomInfo{
+            bool Enable = false;
+            VkDeviceSize Size = 0;
+            VkDescriptorSetLayoutBinding Binding;
+        }GraphicsCustom;
+        struct GraphicsSamplerInfo{
+            bool Enable = false;
+            int Count = 1;
+            bool UseMultiSamplerForOneObject = false;
+        }GraphicsSampler;
+        //--------------------------------------
+        struct ComputeCustomInfo{
+            bool Enable = false;
+            VkDeviceSize Size = 0;
+            VkDescriptorSetLayoutBinding Binding;
+        }ComputeCustom;
+        struct ComputeStorageBufferInfo{
+            bool Enable = false;
+            VkDeviceSize Size = 0;
+            VkBufferUsageFlags Usage;
+        }ComputeStorageBuffer;
+        bool EnableComputeStorageImage = false;
+        bool EnableComputeStorageImageSwapChain = false;
+    };
+    struct FeatureInfo{
+        bool EnableGraphicsDepthTest = false;
+        bool EnableGraphicsMSAA = false;
+        bool EnableGraphics48BPT = false;
+        bool EnableGraphicsPushConstant = false;
+        bool EnableGraphicsBlend = false;
+        bool EnableGraphicsRainbowMipmap = false;
+    };
+    struct BufferInfo{
+        struct GraphicsVertexInfo{
+            bool Enable;
+            VertexStructureTypes StructureType;
+            std::vector<Vertex3D> *Vertices3D = NULL;
+            std::vector<uint32_t> *Indices3D = NULL;
+        }GraphicsVertex;
+    };
+    struct ShaderInfo{
+        std::string Vertex;
+        std::string Fragment;
+        std::string Compute;
+    };
+
+    struct ObjectInfo{
+        int Count = 0;
+        struct ModelInfo{
+            std::vector<std::string> *Names = NULL;
+            std::vector<int> *List = NULL; //the i'th object use i'th model
+        }Model;
+        struct TextureInfo{
+            std::vector<std::pair<std::string, bool>> *Names = NULL;
+            std::vector<int> *List = NULL; //the i'th object use i'th texture
+        }Texture;
+    };
+
+    struct AppInfo{
+        ObjectInfo Object;
+        RenderInfo Render;
+        ShaderInfo Shader;
+        UniformInfo Uniform;
+        FeatureInfo Feature;
+        BufferInfo Buffer;
+    }appInfo;
+    //AppInfo appInfo;
+
+    void SetApplicationProperty(AppInfo &appInfo);
 };
+
+
 
 #endif

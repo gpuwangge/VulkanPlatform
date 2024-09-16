@@ -107,7 +107,8 @@ public:
     static VertexStructureTypes VertexStructureType;
     static void Activate_Buffer_Graphics_Vertex(std::vector<Vertex3D> &vertices3D, std::vector<uint32_t> &indices3D);
     static void Activate_Buffer_Graphics_Vertex(std::vector<Vertex2D> &vertices2D);
-    static void Activate_Buffer_Graphics_Vertex(std::vector<std::string> &modelNames);
+    //static void Activate_Buffer_Graphics_Vertex(std::vector<std::string> &modelNames);
+    static void Activate_Buffer_Graphics_Vertex(std::vector<std::string> *modelNames);
     static void Activate_Buffer_Graphics_Vertex(VertexStructureTypes vertexStructureType);
 
     /*****************************

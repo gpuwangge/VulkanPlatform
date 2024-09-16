@@ -1,5 +1,4 @@
 #include "..\\framework\\include\\application.h"
-#include "object.h"
 #define TEST_CLASS_NAME CFurMark
 class TEST_CLASS_NAME: public CApplication{
 public:
@@ -29,28 +28,42 @@ public:
 	};
 	CustomUniformBufferObject customUBO{};
 
-	CObject object;
-
 	std::vector<std::pair<std::string, bool>> textureNames = {
 		{"fur.jpg", false},
 		{"noise.png", false},
 		{"wall.jpg", false}
-		}; 
-	std::string vertexShader = "furMark/vert.spv";
-	std::string fragmentShader = "furMark/frag.spv";
+	}; 
+	std::vector<int> textureList = {0}; //object_0 uses 3 texture(in 3 sampler), how to describe?
+	std::vector<int> modelList = {0}; 
 
 	void initialize(){
-		
-		CSupervisor::VertexShader = vertexShader;
-		CSupervisor::FragmentShader = fragmentShader;
-		Activate_Uniform_Graphics_Sampler(textureNames.size());
-		Activate_Uniform_Graphics_MVP();
-		Activate_Uniform_Graphics_Custom(sizeof(CustomUniformBufferObject), CustomUniformBufferObject::GetBinding());
-		Activate_Buffer_Graphics_Vertex(vertices3D, indices3D);
-		Activate_Texture(&textureNames);
-		Activate_Pipeline();
+		appInfo.Object.Count = 1;
+		appInfo.Object.Model.List = &modelList;
+		appInfo.Object.Texture.Names = &textureNames;
+		appInfo.Object.Texture.List = &textureList;
+		appInfo.Shader.Vertex = "furMark/vert.spv";
+		appInfo.Shader.Fragment = "furMark/frag.spv";
+		appInfo.Uniform.GraphicsSampler.Enable = true;
+		appInfo.Uniform.GraphicsSampler.Count = textureNames.size();
+		appInfo.Uniform.GraphicsSampler.UseMultiSamplerForOneObject = true;
+		appInfo.Uniform.EnableGraphicsMVP = true;
+		appInfo.Uniform.GraphicsCustom.Enable = true;
+		appInfo.Uniform.GraphicsCustom.Size = sizeof(CustomUniformBufferObject);
+		appInfo.Uniform.GraphicsCustom.Binding = CustomUniformBufferObject::GetBinding();
+		appInfo.Buffer.GraphicsVertex.Enable = true;
+		appInfo.Buffer.GraphicsVertex.Vertices3D = &vertices3D; 
+		appInfo.Buffer.GraphicsVertex.Indices3D = &indices3D;
 
-		object.Register((CApplication*)this, INT_MAX);//INT_MAX means use all samplers
+		//CSupervisor::VertexShader = vertexShader;
+		//CSupervisor::FragmentShader = fragmentShader;
+		//Activate_Uniform_Graphics_Sampler(textureNames.size());
+		//Activate_Uniform_Graphics_MVP();
+		//Activate_Uniform_Graphics_Custom(sizeof(CustomUniformBufferObject), CustomUniformBufferObject::GetBinding());
+		//Activate_Buffer_Graphics_Vertex(vertices3D, indices3D);
+		//Activate_Texture(&textureNames);
+		//Activate_Pipeline();
+
+		//object.Register((CApplication*)this, INT_MAX);//INT_MAX means use all samplers
 
 		CApplication::initialize();
 	}
@@ -66,7 +79,7 @@ public:
 	}
 
 	void recordGraphicsCommandBuffer(){
-		object.Draw(); 
+		objectList[0].Draw(); 
 	}
 
 };

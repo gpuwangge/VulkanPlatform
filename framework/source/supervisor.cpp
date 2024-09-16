@@ -84,14 +84,22 @@ void CSupervisor::Activate_Buffer_Graphics_Vertex(std::vector<Vertex2D> &vertice
     m_app->renderer.CreateVertexBuffer<Vertex2D>(vertices2D); 
     //m_app->renderer.CreateIndexBuffer(indices3D);
 }
-void CSupervisor::Activate_Buffer_Graphics_Vertex(std::vector<std::string> &modelNames){ 
+// void CSupervisor::Activate_Buffer_Graphics_Vertex(std::vector<std::string> &modelNames){
+//     VertexStructureType = VertexStructureTypes::ThreeDimension;
+//     for(int i = 0; i < modelNames.size(); i++){
+//         m_app->modelManager.LoadObjModel(modelNames[i], vertices3D, indices3D);
+//         m_app->renderer.CreateVertexBuffer<Vertex3D>(vertices3D); 
+//         m_app->renderer.CreateIndexBuffer(indices3D);
+//     }
+// }
+void CSupervisor::Activate_Buffer_Graphics_Vertex(std::vector<std::string> *modelNames){ 
     VertexStructureType = VertexStructureTypes::ThreeDimension;
-    for(int i = 0; i < modelNames.size(); i++){
-        m_app->modelManager.LoadObjModel(modelNames[i], vertices3D, indices3D);
+    for(int i = 0; i < modelNames->size(); i++){
+        m_app->modelManager.LoadObjModel((*modelNames)[i], vertices3D, indices3D);
         m_app->renderer.CreateVertexBuffer<Vertex3D>(vertices3D); 
         m_app->renderer.CreateIndexBuffer(indices3D);
     }
-}        
+}          
 void CSupervisor::Activate_Buffer_Graphics_Vertex(VertexStructureTypes vertexStructureType){ 
     VertexStructureType = vertexStructureType;
 }  

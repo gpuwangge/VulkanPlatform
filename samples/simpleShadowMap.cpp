@@ -1,5 +1,4 @@
 #include "..\\framework\\include\\application.h"
-#include "object.h"
 #define TEST_CLASS_NAME CSimpleShadowMap
 class TEST_CLASS_NAME: public CApplication{
 public:
@@ -19,30 +18,32 @@ public:
 	};
 	CustomUniformBufferObject customUBO{};
 
-	CObject object;
-
+	
 	std::vector<std::string> modelNames = {"viking_room.obj"}; 
+	std::vector<int> modelList = {0}; //the 0'th object use 0'th model
 	std::vector<std::pair<std::string, bool>> textureNames = {{"viking_room.png", false}}; //first: textureName, second: mipmap
-	std::string vertexShader = "simpleShadowMap/vert.spv";
-	std::string fragmentShader = "simpleShadowMap/frag.spv";
+	std::vector<int> textureList = {0}; //the 0'th object use 0'th texture
 
     void initialize(){
 		mainCamera.setPosition(glm::vec3(0.0f, -2.5f, -2.5f));
     	mainCamera.setRotation(glm::vec3(45.0f, 0.0f, 0.0f));
     	mainCamera.setPerspective(60.0f, (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 256.0f);
 		
-		CSupervisor::VertexShader = vertexShader;
-		CSupervisor::FragmentShader = fragmentShader;
-		Activate_Uniform_Graphics_Sampler();
-		Activate_Uniform_Graphics_MVP();
-		Activate_Uniform_Graphics_Custom(sizeof(CustomUniformBufferObject), CustomUniformBufferObject::GetBinding());
-		Activate_Feature_Graphics_MSAA();
-		Activate_Buffer_Graphics_Vertex(modelNames);
-		Activate_Texture(&textureNames);
-		Activate_Pipeline();
-
-		object.Register((CApplication*)this);
-
+		appInfo.Object.Count = 1;
+		appInfo.Object.Model.Names = &modelNames;
+		appInfo.Object.Model.List = &modelList;
+		appInfo.Object.Texture.Names = &textureNames;
+		appInfo.Object.Texture.List = &textureList;
+		appInfo.Shader.Vertex = "simpleShadowMap/vert.spv";
+		appInfo.Shader.Fragment = "simpleShadowMap/frag.spv";
+		appInfo.Uniform.GraphicsSampler.Enable = true;
+		appInfo.Uniform.EnableGraphicsMVP = true;
+		appInfo.Uniform.GraphicsCustom.Enable = true;
+		appInfo.Uniform.GraphicsCustom.Size = sizeof(CustomUniformBufferObject);
+		appInfo.Uniform.GraphicsCustom.Binding = CustomUniformBufferObject::GetBinding();
+		appInfo.Feature.EnableGraphicsMSAA = true;
+		appInfo.Buffer.GraphicsVertex.Enable = true;
+		
 		CApplication::initialize();
 	} 
 
@@ -69,12 +70,12 @@ public:
 		graphicsDescriptorManager.updateCustomUniformBuffer<CustomUniformBufferObject>(renderer.currentFrame, durationTime, customUBO);
 
 		//graphicsDescriptorManager.mvpUBO.mvpData[0].model = glm::rotate(glm::mat4(1.0f),  glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-		object.SetRotation(glm::rotate(glm::mat4(1.0f),  glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
+		objectList[0].SetRotation(glm::rotate(glm::mat4(1.0f),  glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
 		CApplication::update();
 	}
 
 	void recordGraphicsCommandBuffer(){
-		object.Draw();
+		objectList[0].Draw();
 	}
 };
 

@@ -76,6 +76,17 @@ void CApplication::run(){ //Entrance Function
 #endif
 
 void CApplication::initialize(){
+    SetApplicationProperty(appInfo);
+
+    objectList.resize(appInfo.Object.Count);
+    for(int i = 0; i < objectList.size(); i++)
+        objectList[i].Register((CApplication*)this, 
+        appInfo.Uniform.GraphicsSampler.UseMultiSamplerForOneObject ? INT_MAX : (*appInfo.Object.Texture.List)[i],
+            (*appInfo.Object.Model.List)[i],
+            //((i >= appInfo.Texture.List->size()) ? -1 : (*appInfo.Texture.List)[i]),  //-1 means not use texuture for this object
+            //((i >= appInfo.Buffer.GraphicsVertex.Model.List->size()) ? -1 : (*appInfo.Buffer.GraphicsVertex.Model.List)[i]),  //-1 means not use model for this object
+            i); //must be set after initialize()::SetApplicationProperty(appInfo);
+
     renderer.CreateSyncObjects(swapchain.imageSize);
     shaderManager.Destroy();
 
@@ -345,7 +356,7 @@ void CApplication::Activate_Buffer_Graphics_Vertex(std::vector<Vertex2D> &vertic
     CSupervisor::Activate_Buffer_Graphics_Vertex(vertices2D);
 }
 void CApplication::Activate_Buffer_Graphics_Vertex(std::vector<std::string> &modelNames){
-    CSupervisor::Activate_Buffer_Graphics_Vertex(modelNames);
+    //CSupervisor::Activate_Buffer_Graphics_Vertex(modelNames);
 }
 void CApplication::Activate_Buffer_Graphics_Vertex(VertexStructureTypes vertexStructureType){
     CSupervisor::Activate_Buffer_Graphics_Vertex(vertexStructureType);
@@ -361,4 +372,29 @@ void CApplication::Activate_Pipeline(){
 
 void CApplication::Dispatch(int numWorkGroupsX, int numWorkGroupsY, int numWorkGroupsZ){
     CSupervisor::Dispatch(numWorkGroupsX, numWorkGroupsY, numWorkGroupsZ);
+}
+
+
+void CApplication::SetApplicationProperty(AppInfo &appInfo){
+    renderer.m_renderMode = appInfo.Render.Mode;
+
+    CSupervisor::ComputeShader = appInfo.Shader.Compute;
+	CSupervisor::VertexShader = appInfo.Shader.Vertex;
+	CSupervisor::FragmentShader = appInfo.Shader.Fragment;
+
+    if(appInfo.Uniform.GraphicsSampler.Enable) CSupervisor::Activate_Uniform_Graphics_Sampler(appInfo.Uniform.GraphicsSampler.Count); //samplerCount
+    if(appInfo.Uniform.EnableGraphicsMVP) CSupervisor::Activate_Uniform_Graphics_MVP();
+    if(appInfo.Uniform.GraphicsCustom.Enable) CSupervisor::Activate_Uniform_Graphics_Custom(appInfo.Uniform.GraphicsCustom.Size, appInfo.Uniform.GraphicsCustom.Binding);
+    if(appInfo.Uniform.ComputeStorageBuffer.Enable) CSupervisor::Activate_Uniform_Compute_StorageBuffer(appInfo.Uniform.ComputeStorageBuffer.Size, appInfo.Uniform.ComputeStorageBuffer.Usage);
+    if(appInfo.Uniform.ComputeCustom.Enable) CSupervisor::Activate_Uniform_Compute_Custom(appInfo.Uniform.ComputeCustom.Size, appInfo.Uniform.ComputeCustom.Binding);
+    if(appInfo.Feature.EnableGraphicsBlend) CSupervisor::Activate_Feature_Graphics_Blend();
+    if(appInfo.Feature.EnableGraphicsDepthTest);
+    if(appInfo.Feature.EnableGraphicsMSAA) CSupervisor::Activate_Feature_Graphics_MSAA();
+    if(appInfo.Feature.EnableGraphics48BPT) CSupervisor::Activate_Feature_Graphics_48BPT();
+    if(appInfo.Buffer.GraphicsVertex.Enable && appInfo.Buffer.GraphicsVertex.StructureType != NULL) CSupervisor::Activate_Buffer_Graphics_Vertex(appInfo.Buffer.GraphicsVertex.StructureType);
+    if(appInfo.Buffer.GraphicsVertex.Enable && appInfo.Buffer.GraphicsVertex.Indices3D != NULL) CSupervisor::Activate_Buffer_Graphics_Vertex(*appInfo.Buffer.GraphicsVertex.Vertices3D, *appInfo.Buffer.GraphicsVertex.Indices3D);
+    if(appInfo.Buffer.GraphicsVertex.Enable && appInfo.Object.Model.Names != NULL) CSupervisor::Activate_Buffer_Graphics_Vertex(appInfo.Object.Model.Names);
+    if(appInfo.Object.Texture.Names != NULL) CSupervisor::Activate_Texture(appInfo.Object.Texture.Names);
+
+    CSupervisor::Activate_Pipeline();
 }
