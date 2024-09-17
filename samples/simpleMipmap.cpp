@@ -7,7 +7,7 @@ public:
 	std::vector<int> modelList = {0}; 
 	std::vector<int> textureList = {0};
 	
-    void initialize(){
+	void initialize(){
 		mainCamera.type = Camera::CameraType::firstperson;
 		mainCamera.setPosition(glm::vec3(0.0f, -0.8f, 0.0f));
 		mainCamera.setRotation(glm::vec3(0.0f, 90.00001f, 0.0f));

@@ -14,7 +14,7 @@ public:
 	std::vector<int> modelList = {0}; 
 	std::vector<int> textureList = {0};
 
-    void initialize(){
+	void initialize(){
 		mainCamera.setPosition(glm::vec3(0.0f, 0.0f, -1.5f));
 		appInfo.Object.Count = 1;
 		appInfo.Buffer.GraphicsVertex.Vertices3D = &vertices3D; 

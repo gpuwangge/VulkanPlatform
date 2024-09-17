@@ -14,7 +14,7 @@ public:
 	std::vector<int> textureList = {0};
 	std::vector<int> modelList = {0}; 
 
-    void initialize(){
+	void initialize(){
 		mainCamera.setPosition(glm::vec3(0.0f, 0.0f, -3.0f));
 		mainCamera.setPerspective(90.0f, (float)windowWidth /  (float)windowHeight, 0.1f, 256.0f);
 		appInfo.Object.Count = 1;
