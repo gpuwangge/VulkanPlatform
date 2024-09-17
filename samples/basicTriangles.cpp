@@ -31,20 +31,17 @@ public:
 
 	void initialize(){
 		appInfo.Object.Count = 1;
+		appInfo.Buffer.GraphicsVertex.Vertices3D = &vertices3D; 
+		appInfo.Buffer.GraphicsVertex.Indices3D = &indices3D;
 		appInfo.Object.Model.List = &modelList;
 		appInfo.Object.Texture.Names = &textureNames;
 		appInfo.Object.Texture.List = &textureList;
 		appInfo.Shader.Vertex = "basicTriangles/vert.spv";
 		appInfo.Shader.Fragment = "basicTriangles/frag.spv";
-		appInfo.Uniform.GraphicsSampler.Enable = true;
+		appInfo.Uniform.GraphicsSampler.Count = 1;
 		appInfo.Uniform.EnableGraphicsMVP = true;
-		appInfo.Uniform.GraphicsCustom.Enable = true;
 		appInfo.Uniform.GraphicsCustom.Size = sizeof(CustomUniformBufferObject);
 		appInfo.Uniform.GraphicsCustom.Binding = CustomUniformBufferObject::GetBinding();
-		appInfo.Buffer.GraphicsVertex.Enable = true;
-		appInfo.Buffer.GraphicsVertex.Vertices3D = &vertices3D; 
-		appInfo.Buffer.GraphicsVertex.Indices3D = &indices3D;
-		
 		CApplication::initialize();
 	}
 

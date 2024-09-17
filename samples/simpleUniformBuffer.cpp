@@ -1,5 +1,4 @@
 #include "..\\framework\\include\\application.h"
-#include "object.h"
 #define TEST_CLASS_NAME CSimpleUniformBuffer
 class TEST_CLASS_NAME: public CApplication{
 //a changeing color triangle on the screen
@@ -19,19 +18,12 @@ public:
 	};
 	CustomUniformBufferObject customUBO{};
 
-	CObject object;
-
-	std::string vertexShader = "simpleUniformBuffer/vert.spv";
-	std::string fragmentShader = "simpleUniformBuffer/frag.spv";
-
 	void initialize(){
-		CSupervisor::VertexShader = vertexShader;
-		CSupervisor::FragmentShader = fragmentShader;
-		Activate_Uniform_Graphics_Custom(sizeof(CustomUniformBufferObject), CustomUniformBufferObject::GetBinding());
-		Activate_Pipeline(); 
-
-		object.Register((CApplication*)this, -1, -1, 0); //no texture, no model, id=0
-
+		appInfo.Object.Count = 1;
+		appInfo.Shader.Vertex = "simpleUniformBuffer/vert.spv";
+		appInfo.Shader.Fragment = "simpleUniformBuffer/frag.spv";
+		appInfo.Uniform.GraphicsCustom.Size = sizeof(CustomUniformBufferObject);
+		appInfo.Uniform.GraphicsCustom.Binding = CustomUniformBufferObject::GetBinding();
 		CApplication::initialize();
 	}
 
@@ -43,7 +35,7 @@ public:
 	}
 
 	void recordGraphicsCommandBuffer(){
-		object.Draw(3);
+		objectList[0].Draw(3);
 	}	
 };
 

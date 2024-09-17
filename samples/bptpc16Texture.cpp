@@ -17,31 +17,18 @@ public:
     void initialize(){
 		mainCamera.setPosition(glm::vec3(0.0f, 0.0f, -3.0f));
 		mainCamera.setPerspective(90.0f, (float)windowWidth /  (float)windowHeight, 0.1f, 256.0f);
-
 		appInfo.Object.Count = 1;
+		appInfo.Buffer.GraphicsVertex.Vertices3D = &vertices3D; 
+		appInfo.Buffer.GraphicsVertex.Indices3D = &indices3D;
 		appInfo.Object.Model.List = &modelList;
 		appInfo.Object.Texture.Names = &textureNames;
 		appInfo.Object.Texture.List = &textureList;
 		appInfo.Shader.Vertex = "bptpc16Texture/vert.spv";
 		appInfo.Shader.Fragment = "bptpc16Texture/frag.spv";
-		appInfo.Uniform.GraphicsSampler.Enable = true;
+		appInfo.Uniform.GraphicsSampler.Count = 1;
 		appInfo.Uniform.EnableGraphicsMVP = true;
 		appInfo.Feature.EnableGraphicsMSAA = true;
 		appInfo.Feature.EnableGraphics48BPT = true;
-		appInfo.Buffer.GraphicsVertex.Enable = true;
-		appInfo.Buffer.GraphicsVertex.Vertices3D = &vertices3D; 
-		appInfo.Buffer.GraphicsVertex.Indices3D = &indices3D;
-
-		//Activate_Uniform_Graphics_Sampler();
-		//Activate_Uniform_Graphics_MVP();
-		//Activate_Feature_Graphics_MSAA();
-		//Activate_Feature_Graphics_48BPT();
-		//Activate_Buffer_Graphics_Vertex(vertices3D, indices3D);
-		//Activate_Texture(&textureNames);
-		//Activate_Pipeline();
-
-		//object.Register((CApplication*)this); //, vertices3D, indices3D
-
 		CApplication::initialize();
 	}
 

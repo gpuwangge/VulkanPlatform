@@ -26,15 +26,11 @@ public:
 	bool bVerbose = true;
 	bool bVerify = true;
 
-	std::string computeShader = "gemmCompute/comp.spv";
-
 	void initialize(){
-		renderer.m_renderMode = renderer.RENDER_COMPUTE_Mode;
-		
-		CSupervisor::ComputeShader = computeShader;
-		Activate_Uniform_Compute_StorageBuffer(sizeof(StructStorageBuffer));
-		Activate_Pipeline();
-
+		appInfo.Render.Mode = renderer.RENDER_COMPUTE_Mode;
+		appInfo.Shader.Compute = "gemmCompute/comp.spv";
+		appInfo.Uniform.ComputeStorageBuffer.Size = sizeof(StructStorageBuffer);
+		appInfo.Uniform.ComputeStorageBuffer.Usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
 		CApplication::initialize();
 
 		//Initial Host data
@@ -53,7 +49,6 @@ public:
 		//Host >> Device
 		computeDescriptorManager.updateStorageBuffer<StructStorageBuffer>(renderer.currentFrame, durationTime, storageBufferObject); //1 TODO: fill all inflight, update input only
 		computeDescriptorManager.updateStorageBuffer<StructStorageBuffer>(renderer.currentFrame+1, durationTime, storageBufferObject); //1
-		
 	}
 
 	void update(){
@@ -68,7 +63,7 @@ public:
 	}
 
 	void recordComputeCommandBuffer(){
-		CSupervisor::Dispatch(1,1,1);
+		Dispatch(1,1,1);
 	}
 
 	void postUpdate(){

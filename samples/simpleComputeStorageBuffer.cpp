@@ -11,15 +11,10 @@ public:
 	};
 	StructStorageBuffer storageBufferObject;
 
-	std::string computeShader = "simpleComputeStorageBuffer/comp.spv";
-
 	void initialize(){
-		renderer.m_renderMode = renderer.RENDER_COMPUTE_Mode;
-
-		CSupervisor::ComputeShader = computeShader;
-		Activate_Uniform_Compute_StorageBuffer(sizeof(StructStorageBuffer));
-		Activate_Pipeline();
-
+		appInfo.Render.Mode = renderer.RENDER_COMPUTE_Mode;
+		appInfo.Shader.Compute = "simpleComputeStorageBuffer/comp.spv";
+		appInfo.Uniform.ComputeStorageBuffer.Size = 1; //this can be any non-zero number, in order to enable storage buffer
 		CApplication::initialize();
 	}
 
@@ -40,9 +35,6 @@ public:
 	}
 
 	void recordComputeCommandBuffer(){
-		//std::cout<<"Record Compute command buffer. "<<std::endl;
-		//renderer.Dispatch(1, 1, 1); //dispatch an empty compute shader. TODO: need add some compute here
-
 		//In this test, there is no need to dispatch(and no need to bind descriptor).
 		//The storage buffer will work by itself.
 	}

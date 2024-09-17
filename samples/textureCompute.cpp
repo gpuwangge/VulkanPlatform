@@ -1,5 +1,4 @@
 #include "..\\framework\\include\\application.h"
-#include "object.h"
 #define TEST_CLASS_NAME CTextureCompute
 class TEST_CLASS_NAME: public CApplication{
 //This test is similar to simpleComputeStorageImage, but instead use 2 texture image, one as input, the other as output
@@ -16,7 +15,6 @@ public:
 	static const int KernelRunNumber = 1;
 
 	std::vector<std::pair<std::string, bool>> textureNames = {{"texture.jpg", false}}; //first: textureName, second: mipmap
-	std::string computeShader = "textureCompute/comp.spv";
 
 	TEST_CLASS_NAME(){//these must be updated before initialization
 		swapchain.imageSize = MAX_FRAMES_IN_FLIGHT;
@@ -24,16 +22,12 @@ public:
 	}
 
 	void initialize(){
-		renderer.m_renderMode = renderer.RENDER_COMPUTE_SWAPCHAIN_Mode;
-
-		CSupervisor::ComputeShader = computeShader;
-		Activate_Uniform_Compute_StorageImage_Swapchain();
-		Activate_Uniform_Compute_StorageImage();
-		Activate_Texture(&textureNames);
-		Activate_Pipeline();
-
+        appInfo.Render.Mode = renderer.RENDER_COMPUTE_SWAPCHAIN_Mode;
+        appInfo.Shader.Compute = "textureCompute/comp.spv";
+        appInfo.Object.Texture.Names = &textureNames;
+        appInfo.Uniform.EnableComputeStorageImage = true;
+        appInfo.Uniform.EnableComputeStorageImageSwapChain = true;
 		CApplication::initialize();
-
 		createComputeCommandBuffers(renderer.commandBuffers[renderer.computeCmdId], swapchain.images);
 	}
 
@@ -95,7 +89,7 @@ public:
                 VK_ACCESS_MEMORY_WRITE_BIT,VK_ACCESS_SHADER_WRITE_BIT,
                 VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT);
             
-			CSupervisor::Dispatch(300,600,1);
+			Dispatch(300,600,1);
          
             recordImageBarrier(commandBuffers[i], swapChainImages[i],
                 VK_IMAGE_LAYOUT_GENERAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,

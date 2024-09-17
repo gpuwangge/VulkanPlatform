@@ -31,30 +31,21 @@ public:
 
 	bool bVerbose = true;
 	bool bVerify = false;
-
-	std::vector<int> modelList = {-1}; 
-	std::vector<int> textureList = {-1}; 
-
+	
 	std::vector<VkClearValue> clearValues{ {  0.0f, 0.0f, 0.0f, 1.0f  } };
 
 	void initialize(){
 		appInfo.Object.Count = 1;//One object, that is the particle generator
-		appInfo.Object.Model.List = &modelList;
-		appInfo.Object.Texture.List = &textureList;
+		appInfo.Buffer.GraphicsVertex.StructureType = VertexStructureTypes::ParticleType;
 		appInfo.Render.Mode = CRenderer::RENDER_COMPUTE_GRAPHICS_Mode;
 		appInfo.Shader.Compute = "simpleParticles/comp.spv";
 		appInfo.Shader.Vertex = "simpleParticles/vert.spv";
 		appInfo.Shader.Fragment = "simpleParticles/frag.spv";
-		appInfo.Uniform.ComputeCustom.Enable = true;
 		appInfo.Uniform.ComputeCustom.Size = sizeof(CustomUniformBufferObject);
 		appInfo.Uniform.ComputeCustom.Binding = CustomUniformBufferObject::GetBinding();
-		appInfo.Uniform.ComputeStorageBuffer.Enable = true;
 		appInfo.Uniform.ComputeStorageBuffer.Size = sizeof(StructStorageBuffer);
 		appInfo.Uniform.ComputeStorageBuffer.Usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
 		appInfo.Feature.EnableGraphicsBlend = true;
-		appInfo.Buffer.GraphicsVertex.Enable = true;
-		appInfo.Buffer.GraphicsVertex.StructureType = VertexStructureTypes::ParticleType;
-
 		CApplication::initialize();
 		
 		std::cout<<"init done."<<std::endl;

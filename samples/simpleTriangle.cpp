@@ -1,34 +1,21 @@
 #include "..\\framework\\include\\application.h"
-#include "object.h"
 #define TEST_CLASS_NAME CSimpleTriangle
+//a blue triangle on the screen
 class TEST_CLASS_NAME: public CApplication{
-	//a blue triangle on the screen
-	CObject object;
-
-	std::string vertexShader = "simpleTriangle/vert.spv";
-	std::string fragmentShader = "simpleTriangle/frag.spv";
-
 public:
 	void initialize(){
-		CSupervisor::VertexShader = vertexShader;
-		CSupervisor::FragmentShader = fragmentShader;
-		Activate_Pipeline(); 
-		
-		object.Register((CApplication*)this, -1, -1, 0); //no texture, no model, id=0
-		
+		appInfo.Object.Count = 1;
+		appInfo.Shader.Vertex = "simpleTriangle/vert.spv";
+		appInfo.Shader.Fragment = "simpleTriangle/frag.spv";
 		CApplication::initialize();
 	}
 
 	void update(){
-		//static int counter = 1;
 		CApplication::update();
-
-		//if(counter==7504) NeedToExit = true;
-		//counter++;
 	}
 
 	void recordGraphicsCommandBuffer(){
-		object.Draw(3);
+		objectList[0].Draw(3);
 	}
 };
 

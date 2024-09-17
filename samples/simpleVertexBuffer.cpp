@@ -1,5 +1,4 @@
 #include "..\\framework\\include\\application.h"
-#include "object.h"
 #define TEST_CLASS_NAME CSimpleVertexBuffer
 class TEST_CLASS_NAME: public CApplication{
 //a triangle on the screen, each vertex has R, G or B color. Fragment color is interpolated
@@ -10,19 +9,14 @@ public:
 		{ { -0.5f, 0.5f},{ 0.0f, 0.0f, 1.0f }}		
 	};
 
-	CObject object;
-
-	std::string vertexShader = "simpleVertexBuffer/vert.spv";
-	std::string fragmentShader = "simpleVertexBuffer/frag.spv";
+	std::vector<int> modelList = {0}; //this 0 means vertex3D, not model
 
 	void initialize(){
-		CSupervisor::VertexShader = vertexShader;
-		CSupervisor::FragmentShader = fragmentShader;
-		Activate_Buffer_Graphics_Vertex(vertices);
-		Activate_Pipeline();
-
-		object.Register((CApplication*)this, -1, 0, 0); //no texture, no model, id=0
-
+		appInfo.Object.Count = 1;
+		appInfo.Buffer.GraphicsVertex.Vertices2D = &vertices; 
+		appInfo.Object.Model.List = &modelList;
+		appInfo.Shader.Vertex = "simpleVertexBuffer/vert.spv";
+		appInfo.Shader.Fragment = "simpleVertexBuffer/frag.spv";
 		CApplication::initialize();
 	}
 
@@ -31,7 +25,7 @@ public:
 	}
 
 	void recordGraphicsCommandBuffer(){
-		object.Draw(3);
+		objectList[0].Draw(3);
 	}
 };
 

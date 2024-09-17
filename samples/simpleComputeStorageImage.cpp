@@ -10,20 +10,15 @@ class TEST_CLASS_NAME: public CApplication{
 public:
 	std::vector<VkClearValue> clearValues{ {  0.0f, 1.0f, 0.0f, 1.0f  } };
 
-	std::string computeShader = "simpleComputeStorageImage/comp.spv";
-
 	CSimpleComputeStorageImage(){
 		swapchain.imageSize = MAX_FRAMES_IN_FLIGHT;
 		swapchain.bComputeSwapChainImage = true;
 	}
 
 	void initialize(){
-		renderer.m_renderMode = renderer.RENDER_COMPUTE_SWAPCHAIN_Mode;
-
-		CSupervisor::ComputeShader = computeShader;
-		Activate_Uniform_Compute_StorageImage_Swapchain();
-		Activate_Pipeline();
-
+        appInfo.Render.Mode = renderer.RENDER_COMPUTE_SWAPCHAIN_Mode;
+        appInfo.Shader.Compute = "simpleComputeStorageImage/comp.spv";
+        appInfo.Uniform.EnableComputeStorageImageSwapChain = true;
 		CApplication::initialize();
 		createComputeCommandBuffers(renderer.commandBuffers[renderer.computeCmdId], swapchain.images);
 	}
@@ -74,7 +69,7 @@ public:
                 VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,VK_PIPELINE_STAGE_COMPUTE_SHADER_BIT);
             
 			
-			CSupervisor::Dispatch(200,300,1);
+			Dispatch(200,300,1);
          
             recordImageBarrier(commandBuffers[i], swapChainImages[i],
                 VK_IMAGE_LAYOUT_GENERAL, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR,
