@@ -33,6 +33,9 @@ public:
 	}
 
 	void update(){
+		//objectList[0].MovementSpeed = 0.5f;
+		//objectList[0].RotationSpeed = 5.0f;//-0.025f; //positive number: clockwise around z-axis(object face to the camera)
+		objectList[0].AngularVelocity = glm::vec3(0,0,5.0f);
 		CApplication::update();
 	}
 

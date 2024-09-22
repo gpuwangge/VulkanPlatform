@@ -48,9 +48,13 @@ public:
 	void update(){
 		customUBO.color = {(sin(durationTime) + 1.0f) / 2.0f, 0.0f, (cos(durationTime) + 1.0f) / 2.0f};
 		graphicsDescriptorManager.updateCustomUniformBuffer<CustomUniformBufferObject>(renderer.currentFrame, durationTime, customUBO);
-
-		//graphicsDescriptorManager.mvpUBO.mvpData[0].model = glm::rotate(glm::mat4(1.0f), durationTime * glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-		objectList[0].SetRotation(glm::rotate(glm::mat4(1.0f), durationTime * glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
+		
+		//objectList[0].AngularVelocity = glm::vec3(20,0,0);//Pitch, Yaw, Roll
+		//objectList[0].Velocity.z = 0.5;
+		objectList[0].Velocity.z = 0.5 * sin(durationTime * 2); //positive number will move to z direction (object move forward )
+		objectList[0].Velocity.x = 0.5 * sin(durationTime * 2); //positive number will move to y direction (object move rightward )
+		objectList[0].Velocity.y = 0.5 * sin(durationTime * 2); //positive number will move to z direction (object move downward )
+		
 		CApplication::update();
 	}
 

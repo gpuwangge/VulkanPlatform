@@ -4,22 +4,94 @@
 CObject::CObject(){
     bUseMVP_VP = false;
     bUseTextureSampler = false;
+    bUpdate = true;
+
+    PositionVector = glm::vec3();
+    Velocity = glm::vec3();
+    AngularVelocity = glm::vec3();
+    //MovementSpeed = 0;
+    //RotationSpeed = 0;
+    //Accerlation = glm::vec3();
+    //Direction = glm::vec3(1,0,0);
+    RotationVector = glm::vec3();
+    Pitch = 0;
+    Yaw = 0;
+    Roll = 0;
+    float Scale = 1.0f;
+    //m_model = glm::mat4(1.0f);
 }
+
+ void CObject::Update(float deltaTime){
+    if(!bUpdate) return;
+    //std::cout<<"Update Object"<<m_object_id<<std::endl;
+    
+    // glm::vec3 objectUp;
+    // objectUp.x = -cos(glm::radians(RotationVector.x)) * sin(glm::radians(RotationVector.y));
+    // objectUp.y = sin(glm::radians(RotationVector.x));
+    // objectUp.z = cos(glm::radians(RotationVector.x)) * cos(glm::radians(RotationVector.y));
+    // objectUp = glm::normalize(objectUp);
+
+    /**********
+    * Vulkan Screen Coordinate: Right Hand Rule, x from left to right, y from up to bottom, z from far to near 
+    **********/
+    //PositionVector += deltaTime * glm::normalize(glm::cross(objectUp, glm::vec3(0.0f, 1.0f, 0.0f))) * Velocity.x;
+    //PositionVector += deltaTime * glm::normalize(glm::cross(objectUp, glm::vec3(1.0f, 0.0f, 0.0f))) * Velocity.y;
+    //PositionVector += deltaTime * glm::normalize(objectUp) * Velocity.z;
+
+    ///RotationVector += deltaTime * glm::normalize(glm::cross(objectUp, glm::vec3(0.0f, 1.0f, 0.0f))) * AngularVelocity.x;
+    ///RotationVector += deltaTime * glm::normalize(glm::cross(objectUp, glm::vec3(1.0f, 0.0f, 0.0f))) * AngularVelocity.y;
+    ///RotationVector += deltaTime * glm::normalize(objectUp) * AngularVelocity.z;
+
+    /**********
+    * Rotation Update (Quanternion)
+    * AngularVelocity defines the angular velocity for Pitch, Yaw and Roll
+    **********/
+    glm::quat orientation;
+    Pitch += deltaTime * AngularVelocity.x;
+    Yaw += deltaTime * AngularVelocity.y;
+    Roll += deltaTime * AngularVelocity.z;
+    glm::quat qPitch = glm::angleAxis(glm::radians(Pitch), glm::vec3(1,0,0));
+    glm::quat qYaw = glm::angleAxis(glm::radians(Yaw), glm::vec3(0,1,0));
+    glm::quat qRoll = glm::angleAxis(glm::radians(Roll), glm::vec3(0,0,1));
+    orientation = qPitch * qYaw * qRoll;
+    glm::mat4 rotateMat = glm::mat4_cast(orientation);
+
+    /**********
+    * Translate Update
+    * Velocity defines the velocity along the front direction(?)
+    **********/
+   // glm::vec3 Front = glm::rotate(glm::inverse(orientation), glm::vec3(0.0, 0.0, -1.0));
+    //glm::vec3 Right = glm::rotate(orientation, glm::vec3(1.0, 0.0, 0.0));
+    //glm::vec3 Up = glm::rotate(glm::inverse(orientation), glm::vec3(1.0, 0.0, 0.0));
+    glm::vec3 objectUp;
+    objectUp.x = -cos(glm::radians(Pitch)) * sin(glm::radians(Yaw));
+    objectUp.y = sin(glm::radians(Pitch));
+    objectUp.z = cos(glm::radians(Pitch)) * cos(glm::radians(Yaw));
+    objectUp = glm::normalize(objectUp);
+    PositionVector += deltaTime * glm::normalize(objectUp) * Velocity.z;
+    glm::mat4 translateMat = glm::translate(glm::mat4(1.0f), PositionVector);
+
+    /**********
+    * Calculate model matrix based on vector Postion and Rotation
+    **********/
+    //glm::mat4 m_model = translateMat * rotateMat;
+    //m_model = glm::vec4(position, 0.0f) * glm::vec4(-1.0f, 1.0f, -1.0f, 1.0f);
+
+    CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].model = translateMat * rotateMat;
+ }
+
+ void CObject::SetRotation(glm::mat4 m){
+    //graphicsDescriptorManager.mvpUBO.mvpData[0].model = glm::rotate(glm::mat4(1.0f), durationTime * glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	//objectList[0].SetRotation(glm::rotate(glm::mat4(1.0f), durationTime * glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
+
+    //CGraphicsDescriptorManager::mvpUBO.mvpData[0].model = glm::rotate(glm::mat4(1.0f), durationTime * glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
+	//objectList[0].SetRotation(glm::rotate(glm::mat4(1.0f), durationTime * glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
+    CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].model = m;
+}
+
 void CObject::CleanUp(){
         //textureDescriptor.DestroyAndFree();
 }
-
-// void CObject::InitVertices2D(std::vector<Vertex2D> &input_verticices2D){
-//     vertices2D = input_verticices2D;
-// }
-
-// void CObject::InitVertices3D(std::vector<Vertex3D> &input_verticices3D){
-//     vertices3D = input_verticices3D;
-// }
-
-// void CObject::InitIndices3D(std::vector<uint32_t> &input_indices3D){
-//     indices3D = input_indices3D;
-// }
 
 void CObject::CreateTextureDescriptorSets(CTextureImage &textureImage, VkDescriptorPool &descriptorPool, VkDescriptorSetLayout &descriptorSetLayout, VkSampler &sampler, std::vector<VkImageView> *swapchainImageViews){
     std::vector<CTextureImage> textureImages{textureImage};
@@ -92,12 +164,6 @@ void CObject::Register(CApplication *p_app, int texture_id, int model_id, int ob
     p_graphicsPipelineLayout = &(p_app->renderProcess.graphicsPipelineLayout);
     p_graphicsDescriptorSets = &(p_app->graphicsDescriptorManager.descriptorSets);
 
-    //Prepare vertex/index buffers
-    // vertices3D = input_verticices3D;
-    // indices3D = input_indices3D;
-    // p_renderer->CreateVertexBuffer<Vertex3D>(vertices3D); 
-    // p_renderer->CreateIndexBuffer(indices3D);
-
     //Create texture descriptor set
     if(texture_id != -1){
         bUseTextureSampler = true; //vertex3D has texture coord, assume texture is used
@@ -154,9 +220,4 @@ void CObject::Draw(std::vector<CWxjBuffer> &buffer, uint32_t n){ //const VkBuffe
     //vkCmdBindVertexBuffers(p_renderer->commandBuffers[p_renderer->graphicsCmdId][p_renderer->currentFrame], 0, 1, &buffer[p_renderer->currentFrame].buffer, offsets);
     p_renderer->BindExternalBuffer(buffer);
     p_renderer->Draw(n);
-}
-
-
-void CObject::SetRotation(glm::mat4 m){
-    CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].model = m;
 }

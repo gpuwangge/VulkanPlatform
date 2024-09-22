@@ -6,11 +6,6 @@ bool CApplication::NeedToExit = false;
 CApplication::CApplication(){
     //debugger = new CDebugger("../logs/application.log");
 
-    //descriptors.resize(1);
-    //textureImages.resize(1);
-    //textureImages1.resize(1);
-    //textureImages2.resize(1);
-
     mainCamera.type = Camera::CameraType::firstperson;
     mainCamera.setPosition(glm::vec3(0.0f, 0.0f, -2.0f));
     mainCamera.setRotation(glm::vec3(0.0f, 0.0f, 0.0f));
@@ -120,10 +115,8 @@ void CApplication::update(){
 
     mainCamera.update(deltaTime);
 
-    //for(int i = 0; i < descriptors.size(); i++){
-    //    descriptors[i].updateMVPUniformBuffer(renderer.currentFrame, durationTime, mainCamera);
-    //    descriptors[i].updateVPUniformBuffer(renderer.currentFrame, durationTime, mainCamera);
-    //}
+    for(int i = 0; i < objectList.size(); i++) objectList[i].Update(deltaTime);
+
     graphicsDescriptorManager.updateMVPUniformBuffer(renderer.currentFrame, durationTime, mainCamera);
     graphicsDescriptorManager.updateVPUniformBuffer(renderer.currentFrame, durationTime, mainCamera);
 }
