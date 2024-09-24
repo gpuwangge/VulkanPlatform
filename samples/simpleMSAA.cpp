@@ -25,7 +25,7 @@ public:
 	}
 
 	void update(){
-		objectList[0].AngularVelocity = glm::vec3(50,50,50);//Pitch, Yaw, Roll
+		objectList[0].SetAngularVelocity(50,50,50);
 		CApplication::update();
 	}
 

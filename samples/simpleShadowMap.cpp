@@ -65,8 +65,8 @@ public:
 		
 		graphicsDescriptorManager.updateCustomUniformBuffer<CustomUniformBufferObject>(renderer.currentFrame, durationTime, customUBO);
 
-		//graphicsDescriptorManager.mvpUBO.mvpData[0].model = glm::rotate(glm::mat4(1.0f),  glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-		objectList[0].SetRotation(glm::rotate(glm::mat4(1.0f),  glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
+		objectList[0].SetAngularVelocity(0, 0, 50);
+
 		CApplication::update();
 	}
 

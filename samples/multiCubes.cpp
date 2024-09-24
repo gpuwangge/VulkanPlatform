@@ -40,14 +40,8 @@ public:
 	}
 
 	void update(){
-		//CGraphicsDescriptorManager::mvpUBO.mvpData[0].model = glm::rotate(glm::mat4(1.0f), durationTime * glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-		//CGraphicsDescriptorManager::mvpUBO.mvpData[1].model = glm::rotate(glm::mat4(1.0f), durationTime * glm::radians(-45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-		//objectList[0].SetRotation(glm::rotate(glm::mat4(1.0f), durationTime * glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
-		//objectList[1].SetRotation(glm::rotate(glm::mat4(1.0f), durationTime * glm::radians(-45.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
-		//mvpUBO.mvpData[1].model = glm::mat4(1.0f); //identity matrix
-
-		objectList[0].Velocity.z = 0.5 * sin(durationTime * 2); //positive number will move to x direction (toward camera)
-		objectList[1].AngularVelocity = glm::vec3(0,0,50.0f);
+		objectList[0].SetVelocity(0, 0, 3*sin(durationTime * 2));
+		objectList[1].SetAngularVelocity(50,0,50); //rotation around x and z axis
 		CApplication::update();
 	}
 

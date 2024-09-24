@@ -6,91 +6,149 @@ CObject::CObject(){
     bUseTextureSampler = false;
     bUpdate = true;
 
-    PositionVector = glm::vec3();
+    //ObjectState = ObjectStates::IDLE;
+
+    Position = glm::vec3();
+    Rotation = glm::vec3();
+
     Velocity = glm::vec3();
     AngularVelocity = glm::vec3();
-    //MovementSpeed = 0;
-    //RotationSpeed = 0;
-    //Accerlation = glm::vec3();
-    //Direction = glm::vec3(1,0,0);
-    RotationVector = glm::vec3();
-    Pitch = 0;
-    Yaw = 0;
-    Roll = 0;
-    float Scale = 1.0f;
-    //m_model = glm::mat4(1.0f);
+
+    for(int i = 0; i < 6; i++) TempVelocity[i] = glm::vec4();
+    for(int i = 0; i < 6; i++) TempAngularVelocity[i] = glm::vec4();
+
+    RotationMatrix = glm::mat4();
+    DirectionFront = glm::vec3();
+    DirectionUp = glm::vec3();
+    DirectionLeft = glm::vec3();
+
+    // MaxSpeed = 1.0f;
+    // Speed = 0.0f;
+    // MaxRotateSpeed = 50.0f;
+    // RotateSpeed = 0.0f;
+    // TargetPosition = glm::vec3();
+    // TargetDirection = glm::vec3();
+
+    Scale = 1.0f;
 }
 
  void CObject::Update(float deltaTime){
     if(!bUpdate) return;
     //std::cout<<"Update Object"<<m_object_id<<std::endl;
-    
-    // glm::vec3 objectUp;
-    // objectUp.x = -cos(glm::radians(RotationVector.x)) * sin(glm::radians(RotationVector.y));
-    // objectUp.y = sin(glm::radians(RotationVector.x));
-    // objectUp.z = cos(glm::radians(RotationVector.x)) * cos(glm::radians(RotationVector.y));
-    // objectUp = glm::normalize(objectUp);
+    //std::cout<<"deltaTime: "<<deltaTime<<std::endl;
+
+    glm::vec3 CurrentVelocity = Velocity;
+    glm::vec3 CurrentAngularVelocity = AngularVelocity;
+    for(int i = 0; i < 6; i++){
+        if(TempVelocity[i].w > 0){
+            CurrentVelocity += glm::vec3(TempVelocity[i]);
+            TempVelocity[i].w -= deltaTime;
+        }
+        if(TempAngularVelocity[i].w > 0){
+            CurrentAngularVelocity += glm::vec3(TempAngularVelocity[i]);
+            TempAngularVelocity[i].w -= deltaTime;
+        }
+    }
 
     /**********
     * Vulkan Screen Coordinate: Right Hand Rule, x from left to right, y from up to bottom, z from far to near 
     **********/
-    //PositionVector += deltaTime * glm::normalize(glm::cross(objectUp, glm::vec3(0.0f, 1.0f, 0.0f))) * Velocity.x;
-    //PositionVector += deltaTime * glm::normalize(glm::cross(objectUp, glm::vec3(1.0f, 0.0f, 0.0f))) * Velocity.y;
-    //PositionVector += deltaTime * glm::normalize(objectUp) * Velocity.z;
+    Rotation += deltaTime * glm::vec3(CurrentAngularVelocity.x, CurrentAngularVelocity.y, CurrentAngularVelocity.z);
 
-    ///RotationVector += deltaTime * glm::normalize(glm::cross(objectUp, glm::vec3(0.0f, 1.0f, 0.0f))) * AngularVelocity.x;
-    ///RotationVector += deltaTime * glm::normalize(glm::cross(objectUp, glm::vec3(1.0f, 0.0f, 0.0f))) * AngularVelocity.y;
-    ///RotationVector += deltaTime * glm::normalize(objectUp) * AngularVelocity.z;
+    /**********
+    * Translate Update
+    **********/
+    ComputeRotationMatrix();
+    ComputeDirections();
+    Position += deltaTime * DirectionFront * CurrentVelocity.z;
+    Position += deltaTime * DirectionUp * CurrentVelocity.y;
+    Position += deltaTime * DirectionLeft * CurrentVelocity.x;
+    glm::mat4 translateMatrix = glm::translate(glm::mat4(1.0f), Position);
 
+    /**********
+    * Calculate model matrix based on vector Postion and Rotation
+    **********/
+    CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].model = translateMatrix * RotationMatrix;
+    
+    // switch (ObjectState)
+    // {
+    //     case ObjectStates::IDLE:
+    //         break;
+    //     case ObjectStates::MOVING:
+    //         if(TempVelocityForward.w > 0){
+    //             Velocity = glm::vec3(TempVelocityForward);
+    //             TempVelocityForward.w -= deltaTime;
+    //         }else {
+    //             Velocity = glm::vec3();
+    //             ObjectState = ObjectStates::IDLE;
+    //         }
+    //         // if(ComputeDifference(Position, TargetPosition) < 0.01f){
+    //         //     Velocity = glm::vec3();
+    //         //     TargetPosition = glm::vec3();
+    //         //     ObjectState = ObjectStates::IDLE;
+    //         // }
+    //         break;
+    //     default:
+    //         break;
+    // }
+ }
+
+// float CObject::ComputeDifference(glm::vec3 v1, glm::vec3 v2){
+//     return glm::sqrt((v1.x - v2.x)*(v1.x - v2.x) + (v1.y - v2.y)*(v1.y - v2.y) + (v1.z - v2.z)*(v1.z - v2.z));
+// }
+
+void CObject::ComputeRotationMatrix(){
     /**********
     * Rotation Update (Quanternion)
     * AngularVelocity defines the angular velocity for Pitch, Yaw and Roll
     **********/
     glm::quat orientation;
-    Pitch += deltaTime * AngularVelocity.x;
-    Yaw += deltaTime * AngularVelocity.y;
-    Roll += deltaTime * AngularVelocity.z;
-    glm::quat qPitch = glm::angleAxis(glm::radians(Pitch), glm::vec3(1,0,0));
-    glm::quat qYaw = glm::angleAxis(glm::radians(Yaw), glm::vec3(0,1,0));
-    glm::quat qRoll = glm::angleAxis(glm::radians(Roll), glm::vec3(0,0,1));
-    orientation = qPitch * qYaw * qRoll;
-    glm::mat4 rotateMat = glm::mat4_cast(orientation);
+    glm::quat qPitch = glm::angleAxis(glm::radians(Rotation[0]), glm::vec3(1,0,0));
+    glm::quat qYaw = glm::angleAxis(glm::radians(Rotation[1]), glm::vec3(0,1,0));
+    glm::quat qRoll = glm::angleAxis(glm::radians(Rotation[2]), glm::vec3(0,0,1));
+    orientation = qPitch * qYaw * qRoll; //order matters: first pitch then yaw
+    //orientation = qYaw * qPitch * qRoll;  //first yaw then pitch
+    RotationMatrix = glm::mat4_cast(orientation);    
+}
 
-    /**********
-    * Translate Update
-    * Velocity defines the velocity along the front direction(?)
-    **********/
-   // glm::vec3 Front = glm::rotate(glm::inverse(orientation), glm::vec3(0.0, 0.0, -1.0));
-    //glm::vec3 Right = glm::rotate(orientation, glm::vec3(1.0, 0.0, 0.0));
-    //glm::vec3 Up = glm::rotate(glm::inverse(orientation), glm::vec3(1.0, 0.0, 0.0));
-    glm::vec3 objectUp;
-    objectUp.x = -cos(glm::radians(Pitch)) * sin(glm::radians(Yaw));
-    objectUp.y = sin(glm::radians(Pitch));
-    objectUp.z = cos(glm::radians(Pitch)) * cos(glm::radians(Yaw));
-    objectUp = glm::normalize(objectUp);
-    PositionVector += deltaTime * glm::normalize(objectUp) * Velocity.z;
-    glm::mat4 translateMat = glm::translate(glm::mat4(1.0f), PositionVector);
+void CObject::ComputeDirections(){
+    DirectionFront = glm::normalize(RotationMatrix * glm::vec4(0,0,1,0));
+    DirectionUp = glm::normalize(RotationMatrix * glm::vec4(0,1,0,0));
+    DirectionLeft = glm::normalize(RotationMatrix * glm::vec4(1,0,0,0));
+}
 
-    /**********
-    * Calculate model matrix based on vector Postion and Rotation
-    **********/
-    //glm::mat4 m_model = translateMat * rotateMat;
-    //m_model = glm::vec4(position, 0.0f) * glm::vec4(-1.0f, 1.0f, -1.0f, 1.0f);
-
-    CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].model = translateMat * rotateMat;
- }
-
- void CObject::SetRotation(glm::mat4 m){
+//void CObject::SetRotation(glm::mat4 m){
     //graphicsDescriptorManager.mvpUBO.mvpData[0].model = glm::rotate(glm::mat4(1.0f), durationTime * glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 	//objectList[0].SetRotation(glm::rotate(glm::mat4(1.0f), durationTime * glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
 
     //CGraphicsDescriptorManager::mvpUBO.mvpData[0].model = glm::rotate(glm::mat4(1.0f), durationTime * glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
 	//objectList[0].SetRotation(glm::rotate(glm::mat4(1.0f), durationTime * glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
-    CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].model = m;
-}
+    
+    //CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].model = m;
+//}
+
+void CObject::MoveForward(float distance, float speed){ TempVelocity[TranslateDirections::FORWARD] = glm::vec4(0, 0, speed, distance/speed); }
+void CObject::MoveBackward(float distance, float speed){ TempVelocity[TranslateDirections::BACKWARD] = glm::vec4(0, 0, -speed, distance/speed); }
+void CObject::MoveLeft(float distance, float speed){ TempVelocity[TranslateDirections::LEFT]= glm::vec4(speed, 0, 0, distance/speed); }
+void CObject::MoveRight(float distance, float speed){ TempVelocity[TranslateDirections::RIGHT] = glm::vec4(-speed, 0, 0, distance/speed); }
+void CObject::MoveUp(float distance, float speed){ TempVelocity[TranslateDirections::UP]= glm::vec4(0, -speed, 0, distance/speed); }
+void CObject::MoveDown(float distance, float speed){ TempVelocity[TranslateDirections::DOWN]= glm::vec4(0, speed, 0, distance/speed); }
+
+void CObject::PitchUp(float angle, float speed){ TempAngularVelocity[RotationDirections::PITCHUP] = glm::vec4(speed, 0, 0, angle/speed); }
+void CObject::PitchDown(float angle, float speed){ TempAngularVelocity[RotationDirections::PITCHDOWN] = glm::vec4(-speed, 0, 0, angle/speed); }
+void CObject::YawLeft(float angle, float speed){ TempAngularVelocity[RotationDirections::YAWLEFT] = glm::vec4(0, speed, 0, angle/speed); }
+void CObject::YawRight(float angle, float speed){ TempAngularVelocity[RotationDirections::YAWRIGHT] = glm::vec4(0, -speed, 0, angle/speed);  }
+void CObject::RollLeft(float angle, float speed){ TempAngularVelocity[RotationDirections::ROLLLEFT] = glm::vec4(0, 0, speed, angle/speed); }
+void CObject::RollRight(float angle, float speed){ TempAngularVelocity[RotationDirections::ROLLRIGHT] = glm::vec4(0, 0, -speed, angle/speed); }
+
+void CObject::SetPosition(float x, float y, float z){ Position = glm::vec3(x, y, z); }
+void CObject::SetRotation(float pitch, float yaw, float roll){ Rotation = glm::vec3(pitch, yaw, roll); }
+
+void CObject::SetVelocity(float vx, float vy, float vz){ Velocity = glm::vec3(vx, vy, vz); }
+void CObject::SetAngularVelocity(float vx, float vy, float vz){ AngularVelocity = glm::vec3(vx, vy, vz); }
 
 void CObject::CleanUp(){
-        //textureDescriptor.DestroyAndFree();
+    //textureDescriptor.DestroyAndFree();
 }
 
 void CObject::CreateTextureDescriptorSets(CTextureImage &textureImage, VkDescriptorPool &descriptorPool, VkDescriptorSetLayout &descriptorSetLayout, VkSampler &sampler, std::vector<VkImageView> *swapchainImageViews){
