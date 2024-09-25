@@ -125,6 +125,11 @@ public:
     void SetPosition(float x, float y, float z);
     void SetRotation(float pitch, float yaw, float roll);
 
+    glm::vec4 TempMoveVelocity;
+    void MoveToPosition(float x, float y, float z, float t);
+    glm::vec4 TempMoveAngularVelocity;
+    void MoveToRotation(float pitch, float yaw, float roll, float t);
+
     void SetVelocity(float vx, float vy, float vz);
     void SetAngularVelocity(float vx, float vy, float vz);
 

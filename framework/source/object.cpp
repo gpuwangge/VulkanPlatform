@@ -22,6 +22,8 @@ CObject::CObject(){
     DirectionUp = glm::vec3();
     DirectionLeft = glm::vec3();
 
+    TempMoveVelocity = glm::vec4();
+    TempMoveAngularVelocity = glm::vec4();
     // MaxSpeed = 1.0f;
     // Speed = 0.0f;
     // MaxRotateSpeed = 50.0f;
@@ -49,6 +51,14 @@ CObject::CObject(){
             TempAngularVelocity[i].w -= deltaTime;
         }
     }
+    if(TempMoveVelocity.w > 0){
+        CurrentVelocity += glm::vec3(TempMoveVelocity);
+        TempMoveVelocity.w -= deltaTime;
+    }
+    if(TempMoveAngularVelocity.w > 0){
+        CurrentAngularVelocity += glm::vec3(TempMoveAngularVelocity);
+        TempMoveAngularVelocity.w -= deltaTime;
+    }
 
     /**********
     * Vulkan Screen Coordinate: Right Hand Rule, x from left to right, y from up to bottom, z from far to near 
@@ -64,6 +74,8 @@ CObject::CObject(){
     Position += deltaTime * DirectionUp * CurrentVelocity.y;
     Position += deltaTime * DirectionLeft * CurrentVelocity.x;
     glm::mat4 translateMatrix = glm::translate(glm::mat4(1.0f), Position);
+
+    //std::cout<<"Position = "<<Position.x<<","<<Position.y<<","<<Position.z<<std::endl;
 
     /**********
     * Calculate model matrix based on vector Postion and Rotation
@@ -143,6 +155,13 @@ void CObject::RollRight(float angle, float speed){ TempAngularVelocity[RotationD
 
 void CObject::SetPosition(float x, float y, float z){ Position = glm::vec3(x, y, z); }
 void CObject::SetRotation(float pitch, float yaw, float roll){ Rotation = glm::vec3(pitch, yaw, roll); }
+
+void CObject::MoveToPosition(float x, float y, float z, float t){
+    TempMoveVelocity = glm::vec4((x - Position.x)/t, (y - Position.y)/t, (z - Position.z)/t, t);
+}
+void CObject::MoveToRotation(float pitch, float yaw, float roll, float t){
+    TempMoveAngularVelocity = glm::vec4((pitch - Rotation.x)/t, (yaw - Rotation.y)/t, (roll - Rotation.z)/t, t);
+}
 
 void CObject::SetVelocity(float vx, float vy, float vz){ Velocity = glm::vec3(vx, vy, vz); }
 void CObject::SetAngularVelocity(float vx, float vy, float vz){ AngularVelocity = glm::vec3(vx, vy, vz); }
