@@ -18,20 +18,15 @@ public:
 	};
 	CustomUniformBufferObject customUBO{};
 
-	std::vector<std::string> modelNames = {"viking_room.obj"}; 
-	std::vector<std::pair<std::string, bool>> textureNames = {{"viking_room.png", false}}; //first: textureName, second: mipmap
-	std::vector<int> modelList = {0}; //the 0'th object use 0'th model
-	std::vector<int> textureList = {0}; //the 0'th object use 0'th texture
-
 	void initialize(){
 		mainCamera.setPosition(glm::vec3(0.0f, -2.5f, -2.5f));
 		mainCamera.setRotation(glm::vec3(45.0f, 0.0f, 0.0f));
 		mainCamera.setPerspective(60.0f, (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 256.0f);
 		appInfo.Object.Count = 1;
-		appInfo.Object.Model.Names = &modelNames;
-		appInfo.Object.Model.List = &modelList;
-		appInfo.Object.Texture.Names = &textureNames;
-		appInfo.Object.Texture.List = &textureList;
+		appInfo.Object.Model.Names = std::make_unique<std::vector<std::string>>(std::vector<std::string> {"viking_room.obj"});
+		appInfo.Object.Model.List = std::make_unique<std::vector<int>>(std::vector<int> {0});
+		appInfo.Object.Texture.Names = std::make_unique<std::vector<std::pair<std::string, bool>>>(std::vector<std::pair<std::string, bool>> {{"viking_room.png", false}});
+		appInfo.Object.Texture.List = std::make_unique<std::vector<int>>(std::vector<int> {0});
 		appInfo.Shader.Vertex = "simpleShadowMap/vert.spv";
 		appInfo.Shader.Fragment = "simpleShadowMap/frag.spv";
 		appInfo.Uniform.GraphicsSampler.Count = 1;

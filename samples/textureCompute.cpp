@@ -14,8 +14,6 @@ class TEST_CLASS_NAME: public CApplication{
 public:
 	static const int KernelRunNumber = 1;
 
-	std::vector<std::pair<std::string, bool>> textureNames = {{"texture.jpg", false}}; //first: textureName, second: mipmap
-
 	TEST_CLASS_NAME(){//these must be updated before initialization
 		swapchain.imageSize = MAX_FRAMES_IN_FLIGHT;
 		swapchain.bComputeSwapChainImage = true;
@@ -24,7 +22,7 @@ public:
 	void initialize(){
         appInfo.Render.Mode = renderer.RENDER_COMPUTE_SWAPCHAIN_Mode;
         appInfo.Shader.Compute = "textureCompute/comp.spv";
-        appInfo.Object.Texture.Names = &textureNames;
+        appInfo.Object.Texture.Names = std::make_unique<std::vector<std::pair<std::string, bool>>>(std::vector<std::pair<std::string, bool>> {{"texture.jpg", false}});
         appInfo.Uniform.EnableComputeStorageImage = true;
         appInfo.Uniform.EnableComputeStorageImageSwapChain = true;
 		CApplication::initialize();

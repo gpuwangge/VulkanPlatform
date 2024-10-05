@@ -78,6 +78,7 @@ void CApplication::initialize(){
     int model_id = -1;
     for(int i = 0; i < objectList.size(); i++){
         if(appInfo.Object.Texture.List != NULL) texture_id = appInfo.Uniform.GraphicsSampler.UseMultiSamplerForOneObject ? INT_MAX : (*appInfo.Object.Texture.List)[i]; 
+        //std::cout<<"i: "<<(*appInfo.Object.Model.List)[i] <<std::endl;
         if(appInfo.Object.Model.List != NULL) model_id = (*appInfo.Object.Model.List)[i];
         objectList[i].Register((CApplication*)this, texture_id, model_id, i); //must be set after initialize()::SetApplicationProperty(appInfo);
     }
@@ -320,11 +321,11 @@ void CApplication::SetApplicationProperty(AppInfo &appInfo){
     if(appInfo.Feature.EnableGraphics48BPT) CSupervisor::Activate_Feature_Graphics_48BPT();
     if(appInfo.Feature.EnableGraphicsPushConstant) CSupervisor::Activate_Feature_Graphics_PushConstant();
     if(appInfo.Feature.EnableGraphicsRainbowMipmap) CSupervisor::Activate_Feature_Graphics_RainbowMipmap();
-    if(appInfo.Buffer.GraphicsVertex.StructureType != NULL) CSupervisor::Activate_Buffer_Graphics_Vertex(appInfo.Buffer.GraphicsVertex.StructureType);
-    if(appInfo.Buffer.GraphicsVertex.Indices3D != NULL) CSupervisor::Activate_Buffer_Graphics_Vertex(*appInfo.Buffer.GraphicsVertex.Vertices3D, *appInfo.Buffer.GraphicsVertex.Indices3D);
-    if(appInfo.Buffer.GraphicsVertex.Vertices2D != NULL) CSupervisor::Activate_Buffer_Graphics_Vertex(*appInfo.Buffer.GraphicsVertex.Vertices2D);
-    if(appInfo.Object.Model.Names != NULL) CSupervisor::Activate_Buffer_Graphics_Vertex(appInfo.Object.Model.Names);
-    if(appInfo.Object.Texture.Names != NULL) CSupervisor::Activate_Texture(appInfo.Object.Texture.Names);
+    if(appInfo.Buffer.GraphicsVertex.StructureType != VertexStructureTypes::NoType) CSupervisor::Activate_Buffer_Graphics_Vertex(appInfo.Buffer.GraphicsVertex.StructureType);
+    //if(appInfo.Buffer.GraphicsVertex.Indices3D != NULL) CSupervisor::Activate_Buffer_Graphics_Vertex(*appInfo.Buffer.GraphicsVertex.Vertices3D, *appInfo.Buffer.GraphicsVertex.Indices3D);
+    //if(appInfo.Buffer.GraphicsVertex.Vertices2D != NULL) CSupervisor::Activate_Buffer_Graphics_Vertex(*appInfo.Buffer.GraphicsVertex.Vertices2D);
+    if(appInfo.Object.Model.Names != NULL) CSupervisor::Activate_Buffer_Graphics_Vertex(std::move(appInfo.Object.Model.Names), modelManager); 
+    if(appInfo.Object.Texture.Names != NULL) CSupervisor::Activate_Texture(std::move(appInfo.Object.Texture.Names));
 
     CSupervisor::Activate_Pipeline();
 }

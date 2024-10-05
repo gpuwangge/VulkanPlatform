@@ -1,6 +1,7 @@
 #ifndef H_SUPERVISOR
 #define H_SUPERVISOR
 #include "dataBuffer.hpp"
+#include "modelManager.h"
 
 /***************
 There is no such thing as a static class in C++. 
@@ -105,10 +106,7 @@ public:
      * 
      *****************************/    
     static VertexStructureTypes VertexStructureType;
-    static void Activate_Buffer_Graphics_Vertex(std::vector<Vertex3D> &vertices3D, std::vector<uint32_t> &indices3D);
-    static void Activate_Buffer_Graphics_Vertex(std::vector<Vertex2D> &vertices2D);
-    //static void Activate_Buffer_Graphics_Vertex(std::vector<std::string> &modelNames);
-    static void Activate_Buffer_Graphics_Vertex(std::vector<std::string> *modelNames);
+    static void Activate_Buffer_Graphics_Vertex(std::unique_ptr<std::vector<std::string>> modelNames, CModelManager &modelManager);
     static void Activate_Buffer_Graphics_Vertex(VertexStructureTypes vertexStructureType);
 
     /*****************************
@@ -116,7 +114,7 @@ public:
      * Texture
      * 
      *****************************/
-    static void Activate_Texture(std::vector<std::pair<std::string, bool>> *textureNames = NULL);
+    static void Activate_Texture(std::unique_ptr<std::vector<std::pair<std::string, bool>>> textureNames = NULL);
 
     /*****************************
      * 

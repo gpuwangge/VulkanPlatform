@@ -73,38 +73,28 @@ void CSupervisor::Activate_Feature_Graphics_PushConstant(){ bPushConstant = true
 void CSupervisor::Activate_Feature_Graphics_Blend(){ bBlend = true;}
 void CSupervisor::Activate_Feature_Graphics_RainbowMipmap(){ bRainbowMipmap = true;}
 
-
-void CSupervisor::Activate_Buffer_Graphics_Vertex(std::vector<Vertex3D> &vertices3D, std::vector<uint32_t> &indices3D){ 
-    VertexStructureType = VertexStructureTypes::ThreeDimension;
-    m_app->renderer.CreateVertexBuffer<Vertex3D>(vertices3D); 
-    m_app->renderer.CreateIndexBuffer(indices3D);
-}
-void CSupervisor::Activate_Buffer_Graphics_Vertex(std::vector<Vertex2D> &vertices2D){ 
-    VertexStructureType = VertexStructureTypes::TwoDimension;
-    m_app->renderer.CreateVertexBuffer<Vertex2D>(vertices2D); 
-    //m_app->renderer.CreateIndexBuffer(indices3D);
-}
-// void CSupervisor::Activate_Buffer_Graphics_Vertex(std::vector<std::string> &modelNames){
-//     VertexStructureType = VertexStructureTypes::ThreeDimension;
-//     for(int i = 0; i < modelNames.size(); i++){
-//         m_app->modelManager.LoadObjModel(modelNames[i], vertices3D, indices3D);
-//         m_app->renderer.CreateVertexBuffer<Vertex3D>(vertices3D); 
-//         m_app->renderer.CreateIndexBuffer(indices3D);
-//     }
-// }
-void CSupervisor::Activate_Buffer_Graphics_Vertex(std::vector<std::string> *modelNames){ 
-    VertexStructureType = VertexStructureTypes::ThreeDimension;
+void CSupervisor::Activate_Buffer_Graphics_Vertex(std::unique_ptr<std::vector<std::string>> modelNames, CModelManager &modelManager){ 
     for(int i = 0; i < modelNames->size(); i++){
-        m_app->modelManager.LoadObjModel((*modelNames)[i], vertices3D, indices3D);
-        m_app->renderer.CreateVertexBuffer<Vertex3D>(vertices3D); 
-        m_app->renderer.CreateIndexBuffer(indices3D);
+        VertexStructureType = VertexStructureTypes::ThreeDimension;
+        if((*modelNames)[i] == "CUSTOM3D0"){
+            m_app->renderer.CreateVertexBuffer<Vertex3D>(modelManager.customModels3D[0].vertices); 
+            m_app->renderer.CreateIndexBuffer(modelManager.customModels3D[0].indices);
+        }else if((*modelNames)[i] == "CUSTOM2D0"){
+            VertexStructureType = VertexStructureTypes::TwoDimension;
+            m_app->renderer.CreateVertexBuffer<Vertex2D>(modelManager.customModels2D[0].vertices); 
+        }else{
+            VertexStructureType = VertexStructureTypes::ThreeDimension;
+            m_app->modelManager.LoadObjModel((*modelNames)[i], vertices3D, indices3D);
+            m_app->renderer.CreateVertexBuffer<Vertex3D>(vertices3D); 
+            m_app->renderer.CreateIndexBuffer(indices3D);
+        }
     }
 }          
 void CSupervisor::Activate_Buffer_Graphics_Vertex(VertexStructureTypes vertexStructureType){ 
     VertexStructureType = vertexStructureType;
 }  
 
-void CSupervisor::Activate_Texture(std::vector<std::pair<std::string, bool>> *textureNames){
+void CSupervisor::Activate_Texture(std::unique_ptr<std::vector<std::pair<std::string, bool>>> textureNames){
     //Textures
     //if(Query_Pipeline_Graphics()){ //remove this query because if present texutre to swapchain, no need graphics pipeline
     if(textureNames){

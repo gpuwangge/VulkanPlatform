@@ -9,12 +9,11 @@ public:
 		{ { -0.5f, 0.5f},{ 0.0f, 0.0f, 1.0f }}		
 	};
 
-	std::vector<int> modelList = {0}; //this 0 means vertex3D, not model
-
 	void initialize(){
+		modelManager.CreateCustomModel2D(vertices);
 		appInfo.Object.Count = 1;
-		appInfo.Buffer.GraphicsVertex.Vertices2D = &vertices; 
-		appInfo.Object.Model.List = &modelList;
+		appInfo.Object.Model.Names = std::make_unique<std::vector<std::string>>(std::vector<std::string> {"CUSTOM2D0"});
+		appInfo.Object.Model.List = std::make_unique<std::vector<int>>(std::vector<int> {0});
 		appInfo.Shader.Vertex = "simpleVertexBuffer/vert.spv";
 		appInfo.Shader.Fragment = "simpleVertexBuffer/frag.spv";
 		CApplication::initialize();

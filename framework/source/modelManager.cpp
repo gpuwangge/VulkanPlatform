@@ -6,6 +6,18 @@
 CModelManager::CModelManager(){}
 CModelManager::~CModelManager(){}
 
+void CModelManager::CreateCustomModel3D(std::vector<Vertex3D> &vertices3D, std::vector<uint32_t> &indices3D){
+	CCustomModel3D model;
+	model.vertices = vertices3D;
+	model.indices = indices3D;
+	customModels3D.push_back(model);
+}
+
+void CModelManager::CreateCustomModel2D(std::vector<Vertex2D> &vertices2D){
+	CCustomModel2D model;
+	model.vertices = vertices2D;
+	customModels2D.push_back(model);
+}
 
 void CModelManager::LoadObjModel(IN const std::string modelName, OUT std::vector<Vertex3D> &vertices3D, OUT std::vector<uint32_t> &indices3D) {
 	tinyobj::attrib_t attrib;

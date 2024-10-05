@@ -160,12 +160,16 @@ public:
     struct ObjectInfo{
         int Count = 0;
         struct ModelInfo{
-            std::vector<std::string> *Names = NULL;
-            std::vector<int> *List = NULL; //the i'th object use i'th model
+            //std::vector<std::string> *Names = NULL;
+            //std::vector<int> *List = NULL; 
+            std::unique_ptr<std::vector<std::string>> Names;
+            std::unique_ptr<std::vector<int>> List; //the i'th object use i'th model
         }Model;
         struct TextureInfo{
-            std::vector<std::pair<std::string, bool>> *Names = NULL;
-            std::vector<int> *List = NULL; //the i'th object use i'th texture
+            //std::vector<std::pair<std::string, bool>> *Names = NULL;
+            //std::vector<int> *List = NULL; 
+            std::unique_ptr<std::vector<std::pair<std::string, bool>>> Names; //first: textureName, second: mipmap, //the i'th object use i'th texture
+            std::unique_ptr<std::vector<int>> List;
         }Texture;
     };
 

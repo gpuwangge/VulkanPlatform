@@ -16,21 +16,19 @@ public:
 	// };
 
 	// CCube cubes[2];
-
-	std::vector<std::string> modelNames = {"cube.obj", "hallway.obj"}; //"viking_room.obj"
-	std::vector<std::pair<std::string, bool>> textureNames = {{"viking_room.png", false}, {"fur.jpg", false}}; 
-	std::vector<int> modelList = {0, 1}; 
-	std::vector<int> textureList = {0, 1};
 	
     void initialize(){
 		mainCamera.setPosition(glm::vec3(0.0f, -8.5f, -8.5f));
 		mainCamera.setRotation(glm::vec3(45.0f, 0.0f, 0.0f));
 		mainCamera.setPerspective(60.0f, (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 256.0f);
 		appInfo.Object.Count = 2;
-		appInfo.Object.Model.Names = &modelNames;
-		appInfo.Object.Model.List = &modelList;
-		appInfo.Object.Texture.Names = &textureNames;
-		appInfo.Object.Texture.List = &textureList;
+		appInfo.Object.Model.Names = std::make_unique<std::vector<std::string>>(std::vector<std::string> {"cube.obj", "hallway.obj"});
+		appInfo.Object.Model.List = std::make_unique<std::vector<int>>(std::vector<int> {0, 1});
+		appInfo.Object.Texture.Names = std::make_unique<std::vector<std::pair<std::string, bool>>>(std::vector<std::pair<std::string, bool>> {
+			{"viking_room.png", false},
+			{"fur.jpg", false},
+			});
+		appInfo.Object.Texture.List = std::make_unique<std::vector<int>>(std::vector<int> {0, 1});
 		appInfo.Shader.Vertex = "multiCubes/vert.spv";
 		appInfo.Shader.Fragment = "multiCubes/frag.spv";
 		appInfo.Uniform.GraphicsSampler.Count = 1;
