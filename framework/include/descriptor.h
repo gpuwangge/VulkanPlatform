@@ -31,7 +31,9 @@ public:
     static VkDescriptorPool descriptorPool;
     static std::vector<VkDescriptorPoolSize> poolSizes;
 
-    static void createDescriptorPool();//VkDescriptorType    type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER
+    static unsigned int objectCount;
+
+    static void createDescriptorPool(unsigned int object_count = 0);//VkDescriptorType    type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER
     static int getPoolSize();
 
 };

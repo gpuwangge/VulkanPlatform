@@ -273,8 +273,9 @@ struct MVPUniformBufferObject {
 
     //for now, support two groups of mvpData. Each draw only use one mvpData matrices. Use offset to access.
     //Each mvpData is to be aligned to be 256 bytes
-    //buffer size is 256*2 = 512 bytes; Buffer range is 256 bytes(for each object)
-    MVPData mvpData[2]; 
+    //Support up to 256 (MVP) objects. buffer size is 256*256 = 65536 bytes; Buffer range is 256 bytes(for each object)
+    //65536 bytes = 64 kilo bytes
+    MVPData mvpData[256]; 
 
     static VkDescriptorSetLayoutBinding GetBinding(){
         VkDescriptorSetLayoutBinding binding;

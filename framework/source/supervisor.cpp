@@ -189,10 +189,10 @@ void CSupervisor::Activate_Pipeline(){ //*customBinding = NULL
         if(Query_Uniform_Compute_Custom()) CComputeDescriptorManager::addCustomUniformBuffer(ComputeCustomUniformBufferSize);
     }
 
-    //Pool
-    CDescriptorManager::createDescriptorPool(); 
+    //Descriptor Pool
+    CDescriptorManager::createDescriptorPool(m_app->appInfo.Object.Count); 
 
-    //Layout
+    //Descriptor Layout
     if(Query_Pipeline_Graphics()){
         if(Query_Uniform_Graphics_Custom()) {
             CGraphicsDescriptorManager::createDescriptorSetLayout(&GraphicsCustomBinding); 
@@ -205,7 +205,7 @@ void CSupervisor::Activate_Pipeline(){ //*customBinding = NULL
         }else CComputeDescriptorManager::createDescriptorSetLayout();
     }
 
-    //Set
+    //Descriptor Set
     if(Query_Pipeline_Graphics()){
         if(Query_Uniform_Compute_StorageImage())
             m_app->graphicsDescriptorManager.createDescriptorSets(&(m_app->textureManager.textureImages));

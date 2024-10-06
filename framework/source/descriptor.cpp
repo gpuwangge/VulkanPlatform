@@ -8,10 +8,10 @@ unsigned int CDescriptorManager::uniformBufferUsageFlags;
 unsigned int CDescriptorManager::samplerCount;
 std::vector<VkDescriptorPoolSize> CDescriptorManager::poolSizes;
 VkDescriptorPool CDescriptorManager::descriptorPool;
-
+unsigned int CDescriptorManager::objectCount;
 
 //Graphics Descriptor
-std::vector<CWxjBuffer> CGraphicsDescriptorManager::customUniformBuffers; 
+std::vector<CWxjBuffer> CGraphicsDescriptorManager::customUniformBuffers;
 std::vector<void*> CGraphicsDescriptorManager::customUniformBuffersMapped;
 VkDeviceSize CGraphicsDescriptorManager::m_customUniformBufferSize;
 
@@ -32,14 +32,14 @@ VkDescriptorSetLayout CGraphicsDescriptorManager::textureDescriptorSetLayout;
 
 
 //Compute Descriptor
-std::vector<CWxjBuffer> CComputeDescriptorManager::customUniformBuffers; 
+std::vector<CWxjBuffer> CComputeDescriptorManager::customUniformBuffers;
 std::vector<void*> CComputeDescriptorManager::customUniformBuffersMapped;
 VkDeviceSize CComputeDescriptorManager::m_customUniformBufferSize;
 
 std::vector<VkDescriptorSetLayoutBinding> CComputeDescriptorManager::computeBindings;
 VkDescriptorSetLayout CComputeDescriptorManager::descriptorSetLayout;
 
-std::vector<CWxjBuffer> CComputeDescriptorManager::storageBuffers; 
+std::vector<CWxjBuffer> CComputeDescriptorManager::storageBuffers;
 std::vector<void*> CComputeDescriptorManager::storageBuffersMapped;
 VkDeviceSize CComputeDescriptorManager::m_storageBufferSize;
 
@@ -47,34 +47,13 @@ VkDeviceSize CComputeDescriptorManager::m_storageBufferSize;
 
 CGraphicsDescriptorManager::CGraphicsDescriptorManager(){
     //debugger = new CDebugger("../logs/descriptor.log");
-	//bUseCustomUniformBuffer = false;
-    //bUseMVP = false;
-    //bUseVP = false;
-    //bUseSampler = false;
-    //bUseStorageBuffer = false;
-
-
 	m_customUniformBufferSize = 0;
-    ///m_storageBufferSize = 0;
-
-
-    //m_storageBufferSize_2 = 0;
-
-
-	//mvpUBO.model = glm::mat4(1.0f);
-    //mvpUBO.init(1);
-    mvpUBO.mvpData[0].model = glm::mat4(1.0f);
-    mvpUBO.mvpData[1].model = glm::mat4(1.0f);
-    //mvpUBO.mvpData.model = glm::mat4(1.0f);
-
-    //textureSampler = NULL;
-    //textureSamplers.resize(1);
-    //textureSamplerCount = 0;
-    
-
-    //m_storageImageSize = 0;
-
     uniformBufferUsageFlags = 0;
+
+    //TODO: is it okay to not initialize model?
+    // mvpUBO.mvpData[0].model = glm::mat4(1.0f);
+    // mvpUBO.mvpData[1].model = glm::mat4(1.0f);
+    // mvpUBO.mvpData[2].model = glm::mat4(1.0f);
 }
 
 CGraphicsDescriptorManager::~CGraphicsDescriptorManager(){
@@ -117,7 +96,7 @@ void CGraphicsDescriptorManager::addMVPUniformBuffer(){
     //bUseMVP = true;
     uniformBufferUsageFlags |= UNIFORM_BUFFER_MVP_BIT;
     //std::cout<<"addMVPUniformBuffer::uniformBufferUsageFlags = " << uniformBufferUsageFlags<<std::endl;
-	
+
     mvpUniformBuffers.resize(MAX_FRAMES_IN_FLIGHT);
     mvpUniformBuffersMapped.resize(MAX_FRAMES_IN_FLIGHT);
 
@@ -135,7 +114,7 @@ void CGraphicsDescriptorManager::addMVPUniformBuffer(){
 void CGraphicsDescriptorManager::addVPUniformBuffer(){
     //bUseVP = true;
     uniformBufferUsageFlags |= UNIFORM_BUFFER_VP_BIT;
-	
+
     vpUniformBuffers.resize(MAX_FRAMES_IN_FLIGHT);
     vpUniformBuffersMapped.resize(MAX_FRAMES_IN_FLIGHT);
 
@@ -168,7 +147,7 @@ void CGraphicsDescriptorManager::addImageSamplerUniformBuffer(uint32_t mipLevels
 	samplerInfo.unnormalizedCoordinates = VK_FALSE;
 	samplerInfo.compareEnable = VK_FALSE;
 	samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
-	
+
 	if (mipLevels > 1) {
         std::cout<<"Sampler MipLevels = "<< mipLevels<<"(>1). Enable mipmap for all textures using this sampler"<<std::endl;
 		samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;// VK_SAMPLER_MIPMAP_MODE_NEAREST;
@@ -214,7 +193,7 @@ void CComputeDescriptorManager::addStorageBuffer(VkDeviceSize storageBufferSize,
     //     m_storageBufferSize_2 = storageBufferSize;
 
     //     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-    //         storageBuffers_2[i].init(storageBufferSize, usage); 
+    //         storageBuffers_2[i].init(storageBufferSize, usage);
     //         vkMapMemory(CContext::GetHandle().GetLogicalDevice(), storageBuffers_2[i].deviceMemory, 0, storageBufferSize, 0, &storageBuffersMapped_2[i]);
     //     }
     // }
@@ -229,9 +208,13 @@ void CComputeDescriptorManager::addStorageImage(VkBufferUsageFlags usage){
 
 
 
-void CDescriptorManager::createDescriptorPool(){//VkDescriptorType type
+void CDescriptorManager::createDescriptorPool(unsigned int object_count){//VkDescriptorType type
     //Descriptor Step 1/3
 	//HERE_I_AM("CreateDescriptorPool");
+    objectCount = object_count;
+    // for(int i = 0; i < objectCount; i++)
+    //     mvpUBO.mvpData[i].model = glm::mat4(1.0f);
+
 
 	poolSizes.resize(getPoolSize());
 	int counter = 0;
@@ -254,19 +237,19 @@ void CDescriptorManager::createDescriptorPool(){//VkDescriptorType type
         std::cout<<": Sampler("<<samplerCount<<")";
         for(int i = 0; i < samplerCount; i++){
             poolSizes[counter].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-	 	    poolSizes[counter].descriptorCount = 2*static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);///TODO
+	 	    poolSizes[counter].descriptorCount = objectCount*static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);///each object has a sampler
 		    counter++;
         }
     }
     if(uniformBufferUsageFlags & UNIFORM_BUFFER_STORAGE_BIT){
         std::cout<<": Storage Buffer(2)";
         poolSizes[counter].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-	    poolSizes[counter].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT); 
+	    poolSizes[counter].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
         counter++;
         //}
         //if(uniformBufferUsageFlags & UNIFORM_BUFFER_STORAGE_2_BIT){
         poolSizes[counter].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
-	    poolSizes[counter].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT); 
+	    poolSizes[counter].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
         counter++;
     }
     if(uniformBufferUsageFlags & UNIFORM_IMAGE_STORAGE_TEXTURE_BIT){
@@ -288,7 +271,7 @@ void CDescriptorManager::createDescriptorPool(){//VkDescriptorType type
 	poolInfo.poolSizeCount = static_cast<uint32_t>(poolSizes.size());
     //std::cout<<"poolInfo.poolSizeCount = "<<poolInfo.poolSizeCount <<std::endl;
 	poolInfo.pPoolSizes = poolSizes.data();
-	poolInfo.maxSets = ((counter==0)?1:counter)*10*static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);///!!!TODO
+	poolInfo.maxSets = ((counter==0)?1:counter)*10*static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);///!!!TODO: currently support 10 sets?
 
 	VkResult result = vkCreateDescriptorPool(CContext::GetHandle().GetLogicalDevice(), &poolInfo, nullptr, &descriptorPool);
 	if (result != VK_SUCCESS) throw std::runtime_error("failed to create descriptor pool!");
@@ -401,7 +384,7 @@ void CGraphicsDescriptorManager::createTextureDescriptorSetLayout(){
             graphicsBindings[counter].stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
             counter++;
         }
-    }   
+    }
 
     VkDescriptorSetLayoutCreateInfo layoutInfo{};
 	layoutInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_CREATE_INFO;
@@ -503,7 +486,7 @@ void CGraphicsDescriptorManager::createDescriptorSets(std::vector<CTextureImage>
         //         counter++;
         //     }
         // }
-        
+
         /*
         if(uniformBufferUsageFlags & UNIFORM_BUFFER_STORAGE_BIT){ //for storage buffer 1
             VkDescriptorBufferInfo storageBufferInfo_1{};
@@ -634,10 +617,10 @@ void CGraphicsDescriptorManager::updateMVPUniformBuffer(uint32_t currentFrame, f
         //mvpUBO.view = mainCamera.matrices.view;
         //mvpUBO.proj = mainCamera.matrices.perspective;
 
-        mvpUBO.mvpData[0].view = mainCamera.matrices.view;
-        mvpUBO.mvpData[0].proj = mainCamera.matrices.perspective;
-        mvpUBO.mvpData[1].view = mainCamera.matrices.view;
-        mvpUBO.mvpData[1].proj = mainCamera.matrices.perspective;
+        for(int i = 0; i < objectCount; i++){
+            mvpUBO.mvpData[i].view = mainCamera.matrices.view;
+            mvpUBO.mvpData[i].proj = mainCamera.matrices.perspective;
+        }
         //mvpUBO.mvpData.view = mainCamera.matrices.view;
         //mvpUBO.mvpData.proj = mainCamera.matrices.perspective;
 
@@ -695,7 +678,7 @@ int CGraphicsDescriptorManager::getLayoutSize(){
 }
 int CGraphicsDescriptorManager::getSetSize(){
     //return getPoolSize() - textureSamplers.size();
-    //return getLayoutSize() - samplerCount; //for graphics descriptor, set size = layout size = sampler count 
+    //return getLayoutSize() - samplerCount; //for graphics descriptor, set size = layout size = sampler count
     return getLayoutSize();
 }
 
@@ -711,7 +694,7 @@ int CGraphicsDescriptorManager::getSetSize(){
 
 void CGraphicsDescriptorManager::DestroyAndFree(){
     for(int i = 0; i < textureSamplers.size(); i++){
-    //if(textureSampler) 
+    //if(textureSampler)
         vkDestroySampler(CContext::GetHandle().GetLogicalDevice(), textureSamplers[i], nullptr);
     }
     for (size_t i = 0; i < customUniformBuffers.size(); i++) {
@@ -833,7 +816,7 @@ void CComputeDescriptorManager::createDescriptorSets(std::vector<CTextureImage> 
 
         descriptorWrites.resize(descriptorSize);
         int counter = 0;
-        
+
         VkDescriptorBufferInfo customBufferInfo{}; //for custom uniform
         if(uniformBufferUsageFlags & UNIFORM_BUFFER_CUSTOM_COMPUTE_BIT){
             customBufferInfo.buffer = customUniformBuffers[i].buffer;
