@@ -1,4 +1,5 @@
 #include "../include/descriptor.h"
+#include "../include/object.h"
 
 //Camera CApplication::mainCamera;
 
@@ -149,7 +150,7 @@ void CGraphicsDescriptorManager::addImageSamplerUniformBuffer(uint32_t mipLevels
 	samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
 
 	if (mipLevels > 1) {
-        std::cout<<"Sampler MipLevels = "<< mipLevels<<"(>1). Enable mipmap for all textures using this sampler"<<std::endl;
+        //std::cout<<"Sampler MipLevels = "<< mipLevels<<"(>1). Enable mipmap for all textures using this sampler"<<std::endl;
 		samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;// VK_SAMPLER_MIPMAP_MODE_NEAREST;
 	 	samplerInfo.minLod = 0.0f;
 	 	samplerInfo.maxLod = static_cast<float>(mipLevels / 2);
@@ -219,22 +220,22 @@ void CDescriptorManager::createDescriptorPool(unsigned int object_count){//VkDes
 	poolSizes.resize(getPoolSize());
 	int counter = 0;
     //std::cout<<"createDescriptorPool::textureSamplers.size() = " << textureSamplers.size()<<std::endl;
-    std::cout<<"Pool size = " << getPoolSize();//std::endl;
+    //std::cout<<"Pool size = " << getPoolSize();//std::endl;
 
 	if((uniformBufferUsageFlags & UNIFORM_BUFFER_CUSTOM_GRAPHICS_BIT) ||(uniformBufferUsageFlags & UNIFORM_BUFFER_CUSTOM_COMPUTE_BIT)){
-        std::cout<<": Custom Buffer";
+        //std::cout<<": Custom Buffer";
         poolSizes[counter].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 	 	poolSizes[counter].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
 		counter++;
 	}
     if(uniformBufferUsageFlags & UNIFORM_BUFFER_MVP_BIT || uniformBufferUsageFlags & UNIFORM_BUFFER_VP_BIT){
-        std::cout<<": MVP";
+        //std::cout<<": MVP";
         poolSizes[counter].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
 	 	poolSizes[counter].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
 		counter++;
     }
     if(uniformBufferUsageFlags & UNIFORM_BUFFER_SAMPLER_BIT){
-        std::cout<<": Sampler("<<samplerCount<<")";
+        //std::cout<<": Sampler("<<samplerCount<<")";
         for(int i = 0; i < samplerCount; i++){
             poolSizes[counter].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 	 	    poolSizes[counter].descriptorCount = objectCount*static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);///each object has a sampler
@@ -242,7 +243,7 @@ void CDescriptorManager::createDescriptorPool(unsigned int object_count){//VkDes
         }
     }
     if(uniformBufferUsageFlags & UNIFORM_BUFFER_STORAGE_BIT){
-        std::cout<<": Storage Buffer(2)";
+        //std::cout<<": Storage Buffer(2)";
         poolSizes[counter].type = VK_DESCRIPTOR_TYPE_STORAGE_BUFFER;
 	    poolSizes[counter].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
         counter++;
@@ -253,18 +254,18 @@ void CDescriptorManager::createDescriptorPool(unsigned int object_count){//VkDes
         counter++;
     }
     if(uniformBufferUsageFlags & UNIFORM_IMAGE_STORAGE_TEXTURE_BIT){
-        std::cout<<": Storage Image(for Texture)";
+        //std::cout<<": Storage Image(for Texture)";
         poolSizes[counter].type = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
 	    poolSizes[counter].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT); ///!!!
         counter++;
     }
     if(uniformBufferUsageFlags & UNIFORM_IMAGE_STORAGE_SWAPCHAIN_BIT){
-        std::cout<<": Storage Image(for Swapchain Presentation)";
+        //std::cout<<": Storage Image(for Swapchain Presentation)";
         poolSizes[counter].type = VK_DESCRIPTOR_TYPE_STORAGE_IMAGE;
 	    poolSizes[counter].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT); ///!!!
         counter++;
     }
-    std::cout<<std::endl;
+    //std::cout<<std::endl;
 
 	VkDescriptorPoolCreateInfo poolInfo{};
 	poolInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_POOL_CREATE_INFO;
@@ -286,7 +287,7 @@ void CGraphicsDescriptorManager::createDescriptorSetLayout(VkDescriptorSetLayout
     graphicsBindings.resize(getLayoutSize());
     //graphicsBindings.resize(0);
 	int counter = 0;
-    std::cout<<"Layout(Graphics, Non-sampler) size = " << graphicsBindings.size()<<std::endl;
+    //std::cout<<"Layout(Graphics, Non-sampler) size = " << graphicsBindings.size()<<std::endl;
     //std::cout.flush();
 
 	if(uniformBufferUsageFlags & UNIFORM_BUFFER_CUSTOM_GRAPHICS_BIT){
@@ -372,7 +373,7 @@ void CGraphicsDescriptorManager::createDescriptorSetLayout(VkDescriptorSetLayout
 
 void CGraphicsDescriptorManager::createTextureDescriptorSetLayout(){
     graphicsBindings.resize(textureSamplers.size());//sampleCount?
-    std::cout<<"Layout(Sampler) size = "<<textureSamplers.size()<<std::endl;
+    //std::cout<<"Layout(Sampler) size = "<<textureSamplers.size()<<std::endl;
 	int counter = 0;
 
     if(uniformBufferUsageFlags & UNIFORM_BUFFER_SAMPLER_BIT){
@@ -400,7 +401,7 @@ void CGraphicsDescriptorManager::createDescriptorSets(std::vector<CTextureImage>
     //HERE_I_AM("wxjCreateDescriptorSets");
 
     int descriptorSize = getSetSize();
-    std::cout<<"Set(Graphics, Non-sampler) size = "<<getSetSize()<<std::endl;
+    //std::cout<<"Set(Graphics, Non-sampler) size = "<<getSetSize()<<std::endl;
 
     VkResult result = VK_SUCCESS;
 
@@ -604,7 +605,7 @@ void CGraphicsDescriptorManager::createDescriptorSets(std::vector<CTextureImage>
 }
 
 
-void CGraphicsDescriptorManager::updateMVPUniformBuffer(uint32_t currentFrame, float durationTime, Camera &mainCamera) {
+void CGraphicsDescriptorManager::updateMVPUniformBuffer(uint32_t currentFrame, float durationTime, Camera &mainCamera, std::vector<CObject> &objectList) {
     if(uniformBufferUsageFlags & UNIFORM_BUFFER_MVP_BIT){
         // UniformBufferObject ubo{};
         // ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
@@ -618,8 +619,13 @@ void CGraphicsDescriptorManager::updateMVPUniformBuffer(uint32_t currentFrame, f
         //mvpUBO.proj = mainCamera.matrices.perspective;
 
         for(int i = 0; i < objectCount; i++){
-            mvpUBO.mvpData[i].view = mainCamera.matrices.view;
-            mvpUBO.mvpData[i].proj = mainCamera.matrices.perspective;
+            if(!objectList[i].bSticker){
+                mvpUBO.mvpData[i].view = mainCamera.matrices.view;
+                mvpUBO.mvpData[i].proj = mainCamera.matrices.perspective;
+            }else{
+                mvpUBO.mvpData[i].view = glm::mat4(1.0f);//mainCamera.matrices.view;
+                mvpUBO.mvpData[i].proj = glm::mat4(1.0f);//mainCamera.matrices.perspective;
+            }
         }
         //mvpUBO.mvpData.view = mainCamera.matrices.view;
         //mvpUBO.mvpData.proj = mainCamera.matrices.perspective;

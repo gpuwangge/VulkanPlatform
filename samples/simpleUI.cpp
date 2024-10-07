@@ -37,17 +37,19 @@ public:
 			{"viking_room.png", false},
 			{"fur.jpg", false},
 			});
-		appInfo.Object.Texture.List = std::make_unique<std::vector<int>>(std::vector<int> {0, 1, 2, 1});
+		appInfo.Object.Texture.List = std::make_unique<std::vector<int>>(std::vector<int> {0, 0, 0, 0});
 		appInfo.Shader.Vertex = "simpleUI/vert.spv";
 		appInfo.Shader.Fragment = "simpleUI/frag.spv";
 		appInfo.Uniform.GraphicsSampler.Count = 1;
 		appInfo.Uniform.EnableGraphicsMVP = true;
 		appInfo.Feature.EnableGraphicsMSAA = true;
 		CApplication::initialize();
+
+		objectList[0].bSticker = true;
 	}
 
 	void update(){
-		objectList[0].SetVelocity(0, 0, 3*sin(durationTime * 2));
+		objectList[0].SetVelocity(0, sin(durationTime * 2), 0);
 		objectList[1].SetAngularVelocity(50,0,50); //rotation around x and z axis
 		objectList[2].SetVelocity(0, 3*sin(durationTime * 2), 0);
 		objectList[3].SetVelocity(3*sin(durationTime * 2), 0, 0);
@@ -55,7 +57,9 @@ public:
 	}
 
 	void recordGraphicsCommandBuffer(){
-		for(int i = 0; i < appInfo.Object.Count; i++) objectList[i].Draw();
+		objectList[0].Draw();
+		objectList[3].Draw();
+		//for(int i = 0; i < appInfo.Object.Count; i++) objectList[i].Draw();
 	}
 
 	// ~TEST_CLASS_NAME(){

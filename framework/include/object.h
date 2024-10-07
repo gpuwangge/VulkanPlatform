@@ -102,6 +102,8 @@ class CObject {
 public:
     CObject();
 
+    bool bSticker;
+
     int GetObjectID(){return m_object_id;}
     int GetTextureID(){return m_texture_id;}
     int GetModelID(){return m_model_id;}

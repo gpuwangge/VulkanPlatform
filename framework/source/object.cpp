@@ -3,6 +3,7 @@
 
 CObject::CObject(){
     bUseMVP_VP = false;
+    bSticker = false;
     bUseTextureSampler = false;
     bUpdate = true;
 
@@ -181,7 +182,7 @@ void CObject::CreateTextureDescriptorSets(std::vector<CTextureImage> &textureIma
     
     int descriptorSize = samplers.size();//getDescriptorSize();
     //std::cout<<"createTextureDescriptorSets::samplers.size(): "<<samplers.size()<<std::endl;
-    std::cout<<"Object Set(Sampler) size = "<<descriptorSize<<std::endl;
+    //std::cout<<"Object Set(Sampler) size = "<<descriptorSize<<std::endl;
 
     VkResult result = VK_SUCCESS;
 

@@ -58,7 +58,12 @@ void CApplication::run(){ //Entrance Function
 	swapchain.createImageViews(VK_IMAGE_ASPECT_COLOR_BIT);
 
     CSupervisor::Register((CApplication*)this);
+
+    auto startInitialzeTime = std::chrono::high_resolution_clock::now();
     initialize();
+    auto endInitializeTime = std::chrono::high_resolution_clock::now();
+    auto durationInitializationTime = std::chrono::duration<float, std::chrono::seconds::period>(endInitializeTime - startInitialzeTime).count() * 1000;
+    std::cout<<"Total Initialization cost: "<<durationInitializationTime<<" milliseconds"<<std::endl;
 
     while (!glfwWindowShouldClose(glfwManager.window)) {
         glfwPollEvents();
@@ -71,7 +76,11 @@ void CApplication::run(){ //Entrance Function
 #endif
 
 void CApplication::initialize(){
+    //auto startAppTime = std::chrono::high_resolution_clock::now();
     SetApplicationProperty(appInfo);
+    //auto endAppTime = std::chrono::high_resolution_clock::now();
+    //auto durationTime = std::chrono::duration<float, std::chrono::seconds::period>(endAppTime - startAppTime).count() * 1000;
+    //std::cout<<"Total Set Application Property cost: "<<durationTime<<" milliseconds"<<std::endl;
 
     objectList.resize(appInfo.Object.Count);
     int texture_id = -1; //INT_MAX means use all samplers
@@ -118,7 +127,7 @@ void CApplication::update(){
 
     for(int i = 0; i < objectList.size(); i++) objectList[i].Update(deltaTime);
 
-    graphicsDescriptorManager.updateMVPUniformBuffer(renderer.currentFrame, durationTime, mainCamera);
+    graphicsDescriptorManager.updateMVPUniformBuffer(renderer.currentFrame, durationTime, mainCamera, objectList);
     graphicsDescriptorManager.updateVPUniformBuffer(renderer.currentFrame, durationTime, mainCamera);
 }
 
@@ -301,6 +310,8 @@ void CApplication::Dispatch(int numWorkGroupsX, int numWorkGroupsY, int numWorkG
 }
 
 void CApplication::SetApplicationProperty(AppInfo &appInfo){
+    //auto startActivateTime = std::chrono::high_resolution_clock::now();
+
     renderer.m_renderMode = appInfo.Render.Mode;
 
     CSupervisor::ComputeShader = appInfo.Shader.Compute;
@@ -322,10 +333,26 @@ void CApplication::SetApplicationProperty(AppInfo &appInfo){
     if(appInfo.Feature.EnableGraphicsPushConstant) CSupervisor::Activate_Feature_Graphics_PushConstant();
     if(appInfo.Feature.EnableGraphicsRainbowMipmap) CSupervisor::Activate_Feature_Graphics_RainbowMipmap();
     if(appInfo.Buffer.GraphicsVertex.StructureType != VertexStructureTypes::NoType) CSupervisor::Activate_Buffer_Graphics_Vertex(appInfo.Buffer.GraphicsVertex.StructureType);
-    //if(appInfo.Buffer.GraphicsVertex.Indices3D != NULL) CSupervisor::Activate_Buffer_Graphics_Vertex(*appInfo.Buffer.GraphicsVertex.Vertices3D, *appInfo.Buffer.GraphicsVertex.Indices3D);
-    //if(appInfo.Buffer.GraphicsVertex.Vertices2D != NULL) CSupervisor::Activate_Buffer_Graphics_Vertex(*appInfo.Buffer.GraphicsVertex.Vertices2D);
-    if(appInfo.Object.Model.Names != NULL) CSupervisor::Activate_Buffer_Graphics_Vertex(std::move(appInfo.Object.Model.Names), modelManager); 
-    if(appInfo.Object.Texture.Names != NULL) CSupervisor::Activate_Texture(std::move(appInfo.Object.Texture.Names));
+    //auto endActivateTime = std::chrono::high_resolution_clock::now();
+    //auto durationTime = std::chrono::duration<float, std::chrono::seconds::period>(endActivateTime - startActivateTime).count()*1000;
+    //std::cout<<"Activate cost: "<<durationTime<<" milliseconds"<<std::endl;
 
+    auto startLoadModelTime = std::chrono::high_resolution_clock::now();
+    if(appInfo.Object.Model.Names != NULL) CSupervisor::Activate_Buffer_Graphics_Vertex(std::move(appInfo.Object.Model.Names), modelManager); 
+    auto endLoadModelTime = std::chrono::high_resolution_clock::now();
+    auto durationLoadModelTime = std::chrono::duration<float, std::chrono::seconds::period>(endLoadModelTime - startLoadModelTime).count()*1000;
+    std::cout<<"Load Model cost: "<<durationLoadModelTime<<" milliseconds"<<std::endl;
+
+    auto startTextureTime = std::chrono::high_resolution_clock::now();
+    if(appInfo.Object.Texture.Names != NULL) CSupervisor::Activate_Texture(std::move(appInfo.Object.Texture.Names));
+    auto endTextureTime = std::chrono::high_resolution_clock::now();
+    auto durationTextureTime = std::chrono::duration<float, std::chrono::seconds::period>(endTextureTime - startTextureTime).count()*1000;
+    std::cout<<"Load Textures cost: "<<durationTextureTime<<" milliseconds"<<std::endl;
+
+    //auto startPipelineTime = std::chrono::high_resolution_clock::now();
     CSupervisor::Activate_Pipeline();
+    //auto endPipelineTime = std::chrono::high_resolution_clock::now();
+    //durationTime = std::chrono::duration<float, std::chrono::seconds::period>(endPipelineTime - startPipelineTime).count()*1000;
+    //std::cout<<"Activate Pipeline cost: "<<durationTime<<" milliseconds"<<std::endl;
+
 }

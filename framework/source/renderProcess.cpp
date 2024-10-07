@@ -94,13 +94,13 @@ void CRenderProcess::addColorAttachment(VkFormat swapChainImageFormat, bool bEna
 	
 	if(bEnableDepthTest) {
 		addDepthAttachment(depthFormat);
-		std::cout<<"Depth Attachment added. Depth Test enabled. "<<std::endl;
+		//std::cout<<"Depth Attachment added. Depth Test enabled. "<<std::endl;
 	}
 
 	if(msaaSamples > 1) {//msaaSamples > 1 means swapchains'MSAA feature is enabled
 		imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 		addColorAttachmentResolve();
-		std::cout<<"Color Attachment Resolve added. MSAA enabled, msaaSamples = "<<msaaSamples<<std::endl;
+		//std::cout<<"Color Attachment Resolve added. MSAA enabled, msaaSamples = "<<msaaSamples<<std::endl;
 	}
 
     //Concept of attachment in Vulkan is like render target in OpenGL
@@ -119,7 +119,7 @@ void CRenderProcess::addColorAttachment(VkFormat swapChainImageFormat, bool bEna
 	colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 	colorAttachment.finalLayout = imageLayout;
 
-	std::cout<<"Color Attachment added. "<<std::endl;
+	//std::cout<<"Color Attachment added. "<<std::endl;
 }
 void CRenderProcess::addDepthAttachment(VkFormat depthFormat){  
 	bUseDepthAttachment = true;

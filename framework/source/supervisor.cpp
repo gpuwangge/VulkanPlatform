@@ -101,6 +101,7 @@ void CSupervisor::Activate_Texture(std::unique_ptr<std::vector<std::pair<std::st
         VkImageUsageFlags usage;// = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
         //VkImageUsageFlags usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT;
         for(int i = 0; i < textureNames->size(); i++){
+            auto startTextureTime = std::chrono::high_resolution_clock::now();
             if((*textureNames)[i].second) //mipmap
                 usage = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
             else 
@@ -116,7 +117,11 @@ void CSupervisor::Activate_Texture(std::unique_ptr<std::vector<std::pair<std::st
                 VkImageUsageFlags usage_mipmap = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
                 if((*textureNames)[i].second) m_app->textureManager.textureImages[i].generateMipmaps("checkerboard", usage_mipmap);
             }else if((*textureNames)[i].second) m_app->textureManager.textureImages[i].generateMipmaps();
+            auto endTextureTime = std::chrono::high_resolution_clock::now();
+            auto durationTime = std::chrono::duration<float, std::chrono::seconds::period>(endTextureTime - startTextureTime).count()*1000;
+            std::cout<<"Load Texture '"<< (*textureNames)[i].first <<"' cost: "<<durationTime<<" milliseconds"<<std::endl;
         }
+
     }
     //}
 }

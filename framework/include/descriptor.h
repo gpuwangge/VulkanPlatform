@@ -4,7 +4,10 @@
 #include "context.h"
 #include "dataBuffer.hpp"
 #include "camera.hpp"
+//#include "object.h"
 #include "../include/texture.h"
+
+class CObject;
 
 typedef enum UniformBufferBits {
     UNIFORM_BUFFER_CUSTOM_GRAPHICS_BIT = 0x00000001, //assume app uses one: graphics custom or compute custom
@@ -64,7 +67,7 @@ public:
 	static std::vector<void*> mvpUniformBuffersMapped;
     static void addMVPUniformBuffer();
     static MVPUniformBufferObject mvpUBO;
-    void updateMVPUniformBuffer(uint32_t currentFrame, float durationTime, Camera &mainCamera);
+    void updateMVPUniformBuffer(uint32_t currentFrame, float durationTime, Camera &mainCamera, std::vector<CObject> &objectList);
     //bool bUseVP;
     static std::vector<CWxjBuffer> vpUniformBuffers; 
 	static std::vector<void*> vpUniformBuffersMapped;

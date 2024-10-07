@@ -24,13 +24,15 @@ void CTextureImage::CreateTextureImage(const std::string texturePath, VkImageUsa
 	void* texels;
 #ifndef ANDROID
 	std::string fullTexturePath = TEXTURE_PATH + texturePath;
-	for(short i = 0; i < 2; i++){
+	for(short i = 0; i < 2; i++){ //look for texture in 2 locations
 		if(bitPerTexelPerChannel == 16){
 			texels = stbi_load_16(fullTexturePath.c_str(), &texWidth, &texHeight, &texChannels, dstTexChannels);
-			std::cout<<"Load 48bpt texture."<<std::endl;
+			//std::cout<<"Load 48bpt texture."<<std::endl;
+			//std::cout<<"texWidth = "<<texWidth<<", texHeight = "<<texHeight<<std::endl;
 		}else{
 			texels = stbi_load(fullTexturePath.c_str(), &texWidth, &texHeight, &texChannels, dstTexChannels);
-			std::cout<<"Load 24bpt texture."<<std::endl;
+			//std::cout<<"Load 24bpt texture."<<std::endl;
+			//std::cout<<"texWidth = "<<texWidth<<", texHeight = "<<texHeight<<std::endl;
 		}if(texels) break;
 		fullTexturePath = "textures/" + texturePath; 
 	}
