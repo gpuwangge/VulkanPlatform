@@ -16,7 +16,8 @@
 Prepare:  
 1. Install Vulkan  
 1. Install CMake  
-1. Setup GLFW (Or use SDL at your preference)  
+1. Setup SDL or GLFW (Default is using SDL, can change the setting in application.h)  
+(Refer https://github.com/gpuwangge/Wiki/blob/main/documents/SDL.md for SDL Installation)  
 1. Setup GLM (Tested version 0.9.9.8)
 1. git clone this repo 
 - [Optional] Download other thirdparty headers: stb_image.h and tiny_obj_loader.h (I already put both files in the "thirdparty" folder in this repo)  

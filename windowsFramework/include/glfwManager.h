@@ -18,8 +18,8 @@ public:
     int m_windowWidth, m_windowHeight;
 
     void createWindow(int &windowWidth, int &windowHeight);
+    void queryRequiredInstanceExtensions(std::vector<const char*> &requiredInstanceExtensions);
     void createSurface(std::unique_ptr<CInstance> &instance, VkSurfaceKHR &surface);
-    void getGLFWRequiredInstanceExtensions(std::vector<const char*> &requiredInstanceExtensions);
 
     static void GLFWKeyboard(GLFWwindow * window, int key, int scancode, int action, int mods);
 	static void GLFWMouseMotion(GLFWwindow *window, double xpos, double ypos);

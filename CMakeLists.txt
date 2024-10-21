@@ -12,8 +12,9 @@ include_directories(
     ${PROJECT_SOURCE_DIR}/windowsFramework/include)
 
 link_directories(
-    $ENV{VULKAN_SDK}/Lib
-    $ENV{LIB})          #Put this in environment user variable LIB: C:\VulkanSDK\GLFW\lib-static-ucrt  
+    $ENV{VULKAN_SDK}/Lib #Put this in environment user variable LIB: C:\VulkanSDK\GLFW\lib-static-ucrt  
+    $ENV{LIB}
+    ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/) #put SDL3.dll and glfw3.dll in thirdparty/
 
 #to verify environment varaibles (reboot machine after change if needed):
 #echo %VULKAN_SDK%
@@ -21,9 +22,10 @@ link_directories(
 #echo %LIB%
 
 
+add_subdirectory(sdlframework)
 add_subdirectory(windowsFramework)
 add_subdirectory(framework)
-link_libraries(vulkan-framework windows-vulkan-framework vulkan-1 glfw3dll)
+link_libraries(vulkan-framework windows-vulkan-framework sdl-vulkan-framework vulkan-1 SDL3 glfw3dll)
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 
@@ -40,7 +42,8 @@ endif()
 
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/glfw3.dll
     DESTINATION ${EXECUTABLE_OUTPUT_PATH}/)
-
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/sdl3.dll
+    DESTINATION ${EXECUTABLE_OUTPUT_PATH}/)
 
 
 

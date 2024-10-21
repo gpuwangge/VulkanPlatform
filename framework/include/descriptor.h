@@ -108,7 +108,7 @@ public:
 class CComputeDescriptorManager: public CDescriptorManager{
 public:
     CComputeDescriptorManager(){
-        std::cout<<"CComputeDescriptorManager construct."<<std::endl;
+        //std::cout<<"CComputeDescriptorManager construct."<<std::endl;
     }
 
     ~CComputeDescriptorManager(){

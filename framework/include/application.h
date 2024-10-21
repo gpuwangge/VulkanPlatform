@@ -17,8 +17,11 @@
 #include "supervisor.h"
 #include "object.h"
 
+#define SDL
+
 #ifndef ANDROID
 #include "..\\..\\windowsFramework\\include\\glfwManager.h"
+#include "..\\..\\sdlFramework\\include\\sdlManager.h"
 #endif
 
 //Decide not to use macro
@@ -76,6 +79,7 @@ public:
     
 #ifndef ANDROID
     CGLFWManager glfwManager;
+    CSDLManager sdlManager;
     void run();
 #endif
 

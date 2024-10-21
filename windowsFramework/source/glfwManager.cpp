@@ -259,13 +259,7 @@ void CGLFWManager::createWindow(int &windowWidth, int &windowHeight){
 		windowHeight = m_windowHeight;
 }
 
-void CGLFWManager::createSurface(std::unique_ptr<CInstance> &instance, VkSurfaceKHR &surface) {
-    if (glfwCreateWindowSurface(instance->getHandle(), window, nullptr, &surface) != VK_SUCCESS) {
-        throw std::runtime_error("failed to create window surface!");
-    }
-}
-
-void CGLFWManager::getGLFWRequiredInstanceExtensions(std::vector<const char*> &requiredInstanceExtensions){
+void CGLFWManager::queryRequiredInstanceExtensions(std::vector<const char*> &requiredInstanceExtensions){
     uint32_t glfwExtensionCount = 0;
     const char** glfwExtensions;
     glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
@@ -273,4 +267,10 @@ void CGLFWManager::getGLFWRequiredInstanceExtensions(std::vector<const char*> &r
 	requiredInstanceExtensions.resize(glfwExtensionCount);
 	for(int i = 0; i < glfwExtensionCount; i++)
 		requiredInstanceExtensions[i] = glfwExtensions[i];
+}
+
+void CGLFWManager::createSurface(std::unique_ptr<CInstance> &instance, VkSurfaceKHR &surface) {
+    if (glfwCreateWindowSurface(instance->getHandle(), window, nullptr, &surface) != VK_SUCCESS) {
+        throw std::runtime_error("failed to create window surface!");
+    }
 }

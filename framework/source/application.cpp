@@ -22,22 +22,57 @@ CApplication::CApplication(){
 void CApplication::run(){ //Entrance Function
     CContext::Init();
 
+    /**************** 
+    * Five steps with third-party(GLFW or SDL) initialization
+    * Step 1: Create Window
+    *****************/
+#ifdef SDL
+    sdlManager.createWindow(OUT windowWidth, OUT windowHeight);
+#else
     glfwManager.createWindow(OUT windowWidth, OUT windowHeight);
-
+#endif
 	PRINT("run: Created Window. Window width = %d,  height = %d.", windowWidth, windowHeight);
 
+    /**************** 
+    * Step 2: Select required layers
+    *****************/
     const std::vector<const char*> requiredValidationLayers = {"VK_LAYER_KHRONOS_validation"};
+    
+    /**************** 
+    * Step 3: Select required instance extensions
+    *****************/
     std::vector<const char*> requiredInstanceExtensions;
-    glfwManager.getGLFWRequiredInstanceExtensions(requiredInstanceExtensions);
+#ifdef SDL
+    sdlManager.queryRequiredInstanceExtensions(OUT requiredInstanceExtensions);
+#else    
+    glfwManager.queryRequiredInstanceExtensions(OUT requiredInstanceExtensions);
+#endif
     if(enableValidationLayers) requiredInstanceExtensions.push_back(VK_EXT_DEBUG_UTILS_EXTENSION_NAME);
+
+    /**************** 
+    * Step 4: create instance
+    *****************/
+    //prepareVulkanDevices();
+    instance = std::make_unique<CInstance>(requiredValidationLayers, requiredInstanceExtensions);
+
+    /**************** 
+    * Step 5: create surface
+    * Surface is to store view format information for creating swapchain. 
+    * Only third party(glfw or sdl) knows what kind of surface can be attached to its window.
+    *****************/
+#ifdef SDL   
+    sdlManager.createSurface(IN instance, OUT surface);
+#else  
+    glfwManager.createSurface(IN instance, OUT surface);
+#endif
+
+    /**************** 
+    * General initialization begins
+    * Select required queue families
+    * Select required device extensions
+    *****************/
     VkQueueFlagBits requiredQueueFamilies = VK_QUEUE_GRAPHICS_BIT; //& VK_QUEUE_COMPUTE_BIT
     const std::vector<const char*>  requireDeviceExtensions = {VK_KHR_SWAPCHAIN_EXTENSION_NAME};
-
-    //prepareVulkanDevices();
-    instance = std::make_unique<CInstance>(requiredValidationLayers,requiredInstanceExtensions);
-    //need instance. Surface is to store view format information for creating swapchain. 
-    //Only GLFW knows what kind of surface can be attached to its window.
-    glfwManager.createSurface(instance, surface);
 
     instance->findAllPhysicalDevices();
 
@@ -65,11 +100,40 @@ void CApplication::run(){ //Entrance Function
     auto durationInitializationTime = std::chrono::duration<float, std::chrono::seconds::period>(endInitializeTime - startInitialzeTime).count() * 1000;
     std::cout<<"Total Initialization cost: "<<durationInitializationTime<<" milliseconds"<<std::endl;
 
+
+
+#ifdef SDL   
+    // Poll for user input.
+    unsigned debugCount = 0;
+    bool stillRunning = true;
+    while(stillRunning) {
+        debugCount++;
+        SDL_Event event;
+        while(SDL_PollEvent(&event)) {
+            //std::cout << "Debug: while loop: " <<debugCount<< std::endl;
+            switch(event.type) {
+                case SDL_EVENT_QUIT:
+                    stillRunning = false;
+                    break;
+                default:
+                    // Do nothing.
+                    break;
+            }
+        }
+        UpdateRecordRender();
+        //SDL_Delay(10);
+    }
+#else  
     while (!glfwWindowShouldClose(glfwManager.window)) {
         glfwPollEvents();
         UpdateRecordRender();
         if (NeedToExit) break;
 	}
+#endif
+
+
+
+
 
 	vkDeviceWaitIdle(CContext::GetHandle().GetLogicalDevice());//Wait GPU to complete all jobs before CPU destroy resources
 }
