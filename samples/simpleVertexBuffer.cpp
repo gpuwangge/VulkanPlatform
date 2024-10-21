@@ -1,4 +1,4 @@
-#include "..\\framework\\include\\application.h"
+#include "..\\vulkanFramework\\include\\application.h"
 #define TEST_CLASS_NAME CSimpleVertexBuffer
 class TEST_CLASS_NAME: public CApplication{
 //a triangle on the screen, each vertex has R, G or B color. Fragment color is interpolated
@@ -29,6 +29,6 @@ public:
 };
 
 #ifndef ANDROID
-#include "..\\windowsFramework\\include\\main.hpp"
+#include "..\\vulkanFramework\\include\\main.hpp"
 #endif
 

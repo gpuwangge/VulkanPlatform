@@ -1,4 +1,4 @@
-#include "..\\framework\\include\\application.h"
+#include "..\\vulkanFramework\\include\\application.h"
 #include <random>
 #define TEST_CLASS_NAME CSimpleParticles
 class TEST_CLASS_NAME: public CApplication{
@@ -135,6 +135,6 @@ public:
 };
 
 #ifndef ANDROID
-#include "..\\windowsFramework\\include\\main.hpp"
+#include "..\\vulkanFramework\\include\\main.hpp"
 #endif
 

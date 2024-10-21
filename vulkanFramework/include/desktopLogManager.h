@@ -1,5 +1,5 @@
-#ifndef H_WINDOWSLOGMANAGER
-#define H_WINDOWSLOGMANAGER
+#ifndef H_DESKTOPLOGMANAGER
+#define H_DESKTOPLOGMANAGER
 
 //#pragma once
 #define HERE_I_AM(s) { debugger->writeMSG("\n***** %s *****\n", s); debugger->flush(); }
@@ -43,7 +43,7 @@ static errorcode ErrorCodes[] =
 	{ VK_ERROR_INVALID_EXTERNAL_HANDLE,	"Invalid External Handle" },
 };
 
-class CWindowsLogManager {
+class CDesktopLogManager {
 	bool Verbose;			// true = write messages into a file
 public:
 	FILE * FpDebug;			// where to send debugging messages

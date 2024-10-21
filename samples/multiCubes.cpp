@@ -3,7 +3,7 @@
  * (modified from simpleMSAA, shader to use multiCubes, model to use cube.obj)
  * *********** */
 
-#include "..\\framework\\include\\application.h"
+#include "..\\vulkanFramework\\include\\application.h"
 #define TEST_CLASS_NAME CMultiCubes
 
 //CApplication CSkyvision::*m_app;
@@ -54,5 +54,5 @@ public:
 };
 
 #ifndef ANDROID
-#include "..\\windowsFramework\\include\\main.hpp"
+#include "..\\vulkanFramework\\include\\main.hpp"
 #endif

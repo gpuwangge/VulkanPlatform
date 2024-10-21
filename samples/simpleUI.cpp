@@ -2,7 +2,7 @@
  * This sample is to test render 2D UI and 3D Object in a single scene
  * *********** */
 
-#include "..\\framework\\include\\application.h"
+#include "..\\vulkanFramework\\include\\application.h"
 #define TEST_CLASS_NAME CSimpleUI
 
 //CApplication CSkyvision::*m_app;
@@ -69,5 +69,5 @@ public:
 };
 
 #ifndef ANDROID
-#include "..\\windowsFramework\\include\\main.hpp"
+#include "..\\vulkanFramework\\include\\main.hpp"
 #endif

@@ -4,7 +4,7 @@
             "name": "windows-gcc-x64",
             "includePath": [
                 "${workspaceFolder}/**",
-                "${workspaceFolder}/framework",
+                "${workspaceFolder}/vulkanFramework",
                 "C:/VulkanSDK",
                 "C:/VulkanSDK/GLM",
                 "C:/VulkanSDK/GLFW/include",

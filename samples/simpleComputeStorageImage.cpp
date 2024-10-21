@@ -1,4 +1,4 @@
-#include "..\\framework\\include\\application.h"
+#include "..\\vulkanFramework\\include\\application.h"
 #define TEST_CLASS_NAME CSimpleComputeStorageImage
 class TEST_CLASS_NAME: public CApplication{
 //This test draws on the swapchain images, with the use of storage image
@@ -86,6 +86,6 @@ public:
 };
 
 #ifndef ANDROID
-#include "..\\windowsFramework\\include\\main.hpp"
+#include "..\\vulkanFramework\\include\\main.hpp"
 #endif
 

@@ -4,7 +4,8 @@
 #include "common.h"
 
 #ifndef ANDROID
-    #include "..\\..\\windowsFramework\\include\\windowsLogManager.h"
+    //#include "..\\..\\windowsFramework\\include\\windowsLogManager.h"
+    #include "desktopLogManager.h"
 #else
     #include "..\\..\\androidFramework\\include\\androidLogManager.h"
 #endif
@@ -32,7 +33,7 @@ public:
 
 private:
 #ifndef ANDROID
-    CWindowsLogManager windowsLogManager;
+    CDesktopLogManager desktopLogManager;
 #else
     CAndroidLogManager androidLogManager;
 #endif

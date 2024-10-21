@@ -1,4 +1,4 @@
-#include "..\\framework\\include\\application.h"
+#include "..\\vulkanFramework\\include\\application.h"
 #define TEST_CLASS_NAME CSimpleMSAA
 class TEST_CLASS_NAME: public CApplication{
 public:
@@ -30,5 +30,5 @@ public:
 };
 
 #ifndef ANDROID
-#include "..\\windowsFramework\\include\\main.hpp"
+#include "..\\vulkanFramework\\include\\main.hpp"
 #endif

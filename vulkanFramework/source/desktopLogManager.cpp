@@ -1,10 +1,10 @@
-#include "windowsLogManager.h"
+#include "../include/desktopLogManager.h"
 
-CWindowsLogManager::CWindowsLogManager() {
+CDesktopLogManager::CWindowsLogManager() {
 	Verbose = true;
 }
 
-void CWindowsLogManager::createLogFile(const std::string&  debugFilename){
+void CDesktopLogManager::createLogFile(const std::string&  debugFilename){
 #ifdef _WIN32
 	errno_t err = fopen_s(&FpDebug, debugFilename.c_str(), "w");
 	if (err != 0)
@@ -23,59 +23,59 @@ void CWindowsLogManager::createLogFile(const std::string&  debugFilename){
 	//fprintf(FpDebug, "Width = %d ; Height = %d\n", WINDOW_WIDTH, WINDOW_HEIGHT);
 }
 
-void CWindowsLogManager::printLog(std::string s) {
+void CDesktopLogManager::printLog(std::string s) {
 	if(Verbose) fprintf(FpDebug, "%s", s.c_str());
 	if(Verbose) fprintf(FpDebug, "\n");
 }
 
-void CWindowsLogManager::printLog(std::string s, int n) {
+void CDesktopLogManager::printLog(std::string s, int n) {
 	if(Verbose) fprintf(FpDebug, s.c_str(), n);
 	if(Verbose) fprintf(FpDebug, "\n");
 }
 
-void CWindowsLogManager::printLog(std::string s, int n0, int n1) {
+void CDesktopLogManager::printLog(std::string s, int n0, int n1) {
 	if(Verbose) fprintf(FpDebug, s.c_str(), n0, n1);
 	if(Verbose) fprintf(FpDebug, "\n");
 }
 
-void CWindowsLogManager::printLog(std::string s, int n0, int n1, int n2) {
+void CDesktopLogManager::printLog(std::string s, int n0, int n1, int n2) {
 	if(Verbose) fprintf(FpDebug, s.c_str(), n0, n1, n2);
 	if(Verbose) fprintf(FpDebug, "\n");
 }
 
-void CWindowsLogManager::printLog(std::string s, float n) {
+void CDesktopLogManager::printLog(std::string s, float n) {
 	if(Verbose) fprintf(FpDebug, s.c_str(), n);
 	if(Verbose) fprintf(FpDebug, "\n");
 }
 
-void CWindowsLogManager::printLog(std::string s, float n0, float n1){
+void CDesktopLogManager::printLog(std::string s, float n0, float n1){
 	if(Verbose) fprintf(FpDebug, s.c_str(), n0, n1);
 	if(Verbose) fprintf(FpDebug, "\n");
 }
 
-void CWindowsLogManager::printLog(std::string s0, std::string s1) {
+void CDesktopLogManager::printLog(std::string s0, std::string s1) {
 	if(Verbose) fprintf(FpDebug, s0.c_str(), s1.c_str());
 	if(Verbose) fprintf(FpDebug, "\n");
 }
 
-void CWindowsLogManager::printLog(std::string s, float *n, int size){
+void CDesktopLogManager::printLog(std::string s, float *n, int size){
 	if(Verbose) fprintf(FpDebug, "%s", s.c_str());
 	for(int i = 0; i < size; i++) fprintf(FpDebug, "%f, ", n[i]);
 	if(Verbose) fprintf(FpDebug, "\n");
 }
 
-void CWindowsLogManager::printLog(std::string s, int *n, int size){
+void CDesktopLogManager::printLog(std::string s, int *n, int size){
 	if(Verbose) fprintf(FpDebug, "%s", s.c_str());
 	for(int i = 0; i < size; i++) fprintf(FpDebug, "%d, ", n[i]);
 	if(Verbose) fprintf(FpDebug, "\n");
 }
 
-void CWindowsLogManager::printLog(std::string s, unsigned long int n){
+void CDesktopLogManager::printLog(std::string s, unsigned long int n){
 	if(Verbose) fprintf(FpDebug, s.c_str(), n);
 	if(Verbose) fprintf(FpDebug, "\n");
 }
 
-void CWindowsLogManager::printVkError(VkResult result, std::string prefix){
+void CDesktopLogManager::printVkError(VkResult result, std::string prefix){
 	if (Verbose  &&  result == VK_SUCCESS)
 	{
 		fprintf(FpDebug, "%s: %s\n", prefix.c_str(), "Successful");
@@ -99,6 +99,6 @@ void CWindowsLogManager::printVkError(VkResult result, std::string prefix){
 }
 
 
-void CWindowsLogManager::flush() {
+void CDesktopLogManager::flush() {
 	fflush(FpDebug);
 }

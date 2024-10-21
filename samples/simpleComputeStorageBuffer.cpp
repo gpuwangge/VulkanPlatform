@@ -1,4 +1,4 @@
-#include "..\\framework\\include\\application.h"
+#include "..\\vulkanFramework\\include\\application.h"
 #define TEST_CLASS_NAME CSimpleComputeStorageBuffer
 class TEST_CLASS_NAME: public CApplication{
 //A sample to test storage buffer (for compute)	
@@ -53,6 +53,6 @@ public:
 };
 
 #ifndef ANDROID
-#include "..\\windowsFramework\\include\\main.hpp"
+#include "..\\vulkanFramework\\include\\main.hpp"
 #endif
 

@@ -8,7 +8,7 @@ set(CMAKE_BUILD_TYPE "Debug")
 include_directories(
     $ENV{VULKAN_SDK}/Include
     $ENV{INCLUDE}        #Put this in environment user variable INCLUDE: C:\VulkanSDK\GLFW\include;C:\VulkanSDK\GLM
-    ${PROJECT_SOURCE_DIR}/framework/include
+    ${PROJECT_SOURCE_DIR}/vulkanFramework/include
     ${PROJECT_SOURCE_DIR}/windowsFramework/include)
 
 link_directories(
@@ -24,7 +24,7 @@ link_directories(
 
 add_subdirectory(sdlframework)
 add_subdirectory(windowsFramework)
-add_subdirectory(framework)
+add_subdirectory(vulkanFramework)
 link_libraries(vulkan-framework windows-vulkan-framework sdl-vulkan-framework vulkan-1 SDL3 glfw3dll)
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
