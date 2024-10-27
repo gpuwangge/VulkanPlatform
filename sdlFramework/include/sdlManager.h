@@ -31,10 +31,6 @@ public:
     void createWindow(int &windowWidth, int &windowHeight);
     void queryRequiredInstanceExtensions(std::vector<const char*> &requiredInstanceExtensions);
     void createSurface(std::unique_ptr<CInstance> &instance, VkSurfaceKHR &surface);
-
-    // static void GLFWKeyboard(GLFWwindow * window, int key, int scancode, int action, int mods);
-	// static void GLFWMouseMotion(GLFWwindow *window, double xpos, double ypos);
-	// static void GLFWMouseButton(GLFWwindow *window, int button, int action, int mods);
 };
 
 #endif

@@ -8,8 +8,8 @@ set(CMAKE_BUILD_TYPE "Debug")
 include_directories(
     $ENV{VULKAN_SDK}/Include
     $ENV{INCLUDE}        #Put this in environment user variable INCLUDE: C:\VulkanSDK\GLFW\include;C:\VulkanSDK\GLM
-    ${PROJECT_SOURCE_DIR}/vulkanFramework/include
-    ${PROJECT_SOURCE_DIR}/windowsFramework/include)
+    ${PROJECT_SOURCE_DIR}/vulkanFramework/include)
+    #${PROJECT_SOURCE_DIR}/windowsFramework/include)
 
 link_directories(
     $ENV{VULKAN_SDK}/Lib #Put this in environment user variable LIB: C:\VulkanSDK\GLFW\lib-static-ucrt  
@@ -23,9 +23,10 @@ link_directories(
 
 
 add_subdirectory(sdlframework)
-add_subdirectory(windowsFramework)
+#add_subdirectory(windowsFramework)
 add_subdirectory(vulkanFramework)
-link_libraries(vulkan-framework windows-vulkan-framework sdl-vulkan-framework vulkan-1 SDL3 glfw3dll)
+#link_libraries(vulkan-framework windows-vulkan-framework sdl-vulkan-framework vulkan-1 SDL3 glfw3dll)
+link_libraries(vulkan-framework sdl-vulkan-framework vulkan-1 SDL3)
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 
@@ -40,10 +41,8 @@ else()
     endforeach()
 endif()
 
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/glfw3.dll
-    DESTINATION ${EXECUTABLE_OUTPUT_PATH}/)
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/sdl3.dll
-    DESTINATION ${EXECUTABLE_OUTPUT_PATH}/)
+#file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/glfw3.dll DESTINATION ${EXECUTABLE_OUTPUT_PATH}/)
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/sdl3.dll DESTINATION ${EXECUTABLE_OUTPUT_PATH}/)
 
 
 

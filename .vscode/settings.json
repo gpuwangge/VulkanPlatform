@@ -40,7 +40,7 @@
   "C_Cpp_Runner.includePaths": [
     "C:/VulkanSDK",
     "C:/VulkanSDK/GLM",
-    "C:/VulkanSDK/GLFW/include",
+    //"C:/VulkanSDK/GLFW/include",
     "${VULKAN_SDK}/Include"
   ],
   "C_Cpp_Runner.includeSearch": [

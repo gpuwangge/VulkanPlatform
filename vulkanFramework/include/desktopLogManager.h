@@ -48,7 +48,7 @@ class CDesktopLogManager {
 public:
 	FILE * FpDebug;			// where to send debugging messages
 
-	CWindowsLogManager();
+	CDesktopLogManager();
 
 	void createLogFile(const std::string&  debugFilename);
 

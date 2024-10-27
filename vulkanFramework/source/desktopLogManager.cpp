@@ -1,6 +1,6 @@
 #include "../include/desktopLogManager.h"
 
-CDesktopLogManager::CWindowsLogManager() {
+CDesktopLogManager::CDesktopLogManager() {
 	Verbose = true;
 }
 

@@ -20,8 +20,11 @@
 #define SDL
 
 #ifndef ANDROID
-#include "..\\..\\windowsFramework\\include\\glfwManager.h"
-#include "..\\..\\sdlFramework\\include\\sdlManager.h"
+    #ifndef SDL
+        #include "..\\..\\windowsFramework\\include\\glfwManager.h"
+    #else
+        #include "..\\..\\sdlFramework\\include\\sdlManager.h"
+    #endif
 #endif
 
 //Decide not to use macro
@@ -78,8 +81,11 @@ public:
     void UpdateRecordRender();
     
 #ifndef ANDROID
-    CGLFWManager glfwManager;
-    CSDLManager sdlManager;
+    #ifndef SDL
+        CGLFWManager glfwManager;
+    #else
+        CSDLManager sdlManager;
+    #endif
     void run();
 #endif
 

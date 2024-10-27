@@ -16,8 +16,7 @@
 Prepare:  
 1. Install Vulkan  
 1. Install CMake  
-1. Setup SDL or GLFW (Default is using SDL, can change the setting in application.h)  
-(Refer https://github.com/gpuwangge/Wiki/blob/main/documents/SDL.md for SDL Installation)  
+1. Setup SDL or GLFW (Default is SDL)   
 1. Setup GLM (Tested version 0.9.9.8)
 1. git clone this repo 
 - [Optional] Download other thirdparty headers: stb_image.h and tiny_obj_loader.h (I already put both files in the "thirdparty" folder in this repo)  
@@ -56,6 +55,18 @@ Launch Android Studio, open "androidSandbox" folder.   Select "Build" > "Build B
 - When device is connected, Run 'app' will launch on device  
 - When device is not conntected, Run 'app' will launch AVD, then you can click the green triangle button on the bar to start app  
 
+## How to switch SDL to GLFW
+Both GLFW and SDL are supported.  
+The default windows/interactive is SDL3.  
+To switch back to GLFW, do the following:  
+1. Comment out #define SDL in application.h  
+2. rename "legacy_windowsFramework" to "windowsFramework"  
+3. in the root CMakeLists.txt:  
+add include_directories(${PROJECT_SOURCE_DIR}/windowsFramework/include)  
+add add_subdirectory(windowsFramework)  
+add link_libraries(windows-vulkan-framework, glfw3dll)  
+copy glfw3dll to bin folder  
+
 ## Distribution
 - For Android, just distribute the single .apk file, it contains all resources.  
 - For Windows, it is more complicated. Besides the .exe binary, you should include the following resources(if the sample use any):  
@@ -85,6 +96,26 @@ One reason is that there are multiple virtual devices and the debugger is stuck 
 Delete these virtual devices and leave only one.  
 (I use **Pixel 7 Pro API 30, Android 11.0 Google Play | x86**)  
 
+## How much time cost in initialization
+Take samples/furMark as example, for GTX1080Ti Desktop Founders Edition:  
+- Load Model cost: 1.015 milliseconds  
+- Load Texture 'fur.jpg' cost: 14 milliseconds  
+- Load Texture 'noise.png' cost: 14.002 milliseconds  
+- Load Texture 'wall.jpg' cost: 6.001 milliseconds  
+- Load Textures (combined) cost: 37.001 milliseconds  
+- Total Initialization cost: 43.001 milliseconds  
+
+simpleMipmap(GTX1080Ti Desktop Founders Edition):  
+- Load Model cost: 1.009 milliseconds  
+- Load Texture 'checkerboard_marble.jpg' cost: 379.115 milliseconds  
+- Load Textures (combined) cost: 380.122 milliseconds  
+- Total Initialization cost: 392.114 milliseconds  
+
+simpleObjLoader(GTX1080Ti Desktop Founders Edition):  
+- Load Model cost: 34.031 milliseconds  
+- Load Texture 'viking_room.png' cost: 67.998 milliseconds  
+- Load Textures (combined) cost: 69 milliseconds  
+- Total Initialization cost: 108.119 milliseconds  
 
 ## References
 https://github.com/StanislavPetrovV/FurMark  
@@ -95,4 +126,4 @@ https://github.com/tinyobjloader/tinyobjloader
 https://vulkan-tutorial.com/  
 https://web.engr.oregonstate.edu/~mjb/vulkan/  
 https://github.com/android/ndk-samples  
-
+https://github.com/gpuwangge/Wiki/blob/main/documents/SDL.md  
