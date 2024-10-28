@@ -30,7 +30,11 @@ public:
 		mainCamera.setPerspective(60.0f, (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 256.0f);
 		modelManager.CreateCustomModel3D(vertices3D, indices3D); //create the 0th custom model 3D (CUSTOM3D0)
 		appInfo.Object.Count = 4;
-		appInfo.Object.Model.Names = std::make_unique<std::vector<std::string>>(std::vector<std::string> {"CUSTOM3D0", "cube.obj", "hallway.obj"});
+		appInfo.Object.Model.Names = std::make_unique<std::vector<std::string>>(std::vector<std::string> {
+			"CUSTOM3D0", 
+			"cube.obj", 
+			"hallway.obj"
+			});
 		appInfo.Object.Model.List = std::make_unique<std::vector<int>>(std::vector<int> {0, 1, 2, 0});
 		appInfo.Object.Texture.Names = std::make_unique<std::vector<std::pair<std::string, bool>>>(std::vector<std::pair<std::string, bool>> {
 			{"texture.jpg", false},
@@ -46,10 +50,13 @@ public:
 		CApplication::initialize();
 
 		objectList[0].bSticker = true;
+		objectList[0].SetPosition(-0.5,-0.5,0.0);
+		//objectList[0].SetScale(1, 2, 1);
 	}
 
 	void update(){
-		objectList[0].SetVelocity(0, sin(durationTime * 2), 0);
+		//objectList[0].SetVelocity(0, sin(durationTime * 2), 0);
+		//objectList[0].SetAngularVelocity(0,0,50); //rotation around z axis
 		objectList[1].SetAngularVelocity(50,0,50); //rotation around x and z axis
 		objectList[2].SetVelocity(0, 3*sin(durationTime * 2), 0);
 		objectList[3].SetVelocity(3*sin(durationTime * 2), 0, 0);

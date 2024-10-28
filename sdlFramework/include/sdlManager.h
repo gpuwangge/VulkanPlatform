@@ -28,9 +28,15 @@ public:
     SDL_Window* window;
     int m_windowWidth, m_windowHeight;
 
+    bool bStillRunning = true;
+    bool bKeyDown = false;
+    bool bMouseDown = false;
+
     void createWindow(int &windowWidth, int &windowHeight);
     void queryRequiredInstanceExtensions(std::vector<const char*> &requiredInstanceExtensions);
     void createSurface(std::unique_ptr<CInstance> &instance, VkSurfaceKHR &surface);
+
+    void eventHandle();
 };
 
 #endif

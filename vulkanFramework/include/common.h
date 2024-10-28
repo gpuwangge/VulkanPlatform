@@ -37,8 +37,8 @@
 // #include <cstdint>
 // #include <limits>
 
-const uint32_t WINDOW_WIDTH = 1024;//1080;
-const uint32_t WINDOW_HEIGHT = 1280;//2400;
+const uint32_t WINDOW_WIDTH = 1024; //1024;//1080;
+const uint32_t WINDOW_HEIGHT = 1024; //1280;//2400;
 const int MAX_FRAMES_IN_FLIGHT = 2;
 
 const int MIPMAP_TEXTURE_COUNT = 7;

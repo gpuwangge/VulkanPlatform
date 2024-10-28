@@ -100,134 +100,11 @@ void CApplication::run(){ //Entrance Function
     auto durationInitializationTime = std::chrono::duration<float, std::chrono::seconds::period>(endInitializeTime - startInitialzeTime).count() * 1000;
     std::cout<<"Total Initialization cost: "<<durationInitializationTime<<" milliseconds"<<std::endl;
 
-
-
 #ifdef SDL   
-    // Poll for user input.
-    unsigned debugCount = 0;
-    bool bStillRunning = true;
-    bool bKeyDown = false;
-    bool bMouseDown = false;
-
-    /* just blank the render target to gray to start. */
-    //static SDL_Renderer *renderer = NULL;
-    //static SDL_Texture *render_target = NULL;
-    //static float previous_touch_x = -1.0f;
-    //static float previous_touch_y = -1.0f;
-
-    /* we make a render target so we can draw lines to it and not have to record and redraw every pen stroke each frame.
-       Instead rendering a frame for us is a single texture draw. */
-    // render_target = SDL_CreateTexture(renderer, SDL_PIXELFORMAT_RGBA8888, SDL_TEXTUREACCESS_TARGET, 640, 480);
-    // if (!render_target) {
-    //     SDL_Log("Couldn't create render target: %s", SDL_GetError());
-    //     //return SDL_APP_FAILURE;
-    // }
-
-    //SDL_SetRenderTarget(renderer, render_target);
-    // SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-    // SDL_RenderClear(renderer);
-    // SDL_SetRenderTarget(renderer, NULL);
-    // SDL_SetRenderDrawBlendMode(renderer, SDL_BLENDMODE_BLEND);
-
-    while(bStillRunning) {
-        debugCount++;
-        SDL_Event event;
-        while(SDL_PollEvent(&event)) {
-            //std::cout << "Debug: while loop: " <<debugCount<< std::endl;
-            switch(event.type) {
-                case SDL_EVENT_KEY_DOWN:
-                    //std::cout<<"Key Down"<<event.key.key<<std::endl;
-                    switch(event.key.key){
-                        case SDLK_LEFT:
-                            CApplication::mainCamera.keys.left = true;
-                            break;
-                        case SDLK_RIGHT:
-                            CApplication::mainCamera.keys.right = true;
-                            break;
-                        case SDLK_UP:
-                            CApplication::mainCamera.keys.up = true;
-                            break;
-                        case SDLK_DOWN:
-                            CApplication::mainCamera.keys.down = true;
-                            break;
-                        case SDLK_W:
-                            CApplication::mainCamera.keys.forward = true;
-                            break;
-                        case SDLK_S:
-                            CApplication::mainCamera.keys.backward = true;
-                            break;
-                        case SDLK_A:
-                            CApplication::mainCamera.keys.turnLeft = true;
-                            break;
-                        case SDLK_D:
-                            CApplication::mainCamera.keys.turnRight = true;
-                            break;
-                        case 'q':
-                        case 'Q':
-                            bStillRunning = false;
-                            break; 
-                    }
-                    bKeyDown = true;
-                    break;
-                case SDL_EVENT_KEY_UP:
-                    //std::cout<<"Key Up"<<event.key.scancode<<std::endl;
-                    switch(event.key.key){
-                        case SDLK_LEFT:
-                            CApplication::mainCamera.keys.left = false;
-                            break;
-                        case SDLK_RIGHT:
-                            CApplication::mainCamera.keys.right = false;
-                            break;
-                        case SDLK_UP:
-                            CApplication::mainCamera.keys.up = false;
-                            break;
-                        case SDLK_DOWN:
-                            CApplication::mainCamera.keys.down = false;
-                            break;
-                        case SDLK_W:
-                            CApplication::mainCamera.keys.forward = false;
-                            break;
-                        case SDLK_S:
-                            CApplication::mainCamera.keys.backward = false;
-                            break;
-                        case SDLK_A:
-                            CApplication::mainCamera.keys.turnLeft = false;
-                            break;
-                        case SDLK_D:
-                            CApplication::mainCamera.keys.turnRight = false;
-                            break;
-                    }
-                    bKeyDown = false;
-                    break;
-                case SDL_EVENT_MOUSE_BUTTON_DOWN:
-                    std::cout<<"Mouse Down: "<<event.pmotion.x<<", "<<event.pmotion.y<<std::endl;
-                    bMouseDown = true;
-                    break;
-                case SDL_EVENT_MOUSE_BUTTON_UP:
-                    std::cout<<"Mouse Up: "<<event.pmotion.x<<", "<<event.pmotion.y<<std::endl;
-                    bMouseDown = false;
-                    break;
-                case SDL_EVENT_MOUSE_MOTION:
-                    if(bMouseDown){
-                        //SDL_SetRenderTarget(renderer, render_target);
-                        //SDL_SetRenderDrawColorFloat(renderer, 0, 0, 0, 255);
-                        //SDL_RenderLine(renderer, previous_touch_x, previous_touch_y, event.pmotion.x, event.pmotion.y);
-                        //std::cout<<bMouseDown<<": "<<event.pmotion.x<<", "<<event.pmotion.y<<std::endl;
-                    }
-                    //previous_touch_x = event.pmotion.x;
-                    //previous_touch_y = event.pmotion.y;
-                    break;
-                case SDL_EVENT_QUIT:
-                    bStillRunning = false;
-                    break;
-                default:
-                    // Do nothing.
-                    break;
-            }
-        }
+    while(sdlManager.bStillRunning) {
+        sdlManager.eventHandle();
         UpdateRecordRender();
         if (NeedToExit) break;
-        //SDL_Delay(10);
     }
 #else  
     while (!glfwWindowShouldClose(glfwManager.window)) {
@@ -236,10 +113,6 @@ void CApplication::run(){ //Entrance Function
         if (NeedToExit) break;
 	}
 #endif
-
-
-
-
 
 	vkDeviceWaitIdle(CContext::GetHandle().GetLogicalDevice());//Wait GPU to complete all jobs before CPU destroy resources
 }

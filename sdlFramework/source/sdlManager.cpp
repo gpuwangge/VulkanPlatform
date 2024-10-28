@@ -43,3 +43,100 @@ void CSDLManager::createSurface(std::unique_ptr<CInstance> &instance, VkSurfaceK
     }
 }
 
+
+void CSDLManager::eventHandle(){
+    SDL_Event event;
+    while(SDL_PollEvent(&event)) {
+        //std::cout << "Debug: while loop: " <<debugCount<< std::endl;
+        switch(event.type) {
+            case SDL_EVENT_KEY_DOWN:
+                //std::cout<<"Key Down"<<event.key.key<<std::endl;
+                switch(event.key.key){
+                    case SDLK_LEFT:
+                        CApplication::mainCamera.keys.left = true;
+                        break;
+                    case SDLK_RIGHT:
+                        CApplication::mainCamera.keys.right = true;
+                        break;
+                    case SDLK_UP:
+                        CApplication::mainCamera.keys.up = true;
+                        break;
+                    case SDLK_DOWN:
+                        CApplication::mainCamera.keys.down = true;
+                        break;
+                    case SDLK_W:
+                        CApplication::mainCamera.keys.forward = true;
+                        break;
+                    case SDLK_S:
+                        CApplication::mainCamera.keys.backward = true;
+                        break;
+                    case SDLK_A:
+                        CApplication::mainCamera.keys.turnLeft = true;
+                        break;
+                    case SDLK_D:
+                        CApplication::mainCamera.keys.turnRight = true;
+                        break;
+                    case 'q':
+                    case 'Q':
+                        bStillRunning = false;
+                        break; 
+                }
+                bKeyDown = true;
+                break;
+            case SDL_EVENT_KEY_UP:
+                //std::cout<<"Key Up"<<event.key.scancode<<std::endl;
+                switch(event.key.key){
+                    case SDLK_LEFT:
+                        CApplication::mainCamera.keys.left = false;
+                        break;
+                    case SDLK_RIGHT:
+                        CApplication::mainCamera.keys.right = false;
+                        break;
+                    case SDLK_UP:
+                        CApplication::mainCamera.keys.up = false;
+                        break;
+                    case SDLK_DOWN:
+                        CApplication::mainCamera.keys.down = false;
+                        break;
+                    case SDLK_W:
+                        CApplication::mainCamera.keys.forward = false;
+                        break;
+                    case SDLK_S:
+                        CApplication::mainCamera.keys.backward = false;
+                        break;
+                    case SDLK_A:
+                        CApplication::mainCamera.keys.turnLeft = false;
+                        break;
+                    case SDLK_D:
+                        CApplication::mainCamera.keys.turnRight = false;
+                        break;
+                }
+                bKeyDown = false;
+                break;
+            case SDL_EVENT_MOUSE_BUTTON_DOWN:
+                std::cout<<"Mouse Down: "<<event.pmotion.x<<", "<<event.pmotion.y<<std::endl;
+                bMouseDown = true;
+                break;
+            case SDL_EVENT_MOUSE_BUTTON_UP:
+                std::cout<<"Mouse Up: "<<event.pmotion.x<<", "<<event.pmotion.y<<std::endl;
+                bMouseDown = false;
+                break;
+            case SDL_EVENT_MOUSE_MOTION:
+                if(bMouseDown){
+                    //SDL_SetRenderTarget(renderer, render_target);
+                    //SDL_SetRenderDrawColorFloat(renderer, 0, 0, 0, 255);
+                    //SDL_RenderLine(renderer, previous_touch_x, previous_touch_y, event.pmotion.x, event.pmotion.y);
+                    //std::cout<<bMouseDown<<": "<<event.pmotion.x<<", "<<event.pmotion.y<<std::endl;
+                }
+                //previous_touch_x = event.pmotion.x;
+                //previous_touch_y = event.pmotion.y;
+                break;
+            case SDL_EVENT_QUIT:
+                bStillRunning = false;
+                break;
+            default:
+                // Do nothing.
+                break;
+        }
+    }
+}

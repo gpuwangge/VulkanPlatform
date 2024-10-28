@@ -11,6 +11,7 @@ CObject::CObject(){
 
     Position = glm::vec3();
     Rotation = glm::vec3();
+    Scale = glm::vec3(1.0f, 1.0f, 1.0f);
 
     Velocity = glm::vec3();
     AngularVelocity = glm::vec3();
@@ -19,6 +20,7 @@ CObject::CObject(){
     for(int i = 0; i < 6; i++) TempAngularVelocity[i] = glm::vec4();
 
     RotationMatrix = glm::mat4();
+    ScaleMatrix = glm::mat4();
     DirectionFront = glm::vec3();
     DirectionUp = glm::vec3();
     DirectionLeft = glm::vec3();
@@ -32,7 +34,7 @@ CObject::CObject(){
     // TargetPosition = glm::vec3();
     // TargetDirection = glm::vec3();
 
-    Scale = 1.0f;
+    //Scale = 1.0f;
 }
 
  void CObject::Update(float deltaTime){
@@ -79,9 +81,17 @@ CObject::CObject(){
     //std::cout<<"Position = "<<Position.x<<","<<Position.y<<","<<Position.z<<std::endl;
 
     /**********
+    * Scale Update
+    **********/
+    ScaleMatrix[0][0] = Scale.x;
+    ScaleMatrix[1][1] = Scale.y;
+    ScaleMatrix[2][2] = Scale.z;
+    ScaleMatrix[3][3] = 1;
+
+    /**********
     * Calculate model matrix based on vector Postion and Rotation
     **********/
-    CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].model = translateMatrix * RotationMatrix;
+    CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].model = translateMatrix * RotationMatrix * ScaleMatrix;
     
     // switch (ObjectState)
     // {
@@ -166,6 +176,13 @@ void CObject::MoveToRotation(float pitch, float yaw, float roll, float t){
 
 void CObject::SetVelocity(float vx, float vy, float vz){ Velocity = glm::vec3(vx, vy, vz); }
 void CObject::SetAngularVelocity(float vx, float vy, float vz){ AngularVelocity = glm::vec3(vx, vy, vz); }
+
+void CObject::SetScale(float scale_x, float scale_y, float scale_z){
+    Scale = glm::vec3(scale_x, scale_y, scale_z);
+}
+void CObject::SetRectangle(float x0, float y0, float z0, float x1, float y1, float z1){
+
+}
 
 void CObject::CleanUp(){
     //textureDescriptor.DestroyAndFree();

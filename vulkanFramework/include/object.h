@@ -22,9 +22,12 @@ class CObject {
     *******************/
     glm::vec3 Position; //absolute position coordinate
     glm::vec3 Rotation; //Pitch, Yaw, Roll
+    glm::vec3 Scale;
 
     glm::mat4 RotationMatrix; //16*4=64 bytes
     void ComputeRotationMatrix();
+
+    glm::mat4 ScaleMatrix;
 
     glm::vec3 DirectionFront;
     glm::vec3 DirectionUp;
@@ -64,7 +67,7 @@ class CObject {
     //glm::vec3 TargetPosition;
     //glm::vec3 TargetDirection;
 
-    float Scale;
+    //float Scale;
 
     // enum ObjectStates {
     //     IDLE,
@@ -134,6 +137,9 @@ public:
 
     void SetVelocity(float vx, float vy, float vz);
     void SetAngularVelocity(float vx, float vy, float vz);
+
+    void SetScale(float scale_x, float scale_y, float scale_z);
+    void SetRectangle(float x0, float y0, float z0, float x1, float y1, float z1);
 
     bool bUpdate;
     void Update(float deltaTime);
