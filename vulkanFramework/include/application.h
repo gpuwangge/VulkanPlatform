@@ -17,8 +17,6 @@
 #include "supervisor.h"
 #include "object.h"
 
-#define SDL
-
 #ifndef ANDROID
     #ifndef SDL
         #include "..\\..\\glfwFramework\\include\\glfwManager.h"
