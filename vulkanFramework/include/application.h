@@ -21,7 +21,7 @@
 
 #ifndef ANDROID
     #ifndef SDL
-        #include "..\\..\\windowsFramework\\include\\glfwManager.h"
+        #include "..\\..\\glfwFramework\\include\\glfwManager.h"
     #else
         #include "..\\..\\sdlFramework\\include\\sdlManager.h"
     #endif

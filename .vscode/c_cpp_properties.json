@@ -5,9 +5,10 @@
             "includePath": [
                 "${workspaceFolder}/**",
                 "${workspaceFolder}/vulkanFramework",
+                "${workspaceFolder}/glfwFramework",
+                "C:/VulkanSDK/GLFW/include",
                 "C:/VulkanSDK",
                 "C:/VulkanSDK/GLM",
-                //"C:/VulkanSDK/GLFW/include",
                 "${VULKAN_SDK}/Include"
             ],
             "compilerPath": "C:\\mingw64\\bin\\gcc.exe",

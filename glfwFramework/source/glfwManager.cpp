@@ -1,5 +1,5 @@
-#include "glfwManager.h"
-#include "application.h"
+#include "../include/glfwManager.h"
+#include "../../vulkanFramework/include/application.h"
 
 #ifndef M_PI
 #define M_PI  3.14159265f

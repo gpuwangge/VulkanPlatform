@@ -4,9 +4,9 @@
 #define GLFW_INCLUDE_VULKAN
 #include <GLFW/glfw3.h>
 
-#include "common.h"
-#include "camera.hpp"
-#include "instance.h"
+#include "../../vulkanFramework/include/common.h"
+#include "../../vulkanFramework/include/camera.hpp"
+#include "../../vulkanFramework/include/instance.h"
 
 class CGLFWManager final{
 
