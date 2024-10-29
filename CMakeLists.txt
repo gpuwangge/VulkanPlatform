@@ -5,6 +5,8 @@ project(VulkanPlatform)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_BUILD_TYPE "Debug")
 
+add_definitions(-DSDL)
+
 include_directories(
     $ENV{VULKAN_SDK}/Include
     $ENV{INCLUDE}
