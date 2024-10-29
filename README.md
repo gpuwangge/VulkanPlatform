@@ -14,9 +14,9 @@
 
 ## How to build to Windows binary(.exe)
 Prepare:  
-1. Install Vulkan  
+1. Install Vulkan (Tested version 1.3.296.0)  
 1. Install CMake  
-1. Setup SDL or GLFW (Default is SDL)   
+1. Setup SDL or GLFW (Default is SDL, tested version 3.1.3)   
 1. Setup GLM (Tested version 0.9.9.8)
 1. git clone this repo 
 - [Optional] Download other thirdparty headers: stb_image.h and tiny_obj_loader.h (I already put both files in the "thirdparty" folder in this repo)  
@@ -60,11 +60,10 @@ Both GLFW and SDL are supported.
 The default windows/interactive is SDL3.  
 To switch back to GLFW, do the following:  
 1. Comment out #define SDL in application.h  
-2. rename "legacy_windowsFramework" to "windowsFramework"  
-3. in the root CMakeLists.txt:  
-add include_directories(${PROJECT_SOURCE_DIR}/windowsFramework/include)  
-add add_subdirectory(windowsFramework)  
-add link_libraries(windows-vulkan-framework, glfw3dll)  
+2. switch CMakeLists.txt with glfw_CMakeLists.txt, what it does:  
+add include_directories(${PROJECT_SOURCE_DIR}/glfwFramework/include)  
+add add_subdirectory(glfwFramework)  
+add link_libraries(glfw-framework, glfw3dll)  
 copy glfw3dll to bin folder  
 
 ## Distribution
