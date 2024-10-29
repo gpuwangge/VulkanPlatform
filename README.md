@@ -58,13 +58,13 @@ Launch Android Studio, open "androidSandbox" folder.   Select "Build" > "Build B
 ## How to switch SDL to GLFW
 Both GLFW and SDL are supported.  
 The default windows/interactive is SDL3.  
-To switch back to GLFW, do the following:  
-1. Comment out #define SDL in application.h  
-2. switch CMakeLists.txt with glfw_CMakeLists.txt, what it does:  
-add include_directories(${PROJECT_SOURCE_DIR}/glfwFramework/include)  
-add add_subdirectory(glfwFramework)  
-add link_libraries(glfw-framework, glfw3dll)  
-copy glfw3dll to bin folder  
+To switch back to GLFW, do this:  
+switch CMakeLists.txt with glfw_CMakeLists.txt  
+what it does:  
+- add include_directories(${PROJECT_SOURCE_DIR}/glfwFramework/include)  
+- add add_subdirectory(glfwFramework)  
+- add link_libraries(glfw-framework, glfw3dll)  
+- copy glfw3dll to bin folder  
 
 ## Distribution
 - For Android, just distribute the single .apk file, it contains all resources.  
