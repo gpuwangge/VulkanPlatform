@@ -31,7 +31,7 @@ public:
 		modelManager.CreateCustomModel3D(vertices3D, indices3D); //create the 0th custom model 3D (CUSTOM3D0)
 		appInfo.Object.Count = 4;
 		appInfo.Object.Model.Names = std::make_unique<std::vector<std::string>>(std::vector<std::string> {
-			"CUSTOM3D0", 
+			"CUSTOM3D0",
 			"cube.obj", 
 			"hallway.obj"
 			});
@@ -65,6 +65,7 @@ public:
 
 	void recordGraphicsCommandBuffer(){
 		objectList[0].Draw();
+		//objectList[1].Draw();
 		objectList[3].Draw();
 		//for(int i = 0; i < appInfo.Object.Count; i++) objectList[i].Draw();
 	}

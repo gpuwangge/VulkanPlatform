@@ -17,6 +17,10 @@ class CObject {
 
     bool bUseMVP_VP;
 
+    glm::vec3 Length;
+    glm::vec3 LengthMin;
+    glm::vec3 LengthMax;
+
    /******************
     * Tranformation
     *******************/
@@ -139,13 +143,13 @@ public:
     void SetAngularVelocity(float vx, float vy, float vz);
 
     void SetScale(float scale_x, float scale_y, float scale_z);
-    void SetRectangle(float x0, float y0, float z0, float x1, float y1, float z1);
+    void SetScaleRectangleXY(float x0, float y0, float x1, float y1); //set 2d image to rect((x0,y0),(x1,y1))
 
     bool bUpdate;
     void Update(float deltaTime);
 
     //when a 3d object is register, it could be with texture(texture_id>=0) or no texture(texture_id=-1); it could have one texture, or several textures(INT_MAX)
-    void Register(CApplication *p_app, int texture_id = 0, int model_id = 0, int object_id = 0); //-1 means no texture or model 
+    void Register(CApplication *p_app, int texture_id = 0, int model_id = 0, int object_id = 0, glm::vec3 length = glm::vec3(), glm::vec3 lengthMin = glm::vec3(), glm::vec3 lengthMax = glm::vec3()); //-1 means no texture or model 
 
     //draw with renderer's buffer, or no buffer
     void Draw(uint32_t n = 0);

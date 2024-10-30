@@ -7,6 +7,10 @@ CObject::CObject(){
     bUseTextureSampler = false;
     bUpdate = true;
 
+    Length = glm::vec3();
+    LengthMin = glm::vec3();
+    LengthMax = glm::vec3();
+
     //ObjectState = ObjectStates::IDLE;
 
     Position = glm::vec3();
@@ -180,7 +184,7 @@ void CObject::SetAngularVelocity(float vx, float vy, float vz){ AngularVelocity 
 void CObject::SetScale(float scale_x, float scale_y, float scale_z){
     Scale = glm::vec3(scale_x, scale_y, scale_z);
 }
-void CObject::SetRectangle(float x0, float y0, float z0, float x1, float y1, float z1){
+void CObject::SetScaleRectangleXY(float x0, float y0, float x1, float y1){
 
 }
 
@@ -248,11 +252,18 @@ void CObject::CreateTextureDescriptorSets(std::vector<CTextureImage> &textureIma
     //std::cout<<"Done set descriptor. "<<std::endl;
 }
 
-void CObject::Register(CApplication *p_app, int texture_id, int model_id, int object_id){ //-1 means no texture or model 
+void CObject::Register(CApplication *p_app, int texture_id, int model_id, int object_id, glm::vec3 length, glm::vec3 lengthMin, glm::vec3 lengthMax){ //-1 means no texture or model 
     m_object_id = object_id;
     m_texture_id = texture_id;
     m_model_id = model_id;
     bUseMVP_VP = CGraphicsDescriptorManager::CheckMVP();
+
+    Length = length;
+    LengthMin = lengthMin;
+    LengthMax = lengthMax;
+    std::cout<<"Length = "<<Length.x<<", "<<Length.y<<", "<<Length.z<<std::endl;
+    std::cout<<"LengthMin = "<<LengthMin.x<<", "<<LengthMin.y<<", "<<LengthMin.z<<std::endl;
+    std::cout<<"LengthMax = "<<LengthMax.x<<", "<<LengthMax.y<<", "<<LengthMax.z<<std::endl;
     
     //Prepare pointers for drawcall
     p_renderer = &(p_app->renderer);

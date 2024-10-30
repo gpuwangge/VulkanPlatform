@@ -10,12 +10,40 @@ void CModelManager::CreateCustomModel3D(std::vector<Vertex3D> &vertices3D, std::
 	CCustomModel3D model;
 	model.vertices = vertices3D;
 	model.indices = indices3D;
+
+	float max_x = 0, max_y = 0, max_z = 0;
+	float min_x = 0, min_y = 0, min_z = 0;
+	for(int i = 0; i < vertices3D.size(); i++){
+		max_x = std::max(max_x, vertices3D[i].pos.x);
+		max_y = std::max(max_y, vertices3D[i].pos.y);
+		max_z = std::max(max_z, vertices3D[i].pos.z);
+		min_x = std::min(min_x, vertices3D[i].pos.x);
+		min_y = std::min(min_y, vertices3D[i].pos.y);
+		min_z = std::min(min_z, vertices3D[i].pos.z);
+	}
+	model.length = glm::vec3(max_x-min_x, max_y-min_y, max_z-min_z);
+	model.lengthMin = glm::vec3(min_x, min_y, min_z);
+	model.lengthMax = glm::vec3(max_x, max_y, max_z);
+
 	customModels3D.push_back(model);
 }
 
 void CModelManager::CreateCustomModel2D(std::vector<Vertex2D> &vertices2D){
 	CCustomModel2D model;
 	model.vertices = vertices2D;
+
+	float max_x = 0, max_y = 0, max_z = 0;
+	float min_x = 0, min_y = 0, min_z = 0;
+	for(int i = 0; i < vertices2D.size(); i++){
+		max_x = std::max(max_x, vertices2D[i].pos.x);
+		max_y = std::max(max_y, vertices2D[i].pos.y);
+		min_x = std::min(min_x, vertices2D[i].pos.x);
+		min_y = std::min(min_y, vertices2D[i].pos.y);
+	}
+	model.length = glm::vec3(max_x-min_x, max_y-min_y, 0);
+	model.lengthMin = glm::vec3(min_x, min_y, 0);
+	model.lengthMax = glm::vec3(max_x, max_y, 0);
+
 	customModels2D.push_back(model);
 }
 
@@ -50,6 +78,8 @@ void CModelManager::LoadObjModel(IN const std::string modelName, OUT std::vector
 	//vertices3D.clear();
 	//indices3D.clear();
 	
+	float max_x = 0, max_y = 0, max_z = 0;
+	float min_x = 0, min_y = 0, min_z = 0;
 	for (const auto& shape : shapes) {
 		for (const auto& index : shape.mesh.indices) {
 			Vertex3D vertex{};
@@ -59,6 +89,12 @@ void CModelManager::LoadObjModel(IN const std::string modelName, OUT std::vector
 				attrib.vertices[3 * index.vertex_index + 1],
 				attrib.vertices[3 * index.vertex_index + 2]
 			};
+			max_x = std::max(max_x, vertex.pos.x);
+			max_y = std::max(max_y, vertex.pos.y);
+			max_z = std::max(max_z, vertex.pos.z);
+			min_x = std::min(min_x, vertex.pos.x);
+			min_y = std::min(min_y, vertex.pos.y);
+			min_z = std::min(min_z, vertex.pos.z);
 
 			vertex.color = { 1.0f, 1.0f, 1.0f };
 
@@ -81,6 +117,10 @@ void CModelManager::LoadObjModel(IN const std::string modelName, OUT std::vector
 			indices3D.push_back(uniqueVertices[vertex]);
 		}
 	}
+	
+	modelLengths.push_back(glm::vec3(max_x-min_x, max_y-min_y, max_z-min_z));
+	modelLengthsMin.push_back(glm::vec3(min_x, min_y, min_z));
+	modelLengthsMax.push_back(glm::vec3(max_x, max_y, max_z));
 }
 
 

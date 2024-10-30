@@ -79,9 +79,17 @@ void CSupervisor::Activate_Buffer_Graphics_Vertex(std::unique_ptr<std::vector<st
         if((*modelNames)[i] == "CUSTOM3D0"){
             m_app->renderer.CreateVertexBuffer<Vertex3D>(modelManager.customModels3D[0].vertices); 
             m_app->renderer.CreateIndexBuffer(modelManager.customModels3D[0].indices);
+            
+            m_app->modelManager.modelLengths.push_back(modelManager.customModels3D[0].length);
+            m_app->modelManager.modelLengthsMin.push_back(modelManager.customModels3D[0].lengthMin);
+            m_app->modelManager.modelLengthsMax.push_back(modelManager.customModels3D[0].lengthMax);
         }else if((*modelNames)[i] == "CUSTOM2D0"){
             VertexStructureType = VertexStructureTypes::TwoDimension;
             m_app->renderer.CreateVertexBuffer<Vertex2D>(modelManager.customModels2D[0].vertices); 
+
+            m_app->modelManager.modelLengths.push_back(modelManager.customModels2D[0].length);
+            m_app->modelManager.modelLengthsMin.push_back(modelManager.customModels2D[0].lengthMin);
+            m_app->modelManager.modelLengthsMax.push_back(modelManager.customModels2D[0].lengthMax);
         }else{
             VertexStructureType = VertexStructureTypes::ThreeDimension;
             m_app->modelManager.LoadObjModel((*modelNames)[i], vertices3D, indices3D);

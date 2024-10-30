@@ -132,7 +132,10 @@ void CApplication::initialize(){
         if(appInfo.Object.Texture.List != NULL) texture_id = appInfo.Uniform.GraphicsSampler.UseMultiSamplerForOneObject ? INT_MAX : (*appInfo.Object.Texture.List)[i]; 
         //std::cout<<"i: "<<(*appInfo.Object.Model.List)[i] <<std::endl;
         if(appInfo.Object.Model.List != NULL) model_id = (*appInfo.Object.Model.List)[i];
-        objectList[i].Register((CApplication*)this, texture_id, model_id, i); //must be set after initialize()::SetApplicationProperty(appInfo);
+        if(CSupervisor::VertexStructureType == VertexStructureTypes::TwoDimension || CSupervisor::VertexStructureType  == VertexStructureTypes::ThreeDimension)
+            objectList[i].Register((CApplication*)this, texture_id, model_id, i, modelManager.modelLengths[model_id], modelManager.modelLengthsMin[model_id], modelManager.modelLengthsMax[model_id]); //must be set after initialize()::SetApplicationProperty(appInfo);
+        else
+            objectList[i].Register((CApplication*)this, texture_id, model_id, i);
     }
 
     renderer.CreateSyncObjects(swapchain.imageSize);
