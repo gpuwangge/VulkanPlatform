@@ -7,9 +7,10 @@ CObject::CObject(){
     bUseTextureSampler = false;
     bUpdate = true;
 
+    Length_original = glm::vec3();
+    LengthMin_original = glm::vec3();
+    LengthMax_original = glm::vec3();
     Length = glm::vec3();
-    LengthMin = glm::vec3();
-    LengthMax = glm::vec3();
 
     //ObjectState = ObjectStates::IDLE;
 
@@ -183,9 +184,30 @@ void CObject::SetAngularVelocity(float vx, float vy, float vz){ AngularVelocity 
 
 void CObject::SetScale(float scale_x, float scale_y, float scale_z){
     Scale = glm::vec3(scale_x, scale_y, scale_z);
+    UpdateLength();
 }
 void CObject::SetScaleRectangleXY(float x0, float y0, float x1, float y1){
+    //Screen Coordinate is (-1,-1) to (1,1)
+    std::cout<<"Position: "<<Position.x<<", "<<Position.y<<", "<<Position.z<<std::endl;
+    std::cout<<"Length_original: "<<Length_original.x<<", "<<Length_original.y<<", "<<Length_original.z<<std::endl;
+    std::cout<<"Scale: "<<Scale.x<<", "<<Scale.y<<", "<<Scale.z<<std::endl;
 
+    //Step 1: Update Scale
+    glm::vec3 destinationLength = glm::vec3(x1-x0, y1-y0, 0);
+    Scale = glm::vec3(destinationLength.x/Length_original.x, destinationLength.y/Length_original.y, 1);
+
+    //Step 2: Update Position
+    Position = glm::vec3(x0+destinationLength.x/2, y0+destinationLength.y/2, 0);
+
+    std::cout<<"Position: "<<Position.x<<", "<<Position.y<<", "<<Position.z<<std::endl;
+    std::cout<<"Length_original: "<<Length_original.x<<", "<<Length_original.y<<", "<<Length_original.z<<std::endl;
+    std::cout<<"Scale: "<<Scale.x<<", "<<Scale.y<<", "<<Scale.z<<std::endl;
+
+    UpdateLength();
+}
+void CObject::UpdateLength(){
+    Length = glm::vec3(Length_original.x * Scale.x, Length_original.y * Scale.y, Length_original.z * Scale.z);
+    std::cout<<"Length Updated: "<<Length.x<<", "<<Length.y<<", "<<Length.z<<std::endl;
 }
 
 void CObject::CleanUp(){
@@ -258,12 +280,13 @@ void CObject::Register(CApplication *p_app, int texture_id, int model_id, int ob
     m_model_id = model_id;
     bUseMVP_VP = CGraphicsDescriptorManager::CheckMVP();
 
+    Length_original = length;
+    LengthMin_original = lengthMin;
+    LengthMax_original = lengthMax;
     Length = length;
-    LengthMin = lengthMin;
-    LengthMax = lengthMax;
-    std::cout<<"Length = "<<Length.x<<", "<<Length.y<<", "<<Length.z<<std::endl;
-    std::cout<<"LengthMin = "<<LengthMin.x<<", "<<LengthMin.y<<", "<<LengthMin.z<<std::endl;
-    std::cout<<"LengthMax = "<<LengthMax.x<<", "<<LengthMax.y<<", "<<LengthMax.z<<std::endl;
+    //std::cout<<"Length = "<<Length.x<<", "<<Length.y<<", "<<Length.z<<std::endl;
+    //std::cout<<"LengthMin = "<<LengthMin.x<<", "<<LengthMin.y<<", "<<LengthMin.z<<std::endl;
+    //std::cout<<"LengthMax = "<<LengthMax.x<<", "<<LengthMax.y<<", "<<LengthMax.z<<std::endl;
     
     //Prepare pointers for drawcall
     p_renderer = &(p_app->renderer);

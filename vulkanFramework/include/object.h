@@ -17,9 +17,10 @@ class CObject {
 
     bool bUseMVP_VP;
 
-    glm::vec3 Length;
-    glm::vec3 LengthMin;
-    glm::vec3 LengthMax;
+    glm::vec3 Length_original; //original is the value before scale
+    glm::vec3 LengthMin_original;
+    glm::vec3 LengthMax_original;
+    glm::vec3 Length; //length after scale, the true "length"
 
    /******************
     * Tranformation
@@ -144,6 +145,7 @@ public:
 
     void SetScale(float scale_x, float scale_y, float scale_z);
     void SetScaleRectangleXY(float x0, float y0, float x1, float y1); //set 2d image to rect((x0,y0),(x1,y1))
+    void UpdateLength();
 
     bool bUpdate;
     void Update(float deltaTime);

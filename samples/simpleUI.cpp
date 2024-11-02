@@ -41,7 +41,7 @@ public:
 			{"viking_room.png", false},
 			{"fur.jpg", false},
 			});
-		appInfo.Object.Texture.List = std::make_unique<std::vector<int>>(std::vector<int> {0, 0, 0, 0});
+		appInfo.Object.Texture.List = std::make_unique<std::vector<int>>(std::vector<int> {0, 1, 2, 0});
 		appInfo.Shader.Vertex = "simpleUI/vert.spv";
 		appInfo.Shader.Fragment = "simpleUI/frag.spv";
 		appInfo.Uniform.GraphicsSampler.Count = 1;
@@ -50,8 +50,14 @@ public:
 		CApplication::initialize();
 
 		objectList[0].bSticker = true;
-		objectList[0].SetPosition(-0.5,-0.5,0.0);
+		//objectList[0].SetPosition(-0.5,-0.5,0.0);
 		//objectList[0].SetScale(1, 2, 1);
+		//objectList[0].SetScaleRectangleXY(0, 0, 1, 1);
+		objectList[0].SetScaleRectangleXY(-1, -1, 0, 0);
+		//objectList[0].SetPosition(-1, -1,0.1);
+
+		objectList[3].bSticker = true;
+		objectList[3].SetScaleRectangleXY(0.5, 0.5, 1, 1);
 	}
 
 	void update(){
@@ -59,15 +65,15 @@ public:
 		//objectList[0].SetAngularVelocity(0,0,50); //rotation around z axis
 		objectList[1].SetAngularVelocity(50,0,50); //rotation around x and z axis
 		objectList[2].SetVelocity(0, 3*sin(durationTime * 2), 0);
-		objectList[3].SetVelocity(3*sin(durationTime * 2), 0, 0);
+		//objectList[3].SetVelocity(3*sin(durationTime * 2), 0, 0);
 		CApplication::update();
 	}
 
 	void recordGraphicsCommandBuffer(){
-		objectList[0].Draw();
+		//objectList[0].Draw();
 		//objectList[1].Draw();
-		objectList[3].Draw();
-		//for(int i = 0; i < appInfo.Object.Count; i++) objectList[i].Draw();
+		//objectList[3].Draw();
+		for(int i = 0; i < appInfo.Object.Count; i++) objectList[i].Draw();
 	}
 
 	// ~TEST_CLASS_NAME(){
