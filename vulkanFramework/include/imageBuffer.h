@@ -22,11 +22,14 @@ public:
     void destroy();
 
     uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) ;
-    void createImage(uint32_t width, uint32_t height, uint32_t mipLevels, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties);
+    void createImage(uint32_t width, uint32_t height, uint32_t mipLevels, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, bool bCubeMap);
     
     //Create 2 versions of this function. The void version is for texture, msaaImage, depthImage. VkImageView version is for swapchain imageview
-    void createImageView(VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels);
-    VkImageView createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels);
+    void createImageView(VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels, bool bCubeMap);
+    VkImageView createImageView(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels, bool bCubeMap);
+
+    //void createImageView_swapchain(VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels);
+    VkImageView createImageView_swapchain(VkImage image, VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels);
 
     //CDebugger * debugger;//can not use debugger in ImageBuffer, because multiple image buffer is created at the same time for swapchain
 };

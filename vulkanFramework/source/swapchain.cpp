@@ -142,7 +142,7 @@ void CSwapchain::createImageViews(VkImageAspectFlags aspectFlags){
     views.resize(imageSize);
     for (size_t i = 0; i < imageSize; i++) {
         CWxjImageBuffer dummyImageBuffer; //dummyImageBuffer doesn't really matter here, just use it's create function
-		views[i] = dummyImageBuffer.createImageView(images[i], swapChainImageFormat, aspectFlags, 1);
+		views[i] = dummyImageBuffer.createImageView_swapchain(images[i], swapChainImageFormat, aspectFlags, 1);
     }
 }
 
@@ -224,16 +224,16 @@ VkExtent2D CSwapchain::chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabili
 }
 
 void CSwapchain::createMSAAImages(VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties){
-    msaaColorImageBuffer.createImage(swapChainExtent.width,swapChainExtent.height, 1, msaaSamples, swapChainImageFormat, tiling, usage, properties);
+    msaaColorImageBuffer.createImage(swapChainExtent.width,swapChainExtent.height, 1, msaaSamples, swapChainImageFormat, tiling, usage, properties, false);
 }
 void CSwapchain::createMSAAImageViews(VkImageAspectFlags aspectFlags){
-    msaaColorImageBuffer.createImageView(swapChainImageFormat, aspectFlags, 1);
+    msaaColorImageBuffer.createImageView(swapChainImageFormat, aspectFlags, 1, false);
 }
 void CSwapchain::createDepthImages(VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties){
-    depthImageBuffer.createImage(swapChainExtent.width,swapChainExtent.height, 1, msaaSamples, depthFormat, tiling, usage, properties);
+    depthImageBuffer.createImage(swapChainExtent.width,swapChainExtent.height, 1, msaaSamples, depthFormat, tiling, usage, properties, false);
 }
 void CSwapchain::createDepthImageViews(VkFormat format, VkImageAspectFlags aspectFlags){
-    depthImageBuffer.createImageView(format, aspectFlags, 1);
+    depthImageBuffer.createImageView(format, aspectFlags, 1, false);
 }
 
 VkFormat CSwapchain::findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) {

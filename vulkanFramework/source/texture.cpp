@@ -66,6 +66,8 @@ void CTextureImage::CreateTextureImage(void* texels, VkImageUsageFlags usage, CW
 // 	LOGI("imageSize: %d bytes", imageSize);
 // #endif	
 	PRINT("CreateTextureImage: imageSize: %d bytes", (int)imageSize);
+	PRINT("CreateTextureImage: texWidth: %d texels", (int)texWidth);
+	PRINT("CreateTextureImage: texHeight: %d texels", (int)texHeight);
 
 	if(imageFormat == VK_FORMAT_R16G16B16A16_SFLOAT){
 // #ifndef ANDROID	
@@ -87,7 +89,7 @@ void CTextureImage::CreateTextureImage(void* texels, VkImageUsageFlags usage, CW
 	stbi_image_free(texels);
 
 	//Step 2: create(allocate) image buffer
-	imageBuffer.createImage(texWidth, texHeight, mipLevels, VK_SAMPLE_COUNT_1_BIT, imageFormat, VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+	imageBuffer.createImage(texWidth, texHeight, mipLevels, VK_SAMPLE_COUNT_1_BIT, imageFormat, VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, false);
 
 	//Step 3: copy stagingBuffer(pixels) to imageBuffer(empty)
 	//To perform the copy, need change imageBuffer's layout: undefined->transferDST->shader-read-only 
@@ -106,7 +108,7 @@ void CTextureImage::CreateTextureImage(void* texels, VkImageUsageFlags usage, CW
 }
 
 void CTextureImage::CreateImageView(VkImageAspectFlags aspectFlags){
-    textureImageBuffer.createImageView(imageFormat, aspectFlags, mipLevels);
+    textureImageBuffer.createImageView(imageFormat, aspectFlags, mipLevels, false);
 }
 
 void CTextureImage::transitionImageLayout(VkImage image, VkImageLayout oldLayout, VkImageLayout newLayout) {
@@ -124,6 +126,7 @@ void CTextureImage::transitionImageLayout(VkImage image, VkImageLayout oldLayout
     barrier.subresourceRange.levelCount = mipLevels;
     barrier.subresourceRange.baseArrayLayer = 0;
     barrier.subresourceRange.layerCount = 1;
+	//barrier.subresourceRange.layerCount = 6; //for cubemap
 
     VkPipelineStageFlags sourceStage;
     VkPipelineStageFlags destinationStage;
