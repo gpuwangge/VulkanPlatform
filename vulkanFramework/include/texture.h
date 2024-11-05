@@ -16,9 +16,15 @@ public:
     void endSingleTimeCommands(VkCommandBuffer commandBuffer);
     void transitionImageLayout(VkImage image, VkImageLayout oldLayout, VkImageLayout newLayout);
 
+    void copyBufferToImage_cubemap(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
+    void transitionImageLayout_cubemap(VkImage image, VkImageLayout oldLayout, VkImageLayout newLayout);
+
     void CreateTextureImage(const std::string texturePath, VkImageUsageFlags usage, VkCommandPool &commandPool, unsigned short bitPerTexelPerChannel = 8);
     void CreateTextureImage(void* texels, VkImageUsageFlags usage, CWxjImageBuffer &imageBuffer, unsigned short texChannels, unsigned short texBptpc);
     void CreateImageView(VkImageAspectFlags aspectFlags);
+
+    void CreateTextureImage_cubemap(void* texels, VkImageUsageFlags usage, CWxjImageBuffer &imageBuffer, unsigned short texChannels, unsigned short texBptpc);
+    void CreateImageView_cubemap(VkImageAspectFlags aspectFlags);
 
     void generateMipmaps(); //create normal mipmap
     void generateMipmaps(std::string rainbowCheckerboardTexturePath, VkImageUsageFlags usage); //create mix mipmaps
