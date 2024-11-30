@@ -408,7 +408,7 @@ void CTextureImage::copyBufferToImage_cubemap(VkBuffer buffer, VkImage image, ui
 	VkBufferImageCopy regions[6];
 	memset(regions, 0, sizeof(regions));
 	for(int i = 0; i < 6; i++){
-		regions[i].bufferOffset = i * (width / 6) * sizeof(float) * 3;// is the offset in bytes from the start of the buffer object where the image data is copied from or to
+		regions[i].bufferOffset = i * (width / 6) * 4;// is the offset in bytes from the start of the buffer object where the image data is copied from or to
 		regions[i].bufferRowLength = width; //specify in texels a subregion of a larger two- or three-dimensional image in buffer
 		regions[i].bufferImageHeight = height;
 		regions[i].imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT; //imageSubresource is a VkImageSubresourceLayers used to specify the specific image subresources of the image used for the source or destination image data.
