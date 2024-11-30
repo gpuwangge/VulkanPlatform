@@ -4,43 +4,77 @@
 #include "imageBuffer.h"
 #include "renderer.h"
 #include "context.h"
+#include "logManager.h"
 
 class CTextureImage final{
 public:
+    /*******************
+    *	Texture Image: Basic
+    ********************/
     CTextureImage();
     ~CTextureImage();
     void Destroy();
 
+    /*******************
+    *	Texture Image: Load
+    ********************/
+    void GetTexels(const std::string texturePath); //, VkImageUsageFlags usage, VkCommandPool &commandPool, unsigned short bitPerTexelPerChannel = 8
+
+    /*******************
+    *	Texture Image: Create
+    ********************/
+    void CreateTextureImage();
+    void CreateImageView(VkImageAspectFlags aspectFlags);
+    
+    /*******************
+    *	Texture Image: Transition
+    ********************/
     void copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
-    VkCommandBuffer beginSingleTimeCommands();
-    void endSingleTimeCommands(VkCommandBuffer commandBuffer);
     void transitionImageLayout(VkImage image, VkImageLayout oldLayout, VkImageLayout newLayout);
 
+    /*******************
+    *	Texture Image: Create(Cubemap)
+    ********************/
+    void CreateTextureImage_cubemap();
+    void CreateImageView_cubemap(VkImageAspectFlags aspectFlags);
+
+    /*******************
+    *	Texture Image: Transition(Cubemap)
+    ********************/
     void copyBufferToImage_cubemap(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height);
     void transitionImageLayout_cubemap(VkImage image, VkImageLayout oldLayout, VkImageLayout newLayout);
 
-    void CreateTextureImage(const std::string texturePath, VkImageUsageFlags usage, VkCommandPool &commandPool, unsigned short bitPerTexelPerChannel = 8);
-    void CreateTextureImage(void* texels, VkImageUsageFlags usage, CWxjImageBuffer &imageBuffer, unsigned short texChannels, unsigned short texBptpc);
-    void CreateImageView(VkImageAspectFlags aspectFlags);
+    /*******************
+    *	Texture Image: Command Utility
+    ********************/
+    VkCommandBuffer beginSingleTimeCommands();
+    void endSingleTimeCommands(VkCommandBuffer commandBuffer);
 
-    void CreateTextureImage_cubemap(void* texels, VkImageUsageFlags usage, CWxjImageBuffer &imageBuffer, unsigned short texChannels, unsigned short texBptpc);
-    void CreateImageView_cubemap(VkImageAspectFlags aspectFlags);
-
+    /*******************
+    *	Texture Image: Mipmap
+    ********************/
+    void CreateTextureImage_rainbow_mipmap(void* texels, VkImageUsageFlags usage, CWxjImageBuffer &imageBuffer);
     void generateMipmaps(); //create normal mipmap
     void generateMipmaps(std::string rainbowCheckerboardTexturePath, VkImageUsageFlags usage); //create mix mipmaps
     void generateMipmapsCore(VkImage image, bool bCreateTempTexture = false, bool bCreateMixTexture = false, std::array<CWxjImageBuffer, MIPMAP_TEXTURE_COUNT> *textureImageBuffers_mipmaps = NULL);
-    
 
-    //Resource for Texture
-    int32_t texWidth, texHeight;
-    VkFormat imageFormat;
-    short dstTexChannels;
+
+    /*******************
+    *	Resource for Texture
+    ********************/
+    int32_t m_texWidth, m_texHeight;
+    VkFormat m_imageFormat;
+    short m_dstTexChannels; //use by stbi_load()
     //std::string texturePath = "";
 	//VkSampler textureSampler;
-	CWxjImageBuffer textureImageBuffer;
+	CWxjImageBuffer m_textureImageBuffer;
 	//VkImageView textureImageView;
 
-    VkCommandPool *pCommandPool;
+    VkCommandPool *m_pCommandPool;
+    void* m_pTexels;
+    VkImageUsageFlags m_usage;
+    int m_texChannels; //8 or 16
+    unsigned short m_texBptpc; //bit per texel per channel
 
     uint32_t mipLevels = 1; //1 means no mipmap
     bool bEnableMipMap = false;
@@ -50,14 +84,12 @@ public:
 class CTextureManager{
 public:
     std::vector<CTextureImage> textureImages;
+    CLogManager logManager;
     //unsigned int textureImageCount = 0;
     CTextureManager();
     ~CTextureManager();
-    void CreateTextureImage(
-        const std::string texturePath, VkImageUsageFlags usage, VkCommandPool &commandPool, 
-        bool bEnableMipmap = false,
-        VkFormat imageFormat = VK_FORMAT_R8G8B8A8_SRGB, 
-        unsigned short bitPerTexelPerChannel = 8);
+    void CreateTextureImage(const std::string texturePath, VkImageUsageFlags usage, VkCommandPool &commandPool, 
+        bool bEnableMipmap = false,VkFormat imageFormat = VK_FORMAT_R8G8B8A8_SRGB, unsigned short bitPerTexelPerChannel = 8, bool bCubemap = false);
     void Destroy();
 };
 

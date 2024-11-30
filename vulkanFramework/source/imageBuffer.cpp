@@ -14,15 +14,18 @@ void CWxjImageBuffer::createImage(uint32_t width, uint32_t height, uint32_t mipL
     VkImageCreateInfo imageInfo{};
     imageInfo.sType = VK_STRUCTURE_TYPE_IMAGE_CREATE_INFO;
     imageInfo.imageType = VK_IMAGE_TYPE_2D;
-    imageInfo.extent.width = width;
-    imageInfo.extent.height = height;
     imageInfo.extent.depth = 1;
     imageInfo.mipLevels = mipLevels;
     if(bCubeMap){
+        imageInfo.extent.width = width/6;
+        imageInfo.extent.height = height;
         imageInfo.arrayLayers = 6; //for cubemap
         imageInfo.flags = VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT;//for cubemap
-    }else
+    }else{
+        imageInfo.extent.width = width;
+        imageInfo.extent.height = height;
         imageInfo.arrayLayers = 1;
+    }
     imageInfo.format = format;
     imageInfo.tiling = tiling;
     imageInfo.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;

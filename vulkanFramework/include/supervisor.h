@@ -114,7 +114,7 @@ public:
      * Texture
      * 
      *****************************/
-    static void Activate_Texture(std::unique_ptr<std::vector<std::pair<std::string, bool>>> textureNames = NULL);
+    static void Activate_Texture(std::unique_ptr<std::vector<std::pair<std::string, bool>>> textureNames = NULL, bool bCubemap = false);
 
     /*****************************
      * 

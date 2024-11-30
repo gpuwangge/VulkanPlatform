@@ -3,40 +3,105 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "../../thirdParty/stb_image.h"
 
+
+/*******************
+*	Texture Manager: to manage a vector of CTextureImages
+********************/
+CTextureManager::CTextureManager(){
+	//std::cout<<"CTextureManager::CTextureManager()"<<std::endl;
+	//textureImages.resize(1);
+#ifndef ANDROID
+    logManager.setLogFile("textureManager.log");
+#endif	
+}
+CTextureManager::~CTextureManager(){
+	//std::cout<<"CTextureManager::~CTextureManager()"<<std::endl;
+}
+
+//The main entrance to create texture image
+void CTextureManager::CreateTextureImage(const std::string texturePath, VkImageUsageFlags usage, VkCommandPool &commandPool, 
+		bool bEnableMipmap, VkFormat imageFormat, unsigned short bitPerTexelPerChannel, bool bCubemap){
+	auto startTextureTime = std::chrono::high_resolution_clock::now();
+
+	CTextureImage textureImage;
+	textureImage.m_imageFormat = imageFormat;
+	textureImage.bEnableMipMap = bEnableMipmap; 
+	textureImage.m_usage = usage;
+	textureImage.m_pCommandPool = &commandPool;
+	assert((bitPerTexelPerChannel == 8) || (bitPerTexelPerChannel == 16)); //bitPerTexelPerChannel is default 8
+	textureImage.m_texBptpc = bitPerTexelPerChannel;
+
+	textureImage.GetTexels(texturePath);
+
+	if(!bCubemap){//General texture image
+		textureImage.CreateTextureImage(); 
+		textureImage.CreateImageView(VK_IMAGE_ASPECT_COLOR_BIT);
+	}else{//Cubemap texture image
+		textureImage.CreateTextureImage_cubemap();
+		textureImage.CreateImageView_cubemap(VK_IMAGE_ASPECT_COLOR_BIT);
+	}
+
+	textureImages.push_back(textureImage);
+	//textureImages[0].CreateTextureImage("texture.jpg", usage, renderer.commandPool);
+	//textureImages[0].CreateImageView(VK_IMAGE_ASPECT_COLOR_BIT);
+
+	auto endTextureTime = std::chrono::high_resolution_clock::now();
+    auto durationTime = std::chrono::duration<float, std::chrono::seconds::period>(endTextureTime - startTextureTime).count()*1000;
+	logManager.print("Load Texture Image %s", texturePath);
+	logManager.print("\tcost %f milliseconds", durationTime);
+    //std::cout<<"Load Texture '"<< (*textureNames)[i].first <<"' cost: "<<durationTime<<" milliseconds"<<std::endl;
+}
+
+void CTextureManager::Destroy(){
+	//std::cout<<"CTextureManager::Destroy()"<<std::endl;
+	for(int i = 0; i < textureImages.size(); i++) textureImages[i].Destroy();
+}
+
+
+/*******************
+*	Texture Image: Basic
+********************/
 CTextureImage::CTextureImage(){
 #ifndef ANDROID
-    imageFormat = VK_FORMAT_R8G8B8A8_SRGB;
+    m_imageFormat = VK_FORMAT_R8G8B8A8_SRGB;
 #else
 	imageFormat = VK_FORMAT_R8G8B8A8_UNORM;
 #endif
-	dstTexChannels = STBI_rgb_alpha;
+	m_dstTexChannels = STBI_rgb_alpha;
 	//debugger = new CDebugger("../logs/texture.log");
 }
 CTextureImage::~CTextureImage(){
 	//if (!debugger) delete debugger;
 }
+void CTextureImage::Destroy(){
+    m_textureImageBuffer.destroy();
+}
 
-void CTextureImage::CreateTextureImage(const std::string texturePath, VkImageUsageFlags usage, VkCommandPool &commandPool, unsigned short bitPerTexelPerChannel) {
-	assert((bitPerTexelPerChannel == 8) || (bitPerTexelPerChannel == 16)); //bitPerTexelPerChannel is default 8
-	pCommandPool = &commandPool;
+/*******************
+*	Texture Image: Load
+********************/
+void CTextureImage::GetTexels(const std::string texturePath) {
+	//m_pCommandPool = &commandPool;
+	//m_usage = usage;
 	//Step 1: prepare staging buffer with texture pixels inside
-	int texChannels;
-	void* texels;
+	int inputTexChannels; //not really useful
+	m_texChannels = m_dstTexChannels; //set channel to output channel number
+
 #ifndef ANDROID
 	std::string fullTexturePath = TEXTURE_PATH + texturePath;
 	for(short i = 0; i < 2; i++){ //look for texture in 2 locations
-		if(bitPerTexelPerChannel == 16){
-			texels = stbi_load_16(fullTexturePath.c_str(), &texWidth, &texHeight, &texChannels, dstTexChannels);
+		if(m_texBptpc == 16){
+			m_pTexels = stbi_load_16(fullTexturePath.c_str(), &m_texWidth, &m_texHeight, &inputTexChannels, m_dstTexChannels);
 			//std::cout<<"Load 48bpt texture."<<std::endl;
 			//std::cout<<"texWidth = "<<texWidth<<", texHeight = "<<texHeight<<std::endl;
 		}else{
-			texels = stbi_load(fullTexturePath.c_str(), &texWidth, &texHeight, &texChannels, dstTexChannels);
+			m_pTexels = stbi_load(fullTexturePath.c_str(), &m_texWidth, &m_texHeight, &inputTexChannels, m_dstTexChannels);
 			//std::cout<<"Load 24bpt texture."<<std::endl;
 			//std::cout<<"texWidth = "<<texWidth<<", texHeight = "<<texHeight<<std::endl;
-		}if(texels) break;
+		}if(m_pTexels) break;
 		fullTexturePath = "textures/" + texturePath; 
 	}
-	if (!texels) throw std::runtime_error("failed to load texture image!");
+	if (!m_pTexels) throw std::runtime_error("failed to load texture image!");
 	//std::cout<<"texWidth: "<<texWidth<<", texHeight: "<<texHeight<<", texChannels: "<<texChannels<<std::endl;
 #else
 	//TODO: need support bitPerTexelPerChannel == 16
@@ -49,124 +114,79 @@ void CTextureImage::CreateTextureImage(const std::string texturePath, VkImageUsa
 		texels = stbi_load_from_memory(fileBits.data(), fileBits.size(), &texWidth, &texHeight, &texChannels, dstTexChannels);//stbi_uc
 	
 #endif
-	PRINT("CreateTextureImage: Load texture as %d bits per texel per channel", bitPerTexelPerChannel);
-	CreateTextureImage(texels, usage, textureImageBuffer, dstTexChannels, bitPerTexelPerChannel); 
+	PRINT("CreateTextureImage: Load texels as %d bits per texel per channel", m_texBptpc);
+	//CreateTextureImage(texels, usage, textureImageBuffer, dstTexChannels, bitPerTexelPerChannel); 
 }
 
+/*******************
+*	Texture Image: Create
+********************/
 static unsigned short frac_float16(unsigned short fp16){
 	return fp16;
 
 }
 
-void CTextureImage::CreateTextureImage(void* texels, VkImageUsageFlags usage, CWxjImageBuffer &imageBuffer, unsigned short texChannels, unsigned short texBptpc) {
+void CTextureImage::CreateTextureImage() {
 	//texWidth/=6;//test
-	VkDeviceSize imageSize = texWidth * texHeight * texChannels * texBptpc/8; 
+	VkDeviceSize imageSize = m_texWidth * m_texHeight * m_texChannels * m_texBptpc/8; 
 // #ifndef ANDROID	
-// 	std::cout<<"imageSize: "<<imageSize<<" bytes"<<std::endl;
+	//std::cout<<"m_texWidth: "<<m_texWidth<<" texels"<<std::endl;
+	//std::cout<<"m_texHeight: "<<m_texHeight<<" texels"<<std::endl;
+	//std::cout<<"m_texChannels: "<<m_texChannels<<" "<<std::endl;
+	//std::cout<<"m_texBptpc: "<<m_texBptpc<<" bit per texel per channel"<<std::endl;
+ 	//std::cout<<"imageSize: "<<imageSize<<" bytes"<<std::endl;
 // #else
 // 	LOGI("imageSize: %d bytes", imageSize);
 // #endif	
 	PRINT("CreateTextureImage: imageSize: %d bytes", (int)imageSize);
-	PRINT("CreateTextureImage: texWidth: %d texels", (int)texWidth);
-	PRINT("CreateTextureImage: texHeight: %d texels", (int)texHeight);
+	PRINT("CreateTextureImage: texWidth: %d texels", (int)m_texWidth);
+	PRINT("CreateTextureImage: texHeight: %d texels", (int)m_texHeight);
 
-	if(imageFormat == VK_FORMAT_R16G16B16A16_SFLOAT){
+	if(m_imageFormat == VK_FORMAT_R16G16B16A16_SFLOAT){
 // #ifndef ANDROID	
 // 		std::cout<<"imageFormat: VK_FORMAT_R16G16B16A16_SFLOAT"<<std::endl;
 // #else
 // 		LOGI("imageFormat: VK_FORMAT_R16G16B16A16_SFLOAT");
 // #endif	
 		PRINT("CreateTextureImage: imageFormat: VK_FORMAT_R16G16B16A16_SFLOAT");		
-		int texelNumber = texWidth * texHeight * texChannels;
-		for(int i = 0; i < texelNumber; i++) ((uint16_t*)texels)[i] = frac_float16(((uint16_t*)texels)[i]);
+		int texelNumber = m_texWidth * m_texHeight * m_texChannels;
+		for(int i = 0; i < texelNumber; i++) ((uint16_t*)m_pTexels)[i] = frac_float16(((uint16_t*)m_pTexels)[i]);
 	}
 
-	mipLevels = bEnableMipMap ? (static_cast<uint32_t>(std::floor(std::log2(std::max(texWidth, texHeight)))) + 1) : 1;
+	mipLevels = bEnableMipMap ? (static_cast<uint32_t>(std::floor(std::log2(std::max(m_texWidth, m_texHeight)))) + 1) : 1;
 
 	CWxjBuffer stagingBuffer;
 	VkResult result = stagingBuffer.init(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
-	stagingBuffer.fill(texels);
+	stagingBuffer.fill(m_pTexels);
 
-	stbi_image_free(texels);
+	stbi_image_free(m_pTexels);
 
 	//Step 2: create(allocate) image buffer
-	imageBuffer.createImage(texWidth, texHeight, mipLevels, VK_SAMPLE_COUNT_1_BIT, imageFormat, VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, false);
+	m_textureImageBuffer.createImage(m_texWidth, m_texHeight, mipLevels, VK_SAMPLE_COUNT_1_BIT, m_imageFormat, VK_IMAGE_TILING_OPTIMAL, m_usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, false);
 
 	//Step 3: copy stagingBuffer(pixels) to imageBuffer(empty)
 	//To perform the copy, need change imageBuffer's layout: undefined->transferDST->shader-read-only 
 	//If the image is mipmap enabled, keep the transferDST layout (it will be mipmaped anyway)
 	//(transfer image in non-DST layout is not optimal???)
 	if(mipLevels == 1){
-		transitionImageLayout(imageBuffer.image, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
- 		copyBufferToImage(stagingBuffer.buffer, imageBuffer.image, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
-      	transitionImageLayout(imageBuffer.image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_GENERAL);//VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL ///!!!!
+		transitionImageLayout(m_textureImageBuffer.image, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+ 		copyBufferToImage(stagingBuffer.buffer, m_textureImageBuffer.image, static_cast<uint32_t>(m_texWidth), static_cast<uint32_t>(m_texHeight));
+      	transitionImageLayout(m_textureImageBuffer.image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_GENERAL);//VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL ///!!!!
 	}else{
-		transitionImageLayout(imageBuffer.image, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-		copyBufferToImage(stagingBuffer.buffer, imageBuffer.image, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
-	}
-
-	stagingBuffer.DestroyAndFree();
-}
-
-void CTextureImage::CreateTextureImage_cubemap(void* texels, VkImageUsageFlags usage, CWxjImageBuffer &imageBuffer, unsigned short texChannels, unsigned short texBptpc) {
-	//texWidth/=6;//test
-	VkDeviceSize imageSize = texWidth * texHeight * texChannels * texBptpc/8; 
-// #ifndef ANDROID	
-// 	std::cout<<"imageSize: "<<imageSize<<" bytes"<<std::endl;
-// #else
-// 	LOGI("imageSize: %d bytes", imageSize);
-// #endif	
-	PRINT("CreateTextureImage: imageSize: %d bytes", (int)imageSize);
-	PRINT("CreateTextureImage: texWidth: %d texels", (int)texWidth);
-	PRINT("CreateTextureImage: texHeight: %d texels", (int)texHeight);
-
-	if(imageFormat == VK_FORMAT_R16G16B16A16_SFLOAT){
-// #ifndef ANDROID	
-// 		std::cout<<"imageFormat: VK_FORMAT_R16G16B16A16_SFLOAT"<<std::endl;
-// #else
-// 		LOGI("imageFormat: VK_FORMAT_R16G16B16A16_SFLOAT");
-// #endif	
-		PRINT("CreateTextureImage: imageFormat: VK_FORMAT_R16G16B16A16_SFLOAT");		
-		int texelNumber = texWidth * texHeight * texChannels;
-		for(int i = 0; i < texelNumber; i++) ((uint16_t*)texels)[i] = frac_float16(((uint16_t*)texels)[i]);
-	}
-
-	mipLevels = bEnableMipMap ? (static_cast<uint32_t>(std::floor(std::log2(std::max(texWidth, texHeight)))) + 1) : 1;
-
-	CWxjBuffer stagingBuffer;
-	VkResult result = stagingBuffer.init(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
-	stagingBuffer.fill(texels);
-
-	stbi_image_free(texels);
-
-	//Step 2: create(allocate) image buffer
-	imageBuffer.createImage(texWidth, texHeight, mipLevels, VK_SAMPLE_COUNT_1_BIT, imageFormat, VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, true);
-
-	//Step 3: copy stagingBuffer(pixels) to imageBuffer(empty)
-	//To perform the copy, need change imageBuffer's layout: undefined->transferDST->shader-read-only 
-	//If the image is mipmap enabled, keep the transferDST layout (it will be mipmaped anyway)
-	//(transfer image in non-DST layout is not optimal???)
-	if(mipLevels == 1){
-		transitionImageLayout(imageBuffer.image, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
- 		copyBufferToImage(stagingBuffer.buffer, imageBuffer.image, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
-      	transitionImageLayout(imageBuffer.image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_GENERAL);//VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL ///!!!!
-	}else{
-		transitionImageLayout(imageBuffer.image, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
-		copyBufferToImage(stagingBuffer.buffer, imageBuffer.image, static_cast<uint32_t>(texWidth), static_cast<uint32_t>(texHeight));
+		transitionImageLayout(m_textureImageBuffer.image, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+		copyBufferToImage(stagingBuffer.buffer, m_textureImageBuffer.image, static_cast<uint32_t>(m_texWidth), static_cast<uint32_t>(m_texHeight));
 	}
 
 	stagingBuffer.DestroyAndFree();
 }
 
 void CTextureImage::CreateImageView(VkImageAspectFlags aspectFlags){
-    textureImageBuffer.createImageView(imageFormat, aspectFlags, mipLevels, false);
+    m_textureImageBuffer.createImageView(m_imageFormat, aspectFlags, mipLevels, false);
 }
 
-void CTextureImage::CreateImageView_cubemap(VkImageAspectFlags aspectFlags){
-    textureImageBuffer.createImageView(imageFormat, aspectFlags, mipLevels, true);
-}
-
-
+/*******************
+*	Texture Image: Transition
+********************/
 void CTextureImage::transitionImageLayout(VkImage image, VkImageLayout oldLayout, VkImageLayout newLayout) {
     VkCommandBuffer commandBuffer = beginSingleTimeCommands();
 
@@ -183,64 +203,6 @@ void CTextureImage::transitionImageLayout(VkImage image, VkImageLayout oldLayout
     barrier.subresourceRange.baseArrayLayer = 0;
     barrier.subresourceRange.layerCount = 1;
 	//barrier.subresourceRange.layerCount = 6; //for cubemap
-	std::cout<<"DEBUG: CTextureImage::transitionImageLayout"<<std::endl;
-
-    VkPipelineStageFlags sourceStage;
-    VkPipelineStageFlags destinationStage;
-
-    if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) {
-        barrier.srcAccessMask = 0;
-        barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-
-        sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
-        destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
-    }
-    else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) {
-        barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-        barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-
-        sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
-        destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-    }
-	else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_GENERAL) {///!!!!
-        barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
-        barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-
-        sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
-        destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-    }
-    else {
-        throw std::invalid_argument("unsupported layout transition!");
-    }
-
-    vkCmdPipelineBarrier(
-        commandBuffer,
-        sourceStage, destinationStage,
-        0,
-        0, nullptr,
-        0, nullptr,
-        1, &barrier
-    );
-
-    endSingleTimeCommands(commandBuffer);
-}
-
-void CTextureImage::transitionImageLayout_cubemap(VkImage image, VkImageLayout oldLayout, VkImageLayout newLayout) {
-    VkCommandBuffer commandBuffer = beginSingleTimeCommands();
-
-    VkImageMemoryBarrier barrier{};
-    barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
-    barrier.oldLayout = oldLayout;
-    barrier.newLayout = newLayout;
-    barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-    barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
-    barrier.image = image;
-    barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-    barrier.subresourceRange.baseMipLevel = 0;
-    barrier.subresourceRange.levelCount = mipLevels;
-    barrier.subresourceRange.baseArrayLayer = 0;
-    //barrier.subresourceRange.layerCount = 1;
-	barrier.subresourceRange.layerCount = 6; //for cubemap
 	std::cout<<"DEBUG: CTextureImage::transitionImageLayout"<<std::endl;
 
     VkPipelineStageFlags sourceStage;
@@ -306,34 +268,177 @@ void CTextureImage::copyBufferToImage(VkBuffer buffer, VkImage image, uint32_t w
     endSingleTimeCommands(commandBuffer);
 }
 
-void CTextureImage::copyBufferToImage_cubemap(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height) {
+
+/*******************
+*	Texture Image: Create(Cubemap)
+********************/
+void CTextureImage::CreateTextureImage_cubemap() {
+	//texWidth/=6;//test
+	VkDeviceSize imageSize = m_texWidth * m_texHeight * m_texChannels * m_texBptpc/8; 
+// #ifndef ANDROID	
+// 	std::cout<<"imageSize: "<<imageSize<<" bytes"<<std::endl;
+// #else
+// 	LOGI("imageSize: %d bytes", imageSize);
+// #endif	
+	PRINT("CreateTextureImage: imageSize: %d bytes", (int)imageSize);
+	PRINT("CreateTextureImage: texWidth: %d texels", (int)m_texWidth);
+	PRINT("CreateTextureImage: texHeight: %d texels", (int)m_texHeight);
+
+	if(m_imageFormat == VK_FORMAT_R16G16B16A16_SFLOAT){
+// #ifndef ANDROID	
+// 		std::cout<<"imageFormat: VK_FORMAT_R16G16B16A16_SFLOAT"<<std::endl;
+// #else
+// 		LOGI("imageFormat: VK_FORMAT_R16G16B16A16_SFLOAT");
+// #endif	
+		PRINT("CreateTextureImage: imageFormat: VK_FORMAT_R16G16B16A16_SFLOAT");		
+		int texelNumber = m_texWidth * m_texHeight * m_texChannels;
+		for(int i = 0; i < texelNumber; i++) ((uint16_t*)m_pTexels)[i] = frac_float16(((uint16_t*)m_pTexels)[i]);
+	}
+
+	mipLevels = bEnableMipMap ? (static_cast<uint32_t>(std::floor(std::log2(std::max(m_texWidth, m_texHeight)))) + 1) : 1;
+
+	CWxjBuffer stagingBuffer;
+	VkResult result = stagingBuffer.init(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
+	stagingBuffer.fill(m_pTexels);
+
+	stbi_image_free(m_pTexels);
+
+	//Step 2: create(allocate) image buffer
+	m_textureImageBuffer.createImage(m_texWidth, m_texHeight, mipLevels, VK_SAMPLE_COUNT_1_BIT, m_imageFormat, VK_IMAGE_TILING_OPTIMAL, m_usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, true);
+
+	//Step 3: copy stagingBuffer(pixels) to imageBuffer(empty)
+	//To perform the copy, need change imageBuffer's layout: undefined->transferDST->shader-read-only 
+	//If the image is mipmap enabled, keep the transferDST layout (it will be mipmaped anyway)
+	//(transfer image in non-DST layout is not optimal???)
+	if(mipLevels == 1){
+		transitionImageLayout_cubemap(m_textureImageBuffer.image, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+ 		copyBufferToImage_cubemap(stagingBuffer.buffer, m_textureImageBuffer.image, static_cast<uint32_t>(m_texWidth), static_cast<uint32_t>(m_texHeight));
+      	transitionImageLayout_cubemap(m_textureImageBuffer.image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_GENERAL);//VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL ///!!!!
+	}else{
+		transitionImageLayout_cubemap(m_textureImageBuffer.image, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+		copyBufferToImage_cubemap(stagingBuffer.buffer, m_textureImageBuffer.image, static_cast<uint32_t>(m_texWidth), static_cast<uint32_t>(m_texHeight));
+	}
+
+	stagingBuffer.DestroyAndFree();
+}
+
+void CTextureImage::CreateImageView_cubemap(VkImageAspectFlags aspectFlags){
+    m_textureImageBuffer.createImageView(m_imageFormat, aspectFlags, mipLevels, true);
+}
+
+/*******************
+*	Texture Image: Transition(Cubemap)
+********************/
+void CTextureImage::transitionImageLayout_cubemap(VkImage image, VkImageLayout oldLayout, VkImageLayout newLayout) {
     VkCommandBuffer commandBuffer = beginSingleTimeCommands();
 
-    VkBufferImageCopy region{};
-    region.bufferOffset = 0;
-    region.bufferRowLength = 0;
-    region.bufferImageHeight = 0;
-    region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-    region.imageSubresource.mipLevel = 0;
-    region.imageSubresource.baseArrayLayer = 0;
-    region.imageSubresource.layerCount = 1;
-    region.imageOffset = { 0, 0, 0 };
-    region.imageExtent = {
-        width,
-        height,
-        1
-    };
+    VkImageMemoryBarrier barrier{};
+    barrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER;
+    barrier.oldLayout = oldLayout;
+    barrier.newLayout = newLayout;
+    barrier.srcQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    barrier.dstQueueFamilyIndex = VK_QUEUE_FAMILY_IGNORED;
+    barrier.image = image;
+    barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    barrier.subresourceRange.baseMipLevel = 0;
+    barrier.subresourceRange.levelCount = mipLevels;
+    barrier.subresourceRange.baseArrayLayer = 0;
+    //barrier.subresourceRange.layerCount = 1;
+	barrier.subresourceRange.layerCount = 6; //for cubemap
+	std::cout<<"DEBUG: CTextureImage::transitionImageLayout"<<std::endl;
 
-    vkCmdCopyBufferToImage(commandBuffer, buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region);
+    VkPipelineStageFlags sourceStage;
+    VkPipelineStageFlags destinationStage;
+
+    if (oldLayout == VK_IMAGE_LAYOUT_UNDEFINED && newLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL) {
+        barrier.srcAccessMask = 0;
+        barrier.dstAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+
+        sourceStage = VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT;
+        destinationStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+    }
+    else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL) {
+        barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+        barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+
+        sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+        destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+    }
+	else if (oldLayout == VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL && newLayout == VK_IMAGE_LAYOUT_GENERAL) {///!!!!
+        barrier.srcAccessMask = VK_ACCESS_TRANSFER_WRITE_BIT;
+        barrier.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+
+        sourceStage = VK_PIPELINE_STAGE_TRANSFER_BIT;
+        destinationStage = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+    }
+    else {
+        throw std::invalid_argument("unsupported layout transition!");
+    }
+
+    vkCmdPipelineBarrier(
+        commandBuffer,
+        sourceStage, destinationStage,
+        0,
+        0, nullptr,
+        0, nullptr,
+        1, &barrier
+    );
 
     endSingleTimeCommands(commandBuffer);
 }
 
+void CTextureImage::copyBufferToImage_cubemap(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height) {
+    VkCommandBuffer commandBuffer = beginSingleTimeCommands();
+
+    // VkBufferImageCopy region{};
+    // region.bufferOffset = 0;
+    // region.bufferRowLength = 0;
+    // region.bufferImageHeight = 0;
+    // region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+    // region.imageSubresource.mipLevel = 0;
+    // region.imageSubresource.baseArrayLayer = 0;
+    // region.imageSubresource.layerCount = 1;
+    // region.imageOffset = { 0, 0, 0 };
+    // region.imageExtent = {
+    //     width,
+    //     height,
+    //     1
+    // };
+
+	VkBufferImageCopy regions[6];
+	memset(regions, 0, sizeof(regions));
+	for(int i = 0; i < 6; i++){
+		regions[i].bufferOffset = i * (width / 6) * sizeof(float) * 3;// is the offset in bytes from the start of the buffer object where the image data is copied from or to
+		regions[i].bufferRowLength = width; //specify in texels a subregion of a larger two- or three-dimensional image in buffer
+		regions[i].bufferImageHeight = height;
+		regions[i].imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT; //imageSubresource is a VkImageSubresourceLayers used to specify the specific image subresources of the image used for the source or destination image data.
+		regions[i].imageSubresource.mipLevel = 0;
+		regions[i].imageSubresource.baseArrayLayer = i;//?
+		regions[i].imageSubresource.layerCount = 1;
+		regions[i].imageOffset = { 0, 0, 0 }; //selects the initial x, y, z offsets in texels of the sub-region of the source or destination image data.
+		regions[i].imageExtent = { //is the size in texels of the image to copy in width, height and depth.
+			width/6,
+			height,
+			1
+		};
+	}
+    
+
+    //vkCmdCopyBufferToImage(commandBuffer, buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region); //region Count = 1
+	vkCmdCopyBufferToImage(commandBuffer, buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 6, regions);
+
+    endSingleTimeCommands(commandBuffer);
+}
+
+
+/*******************
+*	Texture Image: Command Utility
+********************/
 VkCommandBuffer CTextureImage::beginSingleTimeCommands() {
     VkCommandBufferAllocateInfo allocInfo{};
     allocInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_ALLOCATE_INFO;
     allocInfo.level = VK_COMMAND_BUFFER_LEVEL_PRIMARY;
-    allocInfo.commandPool = *pCommandPool;
+    allocInfo.commandPool = *m_pCommandPool;
     allocInfo.commandBufferCount = 1;
 
     VkCommandBuffer commandBuffer;
@@ -359,12 +464,16 @@ void CTextureImage::endSingleTimeCommands(VkCommandBuffer commandBuffer) {
     vkQueueSubmit(CContext::GetHandle().GetGraphicsQueue(), 1, &submitInfo, VK_NULL_HANDLE);
     vkQueueWaitIdle(CContext::GetHandle().GetGraphicsQueue());
 
-    vkFreeCommandBuffers(CContext::GetHandle().GetLogicalDevice(), *pCommandPool, 1, &commandBuffer);
+    vkFreeCommandBuffers(CContext::GetHandle().GetLogicalDevice(), *m_pCommandPool, 1, &commandBuffer);
 }
 
+
+/*******************
+*	Texture Image: Mipmap
+********************/
 void CTextureImage::generateMipmaps(){
     if(mipLevels <= 1) return;
-    generateMipmapsCore(textureImageBuffer.image);
+    generateMipmapsCore(m_textureImageBuffer.image);
 }
 
 void CTextureImage::generateMipmapsCore(VkImage image, bool bCreateTempTexture, bool bCreateMixTexture, std::array<CWxjImageBuffer, MIPMAP_TEXTURE_COUNT> *textureImageBuffers_mipmaps) {
@@ -372,7 +481,7 @@ void CTextureImage::generateMipmapsCore(VkImage image, bool bCreateTempTexture, 
 	//textureImageBuffers_mipmaps: default is NULL
 	// Check if image format supports linear blitting
 	VkFormatProperties formatProperties;
-	vkGetPhysicalDeviceFormatProperties(CContext::GetHandle().GetPhysicalDevice(), imageFormat, &formatProperties);
+	vkGetPhysicalDeviceFormatProperties(CContext::GetHandle().GetPhysicalDevice(), m_imageFormat, &formatProperties);
 
 	if (!(formatProperties.optimalTilingFeatures & VK_FORMAT_FEATURE_SAMPLED_IMAGE_FILTER_LINEAR_BIT)) {
 		throw std::runtime_error("texture image format does not support linear blitting!");
@@ -390,8 +499,8 @@ void CTextureImage::generateMipmapsCore(VkImage image, bool bCreateTempTexture, 
 	barrier.subresourceRange.layerCount = 1;
 	barrier.subresourceRange.levelCount = 1;
 
-	int32_t mipWidth = texWidth;
-	int32_t mipHeight = texHeight;
+	int32_t mipWidth = m_texWidth;
+	int32_t mipHeight = m_texHeight;
 
 	for (uint32_t i = 1; i < mipLevels; i++) {
 		barrier.subresourceRange.baseMipLevel = i - 1;
@@ -467,6 +576,37 @@ void CTextureImage::generateMipmapsCore(VkImage image, bool bCreateTempTexture, 
 	endSingleTimeCommands(commandBuffer);
 }
 
+void CTextureImage::CreateTextureImage_rainbow_mipmap(void* texels, VkImageUsageFlags usage, CWxjImageBuffer &imageBuffer) {
+	VkDeviceSize imageSize = m_texWidth * m_texHeight * m_texChannels * m_texBptpc/8; 
+
+	if(m_imageFormat == VK_FORMAT_R16G16B16A16_SFLOAT){
+		PRINT("CreateTextureImage: imageFormat: VK_FORMAT_R16G16B16A16_SFLOAT");		
+		int texelNumber = m_texWidth * m_texHeight * m_texChannels;
+		for(int i = 0; i < texelNumber; i++) ((uint16_t*)texels)[i] = frac_float16(((uint16_t*)texels)[i]);
+	}
+
+	mipLevels = bEnableMipMap ? (static_cast<uint32_t>(std::floor(std::log2(std::max(m_texWidth, m_texHeight)))) + 1) : 1;
+
+	CWxjBuffer stagingBuffer;
+	VkResult result = stagingBuffer.init(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
+	stagingBuffer.fill(texels);
+
+	stbi_image_free(texels);
+
+	imageBuffer.createImage(m_texWidth, m_texHeight, mipLevels, VK_SAMPLE_COUNT_1_BIT, m_imageFormat, VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, false);
+
+	if(mipLevels == 1){
+		transitionImageLayout(imageBuffer.image, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+ 		copyBufferToImage(stagingBuffer.buffer, imageBuffer.image, static_cast<uint32_t>(m_texWidth), static_cast<uint32_t>(m_texHeight));
+      	transitionImageLayout(imageBuffer.image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_GENERAL);//VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL ///!!!!
+	}else{
+		transitionImageLayout(imageBuffer.image, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
+		copyBufferToImage(stagingBuffer.buffer, imageBuffer.image, static_cast<uint32_t>(m_texWidth), static_cast<uint32_t>(m_texHeight));
+	}
+
+	stagingBuffer.DestroyAndFree();
+}
+
 void CTextureImage::generateMipmaps(std::string rainbowCheckerboardTexturePath, VkImageUsageFlags usage){ //rainbow mipmaps case
     if(mipLevels <= 1) return;
 
@@ -475,7 +615,7 @@ void CTextureImage::generateMipmaps(std::string rainbowCheckerboardTexturePath, 
 		int texChannels;
 #ifndef ANDROID
 		std::string fullTexturePath = TEXTURE_PATH + rainbowCheckerboardTexturePath + std::to_string(i) + ".png";
-		void* texels = stbi_load(fullTexturePath.c_str(), &texWidth, &texHeight, &texChannels, dstTexChannels);
+		void *texels = stbi_load(fullTexturePath.c_str(), &m_texWidth, &m_texHeight, &texChannels, m_dstTexChannels);
 #else
 		//TODO: need support 16 bptpc
 		std::vector<uint8_t> fileBits;
@@ -483,50 +623,15 @@ void CTextureImage::generateMipmaps(std::string rainbowCheckerboardTexturePath, 
 		CContext::GetHandle().androidFileManager.AssetReadFile(fullTexturePath.c_str(), fileBits);
 		uint8_t* texels = stbi_load_from_memory(fileBits.data(), fileBits.size(), &texWidth, &texHeight, &texChannels, 4);
 #endif
-		CreateTextureImage(texels, usage, tmpTextureBufferForRainbowMipmaps[i], dstTexChannels, 8);
+		//CreateTextureImage_rainbow_mipmap(texels, usage, tmpTextureBufferForRainbowMipmaps[i], m_dstTexChannels, 8);
+		CreateTextureImage_rainbow_mipmap(texels, usage, tmpTextureBufferForRainbowMipmaps[i]);
         generateMipmapsCore(tmpTextureBufferForRainbowMipmaps[i].image, true);
 	}
 	//Generate mipmaps for image, using tmpTextureBufferForRainbowMipmaps
-	generateMipmapsCore(textureImageBuffer.image, false, true, &tmpTextureBufferForRainbowMipmaps);
+	generateMipmapsCore(m_textureImageBuffer.image, false, true, &tmpTextureBufferForRainbowMipmaps);
 	//Clean up
 	for (int i = 0; i < MIPMAP_TEXTURE_COUNT; i++) {
         tmpTextureBufferForRainbowMipmaps[i].destroy();
 	}
 }
 
-void CTextureImage::Destroy(){
-    textureImageBuffer.destroy();
-}
-
-
-
-CTextureManager::CTextureManager(){
-	//std::cout<<"CTextureManager::CTextureManager()"<<std::endl;
-	//textureImages.resize(1);
-}
-CTextureManager::~CTextureManager(){
-	//std::cout<<"CTextureManager::~CTextureManager()"<<std::endl;
-}
-
-void CTextureManager::CreateTextureImage(
-		const std::string texturePath, VkImageUsageFlags usage, VkCommandPool &commandPool, 
-		bool bEnableMipmap,
-		VkFormat imageFormat, 
-		unsigned short bitPerTexelPerChannel){
-	CTextureImage textureImage;
-	textureImage.imageFormat = imageFormat;
-	textureImage.bEnableMipMap = bEnableMipmap; 
-	textureImage.CreateTextureImage(texturePath, usage, commandPool, bitPerTexelPerChannel);
-	textureImage.CreateImageView(VK_IMAGE_ASPECT_COLOR_BIT);
-	textureImages.push_back(textureImage);
-	//textureImages[0].CreateTextureImage("texture.jpg", usage, renderer.commandPool);
-	//textureImages[0].CreateImageView(VK_IMAGE_ASPECT_COLOR_BIT);
-}
-
-
-
-
-void CTextureManager::Destroy(){
-	//std::cout<<"CTextureManager::Destroy()"<<std::endl;
-	for(int i = 0; i < textureImages.size(); i++) textureImages[i].Destroy();
-}

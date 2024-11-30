@@ -254,7 +254,7 @@ void CObject::CreateTextureDescriptorSets(std::vector<CTextureImage> &textureIma
         imageInfo.resize(samplers.size());
         for(int j = 0; j < samplers.size(); j++){
             imageInfo[j].imageLayout = VK_IMAGE_LAYOUT_GENERAL; //test compute storage image: ?need figure this out. VK_IMAGE_LAYOUT_GENERAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
-            imageInfo[j].imageView = textureImages[j].textureImageBuffer.view;
+            imageInfo[j].imageView = textureImages[j].m_textureImageBuffer.view;
             imageInfo[j].sampler = samplers[j];
             descriptorWrites[j].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
             descriptorWrites[j].dstSet = descriptorSets[i];

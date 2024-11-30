@@ -390,10 +390,11 @@ void CApplication::SetApplicationProperty(AppInfo &appInfo){
     std::cout<<"Load Model cost: "<<durationLoadModelTime<<" milliseconds"<<std::endl;
 
     auto startTextureTime = std::chrono::high_resolution_clock::now();
-    if(appInfo.Object.Texture.Names != NULL) CSupervisor::Activate_Texture(std::move(appInfo.Object.Texture.Names));
+    if(appInfo.Object.Texture.Names != NULL)
+        CSupervisor::Activate_Texture(std::move(appInfo.Object.Texture.Names), appInfo.Feature.EnableCubemap);
     auto endTextureTime = std::chrono::high_resolution_clock::now();
     auto durationTextureTime = std::chrono::duration<float, std::chrono::seconds::period>(endTextureTime - startTextureTime).count()*1000;
-    std::cout<<"Load Textures (combined) cost: "<<durationTextureTime<<" milliseconds"<<std::endl;
+    std::cout<<"Load Textures cost: "<<durationTextureTime<<" milliseconds"<<std::endl;
 
     //auto startPipelineTime = std::chrono::high_resolution_clock::now();
     CSupervisor::Activate_Pipeline();

@@ -149,6 +149,7 @@ public:
         bool EnableGraphicsPushConstant = false;
         bool EnableGraphicsBlend = false;
         bool EnableGraphicsRainbowMipmap = false;
+        bool EnableCubemap = false;
     };
     struct BufferInfo{
         struct GraphicsVertexInfo{

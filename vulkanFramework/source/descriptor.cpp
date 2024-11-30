@@ -871,7 +871,7 @@ void CComputeDescriptorManager::createDescriptorSets(std::vector<CTextureImage> 
         if(uniformBufferUsageFlags & UNIFORM_IMAGE_STORAGE_TEXTURE_BIT){
             VkDescriptorImageInfo storageImageInfo{};
             storageImageInfo.imageLayout = VK_IMAGE_LAYOUT_GENERAL;
-            storageImageInfo.imageView = (*textureImages)[0].textureImageBuffer.view;
+            storageImageInfo.imageView = (*textureImages)[0].m_textureImageBuffer.view;
             storageImageInfo.sampler = VK_NULL_HANDLE; //textureSamplers[0];
 
             descriptorWrites[counter].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;

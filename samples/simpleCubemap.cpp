@@ -10,12 +10,13 @@ public:
 		appInfo.Object.Count = 1;
 		appInfo.Object.Model.Names = std::make_unique<std::vector<std::string>>(std::vector<std::string> {"cube.obj"});
 		appInfo.Object.Model.List = std::make_unique<std::vector<int>>(std::vector<int> {0});
-		appInfo.Object.Texture.Names = std::make_unique<std::vector<std::pair<std::string, bool>>>(std::vector<std::pair<std::string, bool>> {{"texture.jpg", false}});//output_skybox.png
+		appInfo.Object.Texture.Names = std::make_unique<std::vector<std::pair<std::string, bool>>>(std::vector<std::pair<std::string, bool>> {{"output_skybox.png", false}});//texture.jpg
 		appInfo.Object.Texture.List = std::make_unique<std::vector<int>>(std::vector<int> {0});
 		appInfo.Shader.Vertex = "simpleCubemap/vert.spv";
 		appInfo.Shader.Fragment = "simpleCubemap/frag.spv";	
 		appInfo.Uniform.GraphicsSampler.Count = 1;
 		appInfo.Uniform.EnableGraphicsMVP = true;
+		appInfo.Feature.EnableCubemap = true;
 		//appInfo.Feature.EnableGraphicsMSAA = true;
 		CApplication::initialize();
 	}
