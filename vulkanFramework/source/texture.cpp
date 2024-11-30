@@ -390,21 +390,6 @@ void CTextureImage::transitionImageLayout_cubemap(VkImage image, VkImageLayout o
 void CTextureImage::copyBufferToImage_cubemap(VkBuffer buffer, VkImage image, uint32_t width, uint32_t height) {
     VkCommandBuffer commandBuffer = beginSingleTimeCommands();
 
-    // VkBufferImageCopy region{};
-    // region.bufferOffset = 0;
-    // region.bufferRowLength = 0;
-    // region.bufferImageHeight = 0;
-    // region.imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
-    // region.imageSubresource.mipLevel = 0;
-    // region.imageSubresource.baseArrayLayer = 0;
-    // region.imageSubresource.layerCount = 1;
-    // region.imageOffset = { 0, 0, 0 };
-    // region.imageExtent = {
-    //     width,
-    //     height,
-    //     1
-    // };
-
 	VkBufferImageCopy regions[6];
 	memset(regions, 0, sizeof(regions));
 	for(int i = 0; i < 6; i++){
@@ -413,7 +398,7 @@ void CTextureImage::copyBufferToImage_cubemap(VkBuffer buffer, VkImage image, ui
 		regions[i].bufferImageHeight = height;
 		regions[i].imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT; //imageSubresource is a VkImageSubresourceLayers used to specify the specific image subresources of the image used for the source or destination image data.
 		regions[i].imageSubresource.mipLevel = 0;
-		regions[i].imageSubresource.baseArrayLayer = i;//?
+		regions[i].imageSubresource.baseArrayLayer = i;
 		regions[i].imageSubresource.layerCount = 1;
 		regions[i].imageOffset = { 0, 0, 0 }; //selects the initial x, y, z offsets in texels of the sub-region of the source or destination image data.
 		regions[i].imageExtent = { //is the size in texels of the image to copy in width, height and depth.
@@ -422,9 +407,7 @@ void CTextureImage::copyBufferToImage_cubemap(VkBuffer buffer, VkImage image, ui
 			1
 		};
 	}
-    
 
-    //vkCmdCopyBufferToImage(commandBuffer, buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 1, &region); //region Count = 1
 	vkCmdCopyBufferToImage(commandBuffer, buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 6, regions);
 
     endSingleTimeCommands(commandBuffer);

@@ -51,7 +51,7 @@ void CSDLManager::eventHandle(){
         switch(event.type) {
             case SDL_EVENT_KEY_DOWN:
                 //std::cout<<"Key Down"<<event.key.key<<std::endl;
-                switch(event.key.key){
+                switch(event.key.key){ //need 6 directions and 6 turns to translate camera
                     case SDLK_LEFT:
                         CApplication::mainCamera.keys.left = true;
                         break;
