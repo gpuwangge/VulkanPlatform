@@ -53,28 +53,29 @@ void CSDLManager::eventHandle(){
                 //std::cout<<"Key Down"<<event.key.key<<std::endl;
                 switch(event.key.key){ //need 6 directions and 6 turns to translate camera
                     case SDLK_LEFT:
-                        CApplication::mainCamera.keys.left = true;
+                        //CApplication::mainCamera.keys.left = true;
+                        CApplication::mainCamera.MoveRight(1,1);
                         break;
                     case SDLK_RIGHT:
-                        CApplication::mainCamera.keys.right = true;
+                        //CApplication::mainCamera.keys.right = true;
                         break;
                     case SDLK_UP:
-                        CApplication::mainCamera.keys.up = true;
+                        //CApplication::mainCamera.keys.up = true;
                         break;
                     case SDLK_DOWN:
-                        CApplication::mainCamera.keys.down = true;
+                        //CApplication::mainCamera.keys.down = true;
                         break;
                     case SDLK_W:
-                        CApplication::mainCamera.keys.forward = true;
+                        //CApplication::mainCamera.keys.forward = true;
                         break;
                     case SDLK_S:
-                        CApplication::mainCamera.keys.backward = true;
+                        //CApplication::mainCamera.keys.backward = true;
                         break;
                     case SDLK_A:
-                        CApplication::mainCamera.keys.turnLeft = true;
+                        //CApplication::mainCamera.keys.turnLeft = true;
                         break;
                     case SDLK_D:
-                        CApplication::mainCamera.keys.turnRight = true;
+                        //CApplication::mainCamera.keys.turnRight = true;
                         break;
                     case 'q':
                     case 'Q':
@@ -87,28 +88,29 @@ void CSDLManager::eventHandle(){
                 //std::cout<<"Key Up"<<event.key.scancode<<std::endl;
                 switch(event.key.key){
                     case SDLK_LEFT:
-                        CApplication::mainCamera.keys.left = false;
+                        //CApplication::mainCamera.keys.left = false;
+                        //CApplication::mainCamera.SetVelocity(0,0,0);
                         break;
                     case SDLK_RIGHT:
-                        CApplication::mainCamera.keys.right = false;
+                        //CApplication::mainCamera.keys.right = false;
                         break;
                     case SDLK_UP:
-                        CApplication::mainCamera.keys.up = false;
+                        //CApplication::mainCamera.keys.up = false;
                         break;
                     case SDLK_DOWN:
-                        CApplication::mainCamera.keys.down = false;
+                        //CApplication::mainCamera.keys.down = false;
                         break;
                     case SDLK_W:
-                        CApplication::mainCamera.keys.forward = false;
+                        //CApplication::mainCamera.keys.forward = false;
                         break;
                     case SDLK_S:
-                        CApplication::mainCamera.keys.backward = false;
+                        //CApplication::mainCamera.keys.backward = false;
                         break;
                     case SDLK_A:
-                        CApplication::mainCamera.keys.turnLeft = false;
+                        //CApplication::mainCamera.keys.turnLeft = false;
                         break;
                     case SDLK_D:
-                        CApplication::mainCamera.keys.turnRight = false;
+                        //CApplication::mainCamera.keys.turnRight = false;
                         break;
                 }
                 bKeyDown = false;

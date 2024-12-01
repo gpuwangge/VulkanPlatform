@@ -1,20 +1,15 @@
-/*
-* Basic camera class
-*
-* Copyright (C) 2016 by Sascha Willems - www.saschawillems.de
-*
-* This code is licensed under the MIT license (MIT) (http://opensource.org/licenses/MIT)
-*/
-
 #ifndef H_CAMERA
 #define H_CAMERA
 
-class Camera
+#include "entity.h"
+
+class Camera : public CEntity
 {
 private:
 	float fov;
 	float znear, zfar;
 
+	/* legacy code
 	void updateViewMatrix()
 	{
 		glm::mat4 rotM = glm::mat4(1.0f);
@@ -42,71 +37,65 @@ private:
 		viewPos = glm::vec4(position, 0.0f) * glm::vec4(-1.0f, 1.0f, -1.0f, 1.0f);
 
 		updated = true;
-	};
+	};*/
 public:
 	enum CameraType { lookat, firstperson };
 	CameraType type = CameraType::lookat;
 
-	glm::vec3 rotation = glm::vec3();
-	glm::vec3 position = glm::vec3();
-	glm::vec4 viewPos = glm::vec4();
+	//glm::vec3 rotation = glm::vec3();
+	//glm::vec3 position = glm::vec3();
+	//glm::vec4 viewPos = glm::vec4();
+	//float rotationSpeed = 1.0f;
+	//float movementSpeed = 1.0f;
+	//bool updated = false;
 
-	float rotationSpeed = 1.0f;
-	float movementSpeed = 1.0f;
-
-	bool updated = false;
 	bool flipY = false;
 
-	struct
-	{
+	struct{
 		glm::mat4 perspective;
 		glm::mat4 view;
 	} matrices;
 
-	struct
-	{
+	struct{
+		bool forward = false;
+		bool backward = false;
 		bool left = false;
 		bool right = false;
 		bool up = false;
 		bool down = false;
-		bool forward = false;
-		bool backward = false;
-		bool turnLeft = false;
-		bool turnRight = false;
-	} keys;
+		
+		bool pitchup = false;
+		bool pitchdown = false;
+		bool yawleft = false;
+		bool yawright = false;
+		bool rollleft = false;
+		bool rollright = false;
+	} state;
 
-	bool moving()
-	{
-		return keys.left || keys.right || keys.up || keys.down || keys.forward || keys.backward || keys.turnLeft || keys.turnRight;
-	}
+	// bool active(){
+	// 	return state.left || state.right || state.up || state.down || state.forward || state.backward 
+	// 		|| state.pitchup || state.pitchdown || state.yawleft || state.yawright || state.rollleft || state.rollright;
+	// }
 
-	float getNearClip() {
-		return znear;
-	}
+	//float getNearClip() {  return znear; }
+	//float getFarClip() { return zfar;}
 
-	float getFarClip() {
-		return zfar;
-	}
-
-	void setPerspective(float fov, float aspect, float znear, float zfar)
-	{
+	//this function is provided to user
+	void setPerspective(float fov, float aspect, float znear, float zfar){ 
 		this->fov = fov;
 		this->znear = znear;
 		this->zfar = zfar;
 		matrices.perspective = glm::perspective(glm::radians(fov), aspect, znear, zfar);
-		if (flipY) {
-			matrices.perspective[1][1] *= -1.0f;
-		}
+		if (flipY) matrices.perspective[1][1] *= -1.0f;
 	};
 
-	void updateAspectRatio(float aspect)
-	{
+	//this function is provided to user (no use case yet)
+	void updateAspectRatio(float aspect){
 		matrices.perspective = glm::perspective(glm::radians(fov), aspect, znear, zfar);
-		if (flipY) {
-			matrices.perspective[1][1] *= -1.0f;
-		}
+		if (flipY) matrices.perspective[1][1] *= -1.0f;
 	}
 
+	/* legacy code
 	void setPosition(glm::vec3 position)
 	{
 		this->position = position;
@@ -145,10 +134,48 @@ public:
 	void setMovementSpeed(float movementSpeed)
 	{
 		this->movementSpeed = movementSpeed;
-	}
+	}*/
 
-	void update(float deltaTime)
-	{
+	void update(float deltaTime){
+		CEntity::Update(deltaTime); //update TranslateMatrix RotationMatrix ScaleMatrix
+		//matrices.view = TranslateMatrix * RotationMatrix;
+		matrices.view =  RotationMatrix * TranslateMatrix;
+
+		//std::cout<<"DirectionFront="<<DirectionFront.x<<","<<DirectionFront.y<<","<<DirectionFront.z<<std::endl;
+		//std::cout<<"DirectionLeft="<<DirectionLeft.x<<","<<DirectionLeft.y<<","<<DirectionLeft.z<<std::endl;
+		//std::cout<<"DirectionUp="<<DirectionUp.x<<","<<DirectionUp.y<<","<<DirectionUp.z<<std::endl;
+
+		//std::cout<<"Velocity="<<Velocity.x<<","<<Velocity.y<<","<<Velocity.z<<std::endl;
+
+		//glm::vec3 r = DirectionLeft * TempVelocity[LEFT].x;
+		//std::cout<<"r="<<r.x<<","<<r.y<<","<<r.z<<std::endl;
+		//std::cout<<"TempVelocity[LEFT].w="<<TempVelocity[LEFT].w<<std::endl;
+
+		//std::cout<<"Position="<<Position.x<<","<<Position.y<<","<<Position.z<<std::endl;
+
+		glm::vec3 r;
+		r.x = RotationMatrix[0][0] * Position[0] +  RotationMatrix[0][1] * Position[1] +  RotationMatrix[0][2] * Position[2]; 
+		r.y = RotationMatrix[1][0] * Position[0] +  RotationMatrix[1][1] * Position[1] +  RotationMatrix[1][2] * Position[2]; 
+		r.z = RotationMatrix[2][0] * Position[0] +  RotationMatrix[2][1] * Position[1] +  RotationMatrix[2][2] * Position[2]; 
+		std::cout<<"r="<<r.x<<","<<r.y<<","<<r.z<<std::endl;
+
+
+		// if (active()){
+		// 	if(state.forward);
+		// 	if(state.backward);
+		// 	if(state.left);
+		// 	if(state.right);
+		// 	if(state.up);
+		// 	if(state.down);
+		// 	if(state.pitchup);
+		// 	if(state.pitchdown);
+		// 	if(state.yawleft);
+		// 	if(state.yawright);
+		// 	if(state.rollleft);
+		// 	if(state.rollright);
+		// }
+
+		/* legacy code
 		updated = false;
 		if (type == CameraType::firstperson)
 		{
@@ -181,9 +208,10 @@ public:
 					rotation += glm::vec3(0.0f, 1.0f, 0.0f) * rotSpeed;
 			}
 		}
-		updateViewMatrix();
+		updateViewMatrix();*/
 	};
 
+	/* disable Game Pad for now
 	// Update camera passing separate axis data (gamepad)
 	// Returns true if view or position has been changed
 	bool updatePad(glm::vec2 axisLeft, glm::vec2 axisRight, float deltaTime)
@@ -247,7 +275,7 @@ public:
 
 		return retVal;
 	}
-
+	*/
 };
 
 #endif

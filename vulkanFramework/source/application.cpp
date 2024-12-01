@@ -7,11 +7,11 @@ CApplication::CApplication(){
     //debugger = new CDebugger("../logs/application.log");
 
     mainCamera.type = Camera::CameraType::firstperson;
-    mainCamera.setPosition(glm::vec3(0.0f, 0.0f, -2.0f));
-    mainCamera.setRotation(glm::vec3(0.0f, 0.0f, 0.0f));
+    mainCamera.SetPosition(0.0f, 0.0f, -2.0f);
+    mainCamera.SetRotation(0.0f, 0.0f, 0.0f);
     mainCamera.setPerspective(90.0f, (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 256.0f);
-    mainCamera.movementSpeed = 1.0f;
-    mainCamera.rotationSpeed = 200.0f;
+    //mainCamera.movementSpeed = 1.0f;
+    //mainCamera.rotationSpeed = 200.0f;
 
     //NeedToExit = false;
     windowWidth = 0;

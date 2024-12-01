@@ -12,7 +12,7 @@ public:
 
 	void initialize(){
 		modelManager.CreateCustomModel3D(vertices3D, indices3D);
-		mainCamera.setPosition(glm::vec3(0.0f, 0.0f, -1.5f));
+		mainCamera.SetPosition(0.0f, 0.0f, -1.5f);
 		appInfo.Object.Count = 1;
 		appInfo.Object.Model.Names = std::make_unique<std::vector<std::string>>(std::vector<std::string> {"CUSTOM3D0"});
 		appInfo.Object.Model.List = std::make_unique<std::vector<int>>(std::vector<int> {0});

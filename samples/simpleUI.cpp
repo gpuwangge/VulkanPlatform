@@ -25,8 +25,8 @@ public:
 	// CCube cubes[2];
 	
     void initialize(){
-		mainCamera.setPosition(glm::vec3(0.0f, -8.5f, -8.5f));
-		mainCamera.setRotation(glm::vec3(45.0f, 0.0f, 0.0f));
+		mainCamera.SetPosition(0.0f, -8.5f, -8.5f);
+		mainCamera.SetRotation(45.0f, 0.0f, 0.0f);
 		mainCamera.setPerspective(60.0f, (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 256.0f);
 		modelManager.CreateCustomModel3D(vertices3D, indices3D); //create the 0th custom model 3D (CUSTOM3D0)
 		appInfo.Object.Count = 4;

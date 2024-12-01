@@ -4,8 +4,8 @@ class TEST_CLASS_NAME: public CApplication{
 public:
     void initialize(){
 		//mainCamera.setPosition(glm::vec3(0.0f, -2.5f, -2.5f));
-		mainCamera.setPosition(glm::vec3(0, 0, 0));
-		mainCamera.setRotation(glm::vec3(180.0f, 0.0f, 0.0f));
+		mainCamera.SetPosition(0, 0, 0);
+		mainCamera.SetRotation(180.0f, 0.0f, 0.0f);
 		mainCamera.setPerspective(45.0f, (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 256.0f);
 		appInfo.Object.Count = 1;
 		appInfo.Object.Model.Names = std::make_unique<std::vector<std::string>>(std::vector<std::string> {"cube.obj"});
