@@ -60,28 +60,6 @@ void CEntity::UpdateLength(){
     std::cout<<"Length Updated: "<<Length.x<<", "<<Length.y<<", "<<Length.z<<std::endl;
 }
 
-void CEntity::ComputeRotationMatrix(){
-    /**********
-    * Rotation Update (Quanternion)
-    * AngularVelocity defines the angular velocity for Pitch, Yaw and Roll
-    **********/
-    glm::quat orientation;
-    glm::quat qPitch = glm::angleAxis(glm::radians(Rotation[0]), glm::vec3(1,0,0));
-    glm::quat qYaw = glm::angleAxis(glm::radians(Rotation[1]), glm::vec3(0,1,0));
-    glm::quat qRoll = glm::angleAxis(glm::radians(Rotation[2]), glm::vec3(0,0,1));
-    orientation = qPitch * qYaw * qRoll; //order matters: first pitch then yaw
-    //orientation = qYaw * qPitch * qRoll;  //first yaw then pitch
-    RotationMatrix = glm::mat4_cast(orientation);    
-}
-
-void CEntity::ComputeDirections(){
-    DirectionFront = glm::normalize(RotationMatrix * glm::vec4(0,0,1,0));
-    DirectionUp = glm::normalize(RotationMatrix * glm::vec4(0,1,0,0));
-    DirectionLeft = glm::normalize(RotationMatrix * glm::vec4(1,0,0,0));
-
-    //std::cout<<"DirectionFront="<<DirectionFront.x<<","<<DirectionFront.y<<","<<DirectionFront.z<<std::endl;
-}
-
 void CEntity::Update(float deltaTime){
     glm::vec3 CurrentVelocity = Velocity;
     glm::vec3 CurrentAngularVelocity = AngularVelocity;
@@ -110,10 +88,38 @@ void CEntity::Update(float deltaTime){
     Rotation += deltaTime * glm::vec3(CurrentAngularVelocity.x, CurrentAngularVelocity.y, CurrentAngularVelocity.z);
 
     /**********
-    * Translate Update
+    * Translate Update (Step 1.2.3.)
     **********/
-    ComputeRotationMatrix();
-    ComputeDirections();
+    /**********
+    * 1. Compute RotationMatrix (from Quanternion)
+    * AngularVelocity defines the angular velocity for Pitch, Yaw and Roll
+    * Each component of Rotation is for Pitch, Yaw and Roll
+    **********/
+    glm::quat orientation;
+    glm::quat qPitch = glm::angleAxis(glm::radians(Rotation[0]), glm::vec3(1,0,0));
+    glm::quat qYaw = glm::angleAxis(glm::radians(Rotation[1]), glm::vec3(0,1,0));
+    glm::quat qRoll = glm::angleAxis(glm::radians(Rotation[2]), glm::vec3(0,0,1));
+    //glm::quat qPitch = glm::angleAxis(glm::radians(Rotation[0]), glm::vec3(1,0,0));
+    //glm::quat qYaw = glm::angleAxis(glm::radians(Rotation[1]),  DirectionUp);
+    //glm::quat qRoll = glm::angleAxis(glm::radians(Rotation[2]), glm::vec3(0,0,1));
+    orientation = qPitch * qYaw * qRoll; //order matters: first pitch then yaw
+    //orientation = qYaw * qPitch * qRoll;  //first yaw then pitch
+    RotationMatrix = glm::mat4_cast(orientation);  
+
+    /**********
+    * 2. Compute Directions
+    **********/
+    DirectionLeft = glm::normalize(RotationMatrix * glm::vec4(1,0,0,0));
+    DirectionUp = glm::normalize(RotationMatrix * glm::vec4(0,1,0,0));
+    DirectionFront = glm::normalize(RotationMatrix * glm::vec4(0,0,1,0));
+    
+    
+
+    //std::cout<<"DirectionFront="<<DirectionFront.x<<","<<DirectionFront.y<<","<<DirectionFront.z<<std::endl;
+
+    /**********
+    * 3. Compute TranslationMatrix
+    **********/
     Position += deltaTime * DirectionFront * CurrentVelocity.z;
     Position += deltaTime * DirectionUp * CurrentVelocity.y;
     Position += deltaTime * DirectionLeft * CurrentVelocity.x;

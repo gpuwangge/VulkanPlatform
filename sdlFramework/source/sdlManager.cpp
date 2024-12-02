@@ -53,32 +53,58 @@ void CSDLManager::eventHandle(){
                 //std::cout<<"Key Down"<<event.key.key<<std::endl;
                 switch(event.key.key){ //need 6 directions and 6 turns to translate camera
                     case SDLK_LEFT:
-                        //CApplication::mainCamera.keys.left = true;
-                        CApplication::mainCamera.MoveRight(1,1);
+                        ////CApplication::mainCamera.keys.left = true;
+                        //CApplication::mainCamera.MoveLeft(1,1);
+                        CApplication::mainCamera.Velocity.x = 1;
                         break;
                     case SDLK_RIGHT:
                         //CApplication::mainCamera.keys.right = true;
+                        //CApplication::mainCamera.MoveRight(1,1);
+                        CApplication::mainCamera.Velocity.x = -1;
                         break;
                     case SDLK_UP:
+                        //CApplication::mainCamera.MoveUp(1,1);
                         //CApplication::mainCamera.keys.up = true;
+                        CApplication::mainCamera.Velocity.y = -1;
                         break;
                     case SDLK_DOWN:
                         //CApplication::mainCamera.keys.down = true;
+                        //CApplication::mainCamera.MoveDown(1,1);
+                        CApplication::mainCamera.Velocity.y = 1;
                         break;
                     case SDLK_W:
                         //CApplication::mainCamera.keys.forward = true;
+                        CApplication::mainCamera.Velocity.z = 1;
                         break;
                     case SDLK_S:
                         //CApplication::mainCamera.keys.backward = true;
+                        CApplication::mainCamera.Velocity.z = -1;
                         break;
                     case SDLK_A:
                         //CApplication::mainCamera.keys.turnLeft = true;
+                        CApplication::mainCamera.AngularVelocity.y = 100;
                         break;
                     case SDLK_D:
                         //CApplication::mainCamera.keys.turnRight = true;
+                        CApplication::mainCamera.AngularVelocity.y = -100;
                         break;
-                    case 'q':
-                    case 'Q':
+                    case SDLK_Q:
+                        //CApplication::mainCamera.keys.turnLeft = true;
+                        CApplication::mainCamera.AngularVelocity.z = 100;
+                        break;
+                    case SDLK_E:
+                        //CApplication::mainCamera.keys.turnRight = true;
+                        CApplication::mainCamera.AngularVelocity.z = -100;
+                        break;
+                    case SDLK_R:
+                        //CApplication::mainCamera.keys.turnLeft = true;
+                        CApplication::mainCamera.AngularVelocity.x = 100;
+                        break;
+                    case SDLK_F:
+                        //CApplication::mainCamera.keys.turnRight = true;
+                        CApplication::mainCamera.AngularVelocity.x = -100;
+                        break;
+                    case SDLK_ESCAPE:
                         bStillRunning = false;
                         break; 
                 }
@@ -90,27 +116,51 @@ void CSDLManager::eventHandle(){
                     case SDLK_LEFT:
                         //CApplication::mainCamera.keys.left = false;
                         //CApplication::mainCamera.SetVelocity(0,0,0);
+                        CApplication::mainCamera.Velocity.x = 0;
                         break;
                     case SDLK_RIGHT:
                         //CApplication::mainCamera.keys.right = false;
+                        CApplication::mainCamera.Velocity.x = 0;
                         break;
                     case SDLK_UP:
                         //CApplication::mainCamera.keys.up = false;
+                        CApplication::mainCamera.Velocity.y = 0;
                         break;
                     case SDLK_DOWN:
                         //CApplication::mainCamera.keys.down = false;
+                        CApplication::mainCamera.Velocity.y = 0;
                         break;
                     case SDLK_W:
                         //CApplication::mainCamera.keys.forward = false;
+                        CApplication::mainCamera.Velocity.z = 0;
                         break;
                     case SDLK_S:
                         //CApplication::mainCamera.keys.backward = false;
+                        CApplication::mainCamera.Velocity.z = 0;
                         break;
                     case SDLK_A:
                         //CApplication::mainCamera.keys.turnLeft = false;
+                        CApplication::mainCamera.AngularVelocity.y = 0;
                         break;
                     case SDLK_D:
                         //CApplication::mainCamera.keys.turnRight = false;
+                        CApplication::mainCamera.AngularVelocity.y = 0;
+                        break;
+                    case SDLK_Q:
+                        //CApplication::mainCamera.keys.turnLeft = true;
+                        CApplication::mainCamera.AngularVelocity.z = 0;
+                        break;
+                    case SDLK_E:
+                        //CApplication::mainCamera.keys.turnRight = true;
+                        CApplication::mainCamera.AngularVelocity.z = 0;
+                        break;
+                    case SDLK_R:
+                        //CApplication::mainCamera.keys.turnLeft = true;
+                        CApplication::mainCamera.AngularVelocity.x = 0;
+                        break;
+                    case SDLK_F:
+                        //CApplication::mainCamera.keys.turnRight = true;
+                        CApplication::mainCamera.AngularVelocity.x = 0;
                         break;
                 }
                 bKeyDown = false;

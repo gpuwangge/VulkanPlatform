@@ -139,7 +139,14 @@ public:
 	void update(float deltaTime){
 		CEntity::Update(deltaTime); //update TranslateMatrix RotationMatrix ScaleMatrix
 		//matrices.view = TranslateMatrix * RotationMatrix;
-		matrices.view =  RotationMatrix * TranslateMatrix;
+		//matrices.view =  RotationMatrix * TranslateMatrix;
+
+		//std::cout<<"Position="<<Position.x<<","<<Position.y<<","<<Position.z<<std::endl;
+
+		glm::vec3 cameraPos = Position;//glm::vec3(0.0f, 0.0f, 3.0f);
+		glm::vec3 cameraFront = DirectionFront;//glm::vec3(0.0f, 0.0f, -1.0f);
+		glm::vec3 cameraUp = DirectionUp;// glm::vec3(0.0f, 1.0f, 0.0f);
+		matrices.view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
 		//std::cout<<"DirectionFront="<<DirectionFront.x<<","<<DirectionFront.y<<","<<DirectionFront.z<<std::endl;
 		//std::cout<<"DirectionLeft="<<DirectionLeft.x<<","<<DirectionLeft.y<<","<<DirectionLeft.z<<std::endl;
@@ -151,13 +158,13 @@ public:
 		//std::cout<<"r="<<r.x<<","<<r.y<<","<<r.z<<std::endl;
 		//std::cout<<"TempVelocity[LEFT].w="<<TempVelocity[LEFT].w<<std::endl;
 
-		//std::cout<<"Position="<<Position.x<<","<<Position.y<<","<<Position.z<<std::endl;
+		
 
-		glm::vec3 r;
-		r.x = RotationMatrix[0][0] * Position[0] +  RotationMatrix[0][1] * Position[1] +  RotationMatrix[0][2] * Position[2]; 
-		r.y = RotationMatrix[1][0] * Position[0] +  RotationMatrix[1][1] * Position[1] +  RotationMatrix[1][2] * Position[2]; 
-		r.z = RotationMatrix[2][0] * Position[0] +  RotationMatrix[2][1] * Position[1] +  RotationMatrix[2][2] * Position[2]; 
-		std::cout<<"r="<<r.x<<","<<r.y<<","<<r.z<<std::endl;
+		//glm::vec3 r;
+		//r.x = RotationMatrix[0][0] * Position[0] +  RotationMatrix[0][1] * Position[1] +  RotationMatrix[0][2] * Position[2]; 
+		//r.y = RotationMatrix[1][0] * Position[0] +  RotationMatrix[1][1] * Position[1] +  RotationMatrix[1][2] * Position[2]; 
+		//r.z = RotationMatrix[2][0] * Position[0] +  RotationMatrix[2][1] * Position[1] +  RotationMatrix[2][2] * Position[2]; 
+		//std::cout<<"r="<<r.x<<","<<r.y<<","<<r.z<<std::endl;
 
 
 		// if (active()){

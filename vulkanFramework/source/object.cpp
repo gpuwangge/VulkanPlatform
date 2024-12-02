@@ -52,32 +52,12 @@ CObject::CObject(){
 
     CEntity::Update(deltaTime); //update translateMatrix, RotationMatrix and ScaleMatrix
 
+    //std::cout<<"Position="<<Position.x<<","<<Position.y<<","<<Position.z<<std::endl;
+
     /**********
-    * Calculate model matrix based on vector Postion and Rotation
+    * Calculate model matrix based on Translation, Rotation and Scale
     **********/
     CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].model = TranslateMatrix * RotationMatrix * ScaleMatrix;
-    
-    // switch (ObjectState)
-    // {
-    //     case ObjectStates::IDLE:
-    //         break;
-    //     case ObjectStates::MOVING:
-    //         if(TempVelocityForward.w > 0){
-    //             Velocity = glm::vec3(TempVelocityForward);
-    //             TempVelocityForward.w -= deltaTime;
-    //         }else {
-    //             Velocity = glm::vec3();
-    //             ObjectState = ObjectStates::IDLE;
-    //         }
-    //         // if(ComputeDifference(Position, TargetPosition) < 0.01f){
-    //         //     Velocity = glm::vec3();
-    //         //     TargetPosition = glm::vec3();
-    //         //     ObjectState = ObjectStates::IDLE;
-    //         // }
-    //         break;
-    //     default:
-    //         break;
-    // }
  }
 
 // float CObject::ComputeDifference(glm::vec3 v1, glm::vec3 v2){

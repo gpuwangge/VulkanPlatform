@@ -36,6 +36,9 @@ public:
 		appInfo.Feature.EnableGraphicsMSAA = true;
 		
 		CApplication::initialize();
+
+		objectList[0].YawLeft(90,200);
+		//objectList[0].RollLeft(90, 200);
 	} 
 
 	void update(){
@@ -60,7 +63,8 @@ public:
 		
 		graphicsDescriptorManager.updateCustomUniformBuffer<CustomUniformBufferObject>(renderer.currentFrame, durationTime, customUBO);
 
-		objectList[0].SetAngularVelocity(0, 0, 50);
+		//objectList[0].SetAngularVelocity(0, 0, 50);
+		objectList[0].SetVelocity(sin(durationTime * 2), 0, 0);
 
 		CApplication::update();
 	}

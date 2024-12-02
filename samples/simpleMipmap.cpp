@@ -7,6 +7,8 @@ public:
 		mainCamera.SetPosition(0.0f, -0.8f, 0.0f);
 		//mainCamera.SetRotation(0.0f, 90.00001f, 0.0f);
 		//mainCamera.YawLeft(90, 100);
+		//mainCamera.RollLeft(90, 100);
+		//mainCamera.PitchUp(90, 100);
 
 		mainCamera.setPerspective(60.0f, (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 256.0f);
 		appInfo.Object.Count = 1;

@@ -5,7 +5,9 @@
 class CEntity{
 public:
     CEntity(){
-
+        DirectionLeft = glm::vec3(1, 0, 0);
+        DirectionUp = glm::vec3(0, 1, 0);
+        DirectionFront = glm::vec3(0, 0, 1);
     }
 
     ~CEntity(){
@@ -25,7 +27,6 @@ public:
     glm::vec3 Scale;
 
     glm::mat4 RotationMatrix; //16*4=64 bytes
-    void ComputeRotationMatrix();
 
     glm::mat4 ScaleMatrix;
 
@@ -34,7 +35,6 @@ public:
     glm::vec3 DirectionFront;
     glm::vec3 DirectionUp;
     glm::vec3 DirectionLeft;
-    void ComputeDirections();
 
     glm::vec3 Velocity;
     glm::vec3 AngularVelocity; //RotationSpeed for x, y and z axis
