@@ -109,11 +109,30 @@ void CEntity::Update(float deltaTime){
     /**********
     * 2. Compute Directions
     **********/
-    DirectionLeft = glm::normalize(RotationMatrix * glm::vec4(1,0,0,0));
-    DirectionUp = glm::normalize(RotationMatrix * glm::vec4(0,1,0,0));
-    DirectionFront = glm::normalize(RotationMatrix * glm::vec4(0,0,1,0));
-    
-    
+   if(entityType == EntityType::general){
+        DirectionLeft = glm::normalize(RotationMatrix * glm::vec4(1,0,0,0));
+        DirectionUp = glm::normalize(RotationMatrix * glm::vec4(0,1,0,0));
+        DirectionFront = glm::normalize(RotationMatrix * glm::vec4(0,0,1,0));
+   }else if(entityType == EntityType::camera){
+        //for first person camera: calculate new direction front with pitch(x) and yaw(y)
+        //pitch value is accurate, but yaw is not when pitch is close to 90 and -90 degrees
+        //roll is ignored for first persion camera type
+        if(Rotation.x > 89.0f) Rotation.x = 89.0f;
+        if(Rotation.x < -89.0f) Rotation.x = -89.0f;
+        DirectionFront.x = cos(glm::radians(Rotation.x)) * cos(glm::radians(Rotation.y));
+        DirectionFront.y = sin(glm::radians(Rotation.x));
+        DirectionFront.z = sin(glm::radians(Rotation.y)) * cos(glm::radians(Rotation.x));
+        DirectionFront = glm::normalize(DirectionFront);
+        DirectionUp = glm::vec3(0,-1,0); //vulkan use different NDC compare to opengl
+        DirectionLeft = glm::normalize(glm::cross(DirectionUp, DirectionFront));
+        
+        // static unsigned count = 0;
+        // if(count %10000 == 0){
+        //     //std::cout<<"CameraPosition="<<Position.x<<","<<Position.y<<","<<Position.z<<std::endl;
+        //     std::cout<<"CameraRotation="<<Rotation.x<<","<<Rotation.y<<","<<Rotation.z<<std::endl;
+        // }
+        // count++;
+   }
 
     //std::cout<<"DirectionFront="<<DirectionFront.x<<","<<DirectionFront.y<<","<<DirectionFront.z<<std::endl;
 

@@ -39,9 +39,10 @@ private:
 		updated = true;
 	};*/
 public:
-	enum CameraType { lookat, firstperson };
-	CameraType type = CameraType::lookat;
+	enum CameraType { lookat, freemove };
+	CameraType cameraType = CameraType::lookat;
 
+	glm::vec3 TargetPosition = glm::vec3(0.0f, 0.0f, 0.0f);
 	//glm::vec3 rotation = glm::vec3();
 	//glm::vec3 position = glm::vec3();
 	//glm::vec4 viewPos = glm::vec4();
@@ -49,7 +50,12 @@ public:
 	//float movementSpeed = 1.0f;
 	//bool updated = false;
 
-	bool flipY = false;
+	//bool flipY = false;
+
+	Camera(){
+		entityType = EntityType::camera;
+		setPerspective(90.0f, (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 256.0f);
+	}
 
 	struct{
 		glm::mat4 perspective;
@@ -86,13 +92,13 @@ public:
 		this->znear = znear;
 		this->zfar = zfar;
 		matrices.perspective = glm::perspective(glm::radians(fov), aspect, znear, zfar);
-		if (flipY) matrices.perspective[1][1] *= -1.0f;
+		//if (flipY) matrices.perspective[1][1] *= -1.0f;
 	};
 
 	//this function is provided to user (no use case yet)
 	void updateAspectRatio(float aspect){
 		matrices.perspective = glm::perspective(glm::radians(fov), aspect, znear, zfar);
-		if (flipY) matrices.perspective[1][1] *= -1.0f;
+		//if (flipY) matrices.perspective[1][1] *= -1.0f;
 	}
 
 	/* legacy code
@@ -143,10 +149,19 @@ public:
 
 		//std::cout<<"Position="<<Position.x<<","<<Position.y<<","<<Position.z<<std::endl;
 
-		glm::vec3 cameraPos = Position;//glm::vec3(0.0f, 0.0f, 3.0f);
-		glm::vec3 cameraFront = DirectionFront;//glm::vec3(0.0f, 0.0f, -1.0f);
-		glm::vec3 cameraUp = DirectionUp;// glm::vec3(0.0f, 1.0f, 0.0f);
-		matrices.view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+
+		
+		if(cameraType == CameraType::freemove){
+			glm::vec3 cameraPos = Position;//glm::vec3(0.0f, 0.0f, 3.0f);
+			glm::vec3 cameraFront = DirectionFront;//glm::vec3(0.0f, 0.0f, -1.0f);
+			glm::vec3 cameraUp = DirectionUp;// glm::vec3(0.0f, 1.0f, 0.0f);
+			matrices.view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+		}else if(cameraType == CameraType::lookat){
+			glm::vec3 cameraPos = Position;//glm::vec3(0.0f, 0.0f, 3.0f);
+			//glm::vec3 cameraFront = DirectionFront;//glm::vec3(0.0f, 0.0f, -1.0f);
+			glm::vec3 cameraUp = DirectionUp;// glm::vec3(0.0f, 1.0f, 0.0f);
+			matrices.view = glm::lookAt(cameraPos, TargetPosition, cameraUp);//TODO
+		}
 
 		//std::cout<<"DirectionFront="<<DirectionFront.x<<","<<DirectionFront.y<<","<<DirectionFront.z<<std::endl;
 		//std::cout<<"DirectionLeft="<<DirectionLeft.x<<","<<DirectionLeft.y<<","<<DirectionLeft.z<<std::endl;

@@ -14,6 +14,9 @@ public:
 
     }
 
+    enum EntityType { general, camera }; //for first persion type the roll should be ignored
+	EntityType entityType = EntityType::general;
+
     glm::vec3 Length_original; //original is the value before scale
     glm::vec3 LengthMin_original;
     glm::vec3 LengthMax_original;
