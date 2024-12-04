@@ -19,6 +19,11 @@ void CSDLManager::createWindow(int &windowWidth, int &windowHeight){
 	windowWidth = WINDOW_WIDTH;
 	windowHeight = WINDOW_HEIGHT;
 
+    m_windowWidth = WINDOW_WIDTH;
+    m_windowHeight = WINDOW_HEIGHT;
+    m_windowCenterX = WINDOW_WIDTH/2;
+    m_windowCenterY = WINDOW_HEIGHT/2;
+
     window = SDL_CreateWindow("Vulkan Window", windowWidth, windowHeight, SDL_WINDOW_VULKAN);
     if(window == NULL) {
         std::cout << "Could not create SDL window." << std::endl;
@@ -166,22 +171,34 @@ void CSDLManager::eventHandle(){
                 bKeyDown = false;
                 break;
             case SDL_EVENT_MOUSE_BUTTON_DOWN:
-                std::cout<<"Mouse Down: "<<event.pmotion.x<<", "<<event.pmotion.y<<std::endl;
+                //std::cout<<"Mouse Down: "<<event.pmotion.x<<", "<<event.pmotion.y<<std::endl;
                 bMouseDown = true;
                 break;
             case SDL_EVENT_MOUSE_BUTTON_UP:
-                std::cout<<"Mouse Up: "<<event.pmotion.x<<", "<<event.pmotion.y<<std::endl;
+                //std::cout<<"Mouse Up: "<<event.pmotion.x<<", "<<event.pmotion.y<<std::endl;
                 bMouseDown = false;
+                CApplication::mainCamera.AngularVelocity.x = 0;
+                CApplication::mainCamera.AngularVelocity.y = 0;
+                bFirstPersonMouseRotate = !bFirstPersonMouseRotate;
                 break;
             case SDL_EVENT_MOUSE_MOTION:
-                if(bMouseDown){
+                //if(bMouseDown){
                     //SDL_SetRenderTarget(renderer, render_target);
                     //SDL_SetRenderDrawColorFloat(renderer, 0, 0, 0, 255);
                     //SDL_RenderLine(renderer, previous_touch_x, previous_touch_y, event.pmotion.x, event.pmotion.y);
                     //std::cout<<bMouseDown<<": "<<event.pmotion.x<<", "<<event.pmotion.y<<std::endl;
+                    //std::cout<<"Mouse Motion Diff: "<<event.pmotion.x - previous_mouse_x<<", "<<event.pmotion.y - previous_mouse_y<<std::endl;
+                //    CApplication::mainCamera.AngularVelocity.x = mouse_sensitive*(previous_mouse_y - event.pmotion.y);
+                //    CApplication::mainCamera.AngularVelocity.y = mouse_sensitive*(previous_mouse_x - event.pmotion.x);
+                //}
+                //previous_mouse_x = event.pmotion.x;
+                //previous_mouse_y = event.pmotion.y;
+
+                if(bFirstPersonMouseRotate){
+                    CApplication::mainCamera.AngularVelocity.x = mouse_sensitive*(m_windowCenterX - event.pmotion.y);
+                    CApplication::mainCamera.AngularVelocity.y = mouse_sensitive*(m_windowCenterY - event.pmotion.x);
+                     
                 }
-                //previous_touch_x = event.pmotion.x;
-                //previous_touch_y = event.pmotion.y;
                 break;
             case SDL_EVENT_QUIT:
                 bStillRunning = false;

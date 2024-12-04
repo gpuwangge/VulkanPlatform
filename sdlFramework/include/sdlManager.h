@@ -27,10 +27,16 @@ public:
     //GLFWwindow * window;
     SDL_Window* window;
     int m_windowWidth, m_windowHeight;
+    int m_windowCenterX, m_windowCenterY;
 
     bool bStillRunning = true;
     bool bKeyDown = false;
     bool bMouseDown = false;
+
+    float mouse_sensitive = 0.2f;
+    float previous_mouse_x = 0;
+    float previous_mouse_y = 0;
+    bool bFirstPersonMouseRotate = false;
 
     void createWindow(int &windowWidth, int &windowHeight);
     void queryRequiredInstanceExtensions(std::vector<const char*> &requiredInstanceExtensions);
