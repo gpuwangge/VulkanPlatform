@@ -43,6 +43,7 @@ public:
 	CameraType cameraType = CameraType::lookat;
 
 	glm::vec3 TargetPosition = glm::vec3(0.0f, 0.0f, 0.0f);
+	void SetTargetPosition(float x, float y, float z){ TargetPosition = glm::vec3(x, y, z); }
 	//glm::vec3 rotation = glm::vec3();
 	//glm::vec3 position = glm::vec3();
 	//glm::vec4 viewPos = glm::vec4();
@@ -147,8 +148,12 @@ public:
 		//matrices.view = TranslateMatrix * RotationMatrix;
 		//matrices.view =  RotationMatrix * TranslateMatrix;
 
-		//std::cout<<"Position="<<Position.x<<","<<Position.y<<","<<Position.z<<std::endl;
-
+		//static unsigned count = 0;
+		//if(count % 1000 == 0){
+			//std::cout<<"Position="<<Position.x<<","<<Position.y<<","<<Position.z<<std::endl;
+			//std::cout<<"Rotation="<<Rotation.x<<","<<Rotation.y<<","<<Rotation.z<<std::endl;
+		//}
+		//count++;
 
 		
 		if(cameraType == CameraType::freemove){
