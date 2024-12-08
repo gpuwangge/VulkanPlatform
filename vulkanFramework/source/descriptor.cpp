@@ -627,6 +627,7 @@ void CGraphicsDescriptorManager::updateMVPUniformBuffer(uint32_t currentFrame, f
                 mvpUBO.mvpData[i].proj = glm::mat4(1.0f);//mainCamera.matrices.perspective;
             }
         }
+
         //mvpUBO.mvpData.view = mainCamera.matrices.view;
         //mvpUBO.mvpData.proj = mainCamera.matrices.perspective;
 

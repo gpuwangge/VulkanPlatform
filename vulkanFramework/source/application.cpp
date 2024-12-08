@@ -1,7 +1,10 @@
 #include "../include/application.h"
 
-Camera CApplication::mainCamera;  //define static class members
+//static class members must be defined outside. 
+//otherwise invoke 'undefined reference' error when linking
+Camera CApplication::mainCamera;
 bool CApplication::NeedToExit = false; 
+std::vector<CObject> CApplication::objectList; 
 
 CApplication::CApplication(){
     //debugger = new CDebugger("../logs/application.log");

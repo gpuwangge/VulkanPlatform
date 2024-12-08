@@ -53,9 +53,9 @@ CObject::CObject(){
     CEntity::Update(deltaTime); //update translateMatrix, RotationMatrix and ScaleMatrix
 
     static unsigned count = 0;
-    if(count % 1000 == 0){
-        //std::cout<<"Position="<<Position.x<<","<<Position.y<<","<<Position.z<<std::endl;
-        std::cout<<"Rotation="<<Rotation.x<<","<<Rotation.y<<","<<Rotation.z<<std::endl;
+    if(count % 3000 == 0){
+        std::cout<<"Object Position="<<Position.x<<","<<Position.y<<","<<Position.z<<std::endl;
+        //std::cout<<"Object Rotation="<<Rotation.x<<","<<Rotation.y<<","<<Rotation.z<<std::endl;
     }
     count++;
 

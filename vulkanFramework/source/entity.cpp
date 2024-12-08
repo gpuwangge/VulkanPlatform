@@ -119,9 +119,9 @@ void CEntity::Update(float deltaTime){
         //roll is ignored for first persion camera type
         if(Rotation.x > 89.0f) Rotation.x = 89.0f;
         if(Rotation.x < -89.0f) Rotation.x = -89.0f;
-        DirectionFront.x = cos(glm::radians(Rotation.x)) * cos(glm::radians(Rotation.y));
+        DirectionFront.x = cos(glm::radians(Rotation.x)) * cos(glm::radians(90-Rotation.y));
         DirectionFront.y = sin(glm::radians(Rotation.x));
-        DirectionFront.z = sin(glm::radians(Rotation.y)) * cos(glm::radians(Rotation.x));
+        DirectionFront.z = sin(glm::radians(90-Rotation.y)) * cos(glm::radians(Rotation.x));
         DirectionFront = glm::normalize(DirectionFront);
         DirectionUp = glm::vec3(0,-1,0); //vulkan use different NDC compare to opengl
         DirectionLeft = glm::normalize(glm::cross(DirectionUp, DirectionFront));

@@ -4,14 +4,13 @@ class TEST_CLASS_NAME: public CApplication{
 public:
     void initialize(){
 		mainCamera.setPerspective(90.0f, (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 256.0f);
-		//mainCamera.cameraType = Camera::CameraType::freemove;
-		//mainCamera.SetPosition(-1.0f, 0.0f, 0.0f);
-		//mainCamera.SetRotation(0.0f, 0.0f, 0.0f);
-
-		mainCamera.cameraType = Camera::CameraType::lookat;
-		mainCamera.SetPosition(-2.0f, 3.0f, 0.0f);
+		mainCamera.cameraType = Camera::CameraType::freemove;
+		mainCamera.SetPosition(0.0f, 1.2f, 0.0f);
 		mainCamera.SetRotation(0.0f, 0.0f, 0.0f);
-		mainCamera.SetTargetPosition(0,0,0);
+
+		//mainCamera.cameraType = Camera::CameraType::lookat;
+		//mainCamera.SetPosition(0.0f, 3.0f, -3.0f);
+		//mainCamera.SetTargetPosition(0,0,0);
 
 		appInfo.Object.Count = 1;
 		//appInfo.Object.Model.Names = std::make_unique<std::vector<std::string>>(std::vector<std::string> {"BaseMesh_Female.obj"});

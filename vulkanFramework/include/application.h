@@ -69,7 +69,7 @@ public:
     //std::chrono::_V2::system_clock::time_point lastTime;
 
     //VertexStructureTypes vertexStructuretypes;
-    std::vector<CObject> objectList;
+    static std::vector<CObject> objectList;
     //int ObjectCount = 0;
 	//std::vector<int> modelList = {}; 
 	//std::vector<int> textureList = {}; 
