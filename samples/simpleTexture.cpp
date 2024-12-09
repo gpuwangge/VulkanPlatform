@@ -12,9 +12,9 @@ public:
 
 	void initialize(){
 		modelManager.CreateCustomModel3D(vertices3D, indices3D);
-		mainCamera.SetPosition(0.0f, -2.5f, -2.5f);
-		mainCamera.SetRotation(45.0f, 0.0f, 0.0f);
-		mainCamera.setPerspective(60.0f, (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 256.0f);
+		// mainCamera.SetPosition(0.0f, -2.5f, -2.5f);
+		// mainCamera.SetRotation(45.0f, 0.0f, 0.0f);
+		// mainCamera.setPerspective(60.0f, (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 256.0f);
 		appInfo.Object.Count = 1;
 		appInfo.Object.Model.Names = std::make_unique<std::vector<std::string>>(std::vector<std::string> {"CUSTOM3D0"});
 		appInfo.Object.Model.List = std::make_unique<std::vector<int>>(std::vector<int> {0});

@@ -10,10 +10,11 @@ CApplication::CApplication(){
     //debugger = new CDebugger("../logs/application.log");
 
     
-    //mainCamera.cameraType = Camera::CameraType::lookat; //default
-    mainCamera.SetPosition(0.0f, 0.0f, -2.0f);
+    mainCamera.cameraType = Camera::CameraType::lookat; //default
+    mainCamera.SetTargetPosition(0,0,0);
+    mainCamera.SetPosition(0.0f, 0.0f, -3.0f);
     //mainCamera.SetRotation(0.0f, 0.0f, 0.0f);
-    //mainCamera.setPerspective(90.0f, (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 256.0f);
+    mainCamera.setPerspective(90.0f, (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 256.0f);
     //mainCamera.movementSpeed = 1.0f;
     //mainCamera.rotationSpeed = 200.0f;
 

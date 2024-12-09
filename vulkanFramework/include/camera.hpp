@@ -148,12 +148,12 @@ public:
 		//matrices.view = TranslateMatrix * RotationMatrix;
 		//matrices.view =  RotationMatrix * TranslateMatrix;
 
-		static unsigned count = 0;
-		if(count % 1000 == 0){
-			std::cout<<"Camera Position="<<Position.x<<","<<Position.y<<","<<Position.z<<std::endl;
+		//static unsigned count = 0;
+		//if(count % 3000 == 0){
+		//	std::cout<<"Camera Position="<<Position.x<<","<<Position.y<<","<<Position.z<<std::endl;
 			//std::cout<<"Camera Rotation="<<Rotation.x<<","<<Rotation.y<<","<<Rotation.z<<std::endl;
-		}
-		count++;
+		//}
+		//count++;
 
 		
 		if(cameraType == CameraType::freemove){

@@ -3,7 +3,7 @@
 class TEST_CLASS_NAME: public CApplication{
 public:
     void initialize(){
-		mainCamera.setPerspective(90.0f, (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 256.0f);
+		mainCamera.setPerspective(90.0f, (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.01f, 256.0f);
 		mainCamera.cameraType = Camera::CameraType::freemove;
 		mainCamera.SetPosition(0.0f, 1.2f, 0.0f);
 		mainCamera.SetRotation(0.0f, 0.0f, 0.0f);

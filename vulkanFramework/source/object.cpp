@@ -52,12 +52,12 @@ CObject::CObject(){
 
     CEntity::Update(deltaTime); //update translateMatrix, RotationMatrix and ScaleMatrix
 
-    static unsigned count = 0;
-    if(count % 3000 == 0){
-        std::cout<<"Object Position="<<Position.x<<","<<Position.y<<","<<Position.z<<std::endl;
+    //static unsigned count = 0;
+    //if(count % 3000 == 0){
+    //    std::cout<<"Object Position="<<Position.x<<","<<Position.y<<","<<Position.z<<std::endl;
         //std::cout<<"Object Rotation="<<Rotation.x<<","<<Rotation.y<<","<<Rotation.z<<std::endl;
-    }
-    count++;
+    //}
+    //count++;
 
     /**********
     * Calculate model matrix based on Translation, Rotation and Scale

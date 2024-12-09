@@ -71,6 +71,7 @@ void CEntity::Update(float deltaTime){
         if(TempAngularVelocity[i].w > 0){
             CurrentAngularVelocity += glm::vec3(TempAngularVelocity[i]);
             TempAngularVelocity[i].w -= deltaTime;
+            //std::cout<<"TempAngularVelocity[i].w="<<TempAngularVelocity[i].w<<std::endl;
         }
     }
     if(TempMoveVelocity.w > 0){

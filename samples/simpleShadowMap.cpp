@@ -19,9 +19,6 @@ public:
 	CustomUniformBufferObject customUBO{};
 
 	void initialize(){
-		mainCamera.SetPosition(0.0f, -2.5f, -2.5f);
-		mainCamera.SetRotation(45.0f, 0.0f, 0.0f);
-		mainCamera.setPerspective(60.0f, (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 256.0f);
 		appInfo.Object.Count = 1;
 		appInfo.Object.Model.Names = std::make_unique<std::vector<std::string>>(std::vector<std::string> {"viking_room.obj"});
 		appInfo.Object.Model.List = std::make_unique<std::vector<int>>(std::vector<int> {0});
@@ -37,7 +34,8 @@ public:
 		
 		CApplication::initialize();
 
-		objectList[0].YawLeft(90,200);
+		objectList[0].SetRotation(-135,0,45);
+		//objectList[0].YawLeft(90,200);
 		//objectList[0].RollLeft(90, 200);
 	} 
 
@@ -64,7 +62,7 @@ public:
 		graphicsDescriptorManager.updateCustomUniformBuffer<CustomUniformBufferObject>(renderer.currentFrame, durationTime, customUBO);
 
 		//objectList[0].SetAngularVelocity(0, 0, 50);
-		objectList[0].SetVelocity(sin(durationTime * 2), 0, 0);
+		//objectList[0].SetVelocity(sin(durationTime * 2), 0, 0);
 
 		CApplication::update();
 	}

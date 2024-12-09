@@ -3,10 +3,9 @@
 class TEST_CLASS_NAME: public CApplication{
 public:
 	void initialize(){
-		//mainCamera.type = Camera::CameraType::firstperson;
 		mainCamera.cameraType = Camera::CameraType::freemove;
 		mainCamera.SetPosition(0.0f, -0.8f, 0.0f);
-		//mainCamera.SetRotation(0.0f, 90.00001f, 0.0f);
+		mainCamera.SetRotation(0.0f, 90.0f, 0.0f);
 		//mainCamera.YawLeft(90, 100);
 		//mainCamera.RollLeft(90, 100);
 		//mainCamera.PitchUp(90, 100);
