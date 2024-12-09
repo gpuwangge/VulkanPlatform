@@ -4,6 +4,7 @@
 //otherwise invoke 'undefined reference' error when linking
 Camera CApplication::mainCamera;
 bool CApplication::NeedToExit = false; 
+bool CApplication::NeedToPause = false;
 std::vector<CObject> CApplication::objectList; 
 
 CApplication::CApplication(){
@@ -99,6 +100,10 @@ void CApplication::run(){ //Entrance Function
 
     CSupervisor::Register((CApplication*)this);
 
+    std::cout<<"======================================="<<std::endl;
+    std::cout<<"======Welcome to Vulkan Platform======="<<std::endl;
+    std::cout<<"======================================="<<std::endl;
+
     auto startInitialzeTime = std::chrono::high_resolution_clock::now();
     initialize();
     auto endInitializeTime = std::chrono::high_resolution_clock::now();
@@ -108,14 +113,14 @@ void CApplication::run(){ //Entrance Function
 #ifdef SDL   
     while(sdlManager.bStillRunning) {
         sdlManager.eventHandle();
-        UpdateRecordRender();
-        if (NeedToExit) break;
+        if(!NeedToPause) UpdateRecordRender();
+        if(NeedToExit) break;
     }
 #else  
     while (!glfwWindowShouldClose(glfwManager.window)) {
         glfwPollEvents();
-        UpdateRecordRender();
-        if (NeedToExit) break;
+        if(!NeedToPause) UpdateRecordRender();
+        if(NeedToExit) break;
 	}
 #endif
 

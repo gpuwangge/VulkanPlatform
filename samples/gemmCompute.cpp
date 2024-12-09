@@ -54,7 +54,7 @@ public:
 	void update(){
 		std::cout<<"update."<<std::endl;
 		static int counter = 1;
-		if(counter==KernelRunNumber) NeedToExit = true;
+		if(counter==KernelRunNumber) NeedToPause = true;
 		counter++;
 		
 		CApplication::update(); //update deltaTime and durationTime (and mainCamera and MVP, VP)

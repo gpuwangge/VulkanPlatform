@@ -90,6 +90,7 @@ public:
     //for static class member. But can not define and init them in the header file!
     static Camera mainCamera; 
     static bool NeedToExit;
+    static bool NeedToPause;
 
     /*Clean up Functions*/
     void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator);

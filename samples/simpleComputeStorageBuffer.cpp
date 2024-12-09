@@ -28,7 +28,7 @@ public:
 		computeDescriptorManager.updateStorageBuffer<StructStorageBuffer>(renderer.currentFrame, durationTime, storageBufferObject);
 		//std::cout<<"update(): Delta Time: "<<deltaTime<<", Duration Time: "<<durationTime<<std::endl;
 
-		if(counter==KernelRunNumber) NeedToExit = true; 
+		if(counter==KernelRunNumber) NeedToPause = true; 
 		counter++;
 
 		CApplication::update(); //update time

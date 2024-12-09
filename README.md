@@ -37,6 +37,10 @@ make -j
 ```
 - [Optional] Edit CMakeLists.txt to tell compiler which sample to build   
 
+## How to auto-test all samples
+After cmake, an auto-test script will be generated as bin/autotest.bat  
+Launch autotest.bat will launch a sample; press "Esc" to skip to the next sample  
+
 ## How to build to Android binary(.apk)
 Prepare:  
 1. Install Android Studio: https://developer.android.com/   

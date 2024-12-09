@@ -203,7 +203,7 @@ void CTextureImage::transitionImageLayout(VkImage image, VkImageLayout oldLayout
     barrier.subresourceRange.baseArrayLayer = 0;
     barrier.subresourceRange.layerCount = 1;
 	//barrier.subresourceRange.layerCount = 6; //for cubemap
-	std::cout<<"DEBUG: CTextureImage::transitionImageLayout"<<std::endl;
+	//std::cout<<"DEBUG: CTextureImage::transitionImageLayout"<<std::endl;
 
     VkPipelineStageFlags sourceStage;
     VkPipelineStageFlags destinationStage;
@@ -345,7 +345,7 @@ void CTextureImage::transitionImageLayout_cubemap(VkImage image, VkImageLayout o
     barrier.subresourceRange.baseArrayLayer = 0;
     //barrier.subresourceRange.layerCount = 1;
 	barrier.subresourceRange.layerCount = 6; //for cubemap
-	std::cout<<"DEBUG: CTextureImage::transitionImageLayout"<<std::endl;
+	//std::cout<<"DEBUG: CTextureImage::transitionImageLayout"<<std::endl;
 
     VkPipelineStageFlags sourceStage;
     VkPipelineStageFlags destinationStage;

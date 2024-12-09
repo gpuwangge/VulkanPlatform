@@ -30,7 +30,13 @@ void CSDLManager::createWindow(int &windowWidth, int &windowHeight){
         //return 1;
     }
 
-	
+	const HWND hDesktop = GetDesktopWindow();
+    RECT desktop;
+    GetWindowRect(hDesktop, &desktop);
+    int horizontal = desktop.right;
+    int vertical = desktop.bottom;
+
+    SDL_SetWindowPosition(window, horizontal/2, 50);
 }
 
 void CSDLManager::queryRequiredInstanceExtensions(std::vector<const char*> &requiredInstanceExtensions){
