@@ -1,9 +1,10 @@
 #ifndef H_OBJECT
 #define H_OBJECT
 
-#include <glm/gtc/quaternion.hpp>
+//#include <glm/gtc/quaternion.hpp>
 #include "descriptor.h"
 #include "entity.h"
+#include "renderProcess.h"
 
 
 //forward declaration. 
@@ -23,6 +24,7 @@ class CObject : public CEntity {
 
     //These will be used when recording draw cmd
     CRenderer *p_renderer;
+    CRenderProcess *p_renderProcess;
     std::vector<VkDescriptorSet> *p_graphicsDescriptorSets;
     VkPipelineLayout *p_graphicsPipelineLayout;
 

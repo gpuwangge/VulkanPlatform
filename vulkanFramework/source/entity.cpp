@@ -7,8 +7,8 @@
 *******************/
 void CEntity::MoveForward(float distance, float speed){ TempVelocity[TranslateDirections::FORWARD] = glm::vec4(0, 0, speed, distance/speed); }
 void CEntity::MoveBackward(float distance, float speed){ TempVelocity[TranslateDirections::BACKWARD] = glm::vec4(0, 0, -speed, distance/speed); }
-void CEntity::MoveLeft(float distance, float speed){ TempVelocity[TranslateDirections::LEFT]= glm::vec4(speed, 0, 0, distance/speed); }
-void CEntity::MoveRight(float distance, float speed){ TempVelocity[TranslateDirections::RIGHT] = glm::vec4(-speed, 0, 0, distance/speed); }
+void CEntity::MoveLeft(float distance, float speed){ TempVelocity[TranslateDirections::LEFT]= glm::vec4(-speed, 0, 0, distance/speed); }
+void CEntity::MoveRight(float distance, float speed){ TempVelocity[TranslateDirections::RIGHT] = glm::vec4(speed, 0, 0, distance/speed); }
 void CEntity::MoveUp(float distance, float speed){ TempVelocity[TranslateDirections::UP]= glm::vec4(0, -speed, 0, distance/speed); }
 void CEntity::MoveDown(float distance, float speed){ TempVelocity[TranslateDirections::DOWN]= glm::vec4(0, speed, 0, distance/speed); }
 

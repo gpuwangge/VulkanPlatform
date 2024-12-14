@@ -401,7 +401,7 @@ void CRenderer::StartRecordGraphicsCommandBuffer(VkPipeline &pipeline, VkPipelin
     //std::cout<<"BeginCommandBuffer done"<<std::endl;
     BeginRenderPass(renderPass, swapChainFramebuffers, extent, clearValues);
     //std::cout<<"BeginRenderPass done"<<std::endl;
-    BindPipeline(pipeline, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsCmdId);
+    //BindPipeline(pipeline, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsCmdId);
     //std::cout<<"BindPipeline done"<<std::endl;
     SetViewport(extent);
     SetScissor(extent);
