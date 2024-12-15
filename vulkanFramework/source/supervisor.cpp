@@ -251,34 +251,34 @@ void CSupervisor::Activate_Pipeline(){ //*customBinding = NULL
 
         
         if(bPushConstant) 
-            m_app->renderProcess.createGraphicsPipelineLayout(dsLayouts,  m_app->shaderManager.pushConstantRange);
+            m_app->renderProcess.createGraphicsPipelineLayout(dsLayouts,  m_app->shaderManager.pushConstantRange, true, 0);
         else
-            m_app->renderProcess.createGraphicsPipelineLayout(dsLayouts);
+            m_app->renderProcess.createGraphicsPipelineLayout(dsLayouts, 0);
         
         switch(VertexStructureType){
             case VertexStructureTypes::NoType:
                 m_app->renderProcess.createGraphicsPipeline(
                     VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
                     m_app->shaderManager.vertShaderModule, 
-                    m_app->shaderManager.fragShaderModule);  
+                    m_app->shaderManager.fragShaderModule, 0);  
             break;
             case VertexStructureTypes::ThreeDimension:
                 m_app->renderProcess.createGraphicsPipeline<Vertex3D>(
                     VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
                     m_app->shaderManager.vertShaderModule, 
-                    m_app->shaderManager.fragShaderModule);  
+                    m_app->shaderManager.fragShaderModule, true, 0);  
             break;
             case VertexStructureTypes::TwoDimension:
                 m_app->renderProcess.createGraphicsPipeline<Vertex2D>(
                     VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
                     m_app->shaderManager.vertShaderModule, 
-                    m_app->shaderManager.fragShaderModule);
+                    m_app->shaderManager.fragShaderModule, true, 0);
             break;
             case VertexStructureTypes::ParticleType:
                 m_app->renderProcess.createGraphicsPipeline<Particle>(
                     VK_PRIMITIVE_TOPOLOGY_POINT_LIST, 
                     m_app->shaderManager.vertShaderModule, 
-                    m_app->shaderManager.fragShaderModule);  
+                    m_app->shaderManager.fragShaderModule, true, 0);  
             break;
             default:
             break;

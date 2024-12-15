@@ -60,8 +60,10 @@ public:
     VkFormat m_swapChainImageFormat;
 
     bool bCreateGraphicsPipeline = false;
-    VkPipelineLayout graphicsPipelineLayout;
-	VkPipeline graphicsPipeline;
+    //VkPipelineLayout graphicsPipelineLayout;
+	//VkPipeline graphicsPipeline;
+    std::vector<VkPipelineLayout> graphicsPipelineLayouts;
+    std::vector<VkPipeline> graphicsPipelines;
 
     bool bCreateComputePipeline = false;
     VkPipelineLayout computePipelineLayout;
@@ -70,8 +72,8 @@ public:
     void createComputePipelineLayout(VkDescriptorSetLayout &descriptorSetLayout);
     void createComputePipeline(VkShaderModule &computeShaderModule);
 
-    void createGraphicsPipelineLayout(std::vector<VkDescriptorSetLayout> &descriptorSetLayouts);
-    void createGraphicsPipelineLayout(std::vector<VkDescriptorSetLayout> &descriptorSetLayouts, VkPushConstantRange &pushConstantRange, bool bUsePushConstant = true);
+    void createGraphicsPipelineLayout(std::vector<VkDescriptorSetLayout> &descriptorSetLayouts, int graphicsPipelineLayout_id);
+    void createGraphicsPipelineLayout(std::vector<VkDescriptorSetLayout> &descriptorSetLayouts, VkPushConstantRange &pushConstantRange, bool bUsePushConstant, int graphicsPipelineLayout_id);
 
     struct DummyVertex {
         static VkVertexInputBindingDescription getBindingDescription() {
@@ -91,13 +93,13 @@ public:
      * 
      * *****/
     //this function is for samples that are NOT using vertex shader
-    void createGraphicsPipeline(VkPrimitiveTopology topology, VkShaderModule &vertShaderModule, VkShaderModule &fragShaderModule){
-        createGraphicsPipeline<DummyVertex>(topology, vertShaderModule, fragShaderModule, false); //DummyVertex doesn't really matter here, because no vertex attributes used
+    void createGraphicsPipeline(VkPrimitiveTopology topology, VkShaderModule &vertShaderModule, VkShaderModule &fragShaderModule, int graphcisPipeline_id){
+        createGraphicsPipeline<DummyVertex>(topology, vertShaderModule, fragShaderModule, false, graphcisPipeline_id); //DummyVertex doesn't really matter here, because no vertex attributes used
     }
 
     //this function is for samples that are  using vertex shader
     template <typename T>
-    void createGraphicsPipeline(VkPrimitiveTopology topology, VkShaderModule &vertShaderModule, VkShaderModule &fragShaderModule, bool bUseVertexBuffer = true){
+    void createGraphicsPipeline(VkPrimitiveTopology topology, VkShaderModule &vertShaderModule, VkShaderModule &fragShaderModule, bool bUseVertexBuffer, int graphcisPipeline_id){
         //HERE_I_AM("CreateGraphicsPipeline");
         bCreateGraphicsPipeline = true;
 
@@ -221,7 +223,8 @@ public:
 
         /*********9 Layout(Vulkan Special Concept)**********/
         //CreateLayout(descriptorSetLayout);
-        pipelineInfo.layout = graphicsPipelineLayout;	//9
+        pipelineInfo.layout = graphicsPipelineLayouts[graphcisPipeline_id];	//9
+        //pipelineInfo.layout = graphicsPipelineLayout;	//9
         
         /*********10 Renderpass Layout(Vulkan Special Concept)**********/
         //Renderpass is to specify what kind of data goes to graphics pipeline
@@ -243,7 +246,10 @@ public:
 
 
         /*********Create Graphics Pipeline**********/
-        result = vkCreateGraphicsPipelines(CContext::GetHandle().GetLogicalDevice(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline);
+        VkPipeline newpipeline;
+        graphicsPipelines.push_back(newpipeline);
+        result = vkCreateGraphicsPipelines(CContext::GetHandle().GetLogicalDevice(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipelines[graphcisPipeline_id]);
+        //result = vkCreateGraphicsPipelines(CContext::GetHandle().GetLogicalDevice(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline);
         if (result != VK_SUCCESS) throw std::runtime_error("failed to create graphics pipeline!");
         //REPORT("vkCreateGraphicsPipelines");
 

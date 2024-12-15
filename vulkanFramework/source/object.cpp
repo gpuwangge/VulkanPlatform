@@ -145,10 +145,11 @@ void CObject::CreateTextureDescriptorSets(std::vector<CTextureImage> &textureIma
     //std::cout<<"Done set descriptor. "<<std::endl;
 }
 
-void CObject::Register(CApplication *p_app, int texture_id, int model_id, int object_id, glm::vec3 length, glm::vec3 lengthMin, glm::vec3 lengthMax){ //-1 means no texture or model 
+void CObject::Register(CApplication *p_app, int texture_id, int model_id, int object_id, int graphics_pipeline_id, glm::vec3 length, glm::vec3 lengthMin, glm::vec3 lengthMax){ //-1 means no texture or model 
     m_object_id = object_id;
     m_texture_id = texture_id;
     m_model_id = model_id;
+    m_graphics_pipeline_id = graphics_pipeline_id;
     bUseMVP_VP = CGraphicsDescriptorManager::CheckMVP();
 
     Length_original = length;
@@ -162,7 +163,8 @@ void CObject::Register(CApplication *p_app, int texture_id, int model_id, int ob
     //Prepare pointers for drawcall
     p_renderer = &(p_app->renderer);
     p_renderProcess = &(p_app->renderProcess);
-    p_graphicsPipelineLayout = &(p_app->renderProcess.graphicsPipelineLayout);
+    p_graphicsPipelineLayout = &(p_app->renderProcess.graphicsPipelineLayouts[m_graphics_pipeline_id]);
+    //p_graphicsPipelineLayout = &(p_app->renderProcess.graphicsPipelineLayout);
     p_graphicsDescriptorSets = &(p_app->graphicsDescriptorManager.descriptorSets);
 
     //Create texture descriptor set
@@ -189,7 +191,9 @@ void CObject::Register(CApplication *p_app, int texture_id, int model_id, int ob
 
 
 void CObject::Draw(uint32_t n){
-    p_renderer->BindPipeline(p_renderProcess->graphicsPipeline, VK_PIPELINE_BIND_POINT_GRAPHICS, p_renderer->graphicsCmdId);
+    p_renderer->BindPipeline(p_renderProcess->graphicsPipelines[m_graphics_pipeline_id], 
+    //p_renderer->BindPipeline(p_renderProcess->graphicsPipeline, 
+        VK_PIPELINE_BIND_POINT_GRAPHICS, p_renderer->graphicsCmdId);
 
     std::vector<std::vector<VkDescriptorSet>> dsSets; 
     if(p_graphicsDescriptorSets->size() > 0) dsSets.push_back(*p_graphicsDescriptorSets); //set = 0, general uniform
@@ -219,7 +223,9 @@ void CObject::Draw(uint32_t n){
 void CObject::Draw(std::vector<CWxjBuffer> &buffer, uint32_t n){ //const VkBuffer *pBuffers
     //this function is used in sample:simpleparticle only
 
-    p_renderer->BindPipeline(p_renderProcess->graphicsPipeline, VK_PIPELINE_BIND_POINT_GRAPHICS, p_renderer->graphicsCmdId);
+    p_renderer->BindPipeline(p_renderProcess->graphicsPipelines[m_graphics_pipeline_id], 
+    //p_renderer->BindPipeline(p_renderProcess->graphicsPipeline, 
+        VK_PIPELINE_BIND_POINT_GRAPHICS, p_renderer->graphicsCmdId);
 
     //TODO: bind descriptor set
 

@@ -45,8 +45,7 @@ public:
     //void postRecordGraphicsCommandBuffer(CSwapchain &swapchain);
 
     //Create start() and end() to make sample command recording simple
-    void StartRecordGraphicsCommandBuffer(VkPipeline &pipeline, VkPipelineLayout &pipelineLayout, 
-        VkRenderPass &renderPass, 
+    void StartRecordGraphicsCommandBuffer(VkRenderPass &renderPass, 
         std::vector<VkFramebuffer> &swapChainFramebuffers, VkExtent2D &extent,
         std::vector<VkClearValue> &clearValues);
     void EndRecordGraphicsCommandBuffer();

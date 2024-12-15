@@ -143,9 +143,9 @@ void CApplication::initialize(){
         //std::cout<<"i: "<<(*appInfo.Object.Model.List)[i] <<std::endl;
         if(appInfo.Object.Model.List != NULL) model_id = (*appInfo.Object.Model.List)[i];
         if(CSupervisor::VertexStructureType == VertexStructureTypes::TwoDimension || CSupervisor::VertexStructureType  == VertexStructureTypes::ThreeDimension)
-            objectList[i].Register((CApplication*)this, texture_id, model_id, i, modelManager.modelLengths[model_id], modelManager.modelLengthsMin[model_id], modelManager.modelLengthsMax[model_id]); //must be set after initialize()::SetApplicationProperty(appInfo);
+            objectList[i].Register((CApplication*)this, texture_id, model_id, i, 0, modelManager.modelLengths[model_id], modelManager.modelLengthsMin[model_id], modelManager.modelLengthsMax[model_id]); //must be set after initialize()::SetApplicationProperty(appInfo);
         else
-            objectList[i].Register((CApplication*)this, texture_id, model_id, i);
+            objectList[i].Register((CApplication*)this, texture_id, model_id, i, 0, glm::vec3(), glm::vec3(), glm::vec3());
     }
 
     renderer.CreateSyncObjects(swapchain.imageSize);
@@ -212,7 +212,7 @@ void CApplication::UpdateRecordRender(){
             vkResetCommandBuffer(renderer.commandBuffers[renderer.graphicsCmdId][renderer.currentFrame], /*VkCommandBufferResetFlagBits*/ 0);
 
             renderer.StartRecordGraphicsCommandBuffer(
-                renderProcess.graphicsPipeline, renderProcess.graphicsPipelineLayout, renderProcess.renderPass, 
+                renderProcess.renderPass, 
                 swapchain.swapChainFramebuffers,swapchain.swapChainExtent, 
                 renderProcess.clearValues);
             recordGraphicsCommandBuffer();
@@ -275,7 +275,7 @@ void CApplication::UpdateRecordRender(){
             renderer.EndRecordComputeCommandBuffer();
 
             renderer.StartRecordGraphicsCommandBuffer(
-                renderProcess.graphicsPipeline, renderProcess.graphicsPipelineLayout, renderProcess.renderPass, 
+                renderProcess.renderPass, 
                 swapchain.swapChainFramebuffers,swapchain.swapChainExtent, 
                 renderProcess.clearValues);
             recordGraphicsCommandBuffer();

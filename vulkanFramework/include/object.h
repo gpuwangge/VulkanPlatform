@@ -16,6 +16,7 @@ class CObject : public CEntity {
     int m_object_id;
     int m_texture_id;
     int m_model_id;
+    int m_graphics_pipeline_id;
 
     bool bUseMVP_VP;
 
@@ -57,7 +58,7 @@ public:
     void Update(float deltaTime);
 
     //when a 3d object is register, it could be with texture(texture_id>=0) or no texture(texture_id=-1); it could have one texture, or several textures(INT_MAX)
-    void Register(CApplication *p_app, int texture_id = 0, int model_id = 0, int object_id = 0, glm::vec3 length = glm::vec3(), glm::vec3 lengthMin = glm::vec3(), glm::vec3 lengthMax = glm::vec3()); //-1 means no texture or model 
+    void Register(CApplication *p_app, int texture_id, int model_id, int object_id, int graphics_pipeline_id, glm::vec3 length, glm::vec3 lengthMin, glm::vec3 lengthMax); //-1 means no texture or model 
 
     //draw with renderer's buffer, or no buffer
     void Draw(uint32_t n = 0);

@@ -11,7 +11,6 @@ CRenderProcess::CRenderProcess(){
 
     m_msaaSamples = VK_SAMPLE_COUNT_1_BIT;
     m_swapChainImageFormat = VK_FORMAT_UNDEFINED;
-
 }
 CRenderProcess::~CRenderProcess(){
 	//if (!debugger) delete debugger;
@@ -230,11 +229,11 @@ void CRenderProcess::createComputePipeline(VkShaderModule &computeShaderModule){
 	}
 }
 
-void CRenderProcess::createGraphicsPipelineLayout(std::vector<VkDescriptorSetLayout> &descriptorSetLayouts){
+void CRenderProcess::createGraphicsPipelineLayout(std::vector<VkDescriptorSetLayout> &descriptorSetLayouts, int graphicsPipelineLayout_id){
 	VkPushConstantRange dummyPushConstantRange;
-	createGraphicsPipelineLayout(descriptorSetLayouts, dummyPushConstantRange, false);
+	createGraphicsPipelineLayout(descriptorSetLayouts, dummyPushConstantRange, false, graphicsPipelineLayout_id);
 }
-void CRenderProcess::createGraphicsPipelineLayout(std::vector<VkDescriptorSetLayout> &descriptorSetLayouts, VkPushConstantRange &pushConstantRange, bool bUsePushConstant){
+void CRenderProcess::createGraphicsPipelineLayout(std::vector<VkDescriptorSetLayout> &descriptorSetLayouts, VkPushConstantRange &pushConstantRange, bool bUsePushConstant, int graphicsPipelineLayout_id){
 	VkResult result = VK_SUCCESS;
 
 	VkPipelineLayoutCreateInfo pipelineLayoutInfo{};
@@ -253,7 +252,11 @@ void CRenderProcess::createGraphicsPipelineLayout(std::vector<VkDescriptorSetLay
 	}
 
 	//Create Graphics Pipeline Layout
-	result = vkCreatePipelineLayout(CContext::GetHandle().GetLogicalDevice(), &pipelineLayoutInfo, nullptr, &graphicsPipelineLayout);
+	VkPipelineLayout newlayout;
+	graphicsPipelineLayouts.push_back(newlayout);
+	result = vkCreatePipelineLayout(CContext::GetHandle().GetLogicalDevice(), &pipelineLayoutInfo, nullptr, &graphicsPipelineLayouts[graphicsPipelineLayout_id]);
+	//result = vkCreatePipelineLayout(CContext::GetHandle().GetLogicalDevice(), &pipelineLayoutInfo, nullptr, &graphicsPipelineLayout);
+	
 	if (result != VK_SUCCESS) throw std::runtime_error("failed to create pipeline layout!");
 	//REPORT("vkCreatePipelineLayout");
 }
@@ -263,8 +266,10 @@ void CRenderProcess::Cleanup(){
 		vkDestroyRenderPass(CContext::GetHandle().GetLogicalDevice(), renderPass, nullptr);
 
 	if(bCreateGraphicsPipeline){
-	 	vkDestroyPipeline(CContext::GetHandle().GetLogicalDevice(), graphicsPipeline, nullptr);
-     	vkDestroyPipelineLayout(CContext::GetHandle().GetLogicalDevice(), graphicsPipelineLayout, nullptr);
+		for(int i = 0; i < graphicsPipelines.size(); i++){
+			vkDestroyPipeline(CContext::GetHandle().GetLogicalDevice(), graphicsPipelines[i], nullptr);
+			vkDestroyPipelineLayout(CContext::GetHandle().GetLogicalDevice(), graphicsPipelineLayouts[i], nullptr);
+		}
 	}
 
 	if(bCreateComputePipeline){
