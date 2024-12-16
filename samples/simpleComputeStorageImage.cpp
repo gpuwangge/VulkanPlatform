@@ -17,7 +17,11 @@ public:
 
 	void initialize(){
         appInfo.Render.Mode = renderer.RENDER_COMPUTE_SWAPCHAIN_Mode;
-        appInfo.Shader.Compute = "simpleComputeStorageImage/comp.spv";
+        //appInfo.Shader.Compute = "simpleComputeStorageImage/comp.spv";
+        appInfo.Object.Pipeline.VertexShader = std::make_unique<std::vector<std::string>>(std::vector<std::string> {});
+		appInfo.Object.Pipeline.FragmentShader = std::make_unique<std::vector<std::string>>(std::vector<std::string> {});
+		appInfo.Object.Pipeline.ComputeShader = std::make_unique<std::vector<std::string>>(std::vector<std::string> {"simpleComputeStorageImage/comp.spv"});
+		appInfo.Object.Pipeline.List = std::make_unique<std::vector<int>>(std::vector<int> {0});
         appInfo.Uniform.EnableComputeStorageImageSwapChain = true;
 		CApplication::initialize();
 		createComputeCommandBuffers(renderer.commandBuffers[renderer.computeCmdId], swapchain.images);

@@ -20,8 +20,12 @@ public:
 
 	void initialize(){
 		appInfo.Object.Count = 1;
-		appInfo.Shader.Vertex = "simpleUniformBuffer/vert.spv";
-		appInfo.Shader.Fragment = "simpleUniformBuffer/frag.spv";
+		//appInfo.Shader.Vertex = "simpleUniformBuffer/vert.spv";
+		//appInfo.Shader.Fragment = "simpleUniformBuffer/frag.spv";
+		appInfo.Object.Pipeline.VertexShader = std::make_unique<std::vector<std::string>>(std::vector<std::string> {"simpleUniformBuffer/vert.spv"});
+		appInfo.Object.Pipeline.FragmentShader = std::make_unique<std::vector<std::string>>(std::vector<std::string> {"simpleUniformBuffer/frag.spv"});
+		appInfo.Object.Pipeline.ComputeShader = std::make_unique<std::vector<std::string>>(std::vector<std::string> {});
+		appInfo.Object.Pipeline.List = std::make_unique<std::vector<int>>(std::vector<int> {0});
 		appInfo.Uniform.GraphicsCustom.Size = sizeof(CustomUniformBufferObject);
 		appInfo.Uniform.GraphicsCustom.Binding = CustomUniformBufferObject::GetBinding();
 		CApplication::initialize();

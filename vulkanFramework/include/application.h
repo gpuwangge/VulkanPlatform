@@ -68,11 +68,7 @@ public:
 
     //std::chrono::_V2::system_clock::time_point lastTime;
 
-    //VertexStructureTypes vertexStructuretypes;
     static std::vector<CObject> objectList;
-    //int ObjectCount = 0;
-	//std::vector<int> modelList = {}; 
-	//std::vector<int> textureList = {}; 
 
     void CleanUp();
 
@@ -113,6 +109,10 @@ public:
      *******/
     void Dispatch(int numWorkGroupsX, int numWorkGroupsY, int numWorkGroupsZ);  
 
+
+    /*************
+     * APP INFO
+     *******/
     struct RenderInfo{
         CRenderer::RenderModes Mode = CRenderer::RENDER_GRAPHICS_Mode;
     };
@@ -161,32 +161,38 @@ public:
             std::vector<Vertex2D> *Vertices2D = NULL;
         }GraphicsVertex;
     };
-    struct ShaderInfo{
-        std::string Vertex;
-        std::string Fragment;
-        std::string Compute;
-    };
+    // struct ShaderInfo{
+    //     std::string Vertex;
+    //     std::string Fragment;
+    //     std::string Compute;
+    // };
 
     struct ObjectInfo{
         int Count = 0;
         struct ModelInfo{
             //std::vector<std::string> *Names = NULL;
             //std::vector<int> *List = NULL; 
-            std::unique_ptr<std::vector<std::string>> Names;
-            std::unique_ptr<std::vector<int>> List; //the i'th object use i'th model
+            std::unique_ptr<std::vector<std::string>> Names; //models to be loaded
+            std::unique_ptr<std::vector<int>> List; //list[i]=j: the i'th object use j'th model
         }Model;
         struct TextureInfo{
             //std::vector<std::pair<std::string, bool>> *Names = NULL;
             //std::vector<int> *List = NULL; 
-            std::unique_ptr<std::vector<std::pair<std::string, bool>>> Names; //first: textureName, second: mipmap, //the i'th object use i'th texture
-            std::unique_ptr<std::vector<int>> List;
+            std::unique_ptr<std::vector<std::pair<std::string, bool>>> Names; //first: textures to be loaded, second: mipmap, 
+            std::unique_ptr<std::vector<int>> List; //list[i]=j: the i'th object use j'th texture
         }Texture;
+        struct PipelineInfo{
+            std::unique_ptr<std::vector<std::string>> VertexShader;
+            std::unique_ptr<std::vector<std::string>> FragmentShader;
+            std::unique_ptr<std::vector<std::string>> ComputeShader;
+            std::unique_ptr<std::vector<int>> List; //list[i]=j: the i'th object use j'th pipeline
+        }Pipeline;
     };
 
     struct AppInfo{
         ObjectInfo Object;
         RenderInfo Render;
-        ShaderInfo Shader;
+        //ShaderInfo Shader;
         UniformInfo Uniform;
         FeatureInfo Feature;
         BufferInfo Buffer;

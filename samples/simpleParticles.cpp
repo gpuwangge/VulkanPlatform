@@ -38,9 +38,13 @@ public:
 		appInfo.Object.Count = 1;//One object, that is the particle generator
 		appInfo.Buffer.GraphicsVertex.StructureType = VertexStructureTypes::ParticleType;
 		appInfo.Render.Mode = CRenderer::RENDER_COMPUTE_GRAPHICS_Mode;
-		appInfo.Shader.Compute = "simpleParticles/comp.spv";
-		appInfo.Shader.Vertex = "simpleParticles/vert.spv";
-		appInfo.Shader.Fragment = "simpleParticles/frag.spv";
+		//appInfo.Shader.Compute = "simpleParticles/comp.spv";
+		//appInfo.Shader.Vertex = "simpleParticles/vert.spv";
+		//appInfo.Shader.Fragment = "simpleParticles/frag.spv";
+		appInfo.Object.Pipeline.VertexShader = std::make_unique<std::vector<std::string>>(std::vector<std::string> {"simpleParticles/vert.spv"});
+		appInfo.Object.Pipeline.FragmentShader = std::make_unique<std::vector<std::string>>(std::vector<std::string> {"simpleParticles/frag.spv"});
+		appInfo.Object.Pipeline.ComputeShader = std::make_unique<std::vector<std::string>>(std::vector<std::string> {"simpleParticles/comp.spv"});
+		appInfo.Object.Pipeline.List = std::make_unique<std::vector<int>>(std::vector<int> {0});
 		appInfo.Uniform.ComputeCustom.Size = sizeof(CustomUniformBufferObject);
 		appInfo.Uniform.ComputeCustom.Binding = CustomUniformBufferObject::GetBinding();
 		appInfo.Uniform.ComputeStorageBuffer.Size = sizeof(StructStorageBuffer);

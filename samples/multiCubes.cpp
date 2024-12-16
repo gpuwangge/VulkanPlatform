@@ -34,8 +34,12 @@ public:
 			{"skin.jpg", false}
 			});
 		appInfo.Object.Texture.List = std::make_unique<std::vector<int>>(std::vector<int> {0, 1, 2});
-		appInfo.Shader.Vertex = "multiCubes/vert2.spv";
-		appInfo.Shader.Fragment = "multiCubes/frag2.spv";
+		//appInfo.Shader.Vertex = "multiCubes/vert2.spv";
+		//appInfo.Shader.Fragment = "multiCubes/frag2.spv";
+		appInfo.Object.Pipeline.VertexShader = std::make_unique<std::vector<std::string>>(std::vector<std::string> {"multiCubes/vert1.spv", "multiCubes/vert2.spv"});
+		appInfo.Object.Pipeline.FragmentShader = std::make_unique<std::vector<std::string>>(std::vector<std::string> {"multiCubes/frag1.spv", "multiCubes/frag2.spv"});
+		appInfo.Object.Pipeline.ComputeShader = std::make_unique<std::vector<std::string>>(std::vector<std::string> {});
+		appInfo.Object.Pipeline.List = std::make_unique<std::vector<int>>(std::vector<int> {1,0,1});
 		appInfo.Uniform.GraphicsSampler.Count = 1;
 		appInfo.Uniform.EnableGraphicsMVP = true;
 		appInfo.Feature.EnableGraphicsMSAA = true;

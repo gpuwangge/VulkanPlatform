@@ -3,9 +3,9 @@
 
 //Declare static variables here:
 CApplication *CSupervisor::m_app;
-std::string CSupervisor::VertexShader;
-std::string CSupervisor::FragmentShader;
-std::string CSupervisor::ComputeShader;
+//std::string CSupervisor::VertexShader;
+//std::string CSupervisor::FragmentShader;
+//std::string CSupervisor::ComputeShader;
 std::vector<Vertex2D> CSupervisor::vertices2D;
 std::vector<Vertex3D> CSupervisor::vertices3D;
 std::vector<uint32_t> CSupervisor::indices3D;
@@ -26,8 +26,8 @@ bool CSupervisor::bRainbowMipmap;
 
 void CSupervisor::Register(CApplication *app){ m_app = app; m_app->renderer.CreateCommandPool(m_app->surface);} 
 
-bool CSupervisor::Query_Pipeline_Graphics(){ return VertexShader!="";}
-bool CSupervisor::Query_Pipeline_Compute(){ return ComputeShader!="";}
+bool CSupervisor::Query_Pipeline_Graphics(){ return m_app->appInfo.Object.Pipeline.VertexShader->size()>0; } //VertexShader!="";
+bool CSupervisor::Query_Pipeline_Compute(){ return m_app->appInfo.Object.Pipeline.ComputeShader->size()>0; }//ComputeShader!="";
 
 void CSupervisor::Activate_Uniform_Graphics_VP(){ CDescriptorManager::uniformBufferUsageFlags |= UNIFORM_BUFFER_VP_BIT; }
 bool CSupervisor::Query_Uniform_Graphics_VP(){return CDescriptorManager::uniformBufferUsageFlags & UNIFORM_BUFFER_VP_BIT;}
@@ -170,11 +170,17 @@ void CSupervisor::Activate_Pipeline(){ //*customBinding = NULL
 
     //Shaders
     if(Query_Pipeline_Graphics()){
-        m_app->shaderManager.CreateShader(VertexShader, m_app->shaderManager.VERT);
-        m_app->shaderManager.CreateShader(FragmentShader, m_app->shaderManager.FRAG);
+        for(int i = 0; i < m_app->appInfo.Object.Pipeline.VertexShader->size(); i++){
+            m_app->shaderManager.CreateShader((*m_app->appInfo.Object.Pipeline.VertexShader)[i], m_app->shaderManager.VERT);
+            m_app->shaderManager.CreateShader((*m_app->appInfo.Object.Pipeline.FragmentShader)[i], m_app->shaderManager.FRAG);
+        }
+        //m_app->shaderManager.CreateShader(VertexShader, m_app->shaderManager.VERT);
+        //m_app->shaderManager.CreateShader(FragmentShader, m_app->shaderManager.FRAG);
     }
     if(Query_Pipeline_Compute())
-        m_app->shaderManager.CreateShader(ComputeShader, m_app->shaderManager.COMP);
+        for(int i = 0; i < m_app->appInfo.Object.Pipeline.ComputeShader->size(); i++)
+            m_app->shaderManager.CreateShader((*m_app->appInfo.Object.Pipeline.ComputeShader)[i], m_app->shaderManager.COMP);
+        //m_app->shaderManager.CreateShader(ComputeShader, m_app->shaderManager.COMP);
 
     //Push constant
     if(Query_Pipeline_Graphics())
@@ -248,46 +254,48 @@ void CSupervisor::Activate_Pipeline(){ //*customBinding = NULL
         //each object can have muti texture image, multi descriptor set(when creating descritpor set, need a sampler)
         //all objects share the same descriptor pool and descriptor layout, they are universal
         //sampler should also be universal
+        
+        //std::cout<<"Begin create graphics pipeline"<<std::endl;
+        for(int i = 0; i < m_app->appInfo.Object.Pipeline.VertexShader->size(); i++){
+            if(bPushConstant)  m_app->renderProcess.createGraphicsPipelineLayout(dsLayouts,  m_app->shaderManager.pushConstantRange, true, i);
+            else m_app->renderProcess.createGraphicsPipelineLayout(dsLayouts, i);
 
-        
-        if(bPushConstant) 
-            m_app->renderProcess.createGraphicsPipelineLayout(dsLayouts,  m_app->shaderManager.pushConstantRange, true, 0);
-        else
-            m_app->renderProcess.createGraphicsPipelineLayout(dsLayouts, 0);
-        
-        switch(VertexStructureType){
-            case VertexStructureTypes::NoType:
-                m_app->renderProcess.createGraphicsPipeline(
-                    VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
-                    m_app->shaderManager.vertShaderModule, 
-                    m_app->shaderManager.fragShaderModule, 0);  
-            break;
-            case VertexStructureTypes::ThreeDimension:
-                m_app->renderProcess.createGraphicsPipeline<Vertex3D>(
-                    VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
-                    m_app->shaderManager.vertShaderModule, 
-                    m_app->shaderManager.fragShaderModule, true, 0);  
-            break;
-            case VertexStructureTypes::TwoDimension:
-                m_app->renderProcess.createGraphicsPipeline<Vertex2D>(
-                    VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
-                    m_app->shaderManager.vertShaderModule, 
-                    m_app->shaderManager.fragShaderModule, true, 0);
-            break;
-            case VertexStructureTypes::ParticleType:
-                m_app->renderProcess.createGraphicsPipeline<Particle>(
-                    VK_PRIMITIVE_TOPOLOGY_POINT_LIST, 
-                    m_app->shaderManager.vertShaderModule, 
-                    m_app->shaderManager.fragShaderModule, true, 0);  
-            break;
-            default:
-            break;
+            //std::cout<<"create graphics pipeline: "<<i<<std::endl;
+            switch(VertexStructureType){
+                case VertexStructureTypes::NoType:
+                    m_app->renderProcess.createGraphicsPipeline(
+                        VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
+                        m_app->shaderManager.vertShaderModules[i], 
+                        m_app->shaderManager.fragShaderModules[i], i);  
+                break;
+                case VertexStructureTypes::ThreeDimension:
+                    m_app->renderProcess.createGraphicsPipeline<Vertex3D>(
+                        VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
+                        m_app->shaderManager.vertShaderModules[i], 
+                        m_app->shaderManager.fragShaderModules[i], true, i);  
+                break;
+                case VertexStructureTypes::TwoDimension:
+                    m_app->renderProcess.createGraphicsPipeline<Vertex2D>(
+                        VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
+                        m_app->shaderManager.vertShaderModules[i], 
+                        m_app->shaderManager.fragShaderModules[i], true, i);
+                break;
+                case VertexStructureTypes::ParticleType:
+                    m_app->renderProcess.createGraphicsPipeline<Particle>(
+                        VK_PRIMITIVE_TOPOLOGY_POINT_LIST, 
+                        m_app->shaderManager.vertShaderModules[i], 
+                        m_app->shaderManager.fragShaderModules[i], true, i);  
+                break;
+                default:
+                break;
+            }
         }
+        //std::cout<<"Done create graphics pipeline"<<std::endl;
 
     }
-    if(Query_Pipeline_Compute()){
+    if(Query_Pipeline_Compute()){ //for now assume only one compute pipeline
         m_app->renderProcess.createComputePipelineLayout(CComputeDescriptorManager::descriptorSetLayout);
-        m_app->renderProcess.createComputePipeline(m_app->shaderManager.compShaderModule);
+        m_app->renderProcess.createComputePipeline(m_app->shaderManager.compShaderModules[0]);
     }
 }
 

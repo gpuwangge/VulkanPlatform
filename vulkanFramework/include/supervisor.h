@@ -26,9 +26,9 @@ public:
      * Shaders
      * 
      *****************************/
-    static std::string VertexShader;
-    static std::string FragmentShader;
-    static std::string ComputeShader;
+    //static std::string VertexShader;
+    //static std::string FragmentShader;
+    //static std::string ComputeShader;
     static bool Query_Pipeline_Graphics();
     static bool Query_Pipeline_Compute();
 

@@ -42,8 +42,12 @@ public:
 			{"fur.jpg", false},
 			});
 		appInfo.Object.Texture.List = std::make_unique<std::vector<int>>(std::vector<int> {0, 1, 2, 0});
-		appInfo.Shader.Vertex = "simpleUI/vert.spv";
-		appInfo.Shader.Fragment = "simpleUI/frag.spv";
+		//appInfo.Shader.Vertex = "simpleUI/vert.spv";
+		//appInfo.Shader.Fragment = "simpleUI/frag.spv";
+		appInfo.Object.Pipeline.VertexShader = std::make_unique<std::vector<std::string>>(std::vector<std::string> {"simpleUI/vert.spv"});
+		appInfo.Object.Pipeline.FragmentShader = std::make_unique<std::vector<std::string>>(std::vector<std::string> {"simpleUI/frag.spv"});
+		appInfo.Object.Pipeline.ComputeShader = std::make_unique<std::vector<std::string>>(std::vector<std::string> {});
+		appInfo.Object.Pipeline.List = std::make_unique<std::vector<int>>(std::vector<int> {0, 0, 0, 0});
 		appInfo.Uniform.GraphicsSampler.Count = 1;
 		appInfo.Uniform.EnableGraphicsMVP = true;
 		appInfo.Feature.EnableGraphicsMSAA = true;

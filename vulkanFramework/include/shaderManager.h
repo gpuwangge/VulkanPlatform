@@ -11,9 +11,13 @@ public:
 
     enum ShaderTypes{VERT, FRAG, COMP};
 
-    VkShaderModule vertShaderModule = VK_NULL_HANDLE;
-	VkShaderModule fragShaderModule = VK_NULL_HANDLE;
-    VkShaderModule compShaderModule = VK_NULL_HANDLE;
+
+    //VkShaderModule vertShaderModule = VK_NULL_HANDLE;
+	//VkShaderModule fragShaderModule = VK_NULL_HANDLE;
+    //VkShaderModule compShaderModule = VK_NULL_HANDLE;
+    std::vector<VkShaderModule> vertShaderModules;
+    std::vector<VkShaderModule> fragShaderModules;
+    std::vector<VkShaderModule> compShaderModules;
 
     //void CreateVertexShader(const std::string shaderName);
     //void CreateFragmentShader(const std::string shaderName);

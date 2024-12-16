@@ -225,6 +225,7 @@ public:
         //CreateLayout(descriptorSetLayout);
         pipelineInfo.layout = graphicsPipelineLayouts[graphcisPipeline_id];	//9
         //pipelineInfo.layout = graphicsPipelineLayout;	//9
+       
         
         /*********10 Renderpass Layout(Vulkan Special Concept)**********/
         //Renderpass is to specify what kind of data goes to graphics pipeline
@@ -248,7 +249,9 @@ public:
         /*********Create Graphics Pipeline**********/
         VkPipeline newpipeline;
         graphicsPipelines.push_back(newpipeline);
+        //std::cout<<"begin create pipeline "<<std::endl;
         result = vkCreateGraphicsPipelines(CContext::GetHandle().GetLogicalDevice(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipelines[graphcisPipeline_id]);
+        //std::cout<<"done create pipeline "<<std::endl;
         //result = vkCreateGraphicsPipelines(CContext::GetHandle().GetLogicalDevice(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline);
         if (result != VK_SUCCESS) throw std::runtime_error("failed to create graphics pipeline!");
         //REPORT("vkCreateGraphicsPipelines");

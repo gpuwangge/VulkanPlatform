@@ -20,8 +20,12 @@ public:
 		appInfo.Object.Model.List = std::make_unique<std::vector<int>>(std::vector<int> {0});
 		appInfo.Object.Texture.Names = std::make_unique<std::vector<std::pair<std::string, bool>>>(std::vector<std::pair<std::string, bool>> {{"texture.jpg", false}});
 		appInfo.Object.Texture.List = std::make_unique<std::vector<int>>(std::vector<int> {0});
-		appInfo.Shader.Vertex = "simpleTexture/vert.spv";
-		appInfo.Shader.Fragment = "simpleTexture/frag.spv";
+		//appInfo.Shader.Vertex = "simpleTexture/vert.spv";
+		//appInfo.Shader.Fragment = "simpleTexture/frag.spv";
+		appInfo.Object.Pipeline.VertexShader = std::make_unique<std::vector<std::string>>(std::vector<std::string> {"simpleTexture/vert.spv"});
+		appInfo.Object.Pipeline.FragmentShader = std::make_unique<std::vector<std::string>>(std::vector<std::string> {"simpleTexture/frag.spv"});
+		appInfo.Object.Pipeline.ComputeShader = std::make_unique<std::vector<std::string>>(std::vector<std::string> {});
+		appInfo.Object.Pipeline.List = std::make_unique<std::vector<int>>(std::vector<int> {0});
 		appInfo.Uniform.GraphicsSampler.Count = 1;
 		appInfo.Uniform.EnableGraphicsMVP = true;
 		CApplication::initialize();

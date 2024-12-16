@@ -38,8 +38,12 @@ public:
 			{"wall.jpg", false},
 			});
 		appInfo.Object.Texture.List = std::make_unique<std::vector<int>>(std::vector<int> {0}); //object_0 uses 3 texture(in 3 sampler), how to describe?
-		appInfo.Shader.Vertex = "furMark/vert.spv";
-		appInfo.Shader.Fragment = "furMark/frag.spv";
+		//appInfo.Shader.Vertex = "furMark/vert.spv";
+		//appInfo.Shader.Fragment = "furMark/frag.spv";
+		appInfo.Object.Pipeline.VertexShader = std::make_unique<std::vector<std::string>>(std::vector<std::string> {"furMark/vert.spv"});
+		appInfo.Object.Pipeline.FragmentShader = std::make_unique<std::vector<std::string>>(std::vector<std::string> {"furMark/frag.spv"});
+		appInfo.Object.Pipeline.ComputeShader = std::make_unique<std::vector<std::string>>(std::vector<std::string> {});
+		appInfo.Object.Pipeline.List = std::make_unique<std::vector<int>>(std::vector<int> {0});
 		appInfo.Uniform.GraphicsSampler.Count = appInfo.Object.Texture.Names->size();
 		appInfo.Uniform.GraphicsSampler.UseMultiSamplerForOneObject = true;
 		appInfo.Uniform.GraphicsCustom.Size = sizeof(CustomUniformBufferObject);

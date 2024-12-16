@@ -138,14 +138,16 @@ void CApplication::initialize(){
     objectList.resize(appInfo.Object.Count);
     int texture_id = -1; //INT_MAX means use all samplers
     int model_id = -1;
+    int pipeline_id = -1;
     for(int i = 0; i < objectList.size(); i++){
         if(appInfo.Object.Texture.List != NULL) texture_id = appInfo.Uniform.GraphicsSampler.UseMultiSamplerForOneObject ? INT_MAX : (*appInfo.Object.Texture.List)[i]; 
         //std::cout<<"i: "<<(*appInfo.Object.Model.List)[i] <<std::endl;
         if(appInfo.Object.Model.List != NULL) model_id = (*appInfo.Object.Model.List)[i];
+        pipeline_id = (*appInfo.Object.Pipeline.List)[i];
         if(CSupervisor::VertexStructureType == VertexStructureTypes::TwoDimension || CSupervisor::VertexStructureType  == VertexStructureTypes::ThreeDimension)
-            objectList[i].Register((CApplication*)this, texture_id, model_id, i, 0, modelManager.modelLengths[model_id], modelManager.modelLengthsMin[model_id], modelManager.modelLengthsMax[model_id]); //must be set after initialize()::SetApplicationProperty(appInfo);
+            objectList[i].Register((CApplication*)this, texture_id, model_id, i, pipeline_id, modelManager.modelLengths[model_id], modelManager.modelLengthsMin[model_id], modelManager.modelLengthsMax[model_id]); //must be set after initialize()::SetApplicationProperty(appInfo);
         else
-            objectList[i].Register((CApplication*)this, texture_id, model_id, i, 0, glm::vec3(), glm::vec3(), glm::vec3());
+            objectList[i].Register((CApplication*)this, texture_id, model_id, i, pipeline_id, glm::vec3(), glm::vec3(), glm::vec3());
     }
 
     renderer.CreateSyncObjects(swapchain.imageSize);
@@ -370,9 +372,9 @@ void CApplication::SetApplicationProperty(AppInfo &appInfo){
 
     renderer.m_renderMode = appInfo.Render.Mode;
 
-    CSupervisor::ComputeShader = appInfo.Shader.Compute;
-	CSupervisor::VertexShader = appInfo.Shader.Vertex;
-	CSupervisor::FragmentShader = appInfo.Shader.Fragment;
+    //CSupervisor::ComputeShader = appInfo.Shader.Compute;
+	//CSupervisor::VertexShader = appInfo.Shader.Vertex;
+	//CSupervisor::FragmentShader = appInfo.Shader.Fragment;
 
     if(appInfo.Uniform.GraphicsSampler.Count) CSupervisor::Activate_Uniform_Graphics_Sampler(appInfo.Uniform.GraphicsSampler.Count); //samplerCount
     if(appInfo.Uniform.EnableGraphicsMVP) CSupervisor::Activate_Uniform_Graphics_MVP();

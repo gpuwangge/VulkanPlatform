@@ -8,8 +8,12 @@ public:
 		appInfo.Object.Model.List = std::make_unique<std::vector<int>>(std::vector<int> {0});
 		appInfo.Object.Texture.Names = std::make_unique<std::vector<std::pair<std::string, bool>>>(std::vector<std::pair<std::string, bool>> {{"viking_room.png", false}});
 		appInfo.Object.Texture.List = std::make_unique<std::vector<int>>(std::vector<int> {0});
-		appInfo.Shader.Vertex = "simpleObjLoader/vert.spv";
-		appInfo.Shader.Fragment = "simpleObjLoader/frag.spv";	
+		//appInfo.Shader.Vertex = "simpleObjLoader/vert.spv";
+		//appInfo.Shader.Fragment = "simpleObjLoader/frag.spv";	
+		appInfo.Object.Pipeline.VertexShader = std::make_unique<std::vector<std::string>>(std::vector<std::string> {"simpleObjLoader/vert.spv"});
+		appInfo.Object.Pipeline.FragmentShader = std::make_unique<std::vector<std::string>>(std::vector<std::string> {"simpleObjLoader/frag.spv"});
+		appInfo.Object.Pipeline.ComputeShader = std::make_unique<std::vector<std::string>>(std::vector<std::string> {});
+		appInfo.Object.Pipeline.List = std::make_unique<std::vector<int>>(std::vector<int> {0});
 		appInfo.Uniform.GraphicsSampler.Count = 1;
 		appInfo.Uniform.EnableGraphicsMVP = true;
 		appInfo.Feature.EnableGraphicsDepthTest = true;

@@ -12,15 +12,25 @@ CShaderManager::~CShaderManager(){
 void CShaderManager::CreateShader(const std::string shaderName, short shaderType){
     VkShaderModule *pShaderModule;
     switch(shaderType){
-        case VERT:
-            pShaderModule = &vertShaderModule;
+        case VERT:{
+            VkShaderModule newShaderModule;
+            vertShaderModules.push_back(newShaderModule);
+            pShaderModule = &vertShaderModules[vertShaderModules.size()-1];
         break;
-        case FRAG:
-            pShaderModule = &fragShaderModule;
+        }
+        case FRAG:{
+            VkShaderModule newShaderModule;
+            fragShaderModules.push_back(newShaderModule);
+            pShaderModule = &fragShaderModules[fragShaderModules.size()-1];
         break;
-        case COMP:
-            pShaderModule = &compShaderModule;
+        }
+        case COMP:{
+            //pShaderModule = &compShaderModule;
+            VkShaderModule newShaderModule;
+            compShaderModules.push_back(newShaderModule);
+            pShaderModule = &compShaderModules[compShaderModules.size()-1];
         break;
+        }
         default:
             throw std::runtime_error("Invalid shader type!");
         break;
@@ -142,10 +152,13 @@ std::string CShaderManager::InsertString(std::string originalString, std::string
 }
 
 void CShaderManager::Destroy(){
-    if(fragShaderModule)
-        vkDestroyShaderModule(CContext::GetHandle().GetLogicalDevice(), fragShaderModule, nullptr);
-    if(vertShaderModule)
-        vkDestroyShaderModule(CContext::GetHandle().GetLogicalDevice(), vertShaderModule, nullptr);
-    if(compShaderModule)
-        vkDestroyShaderModule(CContext::GetHandle().GetLogicalDevice(), compShaderModule, nullptr);
+    for(int i = 0; i < vertShaderModules.size(); i++) vkDestroyShaderModule(CContext::GetHandle().GetLogicalDevice(), vertShaderModules[i], nullptr);
+    for(int i = 0; i < fragShaderModules.size(); i++) vkDestroyShaderModule(CContext::GetHandle().GetLogicalDevice(), fragShaderModules[i], nullptr);
+    for(int i = 0; i < compShaderModules.size(); i++) vkDestroyShaderModule(CContext::GetHandle().GetLogicalDevice(), compShaderModules[i], nullptr);
+    // if(fragShaderModule)
+    //     vkDestroyShaderModule(CContext::GetHandle().GetLogicalDevice(), fragShaderModule, nullptr);
+    // if(vertShaderModule)
+    //     vkDestroyShaderModule(CContext::GetHandle().GetLogicalDevice(), vertShaderModule, nullptr);
+    // if(compShaderModule)
+    //     vkDestroyShaderModule(CContext::GetHandle().GetLogicalDevice(), compShaderModule, nullptr);
 }
