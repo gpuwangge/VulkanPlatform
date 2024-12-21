@@ -17,6 +17,15 @@
 #include "supervisor.h"
 #include "object.h"
 
+//Macro to convert the macro value to a string
+#define STRINGIFY(x) #x
+#define TOSTRING(x) STRINGIFY(x)
+
+#if WIN32
+    #define YAML_CPP_STATIC_DEFINE
+#endif
+#include "../../thirdParty/yaml-cpp/yaml.h"
+
 #ifndef ANDROID
     #ifndef SDL
         #include "..\\..\\glfwFramework\\include\\glfwManager.h"
@@ -94,8 +103,11 @@ public:
     float durationTime = 0;
     float deltaTime = 0;
 
+    std::string m_sampleName;
+
     /*Virtual function: base and derived class will implement. If drived class not implement, call base's verson*/
-    virtual void initialize(); //base: create sync object, destroy shader resource
+    virtual void initialize(); //use this to call sample initialization
+    //void initialize(); //base: create sync object, destroy shader resource
     virtual void update(); //base: update time, frame id, camera and ubo
     virtual void recordGraphicsCommandBuffer();
     virtual void recordComputeCommandBuffer();
@@ -113,6 +125,7 @@ public:
     /*************
      * APP INFO
      *******/
+
     struct RenderInfo{
         CRenderer::RenderModes Mode = CRenderer::RENDER_GRAPHICS_Mode;
     };
@@ -168,7 +181,7 @@ public:
     // };
 
     struct ObjectInfo{
-        int Count = 0;
+        //int Count = 0;
         struct ModelInfo{
             //std::vector<std::string> *Names = NULL;
             //std::vector<int> *List = NULL; 
@@ -178,7 +191,7 @@ public:
         struct TextureInfo{
             //std::vector<std::pair<std::string, bool>> *Names = NULL;
             //std::vector<int> *List = NULL; 
-            std::unique_ptr<std::vector<std::pair<std::string, bool>>> Names; //first: textures to be loaded, second: mipmap, 
+            std::unique_ptr<std::vector<TextureAttributeInfo>> Attributes; 
             std::unique_ptr<std::vector<int>> List; //list[i]=j: the i'th object use j'th texture
         }Texture;
         struct PipelineInfo{

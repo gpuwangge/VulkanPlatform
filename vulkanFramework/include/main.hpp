@@ -3,6 +3,7 @@
 
 int main(){
 	TEST_CLASS_NAME app;
+	app.m_sampleName = TOSTRING(TEST_CLASS_NAME);
 
 	try {
 		app.run();

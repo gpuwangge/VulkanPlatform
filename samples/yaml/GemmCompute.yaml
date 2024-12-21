@@ -1,0 +1,12 @@
+Object:
+  Models: []
+  Textures: []
+  TextureMipmaps: []
+  VertexShaders: []
+  FragmentShaders: []
+  ComputeShaders: ["gemmCompute/comp.spv"]
+  
+  ModelList: []
+  TextureList: []
+  PipelineList: []
+

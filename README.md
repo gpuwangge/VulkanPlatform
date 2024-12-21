@@ -15,10 +15,10 @@
 ## How to build to Windows binary(.exe)
 Prepare:  
 1. Install Vulkan (Tested version 1.3.296.0)  
-1. Install CMake  
-1. Setup SDL or GLFW (Default is SDL, tested version 3.1.3)   
-1. Setup GLM (Tested version 0.9.9.8)
-1. git clone this repo 
+2. Install CMake  
+3. Setup SDL or GLFW (Default is SDL, tested version 3.1.3)   
+4. Setup GLM (Tested version 0.9.9.8)
+5. git clone this repo 
 - [Optional] Download other thirdparty headers: stb_image.h and tiny_obj_loader.h (I already put both files in the "thirdparty" folder in this repo)  
 ### for all samples
 ```
@@ -52,7 +52,7 @@ NDK: 25.1.8937393
    Especially the "hello-vulkan" test.  
 ### for one sample    
 Launch Android Studio, open "androidSandbox" folder.   Select "Build" > "Build Bundle(s) / APK(s) > Build APK(s)"  
-- [Optional] Edit samples/androidSample.h to tell Android Studio which sample to build  
+- [Optional] Edit samples/android/androidSample.h to tell Android Studio which sample to build  
 - [Optional] If you want to run sample on AVD(Android Virtual Device), in the Android Studio, click the green button on the top right corner.  
 
 ## How to debug in Android Studio
@@ -69,6 +69,20 @@ what it does:
 - add add_subdirectory(glfwFramework)  
 - add link_libraries(glfw-framework, glfw3dll)  
 - copy glfw3dll to bin folder  
+
+## How to integrate yaml-cpp
+- clone https://github.com/jbeder/yaml-cpp/tree/master  
+- in yaml-cpp repo:  
+- mkdir build; cd build  
+- cmake -G "MinGW Makefiles" .. -D BUILD_SHARED_LIBS=ON  
+- make -j  
+- libyaml-cpp.dll will be generated in build/  
+- in VulkanPlatform repo:  
+- copy libyaml-cpp.dll and include/yaml-cpp into thirdparty/  
+- put these path in CMakeLists.txt so headers and .dll can be found  
+- copy libyaml-cpp.dll to bin folder  
+- in sourcefile, #include "../../thirdParty/yaml-cpp/yaml.h"  
+- there is an warning issue related to MinGW: https://github.com/jbeder/yaml-cpp/issues/1072  
 
 ## Distribution
 - For Android, just distribute the single .apk file, it contains all resources.  
@@ -130,3 +144,4 @@ https://vulkan-tutorial.com/
 https://web.engr.oregonstate.edu/~mjb/vulkan/  
 https://github.com/android/ndk-samples  
 https://github.com/gpuwangge/Wiki/blob/main/documents/SDL.md  
+https://github.com/jbeder/yaml-cpp/tree/master  

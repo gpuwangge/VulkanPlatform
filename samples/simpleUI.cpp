@@ -29,25 +29,26 @@ public:
 		mainCamera.SetRotation(45.0f, 0.0f, 0.0f);
 		mainCamera.setPerspective(60.0f, (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 256.0f);
 		modelManager.CreateCustomModel3D(vertices3D, indices3D); //create the 0th custom model 3D (CUSTOM3D0)
-		appInfo.Object.Count = 4;
-		appInfo.Object.Model.Names = std::make_unique<std::vector<std::string>>(std::vector<std::string> {
-			"CUSTOM3D0",
-			"cube.obj", 
-			"hallway.obj"
-			});
-		appInfo.Object.Model.List = std::make_unique<std::vector<int>>(std::vector<int> {0, 1, 2, 0});
-		appInfo.Object.Texture.Names = std::make_unique<std::vector<std::pair<std::string, bool>>>(std::vector<std::pair<std::string, bool>> {
-			{"texture.jpg", false},
-			{"viking_room.png", false},
-			{"fur.jpg", false},
-			});
-		appInfo.Object.Texture.List = std::make_unique<std::vector<int>>(std::vector<int> {0, 1, 2, 0});
-		//appInfo.Shader.Vertex = "simpleUI/vert.spv";
-		//appInfo.Shader.Fragment = "simpleUI/frag.spv";
-		appInfo.Object.Pipeline.VertexShader = std::make_unique<std::vector<std::string>>(std::vector<std::string> {"simpleUI/vert.spv"});
-		appInfo.Object.Pipeline.FragmentShader = std::make_unique<std::vector<std::string>>(std::vector<std::string> {"simpleUI/frag.spv"});
-		appInfo.Object.Pipeline.ComputeShader = std::make_unique<std::vector<std::string>>(std::vector<std::string> {});
-		appInfo.Object.Pipeline.List = std::make_unique<std::vector<int>>(std::vector<int> {0, 0, 0, 0});
+
+		// appInfo.Object.Count = 4;
+		// appInfo.Object.Model.Names = std::make_unique<std::vector<std::string>>(std::vector<std::string> {
+		// 	"CUSTOM3D0",
+		// 	"cube.obj", 
+		// 	"hallway.obj"
+		// 	});
+		// appInfo.Object.Model.List = std::make_unique<std::vector<int>>(std::vector<int> {0, 1, 2, 0});
+		// appInfo.Object.Texture.Names = std::make_unique<std::vector<std::pair<std::string, bool>>>(std::vector<std::pair<std::string, bool>> {
+		// 	{"texture.jpg", false},
+		// 	{"viking_room.png", false},
+		// 	{"fur.jpg", false},
+		// 	});
+		// appInfo.Object.Texture.List = std::make_unique<std::vector<int>>(std::vector<int> {0, 1, 2, 0});
+
+		// appInfo.Object.Pipeline.VertexShader = std::make_unique<std::vector<std::string>>(std::vector<std::string> {"simpleUI/vert.spv"});
+		// appInfo.Object.Pipeline.FragmentShader = std::make_unique<std::vector<std::string>>(std::vector<std::string> {"simpleUI/frag.spv"});
+		// appInfo.Object.Pipeline.ComputeShader = std::make_unique<std::vector<std::string>>(std::vector<std::string> {});
+		// appInfo.Object.Pipeline.List = std::make_unique<std::vector<int>>(std::vector<int> {0, 0, 0, 0});
+
 		appInfo.Uniform.GraphicsSampler.Count = 1;
 		appInfo.Uniform.EnableGraphicsMVP = true;
 		appInfo.Feature.EnableGraphicsMSAA = true;
@@ -77,7 +78,7 @@ public:
 		//objectList[0].Draw();
 		//objectList[1].Draw();
 		//objectList[3].Draw();
-		for(int i = 0; i < appInfo.Object.Count; i++) objectList[i].Draw();
+		for(int i = 0; i < objectList.size(); i++) objectList[i].Draw();
 	}
 
 	// ~TEST_CLASS_NAME(){

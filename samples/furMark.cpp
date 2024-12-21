@@ -29,22 +29,20 @@ public:
 
 	void initialize(){
 		modelManager.CreateCustomModel3D(vertices3D, indices3D);
-		appInfo.Object.Count = 1;
-		appInfo.Object.Model.Names = std::make_unique<std::vector<std::string>>(std::vector<std::string> {"CUSTOM3D0"});
-		appInfo.Object.Model.List = std::make_unique<std::vector<int>>(std::vector<int> {0});
-		appInfo.Object.Texture.Names = std::make_unique<std::vector<std::pair<std::string, bool>>>(std::vector<std::pair<std::string, bool>> {
-			{"fur.jpg", false},
-			{"noise.png", false},
-			{"wall.jpg", false},
-			});
-		appInfo.Object.Texture.List = std::make_unique<std::vector<int>>(std::vector<int> {0}); //object_0 uses 3 texture(in 3 sampler), how to describe?
-		//appInfo.Shader.Vertex = "furMark/vert.spv";
-		//appInfo.Shader.Fragment = "furMark/frag.spv";
-		appInfo.Object.Pipeline.VertexShader = std::make_unique<std::vector<std::string>>(std::vector<std::string> {"furMark/vert.spv"});
-		appInfo.Object.Pipeline.FragmentShader = std::make_unique<std::vector<std::string>>(std::vector<std::string> {"furMark/frag.spv"});
-		appInfo.Object.Pipeline.ComputeShader = std::make_unique<std::vector<std::string>>(std::vector<std::string> {});
-		appInfo.Object.Pipeline.List = std::make_unique<std::vector<int>>(std::vector<int> {0});
-		appInfo.Uniform.GraphicsSampler.Count = appInfo.Object.Texture.Names->size();
+		// appInfo.Object.Count = 1;
+		// appInfo.Object.Model.Names = std::make_unique<std::vector<std::string>>(std::vector<std::string> {"CUSTOM3D0"});
+		// appInfo.Object.Model.List = std::make_unique<std::vector<int>>(std::vector<int> {0});
+		// appInfo.Object.Texture.Names = std::make_unique<std::vector<std::pair<std::string, bool>>>(std::vector<std::pair<std::string, bool>> {
+		// 	{"fur.jpg", false},
+		// 	{"noise.png", false},
+		// 	{"wall.jpg", false},
+		// 	});
+		// appInfo.Object.Texture.List = std::make_unique<std::vector<int>>(std::vector<int> {0}); //object_0 uses 3 texture(in 3 sampler), how to describe?
+		// appInfo.Object.Pipeline.VertexShader = std::make_unique<std::vector<std::string>>(std::vector<std::string> {"furMark/vert.spv"});
+		// appInfo.Object.Pipeline.FragmentShader = std::make_unique<std::vector<std::string>>(std::vector<std::string> {"furMark/frag.spv"});
+		// appInfo.Object.Pipeline.ComputeShader = std::make_unique<std::vector<std::string>>(std::vector<std::string> {});
+		// appInfo.Object.Pipeline.List = std::make_unique<std::vector<int>>(std::vector<int> {0});
+		appInfo.Uniform.GraphicsSampler.Count = 3;//appInfo.Object.Texture.Names->size();
 		appInfo.Uniform.GraphicsSampler.UseMultiSamplerForOneObject = true;
 		appInfo.Uniform.GraphicsCustom.Size = sizeof(CustomUniformBufferObject);
 		appInfo.Uniform.GraphicsCustom.Binding = CustomUniformBufferObject::GetBinding();

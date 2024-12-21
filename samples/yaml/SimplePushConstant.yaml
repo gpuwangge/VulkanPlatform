@@ -1,0 +1,13 @@
+Object:
+  Models: [CUSTOM3D0]
+  Textures: [texture.jpg]
+  TextureMipmaps: [false]
+  VertexShaders: [simplePushConstant/vert.spv]
+  FragmentShaders: [simplePushConstant/frag.spv]
+  ComputeShaders: []
+  
+  ModelList: [0]
+  TextureList: [0]
+  PipelineList: [0]
+
+

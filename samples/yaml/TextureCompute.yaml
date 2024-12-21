@@ -1,0 +1,12 @@
+Object:
+  Models: []
+  Textures: [texture.jpg]
+  TextureMipmaps: [false]
+  VertexShaders: []
+  FragmentShaders: []
+  ComputeShaders: ["textureCompute/comp.spv"]
+  
+  ModelList: []
+  TextureList: []
+  PipelineList: []
+

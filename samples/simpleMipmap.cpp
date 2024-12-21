@@ -11,17 +11,17 @@ public:
 		//mainCamera.PitchUp(90, 100);
 
 		mainCamera.setPerspective(60.0f, (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 256.0f);
-		appInfo.Object.Count = 1;
-		appInfo.Object.Model.Names = std::make_unique<std::vector<std::string>>(std::vector<std::string> {"hallway.obj"});
-		appInfo.Object.Model.List = std::make_unique<std::vector<int>>(std::vector<int> {0});
-		appInfo.Object.Texture.Names = std::make_unique<std::vector<std::pair<std::string, bool>>>(std::vector<std::pair<std::string, bool>> {{"checkerboard_marble.jpg", true}});
-		appInfo.Object.Texture.List = std::make_unique<std::vector<int>>(std::vector<int> {0});
-		//appInfo.Shader.Vertex = "simpleMipmap/vert.spv";
-		//appInfo.Shader.Fragment = "simpleMipmap/frag.spv";	
-		appInfo.Object.Pipeline.VertexShader = std::make_unique<std::vector<std::string>>(std::vector<std::string> {"simpleMipmap/vert.spv"});
-		appInfo.Object.Pipeline.FragmentShader = std::make_unique<std::vector<std::string>>(std::vector<std::string> {"simpleMipmap/frag.spv"});
-		appInfo.Object.Pipeline.ComputeShader = std::make_unique<std::vector<std::string>>(std::vector<std::string> {});
-		appInfo.Object.Pipeline.List = std::make_unique<std::vector<int>>(std::vector<int> {0});
+		// appInfo.Object.Count = 1;
+		// appInfo.Object.Model.Names = std::make_unique<std::vector<std::string>>(std::vector<std::string> {"hallway.obj"});
+		// appInfo.Object.Model.List = std::make_unique<std::vector<int>>(std::vector<int> {0});
+		// appInfo.Object.Texture.Names = std::make_unique<std::vector<std::pair<std::string, bool>>>(std::vector<std::pair<std::string, bool>> {{"checkerboard_marble.jpg", true}});
+		// appInfo.Object.Texture.List = std::make_unique<std::vector<int>>(std::vector<int> {0});
+	
+		// appInfo.Object.Pipeline.VertexShader = std::make_unique<std::vector<std::string>>(std::vector<std::string> {"simpleMipmap/vert.spv"});
+		// appInfo.Object.Pipeline.FragmentShader = std::make_unique<std::vector<std::string>>(std::vector<std::string> {"simpleMipmap/frag.spv"});
+		// appInfo.Object.Pipeline.ComputeShader = std::make_unique<std::vector<std::string>>(std::vector<std::string> {});
+		// appInfo.Object.Pipeline.List = std::make_unique<std::vector<int>>(std::vector<int> {0});
+
 		appInfo.Uniform.GraphicsSampler.Count = 1;
 		appInfo.Uniform.EnableGraphicsMVP = true;
 		appInfo.Feature.EnableGraphicsMSAA = true;

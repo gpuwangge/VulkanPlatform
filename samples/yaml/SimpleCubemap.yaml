@@ -1,0 +1,13 @@
+Object:
+  Models: [cube.obj]
+  Textures: [output_skybox.png]
+  TextureMipmaps: [false]
+  VertexShaders: [simpleCubemap/vert.spv]
+  FragmentShaders: [simpleCubemap/frag.spv]
+  ComputeShaders: []
+  
+  ModelList: [0]
+  TextureList: [0]
+  PipelineList: [0]
+
+

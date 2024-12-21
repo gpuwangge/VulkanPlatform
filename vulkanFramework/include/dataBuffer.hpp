@@ -3,6 +3,11 @@
 #include "common.h"
 #include "context.h"
 
+struct TextureAttributeInfo{
+    std::string name;
+    bool enableMipmap;
+};
+
 enum VertexStructureTypes{
     NoType,
     TwoDimension,

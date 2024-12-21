@@ -1,0 +1,13 @@
+Object:
+  Models: [ElegantChairTable.obj]
+  Textures: [repeat-pattern2.jpg]
+  TextureMipmaps: [true]
+  VertexShaders: [simpleObjTransform/vert.spv]
+  FragmentShaders: [simpleObjTransform/frag.spv]
+  ComputeShaders: []
+  
+  ModelList: [0]
+  TextureList: [0]
+  PipelineList: [0]
+
+

@@ -18,17 +18,17 @@ public:
 	CustomUniformBufferObject customUBO{};
 
     void initialize(){
-		appInfo.Object.Count = 1;
-		appInfo.Object.Model.Names = std::make_unique<std::vector<std::string>>(std::vector<std::string> {"viking_room.obj"});
-		appInfo.Object.Model.List = std::make_unique<std::vector<int>>(std::vector<int> {0});
-		appInfo.Object.Texture.Names = std::make_unique<std::vector<std::pair<std::string, bool>>>(std::vector<std::pair<std::string, bool>> {{"viking_room.png", false}});
-		appInfo.Object.Texture.List = std::make_unique<std::vector<int>>(std::vector<int> {0});
-		//appInfo.Shader.Vertex = "simplePhoneLighting/vert.spv";
-		//appInfo.Shader.Fragment = "simplePhoneLighting/frag.spv";
-		appInfo.Object.Pipeline.VertexShader = std::make_unique<std::vector<std::string>>(std::vector<std::string> {"simplePhoneLighting/vert.spv"});
-		appInfo.Object.Pipeline.FragmentShader = std::make_unique<std::vector<std::string>>(std::vector<std::string> {"simplePhoneLighting/frag.spv"});
-		appInfo.Object.Pipeline.ComputeShader = std::make_unique<std::vector<std::string>>(std::vector<std::string> {});
-		appInfo.Object.Pipeline.List = std::make_unique<std::vector<int>>(std::vector<int> {0});
+		// appInfo.Object.Count = 1;
+		// appInfo.Object.Model.Names = std::make_unique<std::vector<std::string>>(std::vector<std::string> {"viking_room.obj"});
+		// appInfo.Object.Model.List = std::make_unique<std::vector<int>>(std::vector<int> {0});
+		// appInfo.Object.Texture.Names = std::make_unique<std::vector<std::pair<std::string, bool>>>(std::vector<std::pair<std::string, bool>> {{"viking_room.png", false}});
+		// appInfo.Object.Texture.List = std::make_unique<std::vector<int>>(std::vector<int> {0});
+
+		// appInfo.Object.Pipeline.VertexShader = std::make_unique<std::vector<std::string>>(std::vector<std::string> {"simplePhoneLighting/vert.spv"});
+		// appInfo.Object.Pipeline.FragmentShader = std::make_unique<std::vector<std::string>>(std::vector<std::string> {"simplePhoneLighting/frag.spv"});
+		// appInfo.Object.Pipeline.ComputeShader = std::make_unique<std::vector<std::string>>(std::vector<std::string> {});
+		// appInfo.Object.Pipeline.List = std::make_unique<std::vector<int>>(std::vector<int> {0});
+		
 		appInfo.Uniform.GraphicsSampler.Count = 1;
 		appInfo.Uniform.EnableGraphicsMVP = true;
 		appInfo.Feature.EnableGraphicsMSAA = true;

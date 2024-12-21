@@ -1,4 +1,4 @@
-#include "..\\..\\..\\..\\..\\samples\\androidSample.h"
+#include "..\\..\\..\\..\\..\\samples\\android\\androidSample.h"
 
 #include <android/asset_manager.h>
 #include <android/log.h>

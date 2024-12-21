@@ -1,0 +1,12 @@
+Object:
+  Models: [CUSTOM3D0]
+  Textures: [fur.jpg, noise.png, wall.jpg]
+  TextureMipmaps: [false, false, false]
+  VertexShaders: [furMark/vert.spv]
+  FragmentShaders: [furMark/frag.spv]
+  ComputeShaders: []
+  
+  ModelList: [0]
+  TextureList: [0]
+  PipelineList: [0]
+

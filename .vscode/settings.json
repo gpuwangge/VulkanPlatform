@@ -114,7 +114,8 @@
     "typeinfo": "cpp",
     "functional": "cpp",
     "numeric": "cpp",
-    "random": "cpp"
+    "random": "cpp",
+    "valarray": "cpp"
   },
   "C_Cpp.default.compilerPath": "C:\\mingw64\\bin\\g++.exe",
   "cmake.configureOnOpen": false

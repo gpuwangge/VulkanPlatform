@@ -1,0 +1,13 @@
+Object:
+  Models: []
+  Textures: []
+  TextureMipmaps: []
+  VertexShaders: [simpleTriangle/vert.spv]
+  FragmentShaders: [simpleTriangle/frag.spv]
+  ComputeShaders: []
+  
+  ModelList: []
+  TextureList: []
+  PipelineList: [0]
+
+

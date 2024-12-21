@@ -39,7 +39,7 @@ void CShaderManager::CreateShader(const std::string shaderName, short shaderType
 #ifndef ANDROID
     bool bopen = InitSpirVShader(SHADER_PATH + shaderName, pShaderModule);
     if(!bopen) bopen = InitSpirVShader("shaders/" + shaderName, pShaderModule);
-    if(!bopen) throw std::runtime_error("failed to open shader!");
+    if(!bopen) throw std::runtime_error("failed to open shader: "+shaderName);
 #else
     std::vector<uint8_t> fileBits;
     std::string fullShaderName = ANDROID_SHADER_PATH + InsertString(shaderName, "shader.", '/');

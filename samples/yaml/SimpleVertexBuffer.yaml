@@ -1,0 +1,13 @@
+Object:
+  Models: [CUSTOM2D0]
+  Textures: []
+  TextureMipmaps: []
+  VertexShaders: [simpleVertexBuffer/vert.spv]
+  FragmentShaders: [simpleVertexBuffer/frag.spv]
+  ComputeShaders: []
+  
+  ModelList: [0]
+  TextureList: []
+  PipelineList: [0]
+
+

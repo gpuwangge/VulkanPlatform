@@ -102,30 +102,30 @@ void CSupervisor::Activate_Buffer_Graphics_Vertex(VertexStructureTypes vertexStr
     VertexStructureType = vertexStructureType;
 }  
 
-void CSupervisor::Activate_Texture(std::unique_ptr<std::vector<std::pair<std::string, bool>>> textureNames, bool bCubemap){
+void CSupervisor::Activate_Texture(std::unique_ptr<std::vector<TextureAttributeInfo>> textureAttributes, bool bCubemap){
     //Textures
     //if(Query_Pipeline_Graphics()){ //remove this query because if present texutre to swapchain, no need graphics pipeline
-    if(textureNames){
+    if(textureAttributes){
         VkImageUsageFlags usage;// = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
         //VkImageUsageFlags usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT;
-        for(int i = 0; i < textureNames->size(); i++){
+        for(int i = 0; i < textureAttributes->size(); i++){
             //auto startTextureTime = std::chrono::high_resolution_clock::now();
 
-            if((*textureNames)[i].second) //mipmap
+            if((*textureAttributes)[i].enableMipmap) //mipmap
                 usage = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
             else 
                 if(Query_Uniform_Compute_StorageImage()) usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT;
                 else usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
             if(!b48bpt) //24bpt
-                if(Query_Uniform_Compute_StorageImage_Swapchain()) m_app->textureManager.CreateTextureImage((*textureNames)[i].first, usage, m_app->renderer.commandPool, (*textureNames)[i].second, m_app->swapchain.swapChainImageFormat);
-                else m_app->textureManager.CreateTextureImage((*textureNames)[i].first, usage, m_app->renderer.commandPool, (*textureNames)[i].second,  VK_FORMAT_R8G8B8A8_SRGB, 8, bCubemap);  
+                if(Query_Uniform_Compute_StorageImage_Swapchain()) m_app->textureManager.CreateTextureImage((*textureAttributes)[i].name, usage, m_app->renderer.commandPool, (*textureAttributes)[i].enableMipmap, m_app->swapchain.swapChainImageFormat);
+                else m_app->textureManager.CreateTextureImage((*textureAttributes)[i].name, usage, m_app->renderer.commandPool, (*textureAttributes)[i].enableMipmap,  VK_FORMAT_R8G8B8A8_SRGB, 8, bCubemap);  
             else //48bpt
-                m_app->textureManager.CreateTextureImage((*textureNames)[i].first, usage, m_app->renderer.commandPool, (*textureNames)[i].second, VK_FORMAT_R16G16B16A16_UNORM, 16, bCubemap); 
+                m_app->textureManager.CreateTextureImage((*textureAttributes)[i].name, usage, m_app->renderer.commandPool, (*textureAttributes)[i].enableMipmap, VK_FORMAT_R16G16B16A16_UNORM, 16, bCubemap); 
             
             if(bRainbowMipmap){
                 VkImageUsageFlags usage_mipmap = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
-                if((*textureNames)[i].second) m_app->textureManager.textureImages[i].generateMipmaps("checkerboard", usage_mipmap);
-            }else if((*textureNames)[i].second) m_app->textureManager.textureImages[i].generateMipmaps();
+                if((*textureAttributes)[i].enableMipmap) m_app->textureManager.textureImages[i].generateMipmaps("checkerboard", usage_mipmap);
+            }else if((*textureAttributes)[i].enableMipmap) m_app->textureManager.textureImages[i].generateMipmaps();
             
             //auto endTextureTime = std::chrono::high_resolution_clock::now();
             //auto durationTime = std::chrono::duration<float, std::chrono::seconds::period>(endTextureTime - startTextureTime).count()*1000;
@@ -211,7 +211,8 @@ void CSupervisor::Activate_Pipeline(){ //*customBinding = NULL
     }
 
     //Descriptor Pool
-    CDescriptorManager::createDescriptorPool(m_app->appInfo.Object.Count); 
+    //CDescriptorManager::createDescriptorPool(m_app->appInfo.Object.Count); 
+    CDescriptorManager::createDescriptorPool(m_app->objectList.size()); 
 
     //Descriptor Layout
     if(Query_Pipeline_Graphics()){
