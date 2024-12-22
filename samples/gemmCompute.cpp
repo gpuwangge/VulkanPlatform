@@ -28,10 +28,7 @@ public:
 
 	void initialize(){
 		appInfo.Render.Mode = renderer.RENDER_COMPUTE_Mode;
-		// appInfo.Object.Pipeline.VertexShader = std::make_unique<std::vector<std::string>>(std::vector<std::string> {});
-		// appInfo.Object.Pipeline.FragmentShader = std::make_unique<std::vector<std::string>>(std::vector<std::string> {});
-		// appInfo.Object.Pipeline.ComputeShader = std::make_unique<std::vector<std::string>>(std::vector<std::string> {"gemmCompute/comp.spv"});
-		// appInfo.Object.Pipeline.List = std::make_unique<std::vector<int>>(std::vector<int> {0});
+
 		appInfo.Uniform.ComputeStorageBuffer.Size = sizeof(StructStorageBuffer);
 		appInfo.Uniform.ComputeStorageBuffer.Usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
 		CApplication::initialize();

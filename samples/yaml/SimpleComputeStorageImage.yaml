@@ -10,3 +10,19 @@ Object:
   TextureList: []
   PipelineList: []
 
+Uniform:
+  MVP: false
+  VP: false
+  SamplerCount: 0
+  UseMultiSamplerForOneObject: false
+  ComputeStorageImage: false
+  ComputeStorageImageSwapChain: true
+
+Feature:
+  GraphicsDepthTest: false
+  GraphicsMSAA: false
+  Graphics48BPT: false
+  GraphicsPushConstant: false
+  GraphicsBlend: false
+  GraphicsRainbowMipmap: false
+  GraphicsCubemap: false

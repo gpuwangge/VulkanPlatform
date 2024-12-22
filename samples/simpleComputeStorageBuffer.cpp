@@ -13,11 +13,6 @@ public:
 
 	void initialize(){
 		appInfo.Render.Mode = renderer.RENDER_COMPUTE_Mode;
-		//appInfo.Shader.Compute = "simpleComputeStorageBuffer/comp.spv";
-		// appInfo.Object.Pipeline.VertexShader = std::make_unique<std::vector<std::string>>(std::vector<std::string> {});
-		// appInfo.Object.Pipeline.FragmentShader = std::make_unique<std::vector<std::string>>(std::vector<std::string> {});
-		// appInfo.Object.Pipeline.ComputeShader = std::make_unique<std::vector<std::string>>(std::vector<std::string> {"simpleComputeStorageBuffer/comp.spv"});
-		appInfo.Object.Pipeline.List = std::make_unique<std::vector<int>>(std::vector<int> {0});
 		appInfo.Uniform.ComputeStorageBuffer.Size = 1; //this can be any non-zero number, in order to enable storage buffer
 		CApplication::initialize();
 	}

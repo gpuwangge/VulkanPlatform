@@ -130,40 +130,37 @@ public:
         CRenderer::RenderModes Mode = CRenderer::RENDER_GRAPHICS_Mode;
     };
     struct UniformInfo{
-        bool EnableGraphicsVP = false;
-        bool EnableGraphicsMVP = false;
+        bool EnableGraphicsVP = false; //yaml
+        bool EnableGraphicsMVP = false; //yaml
         struct GraphicsCustomInfo{
             //bool Enable = false;
             VkDeviceSize Size = 0;
             VkDescriptorSetLayoutBinding Binding;
         }GraphicsCustom;
         struct GraphicsSamplerInfo{
-            //bool Enable = false;
-            int Count = 0;
-            bool UseMultiSamplerForOneObject = false;
+            int Count = 0; //yaml
+            bool UseMultiSamplerForOneObject = false; //yaml
         }GraphicsSampler;
         //--------------------------------------
         struct ComputeCustomInfo{
-            //bool Enable = false;
             VkDeviceSize Size = 0;
             VkDescriptorSetLayoutBinding Binding;
         }ComputeCustom;
         struct ComputeStorageBufferInfo{
-            //bool Enable = false;
             VkDeviceSize Size = 0;
             VkBufferUsageFlags Usage;
         }ComputeStorageBuffer;
-        bool EnableComputeStorageImage = false;
-        bool EnableComputeStorageImageSwapChain = false;
+        bool EnableComputeStorageImage = false; //yaml
+        bool EnableComputeStorageImageSwapChain = false; //yaml
     };
     struct FeatureInfo{
-        bool EnableGraphicsDepthTest = false;
-        bool EnableGraphicsMSAA = false;
-        bool EnableGraphics48BPT = false;
-        bool EnableGraphicsPushConstant = false;
-        bool EnableGraphicsBlend = false;
-        bool EnableGraphicsRainbowMipmap = false;
-        bool EnableCubemap = false;
+        bool EnableGraphicsDepthTest = false; //yaml
+        bool EnableGraphicsMSAA = false; //yaml
+        bool EnableGraphics48BPT = false; //yaml
+        bool EnableGraphicsPushConstant = false; //yaml
+        bool EnableGraphicsBlend = false; //yaml
+        bool EnableGraphicsRainbowMipmap = false; //yaml
+        bool EnableGraphicsCubemap = false; //yaml
     };
     struct BufferInfo{
         struct GraphicsVertexInfo{

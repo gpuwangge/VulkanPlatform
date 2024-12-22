@@ -130,7 +130,7 @@ void CApplication::run(){ //Entrance Function
 
 //void CApplication::initialize(){}//for sample to call
 void CApplication::initialize(){
-    //Read ymal
+    //Open yaml input file
     m_sampleName.erase(0, 1);
     std::cout<<m_sampleName<<std::endl;
     std::string fullYamlName = "../samples/yaml/" + m_sampleName + ".yaml";
@@ -142,18 +142,34 @@ void CApplication::initialize(){
         return;
     }
 
-    PRINT("Models Size:  %d", (int)config["Object"]["Models"].size());
-    PRINT("Textures Size:  %d", (int)config["Object"]["Textures"].size());
-    PRINT("TextureMipmaps Size:  %d", (int)config["Object"]["TextureMipmaps"].size());
-    PRINT("VertexShaders Size:  %d", (int)config["Object"]["VertexShaders"].size());
-    PRINT("FragmentShaders Size:  %d", (int)config["Object"]["FragmentShaders"].size());
-    PRINT("ComputeShaders Size:  %d", (int)config["Object"]["ComputeShaders"].size());
-    PRINT("ModelList Size:  %d", (int)config["Object"]["ModelList"].size());
-    PRINT("TextureList Size:  %d", (int)config["Object"]["TextureList"].size());
-    PRINT("PipelineList Size:  %d", (int)config["Object"]["PipelineList"].size());
+    //Log yaml data
+    PRINT("Object::Models Size:  %d", (int)config["Object"]["Models"].size());
+    PRINT("Object::Textures Size:  %d", (int)config["Object"]["Textures"].size());
+    PRINT("Object::TextureMipmaps Size:  %d", (int)config["Object"]["TextureMipmaps"].size());
+    PRINT("Object::VertexShaders Size:  %d", (int)config["Object"]["VertexShaders"].size());
+    PRINT("Object::FragmentShaders Size:  %d", (int)config["Object"]["FragmentShaders"].size());
+    PRINT("Object::ComputeShaders Size:  %d", (int)config["Object"]["ComputeShaders"].size());
+    PRINT("Object::ModelList Size:  %d", (int)config["Object"]["ModelList"].size());
+    PRINT("Object::TextureList Size:  %d", (int)config["Object"]["TextureList"].size());
+    PRINT("Object::PipelineList Size:  %d\n", (int)config["Object"]["PipelineList"].size());
 
-   
-    
+    PRINT("Uniform::MVP:  %s", config["Uniform"]["MVP"].as<bool>() ? "true":"false"); //.as<bool> will convert true/false to 1/0, can print with %d
+    PRINT("Uniform::VP:  %s", config["Uniform"]["VP"].as<bool>() ? "true":"false");
+    PRINT("Uniform::SamplerCount:  %d", config["Uniform"]["SamplerCount"].as<int>());
+    PRINT("Uniform::UseMultiSamplerForOneObject:  %s", config["Uniform"]["UseMultiSamplerForOneObject"].as<bool>() ? "true":"false");
+    PRINT("Uniform::ComputeStorageImage:  %s", config["Uniform"]["ComputeStorageImage"].as<bool>() ? "true":"false");
+    PRINT("Uniform::ComputeStorageImageSwapChain:  %s\n", config["Uniform"]["ComputeStorageImageSwapChain"].as<bool>() ? "true":"false");
+
+    PRINT("Feature::GraphicsDepthTest:  %s", config["Feature"]["GraphicsDepthTest"].as<bool>() ? "true":"false");
+    PRINT("Feature::GraphicsMSAA:  %s", config["Feature"]["GraphicsMSAA"].as<bool>() ? "true":"false");
+    PRINT("Feature::Graphics48BPT:  %s", config["Feature"]["Graphics48BPT"].as<bool>() ? "true":"false");
+    PRINT("Feature::GraphicsPushConstant:  %s", config["Feature"]["GraphicsPushConstant"].as<bool>() ? "true":"false");
+    PRINT("Feature::GraphicsBlend:  %s", config["Feature"]["GraphicsBlend"].as<bool>() ? "true":"false");
+    PRINT("Feature::GraphicsRainbowMipmap:  %s", config["Feature"]["GraphicsRainbowMipmap"].as<bool>() ? "true":"false");
+    PRINT("Feature::GraphicsCubemap:  %s\n", config["Feature"]["GraphicsCubemap"].as<bool>() ? "true":"false");
+
+
+    //Hanlde model yaml data
     if(config["Object"]["Models"].size() > 0) appInfo.Object.Model.Names = std::make_unique<std::vector<std::string>>(config["Object"]["Models"].as<std::vector<std::string>>()); //std::vector<std::string> {config["Object"]["Models"][0].as<std::string>()}
 	else appInfo.Object.Model.Names = std::make_unique<std::vector<std::string>>(std::vector<std::string>());
 
@@ -184,6 +200,24 @@ void CApplication::initialize(){
 
 	if(config["Object"]["PipelineList"].size() > 0) appInfo.Object.Pipeline.List = std::make_unique<std::vector<int>>(config["Object"]["PipelineList"].as<std::vector<int>>());
     else appInfo.Object.Pipeline.List = std::make_unique<std::vector<int>>(std::vector<int>());
+
+
+    //Handle uniform yaml data
+    appInfo.Uniform.EnableGraphicsMVP = config["Uniform"]["MVP"].as<bool>();
+    appInfo.Uniform.EnableGraphicsVP = config["Uniform"]["VP"].as<bool>();
+    appInfo.Uniform.GraphicsSampler.Count = config["Uniform"]["SamplerCount"].as<int>();
+    appInfo.Uniform.GraphicsSampler.UseMultiSamplerForOneObject = config["Uniform"]["UseMultiSamplerForOneObject"].as<bool>();
+    appInfo.Uniform.EnableComputeStorageImage = config["Uniform"]["ComputeStorageImage"].as<bool>();
+    appInfo.Uniform.EnableComputeStorageImageSwapChain = config["Uniform"]["ComputeStorageImageSwapChain"].as<bool>();
+
+    //Handle feature yaml data
+    appInfo.Feature.EnableGraphicsDepthTest = config["Feature"]["GraphicsDepthTest"].as<bool>();
+    appInfo.Feature.EnableGraphicsMSAA = config["Feature"]["GraphicsMSAA"].as<bool>();
+    appInfo.Feature.EnableGraphics48BPT = config["Feature"]["Graphics48BPT"].as<bool>();
+    appInfo.Feature.EnableGraphicsPushConstant = config["Feature"]["GraphicsPushConstant"].as<bool>();
+    appInfo.Feature.EnableGraphicsBlend = config["Feature"]["GraphicsBlend"].as<bool>();
+    appInfo.Feature.EnableGraphicsRainbowMipmap = config["Feature"]["GraphicsRainbowMipmap"].as<bool>();
+    appInfo.Feature.EnableGraphicsCubemap = config["Feature"]["GraphicsCubemap"].as<bool>();
 
 
     /*Demo code to use YAML*/
@@ -491,7 +525,7 @@ void CApplication::SetApplicationProperty(AppInfo &appInfo){
 
     auto startTextureTime = std::chrono::high_resolution_clock::now();
     if(appInfo.Object.Texture.Attributes != NULL)
-        CSupervisor::Activate_Texture(std::move(appInfo.Object.Texture.Attributes), appInfo.Feature.EnableCubemap);
+        CSupervisor::Activate_Texture(std::move(appInfo.Object.Texture.Attributes), appInfo.Feature.EnableGraphicsCubemap);
     auto endTextureTime = std::chrono::high_resolution_clock::now();
     auto durationTextureTime = std::chrono::duration<float, std::chrono::seconds::period>(endTextureTime - startTextureTime).count()*1000;
     std::cout<<"Load Textures cost: "<<durationTextureTime<<" milliseconds"<<std::endl;

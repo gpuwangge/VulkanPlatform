@@ -209,7 +209,7 @@ std::unique_ptr<CPhysicalDevice>* CInstance::pickSuitablePhysicalDevice(VkSurfac
             //pickedPhysicalDevice = &phy_device;
             VkPhysicalDeviceProperties	PhysicalDeviceProperties;
             vkGetPhysicalDeviceProperties(IN phy_device.get()->getHandle(), OUT &PhysicalDeviceProperties);
-            PRINT("Picked physical device: %s", PhysicalDeviceProperties.deviceName);
+            PRINT("Picked physical device: %s\n", PhysicalDeviceProperties.deviceName);
 
             return &phy_device;  
         }

@@ -39,16 +39,10 @@ public:
 		appInfo.Buffer.GraphicsVertex.StructureType = VertexStructureTypes::ParticleType;
 		appInfo.Render.Mode = CRenderer::RENDER_COMPUTE_GRAPHICS_Mode;
 
-		// appInfo.Object.Pipeline.VertexShader = std::make_unique<std::vector<std::string>>(std::vector<std::string> {"simpleParticles/vert.spv"});
-		// appInfo.Object.Pipeline.FragmentShader = std::make_unique<std::vector<std::string>>(std::vector<std::string> {"simpleParticles/frag.spv"});
-		// appInfo.Object.Pipeline.ComputeShader = std::make_unique<std::vector<std::string>>(std::vector<std::string> {"simpleParticles/comp.spv"});
-		// appInfo.Object.Pipeline.List = std::make_unique<std::vector<int>>(std::vector<int> {0});
-
 		appInfo.Uniform.ComputeCustom.Size = sizeof(CustomUniformBufferObject);
 		appInfo.Uniform.ComputeCustom.Binding = CustomUniformBufferObject::GetBinding();
 		appInfo.Uniform.ComputeStorageBuffer.Size = sizeof(StructStorageBuffer);
 		appInfo.Uniform.ComputeStorageBuffer.Usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT;
-		appInfo.Feature.EnableGraphicsBlend = true;
 		CApplication::initialize();
 		
 		std::cout<<"init done."<<std::endl;

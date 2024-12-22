@@ -11,13 +11,6 @@ public:
 
 	void initialize(){
 		modelManager.CreateCustomModel2D(vertices);
-		// appInfo.Object.Count = 1;
-		// appInfo.Object.Model.Names = std::make_unique<std::vector<std::string>>(std::vector<std::string> {"CUSTOM2D0"});
-		// appInfo.Object.Model.List = std::make_unique<std::vector<int>>(std::vector<int> {0});
-		// appInfo.Object.Pipeline.VertexShader = std::make_unique<std::vector<std::string>>(std::vector<std::string> {"simpleVertexBuffer/vert.spv"});
-		// appInfo.Object.Pipeline.FragmentShader = std::make_unique<std::vector<std::string>>(std::vector<std::string> {"simpleVertexBuffer/frag.spv"});
-		// appInfo.Object.Pipeline.ComputeShader = std::make_unique<std::vector<std::string>>(std::vector<std::string> {});
-		// appInfo.Object.Pipeline.List = std::make_unique<std::vector<int>>(std::vector<int> {0});
 		CApplication::initialize();
 	}
 

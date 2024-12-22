@@ -8,30 +8,7 @@ public:
 		mainCamera.SetPosition(0.0f, 1.2f, 0.0f);
 		mainCamera.SetRotation(0.0f, 0.0f, 0.0f);
 
-		//mainCamera.cameraType = Camera::CameraType::lookat;
-		//mainCamera.SetPosition(0.0f, 3.0f, -3.0f);
-		//mainCamera.SetTargetPosition(0,0,0);
-
-		// appInfo.Object.Count = 1;
-		// //appInfo.Object.Model.Names = std::make_unique<std::vector<std::string>>(std::vector<std::string> {"BaseMesh_Female.obj"});
-		// //appInfo.Object.Model.Names = std::make_unique<std::vector<std::string>>(std::vector<std::string> {"Skull.obj"});
-		// appInfo.Object.Model.Names = std::make_unique<std::vector<std::string>>(std::vector<std::string> {"ElegantChairTable.obj"});
-		
-		// appInfo.Object.Model.List = std::make_unique<std::vector<int>>(std::vector<int> {0});
-		// //appInfo.Object.Texture.Names = std::make_unique<std::vector<std::pair<std::string, bool>>>(std::vector<std::pair<std::string, bool>> {{"female/female_thickness.psd", false}});
-		// appInfo.Object.Texture.Names = std::make_unique<std::vector<std::pair<std::string, bool>>>(std::vector<std::pair<std::string, bool>> {{"repeat-pattern2.jpg", true}});
-		// appInfo.Object.Texture.List = std::make_unique<std::vector<int>>(std::vector<int> {0});
-	
-		// appInfo.Object.Pipeline.VertexShader = std::make_unique<std::vector<std::string>>(std::vector<std::string> {"simpleObjTransform/vert.spv"});
-		// appInfo.Object.Pipeline.FragmentShader = std::make_unique<std::vector<std::string>>(std::vector<std::string> {"simpleObjTransform/frag.spv"});
-		// appInfo.Object.Pipeline.ComputeShader = std::make_unique<std::vector<std::string>>(std::vector<std::string> {});
-		// appInfo.Object.Pipeline.List = std::make_unique<std::vector<int>>(std::vector<int> {0});
-
-		appInfo.Uniform.GraphicsSampler.Count = 1;
-		appInfo.Uniform.EnableGraphicsMVP = true;
-		appInfo.Feature.EnableGraphicsMSAA = true;
 		CApplication::initialize();
-
 		objectList[0].SetScale(0.01,0.01,0.01);
 	}
 
