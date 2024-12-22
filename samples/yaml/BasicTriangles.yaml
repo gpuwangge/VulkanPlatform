@@ -27,3 +27,11 @@ Feature:
   GraphicsRainbowMipmap: false
   GraphicsCubemap: false
     
+MainCamera:
+  FreeMode: false
+  Position: [0,0,-3]
+  Rotation: [0,0,0]
+  TargetLocation: [0,0,0]
+  FOV: 90
+  Z: [0.1, 256]
+

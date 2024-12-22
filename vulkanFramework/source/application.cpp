@@ -10,15 +10,6 @@ std::vector<CObject> CApplication::objectList;
 CApplication::CApplication(){
     //debugger = new CDebugger("../logs/application.log");
 
-    
-    mainCamera.cameraType = Camera::CameraType::lookat; //default
-    mainCamera.SetTargetPosition(0,0,0);
-    mainCamera.SetPosition(0.0f, 0.0f, -3.0f);
-    //mainCamera.SetRotation(0.0f, 0.0f, 0.0f);
-    mainCamera.setPerspective(90.0f, (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 256.0f);
-    //mainCamera.movementSpeed = 1.0f;
-    //mainCamera.rotationSpeed = 200.0f;
-
     //NeedToExit = false;
     windowWidth = 0;
     windowHeight = 0;
@@ -168,6 +159,12 @@ void CApplication::initialize(){
     PRINT("Feature::GraphicsRainbowMipmap:  %s", config["Feature"]["GraphicsRainbowMipmap"].as<bool>() ? "true":"false");
     PRINT("Feature::GraphicsCubemap:  %s\n", config["Feature"]["GraphicsCubemap"].as<bool>() ? "true":"false");
 
+    PRINT("MainCamera::FreeMode:  %s", config["MainCamera"]["FreeMode"].as<bool>() ? "true":"false");
+    PRINT("MainCamera::Position Size:  %d", (int)config["MainCamera"]["Position"].size());
+    PRINT("MainCamera::Rotation Size:  %d", (int)config["MainCamera"]["Rotation"].size());
+    PRINT("MainCamera::TargetLocation Size:  %d", (int)config["MainCamera"]["TargetLocation"].size());
+    PRINT("MainCamera::FOV:  %f", config["MainCamera"]["FOV"].as<float>());
+    PRINT("MainCamera::Z Size:  %d\n", (int)config["MainCamera"]["Z"].size());
 
     //Hanlde model yaml data
     if(config["Object"]["Models"].size() > 0) appInfo.Object.Model.Names = std::make_unique<std::vector<std::string>>(config["Object"]["Models"].as<std::vector<std::string>>()); //std::vector<std::string> {config["Object"]["Models"][0].as<std::string>()}
@@ -219,6 +216,14 @@ void CApplication::initialize(){
     appInfo.Feature.EnableGraphicsRainbowMipmap = config["Feature"]["GraphicsRainbowMipmap"].as<bool>();
     appInfo.Feature.EnableGraphicsCubemap = config["Feature"]["GraphicsCubemap"].as<bool>();
 
+
+    //Handle camera yaml data
+    if(config["MainCamera"]["FreeMode"].as<bool>() == true) mainCamera.cameraType = Camera::CameraType::freemove;
+    mainCamera.SetTargetPosition(config["MainCamera"]["TargetLocation"][0].as<float>(), config["MainCamera"]["TargetLocation"][1].as<float>(), config["MainCamera"]["TargetLocation"][2].as<float>());
+    mainCamera.SetPosition(config["MainCamera"]["Position"][0].as<float>(), config["MainCamera"]["Position"][1].as<float>(), config["MainCamera"]["Position"][2].as<float>());
+    mainCamera.SetRotation(config["MainCamera"]["Rotation"][0].as<float>(), config["MainCamera"]["Rotation"][1].as<float>(), config["MainCamera"]["Rotation"][2].as<float>());
+    mainCamera.setPerspective(config["MainCamera"]["FOV"].as<float>(),  (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT,
+        config["MainCamera"]["Z"][0].as<float>(), config["MainCamera"]["Z"][1].as<float>());
 
     /*Demo code to use YAML*/
     /*

@@ -12,7 +12,6 @@ public:
 
 	void initialize(){
 		modelManager.CreateCustomModel3D(vertices3D, indices3D);
-		mainCamera.SetPosition(0.0f, 0.0f, -1.5f);
 		CApplication::initialize();
 	}
 

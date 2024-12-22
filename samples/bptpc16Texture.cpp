@@ -12,9 +12,6 @@ public:
 
 	void initialize(){
 		modelManager.CreateCustomModel3D(vertices3D, indices3D);
-		mainCamera.SetPosition(0.0f, 0.0f, -3.0f);
-		mainCamera.setPerspective(90.0f, (float)windowWidth /  (float)windowHeight, 0.1f, 256.0f);
-
 		CApplication::initialize();
 	}
 

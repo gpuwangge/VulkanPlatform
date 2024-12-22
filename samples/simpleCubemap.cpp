@@ -3,8 +3,6 @@
 class TEST_CLASS_NAME: public CApplication{
 public:
     void initialize(){
-		mainCamera.cameraType = Camera::CameraType::freemove;
-		mainCamera.SetPosition(0, 0, 0);
 		CApplication::initialize();
 	}
 

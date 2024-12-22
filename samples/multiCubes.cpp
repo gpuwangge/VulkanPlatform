@@ -18,9 +18,6 @@ public:
 	// CCube cubes[2];
 	
     void initialize(){
-		mainCamera.setPerspective(90.0f, (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.01f, 256.0f);
-		mainCamera.SetPosition(0.0f, 5.0f, -10.0f);
-
 		CApplication::initialize();
 		objectList[0].MoveLeft(5, 100);
 		objectList[2].MoveRight(5, 100);
