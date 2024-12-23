@@ -2,6 +2,7 @@ Object:
   Models: [CUSTOM3D0, cube.obj, hallway.obj]
   Textures: [texture.jpg, viking_room.png, fur.jpg]
   TextureMipmaps: [false, false, false]
+  TextureCubemap: [false, false, false]
   VertexShaders: [simpleUI/shader.vert.spv]
   FragmentShaders: [simpleUI/shader.frag.spv]
   ComputeShaders: []
@@ -25,7 +26,6 @@ Feature:
   GraphicsPushConstant: false
   GraphicsBlend: false
   GraphicsRainbowMipmap: false
-  GraphicsCubemap: false
 
 MainCamera:
   FreeMode: false

@@ -2,6 +2,7 @@ Object:
   Models: [ElegantChairTable.obj]
   Textures: [repeat-pattern2.jpg]
   TextureMipmaps: [true]
+  TextureCubemap: [false]
   VertexShaders: [simpleObjTransform/shader.vert.spv]
   FragmentShaders: [simpleObjTransform/shader.frag.spv]
   ComputeShaders: []
@@ -25,7 +26,6 @@ Feature:
   GraphicsPushConstant: false
   GraphicsBlend: false
   GraphicsRainbowMipmap: false
-  GraphicsCubemap: false
 
 MainCamera:
   FreeMode: true

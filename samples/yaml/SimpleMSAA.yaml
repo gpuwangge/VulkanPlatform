@@ -2,6 +2,7 @@ Object:
   Models: [viking_room.obj]
   Textures: [viking_room.png]
   TextureMipmaps: [false]
+  TextureCubemap: [false]
   VertexShaders: [simpleMSAA/shader.vert.spv]
   FragmentShaders: [simpleMSAA/shader.frag.spv]
   ComputeShaders: []
@@ -25,7 +26,6 @@ Feature:
   GraphicsPushConstant: false
   GraphicsBlend: false
   GraphicsRainbowMipmap: false
-  GraphicsCubemap: false
 
 MainCamera:
   FreeMode: false

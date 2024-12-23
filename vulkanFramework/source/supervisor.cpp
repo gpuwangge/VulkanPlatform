@@ -102,7 +102,7 @@ void CSupervisor::Activate_Buffer_Graphics_Vertex(VertexStructureTypes vertexStr
     VertexStructureType = vertexStructureType;
 }  
 
-void CSupervisor::Activate_Texture(std::unique_ptr<std::vector<TextureAttributeInfo>> textureAttributes, bool bCubemap){
+void CSupervisor::Activate_Texture(std::unique_ptr<std::vector<TextureAttributeInfo>> textureAttributes){
     //Textures
     //if(Query_Pipeline_Graphics()){ //remove this query because if present texutre to swapchain, no need graphics pipeline
     if(textureAttributes){
@@ -118,9 +118,9 @@ void CSupervisor::Activate_Texture(std::unique_ptr<std::vector<TextureAttributeI
                 else usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
             if(!b48bpt) //24bpt
                 if(Query_Uniform_Compute_StorageImage_Swapchain()) m_app->textureManager.CreateTextureImage((*textureAttributes)[i].name, usage, m_app->renderer.commandPool, (*textureAttributes)[i].enableMipmap, m_app->swapchain.swapChainImageFormat);
-                else m_app->textureManager.CreateTextureImage((*textureAttributes)[i].name, usage, m_app->renderer.commandPool, (*textureAttributes)[i].enableMipmap,  VK_FORMAT_R8G8B8A8_SRGB, 8, bCubemap);  
+                else m_app->textureManager.CreateTextureImage((*textureAttributes)[i].name, usage, m_app->renderer.commandPool, (*textureAttributes)[i].enableMipmap,  VK_FORMAT_R8G8B8A8_SRGB, 8, (*textureAttributes)[i].enableCubemap);  
             else //48bpt
-                m_app->textureManager.CreateTextureImage((*textureAttributes)[i].name, usage, m_app->renderer.commandPool, (*textureAttributes)[i].enableMipmap, VK_FORMAT_R16G16B16A16_UNORM, 16, bCubemap); 
+                m_app->textureManager.CreateTextureImage((*textureAttributes)[i].name, usage, m_app->renderer.commandPool, (*textureAttributes)[i].enableMipmap, VK_FORMAT_R16G16B16A16_UNORM, 16, (*textureAttributes)[i].enableCubemap); 
             
             if(bRainbowMipmap){
                 VkImageUsageFlags usage_mipmap = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;

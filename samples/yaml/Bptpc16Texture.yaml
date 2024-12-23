@@ -2,6 +2,7 @@ Object:
   Models: [CUSTOM3D0]
   Textures: [48bpt.png]
   TextureMipmaps: [true]
+  TextureCubemap: [false]
   VertexShaders: [bptpc16Texture/shader.vert.spv]
   FragmentShaders: [bptpc16Texture/shader.frag.spv]
   ComputeShaders: []
@@ -25,7 +26,6 @@ Feature:
   GraphicsPushConstant: false
   GraphicsBlend: false
   GraphicsRainbowMipmap: false
-  GraphicsCubemap: false
 
 MainCamera:
   FreeMode: false

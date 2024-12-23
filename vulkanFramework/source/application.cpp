@@ -137,6 +137,7 @@ void CApplication::initialize(){
     PRINT("Object::Models Size:  %d", (int)config["Object"]["Models"].size());
     PRINT("Object::Textures Size:  %d", (int)config["Object"]["Textures"].size());
     PRINT("Object::TextureMipmaps Size:  %d", (int)config["Object"]["TextureMipmaps"].size());
+    PRINT("Object::TextureMipmaps Size:  %d", (int)config["Object"]["TextureCubemap"].size());
     PRINT("Object::VertexShaders Size:  %d", (int)config["Object"]["VertexShaders"].size());
     PRINT("Object::FragmentShaders Size:  %d", (int)config["Object"]["FragmentShaders"].size());
     PRINT("Object::ComputeShaders Size:  %d", (int)config["Object"]["ComputeShaders"].size());
@@ -157,7 +158,7 @@ void CApplication::initialize(){
     PRINT("Feature::GraphicsPushConstant:  %s", config["Feature"]["GraphicsPushConstant"].as<bool>() ? "true":"false");
     PRINT("Feature::GraphicsBlend:  %s", config["Feature"]["GraphicsBlend"].as<bool>() ? "true":"false");
     PRINT("Feature::GraphicsRainbowMipmap:  %s", config["Feature"]["GraphicsRainbowMipmap"].as<bool>() ? "true":"false");
-    PRINT("Feature::GraphicsCubemap:  %s\n", config["Feature"]["GraphicsCubemap"].as<bool>() ? "true":"false");
+    //PRINT("Feature::GraphicsCubemap:  %s\n", config["Feature"]["GraphicsCubemap"].as<bool>() ? "true":"false");
 
     PRINT("MainCamera::FreeMode:  %s", config["MainCamera"]["FreeMode"].as<bool>() ? "true":"false");
     PRINT("MainCamera::Position Size:  %d", (int)config["MainCamera"]["Position"].size());
@@ -169,12 +170,13 @@ void CApplication::initialize(){
     //Hanlde model yaml data
     if(config["Object"]["Models"].size() > 0) appInfo.Object.Model.Names = std::make_unique<std::vector<std::string>>(config["Object"]["Models"].as<std::vector<std::string>>()); //std::vector<std::string> {config["Object"]["Models"][0].as<std::string>()}
 	else appInfo.Object.Model.Names = std::make_unique<std::vector<std::string>>(std::vector<std::string>());
-
+    
     std::vector<TextureAttributeInfo> textureAttributes = {};
     for(int i = 0; i < config["Object"]["Textures"].size(); i++){
         TextureAttributeInfo info;
         info.name = config["Object"]["Textures"][i].as<std::string>();
         info.enableMipmap = config["Object"]["TextureMipmaps"][i].as<bool>();
+        info.enableCubemap = config["Object"]["TextureCubemap"][i].as<bool>();
         textureAttributes.push_back(info);
     }
     if(config["Object"]["Textures"].size() > 0) appInfo.Object.Texture.Attributes = std::make_unique<std::vector<TextureAttributeInfo>>(textureAttributes);
@@ -214,7 +216,7 @@ void CApplication::initialize(){
     appInfo.Feature.EnableGraphicsPushConstant = config["Feature"]["GraphicsPushConstant"].as<bool>();
     appInfo.Feature.EnableGraphicsBlend = config["Feature"]["GraphicsBlend"].as<bool>();
     appInfo.Feature.EnableGraphicsRainbowMipmap = config["Feature"]["GraphicsRainbowMipmap"].as<bool>();
-    appInfo.Feature.EnableGraphicsCubemap = config["Feature"]["GraphicsCubemap"].as<bool>();
+    //appInfo.Feature.EnableGraphicsCubemap = config["Feature"]["GraphicsCubemap"].as<bool>();
 
 
     //Handle camera yaml data
@@ -530,7 +532,7 @@ void CApplication::SetApplicationProperty(AppInfo &appInfo){
 
     auto startTextureTime = std::chrono::high_resolution_clock::now();
     if(appInfo.Object.Texture.Attributes != NULL)
-        CSupervisor::Activate_Texture(std::move(appInfo.Object.Texture.Attributes), appInfo.Feature.EnableGraphicsCubemap);
+        CSupervisor::Activate_Texture(std::move(appInfo.Object.Texture.Attributes));
     auto endTextureTime = std::chrono::high_resolution_clock::now();
     auto durationTextureTime = std::chrono::duration<float, std::chrono::seconds::period>(endTextureTime - startTextureTime).count()*1000;
     std::cout<<"Load Textures cost: "<<durationTextureTime<<" milliseconds"<<std::endl;

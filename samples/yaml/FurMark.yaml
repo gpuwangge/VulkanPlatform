@@ -2,6 +2,7 @@ Object:
   Models: [CUSTOM3D0]
   Textures: [fur.jpg, noise.png, wall.jpg]
   TextureMipmaps: [false, false, false]
+  TextureCubemap: [false, false, false]
   VertexShaders: [furMark/shader.vert.spv]
   FragmentShaders: [furMark/shader.frag.spv]
   ComputeShaders: []
@@ -25,7 +26,6 @@ Feature:
   GraphicsPushConstant: false
   GraphicsBlend: false
   GraphicsRainbowMipmap: false
-  GraphicsCubemap: false
 
 MainCamera:
   FreeMode: false

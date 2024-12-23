@@ -2,6 +2,7 @@ Object:
   Models: []
   Textures: []
   TextureMipmaps: []
+  TextureCubemap: []
   VertexShaders: [simpleParticles/shader.vert.spv]
   FragmentShaders: [simpleParticles/shader.frag.spv]
   ComputeShaders: [simpleParticles/shader.comp.spv]
@@ -25,7 +26,6 @@ Feature:
   GraphicsPushConstant: false
   GraphicsBlend: true
   GraphicsRainbowMipmap: false
-  GraphicsCubemap: false
 
 MainCamera:
   FreeMode: false

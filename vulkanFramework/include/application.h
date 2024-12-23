@@ -160,7 +160,7 @@ public:
         bool EnableGraphicsPushConstant = false; //yaml
         bool EnableGraphicsBlend = false; //yaml
         bool EnableGraphicsRainbowMipmap = false; //yaml
-        bool EnableGraphicsCubemap = false; //yaml
+        //bool EnableGraphicsCubemap = false; //yaml
     };
     struct BufferInfo{
         struct GraphicsVertexInfo{

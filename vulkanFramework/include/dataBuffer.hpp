@@ -6,6 +6,7 @@
 struct TextureAttributeInfo{
     std::string name;
     bool enableMipmap;
+    bool enableCubemap;
 };
 
 enum VertexStructureTypes{

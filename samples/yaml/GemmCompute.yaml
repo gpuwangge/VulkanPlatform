@@ -2,6 +2,7 @@ Object:
   Models: []
   Textures: []
   TextureMipmaps: []
+  TextureCubemap: []
   VertexShaders: []
   FragmentShaders: []
   ComputeShaders: ["gemmCompute/shader.comp.spv"]
@@ -25,7 +26,6 @@ Feature:
   GraphicsPushConstant: false
   GraphicsBlend: false
   GraphicsRainbowMipmap: false
-  GraphicsCubemap: false
 
 MainCamera:
   FreeMode: false

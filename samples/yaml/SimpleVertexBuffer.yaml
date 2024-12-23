@@ -2,6 +2,7 @@ Object:
   Models: [CUSTOM2D0]
   Textures: []
   TextureMipmaps: []
+  TextureCubemap: []
   VertexShaders: [simpleVertexBuffer/shader.vert.spv]
   FragmentShaders: [simpleVertexBuffer/shader.frag.spv]
   ComputeShaders: []
@@ -25,7 +26,6 @@ Feature:
   GraphicsPushConstant: false
   GraphicsBlend: false
   GraphicsRainbowMipmap: false
-  GraphicsCubemap: false
 
 MainCamera:
   FreeMode: false

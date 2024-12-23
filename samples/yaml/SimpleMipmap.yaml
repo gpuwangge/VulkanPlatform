@@ -2,6 +2,7 @@ Object:
   Models: [hallway.obj]
   Textures: [checkerboard_marble.jpg]
   TextureMipmaps: [true]
+  TextureCubemap: [false]
   VertexShaders: [simpleMipmap/shader.vert.spv]
   FragmentShaders: [simpleMipmap/shader.frag.spv]
   ComputeShaders: []
@@ -25,7 +26,6 @@ Feature:
   GraphicsPushConstant: false
   GraphicsBlend: false
   GraphicsRainbowMipmap: true
-  GraphicsCubemap: false
 
 MainCamera:
   FreeMode: true

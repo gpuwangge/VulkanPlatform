@@ -2,6 +2,7 @@ Object:
   Models: [cube.obj]
   Textures: [output_skybox.png]
   TextureMipmaps: [false]
+  TextureCubemap: [true]
   VertexShaders: [simpleCubemap/shader.vert.spv]
   FragmentShaders: [simpleCubemap/shader.frag.spv]
   ComputeShaders: []
@@ -25,7 +26,6 @@ Feature:
   GraphicsPushConstant: false
   GraphicsBlend: false
   GraphicsRainbowMipmap: false
-  GraphicsCubemap: true
 
 MainCamera:
   FreeMode: true

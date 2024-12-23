@@ -2,6 +2,7 @@ Object:
   Models: [cube.obj]
   Textures: [viking_room.png, fur.jpg, skin.jpg]
   TextureMipmaps: [false, false, false]
+  TextureCubemap: [false, false, false]
   VertexShaders: [multiCubes/shader1.vert.spv, multiCubes/shader2.vert.spv]
   FragmentShaders: [multiCubes/shader1.frag.spv, multiCubes/shader2.frag.spv]
   ComputeShaders: []
@@ -25,7 +26,6 @@ Feature:
   GraphicsPushConstant: false
   GraphicsBlend: false
   GraphicsRainbowMipmap: false
-  GraphicsCubemap: false
 
 MainCamera:
   FreeMode: false
