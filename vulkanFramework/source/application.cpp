@@ -540,5 +540,5 @@ void CApplication::SetApplicationProperty(AppInfo &appInfo){
     //auto endPipelineTime = std::chrono::high_resolution_clock::now();
     //durationTime = std::chrono::duration<float, std::chrono::seconds::period>(endPipelineTime - startPipelineTime).count()*1000;
     //std::cout<<"Activate Pipeline cost: "<<durationTime<<" milliseconds"<<std::endl;
-
+    
 }

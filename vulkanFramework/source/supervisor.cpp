@@ -141,7 +141,7 @@ void CSupervisor::Activate_Pipeline(){ //*customBinding = NULL
     //m_app->renderer.CreateCommandPool(m_app->surface);
     if(Query_Pipeline_Graphics()) m_app->renderer.CreateGraphicsCommandBuffer();
     if(Query_Pipeline_Compute()) m_app->renderer.CreateComputeCommandBuffer();
-    
+
     //Framebuffers
     if(Query_Pipeline_Graphics()){
         VkImageLayout imageLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
