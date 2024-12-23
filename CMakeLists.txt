@@ -29,14 +29,14 @@ if(SINGLE)
     set(SAMPLE_NAME gemmCompute)
     add_executable(${SAMPLE_NAME} samples/${SAMPLE_NAME}.cpp)
 else()
-    file(WRITE ${EXECUTABLE_OUTPUT_PATH}/autotest.bat"
+    file(WRITE ${EXECUTABLE_OUTPUT_PATH}/autotest.bat "
 ")
     
     aux_source_directory(${PROJECT_SOURCE_DIR}/samples SRC)
     foreach(sampleFile IN LISTS SRC)
         get_filename_component(sampleName ${sampleFile} NAME_WE)
         add_executable(${sampleName} ${sampleFile})
-        file(APPEND ${EXECUTABLE_OUTPUT_PATH}/autotest.bat"start /wait ${sampleName}
+        file(APPEND ${EXECUTABLE_OUTPUT_PATH}/autotest.bat "start /wait ${sampleName}
 ")
     endforeach()
 endif()
