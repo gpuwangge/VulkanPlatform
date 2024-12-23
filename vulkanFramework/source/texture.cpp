@@ -26,6 +26,7 @@ void CTextureManager::CreateTextureImage(const std::string texturePath, VkImageU
 	CTextureImage textureImage;
 	textureImage.m_imageFormat = imageFormat;
 	textureImage.bEnableMipMap = bEnableMipmap; 
+	textureImage.bEnableCubemap = bCubemap;
 	textureImage.m_usage = usage;
 	textureImage.m_pCommandPool = &commandPool;
 	assert((bitPerTexelPerChannel == 8) || (bitPerTexelPerChannel == 16)); //bitPerTexelPerChannel is default 8

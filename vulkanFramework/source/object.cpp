@@ -8,6 +8,7 @@ CObject::CObject(){
     bUseMVP_VP = false;
     bSticker = false;
     bUseTextureSampler = false;
+    bUseCubemap = false;
     bUpdate = true;
 
     Length_original = glm::vec3();
@@ -171,6 +172,7 @@ void CObject::Register(CApplication *p_app, int texture_id, int model_id, int ob
     if(texture_id != -1){
         bUseTextureSampler = true; //vertex3D has texture coord, assume texture is used
         if(texture_id != INT_MAX){
+            bUseCubemap = p_app->textureManager.textureImages[m_texture_id].bEnableCubemap; //if this object is skybox, the view matrix should ignore translate
             CreateTextureDescriptorSets(
                 p_app->textureManager.textureImages[m_texture_id], 
                 CGraphicsDescriptorManager::descriptorPool,
@@ -178,6 +180,7 @@ void CObject::Register(CApplication *p_app, int texture_id, int model_id, int ob
                 CGraphicsDescriptorManager::textureSamplers[0]
             );
         }else{
+            bUseCubemap = false; //the skybox with cubemap should use only one texture
             CreateTextureDescriptorSets(
                 p_app->textureManager.textureImages, 
                 CGraphicsDescriptorManager::descriptorPool,

@@ -1,0 +1,37 @@
+Object:
+  Models: [cube.obj, viking_room.obj]
+  Textures: [output_skybox.png, viking_room.png]
+  TextureMipmaps: [false, false]
+  TextureCubemap: [true, false]
+  VertexShaders: [simpleEnvironmentmap/cubemap.vert.spv, simpleEnvironmentmap/model.vert.spv]
+  FragmentShaders: [simpleEnvironmentmap/cubemap.frag.spv, simpleEnvironmentmap/model.frag.spv]
+  ComputeShaders: []
+  
+  ModelList: [0, 1]
+  TextureList: [0, 1]
+  PipelineList: [0, 1]
+
+Uniform:
+  MVP: true
+  VP: false
+  SamplerCount: 1
+  UseMultiSamplerForOneObject: false
+  ComputeStorageImage: false
+  ComputeStorageImageSwapChain: false
+
+Feature:
+  GraphicsDepthTest: false
+  GraphicsMSAA: false
+  Graphics48BPT: false
+  GraphicsPushConstant: false
+  GraphicsBlend: false
+  GraphicsRainbowMipmap: false
+
+MainCamera:
+  FreeMode: true
+  Position: [0,0,0]
+  Rotation: [0,0,0]
+  TargetLocation: [0,0,0]
+  FOV: 60
+  Z: [0.01, 256]
+

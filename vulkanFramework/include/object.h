@@ -49,6 +49,7 @@ public:
     CObject();
 
     bool bSticker;
+    bool bUseCubemap;
 
     int GetObjectID(){return m_object_id;}
     int GetTextureID(){return m_texture_id;}

@@ -84,6 +84,10 @@ what it does:
 - in sourcefile, #include "../../thirdParty/yaml-cpp/yaml.h"  
 - there is an warning issue related to MinGW: https://github.com/jbeder/yaml-cpp/issues/1072  
 
+There are some rules when setting Yaml:
+- if enable MSAA, depthTest will automated be enabled(even it is set to false in yaml)  
+
+
 ## Distribution
 - For Android, just distribute the single .apk file, it contains all resources.  
 - For Windows, it is more complicated. Besides the .exe binary, you should include the following resources(if the sample use any):  

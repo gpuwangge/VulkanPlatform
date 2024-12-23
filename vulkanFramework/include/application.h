@@ -166,8 +166,8 @@ public:
         struct GraphicsVertexInfo{
             //bool Enable = false;
             VertexStructureTypes StructureType = (VertexStructureTypes)NULL;
-            std::vector<Vertex3D> *Vertices3D = NULL;
-            std::vector<uint32_t> *Indices3D = NULL;
+            //std::vector<Vertex3D> *Vertices3D = NULL;
+            //std::vector<uint32_t> *Indices3D = NULL;
             std::vector<Vertex2D> *Vertices2D = NULL;
         }GraphicsVertex;
     };

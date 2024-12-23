@@ -269,6 +269,7 @@ void CApplication::initialize(){
     int model_id = -1;
     int pipeline_id = -1;
     for(int i = 0; i < objectList.size(); i++){
+        //std::cout<<i<<std::endl;
         if(appInfo.Object.Texture.List->size() > 0) texture_id = appInfo.Uniform.GraphicsSampler.UseMultiSamplerForOneObject ? INT_MAX : (*appInfo.Object.Texture.List)[i]; 
         //std::cout<<"i: "<<(*appInfo.Object.Model.List)[i] <<std::endl;
         if(appInfo.Object.Model.List->size() > 0) model_id = (*appInfo.Object.Model.List)[i];
@@ -277,6 +278,7 @@ void CApplication::initialize(){
             objectList[i].Register((CApplication*)this, texture_id, model_id, i, pipeline_id, modelManager.modelLengths[model_id], modelManager.modelLengthsMin[model_id], modelManager.modelLengthsMax[model_id]); //must be set after initialize()::SetApplicationProperty(appInfo);
         else
             objectList[i].Register((CApplication*)this, texture_id, model_id, i, pipeline_id, glm::vec3(), glm::vec3(), glm::vec3());
+        //std::cout<<"registered object:"<<i<<std::endl;
     }
 
     renderer.CreateSyncObjects(swapchain.imageSize);

@@ -7,8 +7,8 @@ CApplication *CSupervisor::m_app;
 //std::string CSupervisor::FragmentShader;
 //std::string CSupervisor::ComputeShader;
 std::vector<Vertex2D> CSupervisor::vertices2D;
-std::vector<Vertex3D> CSupervisor::vertices3D;
-std::vector<uint32_t> CSupervisor::indices3D;
+//std::vector<Vertex3D> CSupervisor::vertices3D;
+//std::vector<uint32_t> CSupervisor::indices3D;
 VkDeviceSize CSupervisor::GraphicsCustomUniformBufferSize;
 VkDescriptorSetLayoutBinding CSupervisor::GraphicsCustomBinding;
 VkDeviceSize CSupervisor::ComputeStorageBufferSize;
@@ -92,9 +92,11 @@ void CSupervisor::Activate_Buffer_Graphics_Vertex(std::unique_ptr<std::vector<st
             m_app->modelManager.modelLengthsMax.push_back(modelManager.customModels2D[0].lengthMax);
         }else{
             VertexStructureType = VertexStructureTypes::ThreeDimension;
-            m_app->modelManager.LoadObjModel((*modelNames)[i], vertices3D, indices3D);
-            m_app->renderer.CreateVertexBuffer<Vertex3D>(vertices3D); 
-            m_app->renderer.CreateIndexBuffer(indices3D);
+            std::vector<Vertex3D> modelVertices3D;
+            std::vector<uint32_t> modelIndices3D;
+            m_app->modelManager.LoadObjModel((*modelNames)[i], modelVertices3D, modelIndices3D);
+            m_app->renderer.CreateVertexBuffer<Vertex3D>(modelVertices3D); 
+            m_app->renderer.CreateIndexBuffer(modelIndices3D);
         }
     }
 }          
@@ -292,7 +294,6 @@ void CSupervisor::Activate_Pipeline(){ //*customBinding = NULL
             }
         }
         //std::cout<<"Done create graphics pipeline"<<std::endl;
-
     }
     if(Query_Pipeline_Compute()){ //for now assume only one compute pipeline
         m_app->renderProcess.createComputePipelineLayout(CComputeDescriptorManager::descriptorSetLayout);

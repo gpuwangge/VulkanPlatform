@@ -38,8 +38,8 @@ public:
      * 
      *****************************/
     static std::vector<Vertex2D> vertices2D;
-    static std::vector<Vertex3D> vertices3D;
-    static std::vector<uint32_t> indices3D;
+    //static std::vector<Vertex3D> vertices3D;
+    //static std::vector<uint32_t> indices3D;
 
     /*****************************
      * 
