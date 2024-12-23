@@ -2,8 +2,8 @@ Object:
   Models: [CUSTOM3D0]
   Textures: [texture.jpg]
   TextureMipmaps: [false]
-  VertexShaders: [simpleTexture/vert.spv]
-  FragmentShaders: [simpleTexture/frag.spv]
+  VertexShaders: [simpleTexture/shader.vert.spv]
+  FragmentShaders: [simpleTexture/shader.frag.spv]
   ComputeShaders: []
   
   ModelList: [0]

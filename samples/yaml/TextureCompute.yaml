@@ -4,7 +4,7 @@ Object:
   TextureMipmaps: [false]
   VertexShaders: []
   FragmentShaders: []
-  ComputeShaders: ["textureCompute/comp.spv"]
+  ComputeShaders: ["textureCompute/shader.comp.spv"]
   
   ModelList: []
   TextureList: []

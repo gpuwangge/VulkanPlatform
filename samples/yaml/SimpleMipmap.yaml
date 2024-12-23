@@ -2,8 +2,8 @@ Object:
   Models: [hallway.obj]
   Textures: [checkerboard_marble.jpg]
   TextureMipmaps: [true]
-  VertexShaders: [simpleMipmap/vert.spv]
-  FragmentShaders: [simpleMipmap/frag.spv]
+  VertexShaders: [simpleMipmap/shader.vert.spv]
+  FragmentShaders: [simpleMipmap/shader.frag.spv]
   ComputeShaders: []
   
   ModelList: [0]

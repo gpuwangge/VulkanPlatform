@@ -2,8 +2,8 @@ Object:
   Models: [viking_room.obj]
   Textures: [viking_room.png]
   TextureMipmaps: [false]
-  VertexShaders: [simpleShadowMap/vert.spv]
-  FragmentShaders: [simpleShadowMap/frag.spv]
+  VertexShaders: [simpleShadowMap/shader.vert.spv]
+  FragmentShaders: [simpleShadowMap/shader.frag.spv]
   ComputeShaders: []
   
   ModelList: [0]

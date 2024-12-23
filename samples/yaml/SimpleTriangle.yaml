@@ -2,8 +2,8 @@ Object:
   Models: []
   Textures: []
   TextureMipmaps: []
-  VertexShaders: [simpleTriangle/vert.spv]
-  FragmentShaders: [simpleTriangle/frag.spv]
+  VertexShaders: [simpleTriangle/shader.vert.spv]
+  FragmentShaders: [simpleTriangle/shader.frag.spv]
   ComputeShaders: []
   
   ModelList: []

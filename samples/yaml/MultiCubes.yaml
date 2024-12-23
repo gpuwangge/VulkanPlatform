@@ -2,8 +2,8 @@ Object:
   Models: [cube.obj]
   Textures: [viking_room.png, fur.jpg, skin.jpg]
   TextureMipmaps: [false, false, false]
-  VertexShaders: [multiCubes/vert1.spv, multiCubes/vert2.spv]
-  FragmentShaders: [multiCubes/frag1.spv, multiCubes/frag2.spv]
+  VertexShaders: [multiCubes/shader1.vert.spv, multiCubes/shader2.vert.spv]
+  FragmentShaders: [multiCubes/shader1.frag.spv, multiCubes/shader2.frag.spv]
   ComputeShaders: []
   
   ModelList: [0,0,0]

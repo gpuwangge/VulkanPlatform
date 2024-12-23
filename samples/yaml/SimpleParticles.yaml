@@ -2,9 +2,9 @@ Object:
   Models: []
   Textures: []
   TextureMipmaps: []
-  VertexShaders: [simpleParticles/vert.spv]
-  FragmentShaders: [simpleParticles/frag.spv]
-  ComputeShaders: [simpleParticles/comp.spv]
+  VertexShaders: [simpleParticles/shader.vert.spv]
+  FragmentShaders: [simpleParticles/shader.frag.spv]
+  ComputeShaders: [simpleParticles/shader.comp.spv]
   
   ModelList: []
   TextureList: []
