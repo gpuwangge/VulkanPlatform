@@ -620,7 +620,7 @@ void CGraphicsDescriptorManager::updateMVPUniformBuffer(uint32_t currentFrame, f
 
         for(int i = 0; i < objectCount; i++){
             if(!objectList[i].bSticker){
-                if(objectList[i].bUseCubemap) {
+                if(objectList[i].bSkybox) {
                     //std::cout<<"remove translate from object = "<<i<<std::endl;
                     mvpUBO.mvpData[i].view = glm::mat4(glm::mat3(mainCamera.matrices.view)); ///remove translate
                 }else mvpUBO.mvpData[i].view = mainCamera.matrices.view;

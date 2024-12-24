@@ -78,7 +78,7 @@ public:
 
     uint32_t mipLevels = 1; //1 means no mipmap
     bool bEnableMipMap = false;
-    bool bEnableCubemap = false; //when object register, need this information to handle view matrix so the ModelMat has not translate
+    //bool bEnableCubemap = false; //when object register, need this information to handle view matrix so the ModelMat has not translate
 };
 
 

@@ -26,6 +26,7 @@ Feature:
   GraphicsPushConstant: false
   GraphicsBlend: false
   GraphicsRainbowMipmap: true
+  GraphicsPipelineSkyboxID: -1
 
 MainCamera:
   FreeMode: true

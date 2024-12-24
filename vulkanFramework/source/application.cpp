@@ -158,7 +158,7 @@ void CApplication::initialize(){
     PRINT("Feature::GraphicsPushConstant:  %s", config["Feature"]["GraphicsPushConstant"].as<bool>() ? "true":"false");
     PRINT("Feature::GraphicsBlend:  %s", config["Feature"]["GraphicsBlend"].as<bool>() ? "true":"false");
     PRINT("Feature::GraphicsRainbowMipmap:  %s", config["Feature"]["GraphicsRainbowMipmap"].as<bool>() ? "true":"false");
-    //PRINT("Feature::GraphicsCubemap:  %s\n", config["Feature"]["GraphicsCubemap"].as<bool>() ? "true":"false");
+    PRINT("Feature::GraphicsPipelineSkyboxID:  %d\n", config["Feature"]["GraphicsPipelineSkyboxID"].as<int>());
 
     PRINT("MainCamera::FreeMode:  %s", config["MainCamera"]["FreeMode"].as<bool>() ? "true":"false");
     PRINT("MainCamera::Position Size:  %d", (int)config["MainCamera"]["Position"].size());
@@ -217,8 +217,8 @@ void CApplication::initialize(){
     appInfo.Feature.EnableGraphicsBlend = config["Feature"]["GraphicsBlend"].as<bool>();
     appInfo.Feature.EnableGraphicsRainbowMipmap = config["Feature"]["GraphicsRainbowMipmap"].as<bool>();
     //appInfo.Feature.EnableGraphicsCubemap = config["Feature"]["GraphicsCubemap"].as<bool>();
-
-
+    appInfo.Feature.GraphicsPipelineSkyboxID = config["Feature"]["GraphicsPipelineSkyboxID"].as<int>();
+   
     //Handle camera yaml data
     if(config["MainCamera"]["FreeMode"].as<bool>() == true) mainCamera.cameraType = Camera::CameraType::freemove;
     mainCamera.SetTargetPosition(config["MainCamera"]["TargetLocation"][0].as<float>(), config["MainCamera"]["TargetLocation"][1].as<float>(), config["MainCamera"]["TargetLocation"][2].as<float>());
@@ -258,7 +258,7 @@ void CApplication::initialize(){
     */
 
     objectList.resize(appInfo.Object.Pipeline.List->size()); //each object should have a pipeline reference, so use the pipeline size as object size. must set this before Set App Property(because of descriptor size rely on object size)
-
+    
     //auto startAppTime = std::chrono::high_resolution_clock::now();
     SetApplicationProperty(appInfo);
     //auto endAppTime = std::chrono::high_resolution_clock::now();
@@ -521,6 +521,10 @@ void CApplication::SetApplicationProperty(AppInfo &appInfo){
     if(appInfo.Feature.EnableGraphics48BPT) CSupervisor::Activate_Feature_Graphics_48BPT();
     if(appInfo.Feature.EnableGraphicsPushConstant) CSupervisor::Activate_Feature_Graphics_PushConstant();
     if(appInfo.Feature.EnableGraphicsRainbowMipmap) CSupervisor::Activate_Feature_Graphics_RainbowMipmap();
+    if(appInfo.Feature.GraphicsPipelineSkyboxID != -1) {
+        objectList[appInfo.Feature.GraphicsPipelineSkyboxID].bSkybox = true;
+        renderProcess.skyboxID = appInfo.Feature.GraphicsPipelineSkyboxID;
+    }
     if(appInfo.Buffer.GraphicsVertex.StructureType != VertexStructureTypes::NoType) CSupervisor::Activate_Buffer_Graphics_Vertex(appInfo.Buffer.GraphicsVertex.StructureType);
     //auto endActivateTime = std::chrono::high_resolution_clock::now();
     //auto durationTime = std::chrono::duration<float, std::chrono::seconds::period>(endActivateTime - startActivateTime).count()*1000;

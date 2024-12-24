@@ -161,6 +161,7 @@ public:
         bool EnableGraphicsBlend = false; //yaml
         bool EnableGraphicsRainbowMipmap = false; //yaml
         //bool EnableGraphicsCubemap = false; //yaml
+        int GraphicsPipelineSkyboxID = -1; //yaml
     };
     struct BufferInfo{
         struct GraphicsVertexInfo{

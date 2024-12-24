@@ -17,7 +17,8 @@ layout(location = 2) out vec3 pos;
 
 void main() {
     gl_Position = ubo.proj * ubo.view * ubo.model * vec4(inPosition, 1.0);
+    gl_Position = gl_Position.xyww; //cheat in depth test
     fragColor = inColor;
     fragTexCoord = inTexCoord;
-    pos = inPosition;
+    pos = inPosition; //pass input position to fragment for cubemap sampler
 }

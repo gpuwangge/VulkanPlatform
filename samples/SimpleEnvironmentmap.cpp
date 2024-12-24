@@ -4,7 +4,7 @@ class TEST_CLASS_NAME: public CApplication{
 public:
     void initialize(){
 		CApplication::initialize();
-		objectList[1].SetScale(0.1f, 0.1f, 0.1f);
+		objectList[0].SetScale(0.1f, 0.1f, 0.1f);
 	}
 
 	void update(){
