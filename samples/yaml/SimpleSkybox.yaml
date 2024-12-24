@@ -3,8 +3,8 @@ Object:
   Textures: [output_skybox.png]
   TextureMipmaps: [false]
   TextureCubemap: [true]
-  VertexShaders: [simpleCubemap/shader.vert.spv]
-  FragmentShaders: [simpleCubemap/shader.frag.spv]
+  VertexShaders: [simpleSkybox/shader.vert.spv]
+  FragmentShaders: [simpleSkybox/shader.frag.spv]
   ComputeShaders: []
   
   ModelList: [0]

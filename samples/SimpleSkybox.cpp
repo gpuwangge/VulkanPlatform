@@ -1,5 +1,5 @@
 #include "..\\vulkanFramework\\include\\application.h"
-#define TEST_CLASS_NAME CSimpleCubemap
+#define TEST_CLASS_NAME CSimpleSkybox
 class TEST_CLASS_NAME: public CApplication{
 public:
     void initialize(){
