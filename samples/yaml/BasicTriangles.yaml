@@ -6,12 +6,18 @@ Object:
   VertexShaders: [basicTriangles/shader.vert.spv]
   FragmentShaders: [basicTriangles/shader.frag.spv]
   ComputeShaders: []
-  
+  # Each element in the list represent an object; pipeline index is the vertex/fragment index, because each pipeline connect one vertex shader and one fragment shader
   ModelList: [0]
   TextureList: [0]
   PipelineList: [0]
 
 Uniform:
+  # Graphcis: Custom Graphics, MVP, VP
+  #Graphics: [{false, true, false},{...}]
+  # Sampler: number of samplers
+  #Sampler: [1, 0, ...]
+  # Compute: Custom Compute, Storage, Storage for Swapchain, Storage Texture
+  #Compute: [true, false, false, false] for now our scenario only need one compute pipeline
   MVP: true
   VP: false
   SamplerCount: 1

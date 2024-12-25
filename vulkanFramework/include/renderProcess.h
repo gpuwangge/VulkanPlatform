@@ -63,7 +63,7 @@ public:
     //VkPipelineLayout graphicsPipelineLayout;
 	//VkPipeline graphicsPipeline;
     std::vector<VkPipelineLayout> graphicsPipelineLayouts;
-    std::vector<VkPipeline> graphicsPipelines;
+    std::vector<VkPipeline> graphicsPipelines;  
     int skyboxID = -1;
 
     bool bCreateComputePipeline = false;
