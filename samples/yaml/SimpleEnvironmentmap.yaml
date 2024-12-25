@@ -3,12 +3,12 @@ Object:
   Textures: [viking_room.png, output_skybox.png, ]
   TextureMipmaps: [false, false]
   TextureCubemap: [false, true]
-  VertexShaders: [simpleEnvironmentmap/model.vert.spv, simpleEnvironmentmap/skybox.vert.spv]
-  FragmentShaders: [simpleEnvironmentmap/model.frag.spv, simpleEnvironmentmap/skybox.frag.spv]
+  VertexShaders: [simpleEnvironmentmap/environmentmap.vert.spv, simpleEnvironmentmap/skybox.vert.spv]
+  FragmentShaders: [simpleEnvironmentmap/environmentmap.frag.spv, simpleEnvironmentmap/skybox.frag.spv]
   ComputeShaders: []
   
-  ModelList: [0, 1]
-  TextureList: [0, 1]
+  ModelList: [1, 1]
+  TextureList: [1, 1]
   PipelineList: [0, 1]
 
 Uniform:
