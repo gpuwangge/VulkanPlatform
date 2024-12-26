@@ -198,7 +198,7 @@ void CSupervisor::Activate_Pipeline(){ //*customBinding = NULL
         //But the sampler is using first miplevels for all textures
         //Need make change so only mipmaped texture use mipmaped sampler
         if(Query_Uniform_Graphics_Sampler())
-            for(int i = 0;i < m_samplerCount; i++)
+            for(int i = 0; i < m_samplerCount; i++)
                 CGraphicsDescriptorManager::addImageSamplerUniformBuffer(m_app->textureManager.textureImages[i].mipLevels);
         if(Query_Uniform_Graphics_Custom()) CGraphicsDescriptorManager::addCustomUniformBuffer(GraphicsCustomUniformBufferSize);
     }
@@ -231,9 +231,10 @@ void CSupervisor::Activate_Pipeline(){ //*customBinding = NULL
 
     //Descriptor Set
     if(Query_Pipeline_Graphics()){
-        if(Query_Uniform_Compute_StorageImage())
-            m_app->graphicsDescriptorManager.createDescriptorSets(&(m_app->textureManager.textureImages));
-        else m_app->graphicsDescriptorManager.createDescriptorSets();
+        //if(Query_Uniform_Compute_StorageImage())
+        //    m_app->graphicsDescriptorManager.createDescriptorSets(&(m_app->textureManager.textureImages));
+        //else 
+        m_app->graphicsDescriptorManager.createDescriptorSets();
     }
     if(Query_Pipeline_Compute()){
         if(Query_Uniform_Compute_StorageImage_Swapchain()) {
@@ -260,6 +261,7 @@ void CSupervisor::Activate_Pipeline(){ //*customBinding = NULL
         
         //std::cout<<"Begin create graphics pipeline"<<std::endl;
         for(int i = 0; i < m_app->appInfo.Object.Pipeline.VertexShader->size(); i++){
+            //! All graphics pipelines use the same dsLayouts
             if(bPushConstant)  m_app->renderProcess.createGraphicsPipelineLayout(dsLayouts,  m_app->shaderManager.pushConstantRange, true, i);
             else m_app->renderProcess.createGraphicsPipelineLayout(dsLayouts, i);
 
@@ -296,6 +298,7 @@ void CSupervisor::Activate_Pipeline(){ //*customBinding = NULL
         //std::cout<<"Done create graphics pipeline"<<std::endl;
     }
     if(Query_Pipeline_Compute()){ //for now assume only one compute pipeline
+        //! only support one compute pipeline
         m_app->renderProcess.createComputePipelineLayout(CComputeDescriptorManager::descriptorSetLayout);
         m_app->renderProcess.createComputePipeline(m_app->shaderManager.compShaderModules[0]);
     }

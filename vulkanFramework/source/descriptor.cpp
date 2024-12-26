@@ -396,7 +396,7 @@ void CGraphicsDescriptorManager::createTextureDescriptorSetLayout(){
 	if (result != VK_SUCCESS) throw std::runtime_error("failed to create descriptor set layout!");
 }
 
-void CGraphicsDescriptorManager::createDescriptorSets(std::vector<CTextureImage> *textureImages, std::vector<VkImageView> *swapchainImageViews){
+void CGraphicsDescriptorManager::createDescriptorSets(){
     //Descriptor Step 3/3
     //HERE_I_AM("wxjCreateDescriptorSets");
 

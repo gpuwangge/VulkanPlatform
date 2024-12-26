@@ -12,11 +12,11 @@ Object:
   GraphicsPipelineList: [1,0,1]
 
 Uniform:
-  # Graphcis: CustomGraphics_MVP_VP
-  Graphics: [[false, true, false]] #TODO
+  # Graphcis: CustomGraphics_MVP_VP (assume all graphics pipelines use the same descriptor uniform layout/set)
+  Graphics: [[false, true, false]]
   # Sampler: SamplersNumber
   Sampler: [1]
-  # Compute: CustomCompute_Storage_SwapchainStorage_TextureStorage (for now assume sample only need one compute pipeline)
+  # Compute: CustomCompute_Storage_SwapchainStorage_TextureStorage (assume all compute pipelines use the same descriptor uniform layout/set)
   Compute: []
 
 Feature:

@@ -526,8 +526,8 @@ void CApplication::SetApplicationProperty(AppInfo &appInfo){
 	//CSupervisor::VertexShader = appInfo.Shader.Vertex;
 	//CSupervisor::FragmentShader = appInfo.Shader.Fragment;
 
-    int i = 0; //test
     //Uniforms
+    int i = 0; //assume all graphics pipelines use the same descriptor uniform layout/set
     if(appInfo.Uniform.GraphicsVector.size() > 0){
         //if(appInfo.Uniform.GraphicsCustom.Size) CSupervisor::Activate_Uniform_Graphics_Custom(appInfo.Uniform.GraphicsCustom.Size, appInfo.Uniform.GraphicsCustom.Binding);
         if(appInfo.Uniform.GraphicsVector[i][0]) CSupervisor::Activate_Uniform_Graphics_Custom(appInfo.Uniform.GraphicsCustom.Size, appInfo.Uniform.GraphicsCustom.Binding);
@@ -535,14 +535,14 @@ void CApplication::SetApplicationProperty(AppInfo &appInfo){
         if(appInfo.Uniform.GraphicsVector[i][2]) CSupervisor::Activate_Uniform_Graphics_VP();
     }
     if(appInfo.Uniform.SamplerVector.size() > 0) CSupervisor::Activate_Uniform_Graphics_Sampler(appInfo.Uniform.SamplerVector[i]); //samplerCount
+    int j = 0; //assume all compute pipelines use the same descriptor uniform layout/set
     if(appInfo.Uniform.ComputeVector.size() > 0){ //assume sampler has exactly one compute pipeline, so the first index is 0
         //if(appInfo.Uniform.ComputeCustom.Size) CSupervisor::Activate_Uniform_Compute_Custom(appInfo.Uniform.ComputeCustom.Size, appInfo.Uniform.ComputeCustom.Binding);
         //if(appInfo.Uniform.ComputeStorageBuffer.Size) CSupervisor::Activate_Uniform_Compute_StorageBuffer(appInfo.Uniform.ComputeStorageBuffer.Size, appInfo.Uniform.ComputeStorageBuffer.Usage);
-        if(appInfo.Uniform.ComputeVector[0][0]) CSupervisor::Activate_Uniform_Compute_Custom(appInfo.Uniform.ComputeCustom.Size, appInfo.Uniform.ComputeCustom.Binding);
-        if(appInfo.Uniform.ComputeVector[0][1]) CSupervisor::Activate_Uniform_Compute_StorageBuffer(appInfo.Uniform.ComputeStorageBuffer.Size, appInfo.Uniform.ComputeStorageBuffer.Usage);
-        if(appInfo.Uniform.ComputeVector[0][2]) CSupervisor::Activate_Uniform_Compute_StorageImage_Swapchain();//EnableComputeStorageImageSwapChain
-        if(appInfo.Uniform.ComputeVector[0][3]) CSupervisor::Activate_Uniform_Compute_StorageImage(); //EnableComputeStorageImage
-        
+        if(appInfo.Uniform.ComputeVector[j][0]) CSupervisor::Activate_Uniform_Compute_Custom(appInfo.Uniform.ComputeCustom.Size, appInfo.Uniform.ComputeCustom.Binding);
+        if(appInfo.Uniform.ComputeVector[j][1]) CSupervisor::Activate_Uniform_Compute_StorageBuffer(appInfo.Uniform.ComputeStorageBuffer.Size, appInfo.Uniform.ComputeStorageBuffer.Usage);
+        if(appInfo.Uniform.ComputeVector[j][2]) CSupervisor::Activate_Uniform_Compute_StorageImage_Swapchain();//EnableComputeStorageImageSwapChain
+        if(appInfo.Uniform.ComputeVector[j][3]) CSupervisor::Activate_Uniform_Compute_StorageImage(); //EnableComputeStorageImage
     }
 
     if(appInfo.Feature.EnableGraphicsBlend) CSupervisor::Activate_Feature_Graphics_Blend();

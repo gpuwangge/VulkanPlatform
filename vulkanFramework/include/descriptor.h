@@ -84,13 +84,7 @@ public:
     static int getLayoutSize();
     static int getSetSize();
     static void createDescriptorSetLayout(VkDescriptorSetLayoutBinding *customBinding = nullptr);
-    void createDescriptorSets(std::vector<CTextureImage> *textureImages = NULL, std::vector<VkImageView> *swapchainImageViews = NULL);
-
-        //VkDescriptorType      descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER,
-        //VkShaderStageFlags    stageFlags = VK_SHADER_STAGE_VERTEX_BIT,
-        //uint32_t              descriptorCount = 1,
-        //const VkSampler*      pImmutableSamplers = nullptr);
-    //static void createMVPDescriptorSetLayout();
+    void createDescriptorSets();
     static void createTextureDescriptorSetLayout();
 
     void DestroyAndFree();
