@@ -9,7 +9,7 @@ Object:
   # Each element in the list represent an object; graphics pipeline number == vertex/fragment number, because each pipeline connect one vertex shader and one fragment shader
   ModelList: [0]
   TextureList: [0]
-  PipelineList: [0]
+  GraphicsPipelineList: [0]
 
 Uniform:
   # Graphcis: CustomGraphics_MVP_VP

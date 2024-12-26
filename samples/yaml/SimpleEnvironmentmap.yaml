@@ -9,7 +9,7 @@ Object:
   
   ModelList: [1, 1]
   TextureList: [1, 1]
-  PipelineList: [0, 1]
+  GraphicsPipelineList: [0, 1]
 
 Uniform:
   # Graphcis: CustomGraphics_MVP_VP

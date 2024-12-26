@@ -143,7 +143,7 @@ void CApplication::initialize(){
     PRINT("Object::ComputeShaders Size:  %d", (int)config["Object"]["ComputeShaders"].size());
     PRINT("Object::ModelList Size:  %d", (int)config["Object"]["ModelList"].size());
     PRINT("Object::TextureList Size:  %d", (int)config["Object"]["TextureList"].size());
-    PRINT("Object::PipelineList Size:  %d\n", (int)config["Object"]["PipelineList"].size());
+    PRINT("Object::GraphicsPipelineList Size:  %d\n", (int)config["Object"]["GraphicsPipelineList"].size());
 
     appInfo.Uniform.UniformGraphicsVector = config["Uniform"]["Graphics"].as<std::vector<std::vector<bool>>>();
     //for(int i = 0; i < UniformGraphicsVector.size(); i++)
@@ -216,8 +216,8 @@ void CApplication::initialize(){
 	if(config["Object"]["TextureList"].size() > 0) appInfo.Object.Texture.List = std::make_unique<std::vector<int>>(config["Object"]["TextureList"].as<std::vector<int>>());
     else appInfo.Object.Texture.List = std::make_unique<std::vector<int>>(std::vector<int>());
 
-	if(config["Object"]["PipelineList"].size() > 0) appInfo.Object.Pipeline.List = std::make_unique<std::vector<int>>(config["Object"]["PipelineList"].as<std::vector<int>>());
-    else appInfo.Object.Pipeline.List = std::make_unique<std::vector<int>>(std::vector<int>());
+	if(config["Object"]["GraphicsPipelineList"].size() > 0) appInfo.Object.Pipeline.GraphicsList = std::make_unique<std::vector<int>>(config["Object"]["GraphicsPipelineList"].as<std::vector<int>>());
+    else appInfo.Object.Pipeline.GraphicsList = std::make_unique<std::vector<int>>(std::vector<int>());
 
 
     //Handle uniform yaml data
@@ -276,7 +276,7 @@ void CApplication::initialize(){
     fout.close();
     */
 
-    objectList.resize(appInfo.Object.Pipeline.List->size()); //each object should have a pipeline reference, so use the pipeline size as object size. must set this before Set App Property(because of descriptor size rely on object size)
+    objectList.resize(appInfo.Object.Pipeline.GraphicsList->size()); //each object should have a pipeline reference, so use the pipeline size as object size. must set this before Set App Property(because of descriptor size rely on object size)
     
     //auto startAppTime = std::chrono::high_resolution_clock::now();
     SetApplicationProperty(appInfo);
@@ -286,17 +286,17 @@ void CApplication::initialize(){
 
     int texture_id = -1; //-1 means not use this resrouce. INT_MAX means use all samplers
     int model_id = -1;
-    int pipeline_id = -1;
+    int graphics_pipeline_id = -1;
     for(int i = 0; i < objectList.size(); i++){
         //std::cout<<i<<std::endl;
         if(appInfo.Object.Texture.List->size() > 0 && appInfo.Uniform.UniformSamplerVector.size() > 0) texture_id = (appInfo.Uniform.UniformSamplerVector[i] > 1) ? INT_MAX : (*appInfo.Object.Texture.List)[i]; //TODO 
         //std::cout<<"i: "<<(*appInfo.Object.Model.List)[i] <<std::endl;
         if(appInfo.Object.Model.List->size() > 0) model_id = (*appInfo.Object.Model.List)[i];
-        pipeline_id = (*appInfo.Object.Pipeline.List)[i];
+        graphics_pipeline_id = (*appInfo.Object.Pipeline.GraphicsList)[i];
         if(CSupervisor::VertexStructureType == VertexStructureTypes::TwoDimension || CSupervisor::VertexStructureType  == VertexStructureTypes::ThreeDimension)
-            objectList[i].Register((CApplication*)this, texture_id, model_id, i, pipeline_id, modelManager.modelLengths[model_id], modelManager.modelLengthsMin[model_id], modelManager.modelLengthsMax[model_id]); //must be set after initialize()::SetApplicationProperty(appInfo);
+            objectList[i].Register((CApplication*)this, texture_id, model_id, i, graphics_pipeline_id, modelManager.modelLengths[model_id], modelManager.modelLengthsMin[model_id], modelManager.modelLengthsMax[model_id]); //must be set after initialize()::SetApplicationProperty(appInfo);
         else
-            objectList[i].Register((CApplication*)this, texture_id, model_id, i, pipeline_id, glm::vec3(), glm::vec3(), glm::vec3());
+            objectList[i].Register((CApplication*)this, texture_id, model_id, i, graphics_pipeline_id, glm::vec3(), glm::vec3(), glm::vec3());
         //std::cout<<"registered object:"<<i<<std::endl;
     }
 
@@ -537,6 +537,7 @@ void CApplication::SetApplicationProperty(AppInfo &appInfo){
     if(appInfo.Uniform.ComputeStorageBuffer.Size) CSupervisor::Activate_Uniform_Compute_StorageBuffer(appInfo.Uniform.ComputeStorageBuffer.Size, appInfo.Uniform.ComputeStorageBuffer.Usage);
     if(appInfo.Uniform.ComputeCustom.Size) CSupervisor::Activate_Uniform_Compute_Custom(appInfo.Uniform.ComputeCustom.Size, appInfo.Uniform.ComputeCustom.Binding);
     
+    //assume sampler has exactly one compute pipeline, so the first index is 0
     if(appInfo.Uniform.UniformComputeVector.size() > 0){
         if(appInfo.Uniform.UniformComputeVector[0][3]) CSupervisor::Activate_Uniform_Compute_StorageImage(); //EnableComputeStorageImage
         if(appInfo.Uniform.UniformComputeVector[0][2]) CSupervisor::Activate_Uniform_Compute_StorageImage_Swapchain();//EnableComputeStorageImageSwapChain

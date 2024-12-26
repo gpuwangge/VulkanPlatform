@@ -200,7 +200,7 @@ public:
             std::unique_ptr<std::vector<std::string>> VertexShader;
             std::unique_ptr<std::vector<std::string>> FragmentShader;
             std::unique_ptr<std::vector<std::string>> ComputeShader;
-            std::unique_ptr<std::vector<int>> List; //list[i]=j: the i'th object use j'th pipeline
+            std::unique_ptr<std::vector<int>> GraphicsList; //list[i]=j: the i'th object use j'th pipeline
         }Pipeline;
     };
 
