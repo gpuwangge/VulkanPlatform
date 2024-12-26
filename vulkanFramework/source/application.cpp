@@ -129,7 +129,7 @@ void CApplication::initialize(){
     try{
         config = YAML::LoadFile(fullYamlName);
     } catch (...){
-        std::cout<<"Error loading ymal file"<<std::endl;
+        std::cout<<"Error loading yaml file"<<std::endl;
         return;
     }
 
@@ -145,12 +145,31 @@ void CApplication::initialize(){
     PRINT("Object::TextureList Size:  %d", (int)config["Object"]["TextureList"].size());
     PRINT("Object::PipelineList Size:  %d\n", (int)config["Object"]["PipelineList"].size());
 
-    PRINT("Uniform::MVP:  %s", config["Uniform"]["MVP"].as<bool>() ? "true":"false"); //.as<bool> will convert true/false to 1/0, can print with %d
-    PRINT("Uniform::VP:  %s", config["Uniform"]["VP"].as<bool>() ? "true":"false");
-    PRINT("Uniform::SamplerCount:  %d", config["Uniform"]["SamplerCount"].as<int>());
-    PRINT("Uniform::UseMultiSamplerForOneObject:  %s", config["Uniform"]["UseMultiSamplerForOneObject"].as<bool>() ? "true":"false");
-    PRINT("Uniform::ComputeStorageImage:  %s", config["Uniform"]["ComputeStorageImage"].as<bool>() ? "true":"false");
-    PRINT("Uniform::ComputeStorageImageSwapChain:  %s\n", config["Uniform"]["ComputeStorageImageSwapChain"].as<bool>() ? "true":"false");
+    appInfo.Uniform.UniformGraphicsVector = config["Uniform"]["Graphics"].as<std::vector<std::vector<bool>>>();
+    //for(int i = 0; i < UniformGraphicsVector.size(); i++)
+    //    for(int j = 0; j < UniformGraphicsVector[i].size(); j++)
+    //        PRINT("Uniform::Graphcis:  %d", UniformGraphicsVector[i][j]);
+    if(appInfo.Uniform.UniformGraphicsVector.size() > 0)
+        PRINT("Uniform::Graphcis Size:  %d, %d", (int)appInfo.Uniform.UniformGraphicsVector.size(), (int)appInfo.Uniform.UniformGraphicsVector[0].size());
+    appInfo.Uniform.UniformSamplerVector = config["Uniform"]["Sampler"].as<std::vector<int>>();
+    //for(int i = 0; i < UniformSamplerVector.size(); i++)
+        //PRINT("Uniform::Sampler:  %d", UniformSamplerVector[i]);
+    if(appInfo.Uniform.UniformSamplerVector.size() > 0)
+        PRINT("Uniform::Sampler Size:  %d", (int)appInfo.Uniform.UniformSamplerVector.size());
+    appInfo.Uniform.UniformComputeVector = config["Uniform"]["Compute"].as<std::vector<std::vector<bool>>>();
+    //for(int i = 0; i < UniformComputeVector.size(); i++)
+        //for(int j = 0; j < UniformComputeVector[i].size(); j++)
+            //PRINT("Uniform::Compute:  %d", UniformComputeVector[i][j]);
+    if(appInfo.Uniform.UniformComputeVector.size() > 0)
+        PRINT("Uniform::Compute Size:  %d, %d", (int)appInfo.Uniform.UniformComputeVector.size(), (int)appInfo.Uniform.UniformComputeVector[0].size());
+    PRINT("\n");
+
+    // PRINT("Uniform::MVP:  %s", config["Uniform"]["MVP"].as<bool>() ? "true":"false"); //.as<bool> will convert true/false to 1/0, can print with %d
+    // PRINT("Uniform::VP:  %s", config["Uniform"]["VP"].as<bool>() ? "true":"false");
+    // PRINT("Uniform::SamplerCount:  %d", config["Uniform"]["SamplerCount"].as<int>());
+    // PRINT("Uniform::UseMultiSamplerForOneObject:  %s", config["Uniform"]["UseMultiSamplerForOneObject"].as<bool>() ? "true":"false");
+    // PRINT("Uniform::ComputeStorageImage:  %s", config["Uniform"]["ComputeStorageImage"].as<bool>() ? "true":"false");
+    // PRINT("Uniform::ComputeStorageImageSwapChain:  %s\n", config["Uniform"]["ComputeStorageImageSwapChain"].as<bool>() ? "true":"false");
 
     PRINT("Feature::GraphicsDepthTest:  %s", config["Feature"]["GraphicsDepthTest"].as<bool>() ? "true":"false");
     PRINT("Feature::GraphicsMSAA:  %s", config["Feature"]["GraphicsMSAA"].as<bool>() ? "true":"false");
@@ -202,12 +221,12 @@ void CApplication::initialize(){
 
 
     //Handle uniform yaml data
-    appInfo.Uniform.EnableGraphicsMVP = config["Uniform"]["MVP"].as<bool>();
-    appInfo.Uniform.EnableGraphicsVP = config["Uniform"]["VP"].as<bool>();
-    appInfo.Uniform.GraphicsSampler.Count = config["Uniform"]["SamplerCount"].as<int>();
-    appInfo.Uniform.GraphicsSampler.UseMultiSamplerForOneObject = config["Uniform"]["UseMultiSamplerForOneObject"].as<bool>();
-    appInfo.Uniform.EnableComputeStorageImage = config["Uniform"]["ComputeStorageImage"].as<bool>();
-    appInfo.Uniform.EnableComputeStorageImageSwapChain = config["Uniform"]["ComputeStorageImageSwapChain"].as<bool>();
+    // appInfo.Uniform.EnableGraphicsMVP = config["Uniform"]["MVP"].as<bool>();
+    // appInfo.Uniform.EnableGraphicsVP = config["Uniform"]["VP"].as<bool>();
+    // appInfo.Uniform.GraphicsSampler.Count = config["Uniform"]["SamplerCount"].as<int>();
+    // appInfo.Uniform.GraphicsSampler.UseMultiSamplerForOneObject = config["Uniform"]["UseMultiSamplerForOneObject"].as<bool>();
+    // appInfo.Uniform.EnableComputeStorageImage = config["Uniform"]["ComputeStorageImage"].as<bool>();
+    // appInfo.Uniform.EnableComputeStorageImageSwapChain = config["Uniform"]["ComputeStorageImageSwapChain"].as<bool>();
 
     //Handle feature yaml data
     appInfo.Feature.EnableGraphicsDepthTest = config["Feature"]["GraphicsDepthTest"].as<bool>();
@@ -270,7 +289,7 @@ void CApplication::initialize(){
     int pipeline_id = -1;
     for(int i = 0; i < objectList.size(); i++){
         //std::cout<<i<<std::endl;
-        if(appInfo.Object.Texture.List->size() > 0) texture_id = appInfo.Uniform.GraphicsSampler.UseMultiSamplerForOneObject ? INT_MAX : (*appInfo.Object.Texture.List)[i]; 
+        if(appInfo.Object.Texture.List->size() > 0 && appInfo.Uniform.UniformSamplerVector.size() > 0) texture_id = (appInfo.Uniform.UniformSamplerVector[i] > 1) ? INT_MAX : (*appInfo.Object.Texture.List)[i]; //TODO 
         //std::cout<<"i: "<<(*appInfo.Object.Model.List)[i] <<std::endl;
         if(appInfo.Object.Model.List->size() > 0) model_id = (*appInfo.Object.Model.List)[i];
         pipeline_id = (*appInfo.Object.Pipeline.List)[i];
@@ -507,14 +526,22 @@ void CApplication::SetApplicationProperty(AppInfo &appInfo){
 	//CSupervisor::VertexShader = appInfo.Shader.Vertex;
 	//CSupervisor::FragmentShader = appInfo.Shader.Fragment;
 
-    if(appInfo.Uniform.GraphicsSampler.Count) CSupervisor::Activate_Uniform_Graphics_Sampler(appInfo.Uniform.GraphicsSampler.Count); //samplerCount
-    if(appInfo.Uniform.EnableGraphicsMVP) CSupervisor::Activate_Uniform_Graphics_MVP();
-    if(appInfo.Uniform.EnableGraphicsVP) CSupervisor::Activate_Uniform_Graphics_VP();
+    int i = 0; //test
+    if(appInfo.Uniform.UniformSamplerVector.size() > 0) CSupervisor::Activate_Uniform_Graphics_Sampler(appInfo.Uniform.UniformSamplerVector[i]); //samplerCount
+    if(appInfo.Uniform.UniformGraphicsVector.size() > 0){
+        if(appInfo.Uniform.UniformGraphicsVector[i][1]) CSupervisor::Activate_Uniform_Graphics_MVP();
+        if(appInfo.Uniform.UniformGraphicsVector[i][2]) CSupervisor::Activate_Uniform_Graphics_VP();
+    }
+
     if(appInfo.Uniform.GraphicsCustom.Size) CSupervisor::Activate_Uniform_Graphics_Custom(appInfo.Uniform.GraphicsCustom.Size, appInfo.Uniform.GraphicsCustom.Binding);
     if(appInfo.Uniform.ComputeStorageBuffer.Size) CSupervisor::Activate_Uniform_Compute_StorageBuffer(appInfo.Uniform.ComputeStorageBuffer.Size, appInfo.Uniform.ComputeStorageBuffer.Usage);
     if(appInfo.Uniform.ComputeCustom.Size) CSupervisor::Activate_Uniform_Compute_Custom(appInfo.Uniform.ComputeCustom.Size, appInfo.Uniform.ComputeCustom.Binding);
-    if(appInfo.Uniform.EnableComputeStorageImage) CSupervisor::Activate_Uniform_Compute_StorageImage();
-    if(appInfo.Uniform.EnableComputeStorageImageSwapChain) CSupervisor::Activate_Uniform_Compute_StorageImage_Swapchain();
+    
+    if(appInfo.Uniform.UniformComputeVector.size() > 0){
+        if(appInfo.Uniform.UniformComputeVector[0][3]) CSupervisor::Activate_Uniform_Compute_StorageImage(); //EnableComputeStorageImage
+        if(appInfo.Uniform.UniformComputeVector[0][2]) CSupervisor::Activate_Uniform_Compute_StorageImage_Swapchain();//EnableComputeStorageImageSwapChain
+    }
+
     if(appInfo.Feature.EnableGraphicsBlend) CSupervisor::Activate_Feature_Graphics_Blend();
     if(appInfo.Feature.EnableGraphicsDepthTest) CSupervisor::Activate_Feature_Graphics_DepthTest();
     if(appInfo.Feature.EnableGraphicsMSAA) CSupervisor::Activate_Feature_Graphics_MSAA();

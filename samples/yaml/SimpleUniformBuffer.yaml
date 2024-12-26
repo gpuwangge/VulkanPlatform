@@ -12,12 +12,12 @@ Object:
   PipelineList: [0]
 
 Uniform:
-  MVP: false
-  VP: false
-  SamplerCount: 0
-  UseMultiSamplerForOneObject: false
-  ComputeStorageImage: false
-  ComputeStorageImageSwapChain: false
+  # Graphcis: CustomGraphics_MVP_VP
+  Graphics: [[false, false, false]]
+  # Sampler: SamplersNumber
+  Sampler: []
+  # Compute: CustomCompute_Storage_SwapchainStorage_TextureStorage (for now assume sample only need one compute pipeline)
+  Compute: []
 
 Feature:
   GraphicsDepthTest: false

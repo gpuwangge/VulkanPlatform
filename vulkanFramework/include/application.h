@@ -130,17 +130,21 @@ public:
         CRenderer::RenderModes Mode = CRenderer::RENDER_GRAPHICS_Mode;
     };
     struct UniformInfo{
-        bool EnableGraphicsVP = false; //yaml
-        bool EnableGraphicsMVP = false; //yaml
+        std::vector<std::vector<bool>> UniformGraphicsVector;
+        std::vector<int> UniformSamplerVector;
+        std::vector<std::vector<bool>> UniformComputeVector;
+
+        //bool EnableGraphicsVP = false; //yaml
+        //bool EnableGraphicsMVP = false; //yaml
         struct GraphicsCustomInfo{
             //bool Enable = false;
             VkDeviceSize Size = 0;
             VkDescriptorSetLayoutBinding Binding;
         }GraphicsCustom;
-        struct GraphicsSamplerInfo{
-            int Count = 0; //yaml
-            bool UseMultiSamplerForOneObject = false; //yaml
-        }GraphicsSampler;
+        //struct GraphicsSamplerInfo{
+        //    int Count = 0; //yaml
+        //    bool UseMultiSamplerForOneObject = false; //yaml
+        //}GraphicsSampler;
         //--------------------------------------
         struct ComputeCustomInfo{
             VkDeviceSize Size = 0;
@@ -150,8 +154,8 @@ public:
             VkDeviceSize Size = 0;
             VkBufferUsageFlags Usage;
         }ComputeStorageBuffer;
-        bool EnableComputeStorageImage = false; //yaml
-        bool EnableComputeStorageImageSwapChain = false; //yaml
+        //bool EnableComputeStorageImage = false; //yaml
+        //bool EnableComputeStorageImageSwapChain = false; //yaml
     };
     struct FeatureInfo{
         bool EnableGraphicsDepthTest = false; //yaml
@@ -160,7 +164,7 @@ public:
         bool EnableGraphicsPushConstant = false; //yaml
         bool EnableGraphicsBlend = false; //yaml
         bool EnableGraphicsRainbowMipmap = false; //yaml
-        //bool EnableGraphicsCubemap = false; //yaml
+        //bool EnableGraphicsCubemap = false;
         int GraphicsPipelineSkyboxID = -1; //yaml
     };
     struct BufferInfo{
