@@ -145,23 +145,23 @@ void CApplication::initialize(){
     PRINT("Object::TextureList Size:  %d", (int)config["Object"]["TextureList"].size());
     PRINT("Object::GraphicsPipelineList Size:  %d\n", (int)config["Object"]["GraphicsPipelineList"].size());
 
-    appInfo.Uniform.UniformGraphicsVector = config["Uniform"]["Graphics"].as<std::vector<std::vector<bool>>>();
+    appInfo.Uniform.GraphicsVector = config["Uniform"]["Graphics"].as<std::vector<std::vector<bool>>>();
     //for(int i = 0; i < UniformGraphicsVector.size(); i++)
     //    for(int j = 0; j < UniformGraphicsVector[i].size(); j++)
     //        PRINT("Uniform::Graphcis:  %d", UniformGraphicsVector[i][j]);
-    if(appInfo.Uniform.UniformGraphicsVector.size() > 0)
-        PRINT("Uniform::Graphcis Size:  %d, %d", (int)appInfo.Uniform.UniformGraphicsVector.size(), (int)appInfo.Uniform.UniformGraphicsVector[0].size());
-    appInfo.Uniform.UniformSamplerVector = config["Uniform"]["Sampler"].as<std::vector<int>>();
+    if(appInfo.Uniform.GraphicsVector.size() > 0)
+        PRINT("Uniform::Graphcis Size:  %d, %d", (int)appInfo.Uniform.GraphicsVector.size(), (int)appInfo.Uniform.GraphicsVector[0].size());
+    appInfo.Uniform.SamplerVector = config["Uniform"]["Sampler"].as<std::vector<int>>();
     //for(int i = 0; i < UniformSamplerVector.size(); i++)
         //PRINT("Uniform::Sampler:  %d", UniformSamplerVector[i]);
-    if(appInfo.Uniform.UniformSamplerVector.size() > 0)
-        PRINT("Uniform::Sampler Size:  %d", (int)appInfo.Uniform.UniformSamplerVector.size());
-    appInfo.Uniform.UniformComputeVector = config["Uniform"]["Compute"].as<std::vector<std::vector<bool>>>();
+    if(appInfo.Uniform.SamplerVector.size() > 0)
+        PRINT("Uniform::Sampler Size:  %d", (int)appInfo.Uniform.SamplerVector.size());
+    appInfo.Uniform.ComputeVector = config["Uniform"]["Compute"].as<std::vector<std::vector<bool>>>();
     //for(int i = 0; i < UniformComputeVector.size(); i++)
         //for(int j = 0; j < UniformComputeVector[i].size(); j++)
             //PRINT("Uniform::Compute:  %d", UniformComputeVector[i][j]);
-    if(appInfo.Uniform.UniformComputeVector.size() > 0)
-        PRINT("Uniform::Compute Size:  %d, %d", (int)appInfo.Uniform.UniformComputeVector.size(), (int)appInfo.Uniform.UniformComputeVector[0].size());
+    if(appInfo.Uniform.ComputeVector.size() > 0)
+        PRINT("Uniform::Compute Size:  %d, %d", (int)appInfo.Uniform.ComputeVector.size(), (int)appInfo.Uniform.ComputeVector[0].size());
     PRINT("\n");
 
     // PRINT("Uniform::MVP:  %s", config["Uniform"]["MVP"].as<bool>() ? "true":"false"); //.as<bool> will convert true/false to 1/0, can print with %d
@@ -289,7 +289,7 @@ void CApplication::initialize(){
     int graphics_pipeline_id = -1;
     for(int i = 0; i < objectList.size(); i++){
         //std::cout<<i<<std::endl;
-        if(appInfo.Object.Texture.List->size() > 0 && appInfo.Uniform.UniformSamplerVector.size() > 0) texture_id = (appInfo.Uniform.UniformSamplerVector[i] > 1) ? INT_MAX : (*appInfo.Object.Texture.List)[i]; //TODO 
+        if(appInfo.Object.Texture.List->size() > 0 && appInfo.Uniform.SamplerVector.size() > 0) texture_id = (appInfo.Uniform.SamplerVector[i] > 1) ? INT_MAX : (*appInfo.Object.Texture.List)[i]; //TODO 
         //std::cout<<"i: "<<(*appInfo.Object.Model.List)[i] <<std::endl;
         if(appInfo.Object.Model.List->size() > 0) model_id = (*appInfo.Object.Model.List)[i];
         graphics_pipeline_id = (*appInfo.Object.Pipeline.GraphicsList)[i];
@@ -527,20 +527,22 @@ void CApplication::SetApplicationProperty(AppInfo &appInfo){
 	//CSupervisor::FragmentShader = appInfo.Shader.Fragment;
 
     int i = 0; //test
-    if(appInfo.Uniform.UniformSamplerVector.size() > 0) CSupervisor::Activate_Uniform_Graphics_Sampler(appInfo.Uniform.UniformSamplerVector[i]); //samplerCount
-    if(appInfo.Uniform.UniformGraphicsVector.size() > 0){
-        if(appInfo.Uniform.UniformGraphicsVector[i][1]) CSupervisor::Activate_Uniform_Graphics_MVP();
-        if(appInfo.Uniform.UniformGraphicsVector[i][2]) CSupervisor::Activate_Uniform_Graphics_VP();
+    //Uniforms
+    if(appInfo.Uniform.GraphicsVector.size() > 0){
+        //if(appInfo.Uniform.GraphicsCustom.Size) CSupervisor::Activate_Uniform_Graphics_Custom(appInfo.Uniform.GraphicsCustom.Size, appInfo.Uniform.GraphicsCustom.Binding);
+        if(appInfo.Uniform.GraphicsVector[i][0]) CSupervisor::Activate_Uniform_Graphics_Custom(appInfo.Uniform.GraphicsCustom.Size, appInfo.Uniform.GraphicsCustom.Binding);
+        if(appInfo.Uniform.GraphicsVector[i][1]) CSupervisor::Activate_Uniform_Graphics_MVP();
+        if(appInfo.Uniform.GraphicsVector[i][2]) CSupervisor::Activate_Uniform_Graphics_VP();
     }
-
-    if(appInfo.Uniform.GraphicsCustom.Size) CSupervisor::Activate_Uniform_Graphics_Custom(appInfo.Uniform.GraphicsCustom.Size, appInfo.Uniform.GraphicsCustom.Binding);
-    if(appInfo.Uniform.ComputeStorageBuffer.Size) CSupervisor::Activate_Uniform_Compute_StorageBuffer(appInfo.Uniform.ComputeStorageBuffer.Size, appInfo.Uniform.ComputeStorageBuffer.Usage);
-    if(appInfo.Uniform.ComputeCustom.Size) CSupervisor::Activate_Uniform_Compute_Custom(appInfo.Uniform.ComputeCustom.Size, appInfo.Uniform.ComputeCustom.Binding);
-    
-    //assume sampler has exactly one compute pipeline, so the first index is 0
-    if(appInfo.Uniform.UniformComputeVector.size() > 0){
-        if(appInfo.Uniform.UniformComputeVector[0][3]) CSupervisor::Activate_Uniform_Compute_StorageImage(); //EnableComputeStorageImage
-        if(appInfo.Uniform.UniformComputeVector[0][2]) CSupervisor::Activate_Uniform_Compute_StorageImage_Swapchain();//EnableComputeStorageImageSwapChain
+    if(appInfo.Uniform.SamplerVector.size() > 0) CSupervisor::Activate_Uniform_Graphics_Sampler(appInfo.Uniform.SamplerVector[i]); //samplerCount
+    if(appInfo.Uniform.ComputeVector.size() > 0){ //assume sampler has exactly one compute pipeline, so the first index is 0
+        //if(appInfo.Uniform.ComputeCustom.Size) CSupervisor::Activate_Uniform_Compute_Custom(appInfo.Uniform.ComputeCustom.Size, appInfo.Uniform.ComputeCustom.Binding);
+        //if(appInfo.Uniform.ComputeStorageBuffer.Size) CSupervisor::Activate_Uniform_Compute_StorageBuffer(appInfo.Uniform.ComputeStorageBuffer.Size, appInfo.Uniform.ComputeStorageBuffer.Usage);
+        if(appInfo.Uniform.ComputeVector[0][0]) CSupervisor::Activate_Uniform_Compute_Custom(appInfo.Uniform.ComputeCustom.Size, appInfo.Uniform.ComputeCustom.Binding);
+        if(appInfo.Uniform.ComputeVector[0][1]) CSupervisor::Activate_Uniform_Compute_StorageBuffer(appInfo.Uniform.ComputeStorageBuffer.Size, appInfo.Uniform.ComputeStorageBuffer.Usage);
+        if(appInfo.Uniform.ComputeVector[0][2]) CSupervisor::Activate_Uniform_Compute_StorageImage_Swapchain();//EnableComputeStorageImageSwapChain
+        if(appInfo.Uniform.ComputeVector[0][3]) CSupervisor::Activate_Uniform_Compute_StorageImage(); //EnableComputeStorageImage
+        
     }
 
     if(appInfo.Feature.EnableGraphicsBlend) CSupervisor::Activate_Feature_Graphics_Blend();

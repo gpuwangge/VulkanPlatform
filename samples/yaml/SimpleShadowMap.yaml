@@ -13,7 +13,7 @@ Object:
 
 Uniform:
   # Graphcis: CustomGraphics_MVP_VP
-  Graphics: [[false, true, false]]
+  Graphics: [[true, true, false]]
   # Sampler: SamplersNumber
   Sampler: [1]
   # Compute: CustomCompute_Storage_SwapchainStorage_TextureStorage (for now assume sample only need one compute pipeline)

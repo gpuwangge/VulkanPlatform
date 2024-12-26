@@ -130,9 +130,9 @@ public:
         CRenderer::RenderModes Mode = CRenderer::RENDER_GRAPHICS_Mode;
     };
     struct UniformInfo{
-        std::vector<std::vector<bool>> UniformGraphicsVector;
-        std::vector<int> UniformSamplerVector;
-        std::vector<std::vector<bool>> UniformComputeVector;
+        std::vector<std::vector<bool>> GraphicsVector;
+        std::vector<int> SamplerVector;
+        std::vector<std::vector<bool>> ComputeVector;
 
         //bool EnableGraphicsVP = false; //yaml
         //bool EnableGraphicsMVP = false; //yaml

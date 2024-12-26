@@ -17,7 +17,7 @@ Uniform:
   # Sampler: SamplersNumber
   Sampler: []
   # Compute: CustomCompute_Storage_SwapchainStorage_TextureStorage (for now assume sample only need one compute pipeline)
-  Compute: [[false, false, false, false]]
+  Compute: [[false, true, false, false]]
 
 Feature:
   GraphicsDepthTest: false
