@@ -238,6 +238,7 @@ public:
         if (bUseDepthAttachment) {
             bool bSkybox = false;
             if(graphicsPipelines.size() == skyboxID) bSkybox = true;
+            //std::cout<<"bSkybox="<<bSkybox<<"(skyboxID="<<skyboxID<<")"<<std::endl;
             VkPipelineDepthStencilStateCreateInfo depthStencil{};
             depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
             depthStencil.depthTestEnable = VK_TRUE;

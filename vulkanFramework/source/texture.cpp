@@ -393,8 +393,36 @@ void CTextureImage::copyBufferToImage_cubemap(VkBuffer buffer, VkImage image, ui
 
 	VkBufferImageCopy regions[6];
 	memset(regions, 0, sizeof(regions));
+
+	/* Horizontal Skybox Format
+	* right,left,up,bottom,front,back
+	* When changing skybox format, remember to change image enxtend in imageBuffer.cpp as well!
+	*/
+	// for(int i = 0; i < 6; i++){
+	// 	regions[i].bufferOffset = i * (width / 6) * 4;// is the offset in bytes from the start of the buffer object where the image data is copied from or to
+	// 	regions[i].bufferRowLength = width; //specify in texels a subregion of a larger two- or three-dimensional image in buffer
+	// 	regions[i].bufferImageHeight = height;
+	// 	regions[i].imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT; //imageSubresource is a VkImageSubresourceLayers used to specify the specific image subresources of the image used for the source or destination image data.
+	// 	regions[i].imageSubresource.mipLevel = 0;
+	// 	regions[i].imageSubresource.baseArrayLayer = i;
+	// 	regions[i].imageSubresource.layerCount = 1;
+	// 	regions[i].imageOffset = { 0, 0, 0 }; //selects the initial x, y, z offsets in texels of the sub-region of the source or destination image data.
+	// 	regions[i].imageExtent = { //is the size in texels of the image to copy in width, height and depth.
+	// 		width/6,
+	// 		height,
+	// 		1
+	// 	};
+	// }
+
+
+	/* Standard Skybox Format
+	*			up
+	*	left	front	right	back
+	*			down
+	*/
+	unsigned int extend_width = width / 4;
+	unsigned int extend_height = height / 3;
 	for(int i = 0; i < 6; i++){
-		regions[i].bufferOffset = i * (width / 6) * 4;// is the offset in bytes from the start of the buffer object where the image data is copied from or to
 		regions[i].bufferRowLength = width; //specify in texels a subregion of a larger two- or three-dimensional image in buffer
 		regions[i].bufferImageHeight = height;
 		regions[i].imageSubresource.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT; //imageSubresource is a VkImageSubresourceLayers used to specify the specific image subresources of the image used for the source or destination image data.
@@ -403,11 +431,19 @@ void CTextureImage::copyBufferToImage_cubemap(VkBuffer buffer, VkImage image, ui
 		regions[i].imageSubresource.layerCount = 1;
 		regions[i].imageOffset = { 0, 0, 0 }; //selects the initial x, y, z offsets in texels of the sub-region of the source or destination image data.
 		regions[i].imageExtent = { //is the size in texels of the image to copy in width, height and depth.
-			width/6,
-			height,
+			extend_width,
+			extend_height,
 			1
 		};
 	}
+	int unit_width = extend_width * 4;
+	int unit_height = extend_height * 4;
+	regions[0].bufferOffset = 1 * unit_height * unit_width + 2 * unit_width; 	//right
+	regions[1].bufferOffset = 1 * unit_height * unit_width; 					//left
+	regions[2].bufferOffset = 0 * unit_height * unit_width + 1 * unit_width; 	//up
+	regions[3].bufferOffset = 2 * unit_height * unit_width + 1 * unit_width; 	//bottom
+	regions[4].bufferOffset = 1 * unit_height * unit_width + 1 * unit_width; 	//front
+	regions[5].bufferOffset = 1 * unit_height * unit_width + 3 * unit_width; 	//back
 
 	vkCmdCopyBufferToImage(commandBuffer, buffer, image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, 6, regions);
 

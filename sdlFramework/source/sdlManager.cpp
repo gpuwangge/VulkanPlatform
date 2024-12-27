@@ -1,5 +1,5 @@
 #include "../include/sdlManager.h"
-#include "application.h"
+#include "../../vulkanFramework/include/application.h"
 
 CSDLManager::CSDLManager(){
 	//std::cout<<"SDL Manager Constructor"<<std::endl;
@@ -269,6 +269,25 @@ void CSDLManager::eventHandle(){
                      
                 }
                 break;
+            case SDL_EVENT_MOUSE_WHEEL:
+                //std::cout<<"event.wheel.which: "<<event.wheel.which<<std::endl;
+                //std::cout<<"event.wheel.x: "<<event.wheel.x<<std::endl;
+                //std::cout<<"event.wheel.y: "<<event.wheel.y<<std::endl;
+                //std::cout<<"event.wheel.mouse_x: "<<event.wheel.mouse_x<<std::endl;
+                //std::cout<<"event.wheel.mouse_y: "<<event.wheel.mouse_y<<std::endl;
+                //std::cout<<"event.wheel.timestamp: "<<event.wheel.timestamp<<std::endl;
+
+                //CApplication::mainCamera.Velocity.z = event.wheel.y; //event.wheel.y is 1 or -1
+
+                if(event.wheel.x == 1) CApplication::mainCamera.MoveLeft(1, 2);
+                else if(event.wheel.x == -1) CApplication::mainCamera.MoveRight(1, 2);
+                if(event.wheel.y == 1) CApplication::mainCamera.MoveForward(1, 2);
+                else if(event.wheel.y == -1) CApplication::mainCamera.MoveBackward(1, 2);
+
+                break;
+            //case SDL_EVENT_MOUSE_WHEEL:
+
+                //break;
             case SDL_EVENT_QUIT:
                 bStillRunning = false;
                 break;

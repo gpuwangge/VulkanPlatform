@@ -1,15 +1,15 @@
 Object:
-  Models: [viking_room.obj, cube.obj]
-  Textures: [viking_room.png, output_skybox.png, ]
-  TextureMipmaps: [false, false]
-  TextureCubemap: [false, true]
+  Models: [cube.obj]
+  Textures: [skybox_interstellar.jpg]
+  TextureMipmaps: [false]
+  TextureCubemap: [true]
   VertexShaders: [simpleEnvironmentmap/environmentmap.vert.spv, simpleEnvironmentmap/skybox.vert.spv]
   FragmentShaders: [simpleEnvironmentmap/environmentmap.frag.spv, simpleEnvironmentmap/skybox.frag.spv]
   ComputeShaders: []
   
-  ModelList: [1, 1]
-  TextureList: [1, 1]
-  GraphicsPipelineList: [0, 1]
+  ModelList: [0, 0, 0, 0, 0, 0, 0, 0]
+  TextureList: [0, 0, 0, 0, 0, 0, 0, 0]
+  GraphicsPipelineList: [0, 0, 0, 0, 0, 0, 0, 1]
 
 Uniform:
   # Graphcis: CustomGraphics_MVP_VP (assume all graphics pipelines use the same descriptor uniform layout/set)
@@ -30,7 +30,7 @@ Feature:
 
 MainCamera:
   FreeMode: true
-  Position: [0,0,0]
+  Position: [0,0,-3]
   Rotation: [0,0,0]
   TargetLocation: [0,0,0]
   FOV: 60

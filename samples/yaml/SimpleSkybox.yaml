@@ -1,6 +1,6 @@
 Object:
   Models: [cube.obj]
-  Textures: [output_skybox.png]
+  Textures: [skybox2_direction.png]
   TextureMipmaps: [false]
   TextureCubemap: [true]
   VertexShaders: [simpleSkybox/shader.vert.spv]

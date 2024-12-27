@@ -85,6 +85,7 @@ public:
     void MoveToRotation(float pitch, float yaw, float roll, float t);
 
     void SetVelocity(float vx, float vy, float vz);
+    void SetVelocity(glm::vec3 v);
     void SetAngularVelocity(float vx, float vy, float vz);
 
     void SetScale(float scale_x, float scale_y, float scale_z);

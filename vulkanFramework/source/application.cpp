@@ -297,6 +297,7 @@ void CApplication::initialize(){
             objectList[i].Register((CApplication*)this, texture_id, model_id, i, graphics_pipeline_id, modelManager.modelLengths[model_id], modelManager.modelLengthsMin[model_id], modelManager.modelLengthsMax[model_id]); //must be set after initialize()::SetApplicationProperty(appInfo);
         else
             objectList[i].Register((CApplication*)this, texture_id, model_id, i, graphics_pipeline_id, glm::vec3(), glm::vec3(), glm::vec3());
+        if(graphics_pipeline_id == appInfo.Feature.GraphicsPipelineSkyboxID)  objectList[i].bSkybox = true;
         //std::cout<<"registered object:"<<i<<std::endl;
     }
 
@@ -552,7 +553,7 @@ void CApplication::SetApplicationProperty(AppInfo &appInfo){
     if(appInfo.Feature.EnableGraphicsPushConstant) CSupervisor::Activate_Feature_Graphics_PushConstant();
     if(appInfo.Feature.EnableGraphicsRainbowMipmap) CSupervisor::Activate_Feature_Graphics_RainbowMipmap();
     if(appInfo.Feature.GraphicsPipelineSkyboxID != -1) {
-        objectList[appInfo.Feature.GraphicsPipelineSkyboxID].bSkybox = true;
+        //objectList[appInfo.Feature.GraphicsPipelineSkyboxID].bSkybox = true;
         renderProcess.skyboxID = appInfo.Feature.GraphicsPipelineSkyboxID;
     }
     if(appInfo.Buffer.GraphicsVertex.StructureType != VertexStructureTypes::NoType) CSupervisor::Activate_Buffer_Graphics_Vertex(appInfo.Buffer.GraphicsVertex.StructureType);

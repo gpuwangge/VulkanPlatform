@@ -14,9 +14,14 @@ layout(location = 1) in vec3 normal;
 layout(location = 0) out vec4 outColor;
 
 void main() {
-    float ratio = 1.00 / 1.52; //for refraction
     vec3 I = normalize(pos - customUBO.cameraPos);
-    //vec3 R = reflect(I, normalize(normal)); //for reflect
-    vec3 R = refract(I, normalize(normal), ratio); //for refraction
+
+    //for reflect
+    vec3 R = reflect(I, normalize(normal)); 
+
+    //for refraction
+    //float ratio = 1.00 / 1.52;
+    //vec3 R = refract(I, normalize(normal), ratio);
+    
     outColor = texture(cubemapSampler, R);
 }

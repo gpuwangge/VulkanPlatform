@@ -17,8 +17,10 @@ void CWxjImageBuffer::createImage(uint32_t width, uint32_t height, uint32_t mipL
     imageInfo.extent.depth = 1;
     imageInfo.mipLevels = mipLevels;
     if(bCubeMap){
-        imageInfo.extent.width = width/6;
-        imageInfo.extent.height = height;
+        //imageInfo.extent.width = width / 6; //horizontal skybox
+        //imageInfo.extent.height = height;
+        imageInfo.extent.width = width / 4; //standard skybox
+	    imageInfo.extent.height = height / 3;
         imageInfo.arrayLayers = 6; //for cubemap
         imageInfo.flags = VK_IMAGE_CREATE_CUBE_COMPATIBLE_BIT;//for cubemap
     }else{
