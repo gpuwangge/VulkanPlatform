@@ -1,0 +1,38 @@
+Object:
+  Models: [sphere.obj]
+  Textures: [skybox_stormydays.jpg]
+  TextureMipmaps: [false]
+  TextureCubemap: [true]
+  VertexShaders: [shadowEnvironmentmap/environmentmap.vert.spv, shadowEnvironmentmap/skybox.vert.spv]
+  FragmentShaders: [shadowEnvironmentmap/environmentmap.frag.spv, shadowEnvironmentmap/skybox.frag.spv]
+  ComputeShaders: []
+  
+  ModelList: [0, 0, 0, 0, 0, 0, 0, 0]
+  TextureList: [0, 0, 0, 0, 0, 0, 0, 0]
+  GraphicsPipelineList: [0, 0, 0, 0, 0, 0, 0, 1]
+
+Uniform:
+  # Graphcis: CustomGraphics_MVP_VP (assume all graphics pipelines use the same descriptor uniform layout/set)
+  Graphics: [[true, true, false]]
+  # Sampler: SamplersNumber
+  Sampler: [1]
+  # Compute: CustomCompute_Storage_SwapchainStorage_TextureStorage (assume all compute pipelines use the same descriptor uniform layout/set)
+  Compute: []
+
+Feature:
+  GraphicsDepthTest: true
+  GraphicsMSAA: false
+  Graphics48BPT: false
+  GraphicsPushConstant: false
+  GraphicsBlend: false
+  GraphicsRainbowMipmap: false
+  GraphicsPipelineSkyboxID: 1
+
+MainCamera:
+  FreeMode: true
+  Position: [0,0,-3]
+  Rotation: [0,0,0]
+  TargetLocation: [0,0,0]
+  FOV: 60
+  Z: [0.01, 256]
+
