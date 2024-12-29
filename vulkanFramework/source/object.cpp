@@ -153,6 +153,8 @@ void CObject::Register(CApplication *p_app, int texture_id, int model_id, int ob
     m_graphics_pipeline_id = graphics_pipeline_id;
     bUseMVP_VP = CGraphicsDescriptorManager::CheckMVP();
 
+    std::cout<<"Register object:"<<m_object_id<<" with texture:"<<m_texture_id<<" and model:"<<model_id<<" and graphcis pipeline:"<<m_graphics_pipeline_id<<std::endl;
+
     Length_original = length;
     LengthMin_original = lengthMin;
     LengthMax_original = lengthMax;

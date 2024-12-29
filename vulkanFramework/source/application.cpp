@@ -289,7 +289,7 @@ void CApplication::initialize(){
     int graphics_pipeline_id = -1;
     for(int i = 0; i < objectList.size(); i++){
         //std::cout<<i<<std::endl;
-        if(appInfo.Object.Texture.List->size() > 0 && appInfo.Uniform.SamplerVector.size() > 0) texture_id = (appInfo.Uniform.SamplerVector[i] > 1) ? INT_MAX : (*appInfo.Object.Texture.List)[i]; //TODO 
+        if(appInfo.Object.Texture.List->size() > 0 && appInfo.Uniform.SamplerVector.size() > 0) texture_id = (appInfo.Uniform.SamplerVector[0] > 1) ? INT_MAX : (*appInfo.Object.Texture.List)[i]; //TODO:now assume all objects use same sampler 
         //std::cout<<"i: "<<(*appInfo.Object.Model.List)[i] <<std::endl;
         if(appInfo.Object.Model.List->size() > 0) model_id = (*appInfo.Object.Model.List)[i];
         graphics_pipeline_id = (*appInfo.Object.Pipeline.GraphicsList)[i];

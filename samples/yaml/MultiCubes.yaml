@@ -7,9 +7,9 @@ Object:
   FragmentShaders: [multiCubes/shader1.frag.spv, multiCubes/shader2.frag.spv]
   ComputeShaders: []
   
-  ModelList: [0,0,0]
-  TextureList: [0,1,2]
-  GraphicsPipelineList: [1,0,1]
+  ModelList: [0,0,0,0,0]
+  TextureList: [0,1,2,1,2]
+  GraphicsPipelineList: [1,0,1,0,0]
 
 Uniform:
   # Graphcis: CustomGraphics_MVP_VP (assume all graphics pipelines use the same descriptor uniform layout/set)

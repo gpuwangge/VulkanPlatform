@@ -1,14 +1,14 @@
 Object:
   Models: [sphere.obj]
-  Textures: [skybox_stormydays.jpg]
-  TextureMipmaps: [false]
-  TextureCubemap: [true]
+  Textures: [skybox_stormydays.jpg, metal.jpg]
+  TextureMipmaps: [false, false]
+  TextureCubemap: [true, false]
   VertexShaders: [shadowEnvironmentmap/environmentmap.vert.spv, shadowEnvironmentmap/skybox.vert.spv]
   FragmentShaders: [shadowEnvironmentmap/environmentmap.frag.spv, shadowEnvironmentmap/skybox.frag.spv]
   ComputeShaders: []
   
   ModelList: [0, 0, 0, 0, 0, 0, 0, 0]
-  TextureList: [0, 0, 0, 0, 0, 0, 0, 0]
+  TextureList: [1, 1, 1, 1, 1, 1, 1, 0]
   GraphicsPipelineList: [0, 0, 0, 0, 0, 0, 0, 1]
 
 Uniform:

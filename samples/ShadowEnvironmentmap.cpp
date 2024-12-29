@@ -3,6 +3,11 @@
 class TEST_CLASS_NAME: public CApplication{
 public:
 	struct CustomUniformBufferObject {
+		//uniform for vertex shader
+		glm::vec3 lightPos;
+	 	glm::mat4 lightSpace;
+
+		//uniform for fragment shader
 		glm::vec3 cameraPos;
 
 		static VkDescriptorSetLayoutBinding GetBinding(){
@@ -11,11 +16,27 @@ public:
 			binding.descriptorCount = 1;
 			binding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
 			binding.pImmutableSamplers = nullptr;
-			binding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+			binding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
 			return binding;
 		}
 	};
 	CustomUniformBufferObject customUBO{};
+
+	// struct CustomUniformBufferObject {
+	// 	glm::vec3 lightPos;
+	// 	glm::mat4 lightSpace;
+
+	// 	static VkDescriptorSetLayoutBinding GetBinding(){
+	// 		VkDescriptorSetLayoutBinding binding;
+	// 		binding.binding = 0;//not important, will be reset
+	// 		binding.descriptorCount = 1;
+	// 		binding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+	// 		binding.pImmutableSamplers = nullptr;
+	// 		binding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+	// 		return binding;
+	// 	}
+	// };
+	// CustomUniformBufferObject customUBO{};
 
     void initialize(){
 		appInfo.Uniform.GraphicsCustom.Size = sizeof(CustomUniformBufferObject);
@@ -36,6 +57,18 @@ public:
 	}
 
 	void update(){
+		//update uniform for vertex shader
+		//customUBO.lightPos = glm::vec3(0.75f * sin(durationTime * 3), 0.75f * sin(durationTime * 2), 0.75f * sin(durationTime * 1));
+		customUBO.lightPos = glm::vec3(0,5,0);
+		float lightFOV = 10.0f; //45.0f;
+		float zNear = 0.0f; //1.0f
+		float zFar = 5.0f; //96.0f
+		glm::mat4 depthProjectionMatrix = glm::perspective(glm::radians(lightFOV), 1.0f, zNear, zFar); // Matrix from light's point of view
+		glm::mat4 depthViewMatrix = glm::lookAt(customUBO.lightPos, glm::vec3(0.0f), glm::vec3(0, 1, 0));
+		glm::mat4 depthModelMatrix = glm::mat4(1.0f);
+		customUBO.lightSpace = depthProjectionMatrix * depthViewMatrix * depthModelMatrix;
+
+		//update uniform for fragment shader
 		customUBO.cameraPos = mainCamera.Position;
 		graphicsDescriptorManager.updateCustomUniformBuffer<CustomUniformBufferObject>(renderer.currentFrame, durationTime, customUBO);
 
@@ -51,6 +84,10 @@ public:
 
 	void recordGraphicsCommandBuffer(){
 		for(int i = 0; i < objectList.size(); i++) objectList[i].Draw();
+		//objectList[0].Draw();
+		//objectList[1].Draw();
+		//objectList[2].Draw();
+		//objectList[3].Draw();
 	}
 };
 
