@@ -4,7 +4,10 @@ class TEST_CLASS_NAME: public CApplication{
 public:
     void initialize(){
 		CApplication::initialize();
-		objectList[0].SetScale(0.01,0.01,0.01);
+		objectList[0].SetScale(0.01,0.01,0.01); //table
+		objectList[1].SetScale(0.003,0.003,0.003); //sphere
+
+		objectList[1].SetPosition(0,1.25,0.75);
 	}
 
 	void update(){
@@ -12,7 +15,7 @@ public:
 	}
 
 	void recordGraphicsCommandBuffer(){
-		objectList[0].Draw();
+		for(int i = 0; i < objectList.size(); i++) objectList[i].Draw();
 	}
 };
 

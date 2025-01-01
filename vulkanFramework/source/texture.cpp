@@ -20,13 +20,14 @@ CTextureManager::~CTextureManager(){
 
 //The main entrance to create texture image
 void CTextureManager::CreateTextureImage(const std::string texturePath, VkImageUsageFlags usage, VkCommandPool &commandPool, 
-		bool bEnableMipmap, VkFormat imageFormat, unsigned short bitPerTexelPerChannel, bool bCubemap){
+		int miplevel, int sampler_id, VkFormat imageFormat, unsigned short bitPerTexelPerChannel, bool bCubemap){
 	auto startTextureTime = std::chrono::high_resolution_clock::now();
 
 	CTextureImage textureImage;
 	textureImage.m_imageFormat = imageFormat;
-	textureImage.bEnableMipMap = bEnableMipmap; 
+	//textureImage.bEnableMipMap = bEnableMipmap; 
 	//textureImage.bEnableCubemap = bCubemap;
+	textureImage.m_mipLevels = miplevel;
 	textureImage.m_usage = usage;
 	textureImage.m_pCommandPool = &commandPool;
 	assert((bitPerTexelPerChannel == 8) || (bitPerTexelPerChannel == 16)); //bitPerTexelPerChannel is default 8
@@ -42,6 +43,8 @@ void CTextureManager::CreateTextureImage(const std::string texturePath, VkImageU
 		textureImage.CreateImageView_cubemap(VK_IMAGE_ASPECT_COLOR_BIT);
 	}
 
+	textureImage.m_sampler_id = sampler_id;
+
 	textureImages.push_back(textureImage);
 	//textureImages[0].CreateTextureImage("texture.jpg", usage, renderer.commandPool);
 	//textureImages[0].CreateImageView(VK_IMAGE_ASPECT_COLOR_BIT);
@@ -49,6 +52,10 @@ void CTextureManager::CreateTextureImage(const std::string texturePath, VkImageU
 	auto endTextureTime = std::chrono::high_resolution_clock::now();
     auto durationTime = std::chrono::duration<float, std::chrono::seconds::period>(endTextureTime - startTextureTime).count()*1000;
 	logManager.print("Load Texture Image %s", texturePath);
+	//logManager.print("\tenable mipmap: %d", textureImage.bEnableMipMap);
+	logManager.print("\tenable miplevels: %d", (int)textureImage.m_mipLevels);
+	logManager.print("\tuse sampler: %d", (int)textureImage.m_sampler_id);
+	logManager.print("\tenable cubemap: %d", bCubemap);
 	logManager.print("\tcost %f milliseconds", durationTime);
     //std::cout<<"Load Texture '"<< (*textureNames)[i].first <<"' cost: "<<durationTime<<" milliseconds"<<std::endl;
 }
@@ -154,7 +161,8 @@ void CTextureImage::CreateTextureImage() {
 		for(int i = 0; i < texelNumber; i++) ((uint16_t*)m_pTexels)[i] = frac_float16(((uint16_t*)m_pTexels)[i]);
 	}
 
-	mipLevels = bEnableMipMap ? (static_cast<uint32_t>(std::floor(std::log2(std::max(m_texWidth, m_texHeight)))) + 1) : 1;
+	//mipLevels = bEnableMipMap ? (static_cast<uint32_t>(std::floor(std::log2(std::max(m_texWidth, m_texHeight)))) + 1) : 1;
+	//std::cout<<"mipLevels: "<<mipLevels<<std::endl;
 
 	CWxjBuffer stagingBuffer;
 	VkResult result = stagingBuffer.init(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
@@ -163,13 +171,13 @@ void CTextureImage::CreateTextureImage() {
 	stbi_image_free(m_pTexels);
 
 	//Step 2: create(allocate) image buffer
-	m_textureImageBuffer.createImage(m_texWidth, m_texHeight, mipLevels, VK_SAMPLE_COUNT_1_BIT, m_imageFormat, VK_IMAGE_TILING_OPTIMAL, m_usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, false);
+	m_textureImageBuffer.createImage(m_texWidth, m_texHeight, m_mipLevels, VK_SAMPLE_COUNT_1_BIT, m_imageFormat, VK_IMAGE_TILING_OPTIMAL, m_usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, false);
 
 	//Step 3: copy stagingBuffer(pixels) to imageBuffer(empty)
 	//To perform the copy, need change imageBuffer's layout: undefined->transferDST->shader-read-only 
 	//If the image is mipmap enabled, keep the transferDST layout (it will be mipmaped anyway)
 	//(transfer image in non-DST layout is not optimal???)
-	if(mipLevels == 1){
+	if(m_mipLevels == 1){
 		transitionImageLayout(m_textureImageBuffer.image, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
  		copyBufferToImage(stagingBuffer.buffer, m_textureImageBuffer.image, static_cast<uint32_t>(m_texWidth), static_cast<uint32_t>(m_texHeight));
       	transitionImageLayout(m_textureImageBuffer.image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_GENERAL);//VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL ///!!!!
@@ -182,7 +190,7 @@ void CTextureImage::CreateTextureImage() {
 }
 
 void CTextureImage::CreateImageView(VkImageAspectFlags aspectFlags){
-    m_textureImageBuffer.createImageView(m_imageFormat, aspectFlags, mipLevels, false);
+    m_textureImageBuffer.createImageView(m_imageFormat, aspectFlags, m_mipLevels, false);
 }
 
 /*******************
@@ -200,7 +208,7 @@ void CTextureImage::transitionImageLayout(VkImage image, VkImageLayout oldLayout
     barrier.image = image;
     barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
     barrier.subresourceRange.baseMipLevel = 0;
-    barrier.subresourceRange.levelCount = mipLevels;
+    barrier.subresourceRange.levelCount = m_mipLevels;
     barrier.subresourceRange.baseArrayLayer = 0;
     barrier.subresourceRange.layerCount = 1;
 	//barrier.subresourceRange.layerCount = 6; //for cubemap
@@ -296,7 +304,7 @@ void CTextureImage::CreateTextureImage_cubemap() {
 		for(int i = 0; i < texelNumber; i++) ((uint16_t*)m_pTexels)[i] = frac_float16(((uint16_t*)m_pTexels)[i]);
 	}
 
-	mipLevels = bEnableMipMap ? (static_cast<uint32_t>(std::floor(std::log2(std::max(m_texWidth, m_texHeight)))) + 1) : 1;
+	//mipLevels = bEnableMipMap ? (static_cast<uint32_t>(std::floor(std::log2(std::max(m_texWidth, m_texHeight)))) + 1) : 1;
 
 	CWxjBuffer stagingBuffer;
 	VkResult result = stagingBuffer.init(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
@@ -305,13 +313,13 @@ void CTextureImage::CreateTextureImage_cubemap() {
 	stbi_image_free(m_pTexels);
 
 	//Step 2: create(allocate) image buffer
-	m_textureImageBuffer.createImage(m_texWidth, m_texHeight, mipLevels, VK_SAMPLE_COUNT_1_BIT, m_imageFormat, VK_IMAGE_TILING_OPTIMAL, m_usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, true);
+	m_textureImageBuffer.createImage(m_texWidth, m_texHeight, m_mipLevels, VK_SAMPLE_COUNT_1_BIT, m_imageFormat, VK_IMAGE_TILING_OPTIMAL, m_usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, true);
 
 	//Step 3: copy stagingBuffer(pixels) to imageBuffer(empty)
 	//To perform the copy, need change imageBuffer's layout: undefined->transferDST->shader-read-only 
 	//If the image is mipmap enabled, keep the transferDST layout (it will be mipmaped anyway)
 	//(transfer image in non-DST layout is not optimal???)
-	if(mipLevels == 1){
+	if(m_mipLevels == 1){
 		transitionImageLayout_cubemap(m_textureImageBuffer.image, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
  		copyBufferToImage_cubemap(stagingBuffer.buffer, m_textureImageBuffer.image, static_cast<uint32_t>(m_texWidth), static_cast<uint32_t>(m_texHeight));
       	transitionImageLayout_cubemap(m_textureImageBuffer.image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_GENERAL);//VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL ///!!!!
@@ -324,7 +332,7 @@ void CTextureImage::CreateTextureImage_cubemap() {
 }
 
 void CTextureImage::CreateImageView_cubemap(VkImageAspectFlags aspectFlags){
-    m_textureImageBuffer.createImageView(m_imageFormat, aspectFlags, mipLevels, true);
+    m_textureImageBuffer.createImageView(m_imageFormat, aspectFlags, m_mipLevels, true);
 }
 
 /*******************
@@ -342,7 +350,7 @@ void CTextureImage::transitionImageLayout_cubemap(VkImage image, VkImageLayout o
     barrier.image = image;
     barrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
     barrier.subresourceRange.baseMipLevel = 0;
-    barrier.subresourceRange.levelCount = mipLevels;
+    barrier.subresourceRange.levelCount = m_mipLevels;
     barrier.subresourceRange.baseArrayLayer = 0;
     //barrier.subresourceRange.layerCount = 1;
 	barrier.subresourceRange.layerCount = 6; //for cubemap
@@ -492,7 +500,7 @@ void CTextureImage::endSingleTimeCommands(VkCommandBuffer commandBuffer) {
 *	Texture Image: Mipmap
 ********************/
 void CTextureImage::generateMipmaps(){
-    if(mipLevels <= 1) return;
+    if(m_mipLevels <= 1) return;
     generateMipmapsCore(m_textureImageBuffer.image);
 }
 
@@ -522,7 +530,7 @@ void CTextureImage::generateMipmapsCore(VkImage image, bool bCreateTempTexture, 
 	int32_t mipWidth = m_texWidth;
 	int32_t mipHeight = m_texHeight;
 
-	for (uint32_t i = 1; i < mipLevels; i++) {
+	for (uint32_t i = 1; i < m_mipLevels; i++) {
 		barrier.subresourceRange.baseMipLevel = i - 1;
 		barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
 		barrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
@@ -580,7 +588,7 @@ void CTextureImage::generateMipmapsCore(VkImage image, bool bCreateTempTexture, 
 		if (mipHeight > 1) mipHeight /= 2;
 	}
 
-	barrier.subresourceRange.baseMipLevel = mipLevels - 1;
+	barrier.subresourceRange.baseMipLevel = m_mipLevels - 1;
 	barrier.oldLayout = VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL;
 	if(bCreateTempTexture) barrier.newLayout = VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL;
 	else barrier.newLayout = VK_IMAGE_LAYOUT_GENERAL;//VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
@@ -605,7 +613,7 @@ void CTextureImage::CreateTextureImage_rainbow_mipmap(void* texels, VkImageUsage
 		for(int i = 0; i < texelNumber; i++) ((uint16_t*)texels)[i] = frac_float16(((uint16_t*)texels)[i]);
 	}
 
-	mipLevels = bEnableMipMap ? (static_cast<uint32_t>(std::floor(std::log2(std::max(m_texWidth, m_texHeight)))) + 1) : 1;
+	//mipLevels = bEnableMipMap ? (static_cast<uint32_t>(std::floor(std::log2(std::max(m_texWidth, m_texHeight)))) + 1) : 1;
 
 	CWxjBuffer stagingBuffer;
 	VkResult result = stagingBuffer.init(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
@@ -613,9 +621,9 @@ void CTextureImage::CreateTextureImage_rainbow_mipmap(void* texels, VkImageUsage
 
 	stbi_image_free(texels);
 
-	imageBuffer.createImage(m_texWidth, m_texHeight, mipLevels, VK_SAMPLE_COUNT_1_BIT, m_imageFormat, VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, false);
+	imageBuffer.createImage(m_texWidth, m_texHeight, m_mipLevels, VK_SAMPLE_COUNT_1_BIT, m_imageFormat, VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, false);
 
-	if(mipLevels == 1){
+	if(m_mipLevels == 1){
 		transitionImageLayout(imageBuffer.image, VK_IMAGE_LAYOUT_UNDEFINED, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL);
  		copyBufferToImage(stagingBuffer.buffer, imageBuffer.image, static_cast<uint32_t>(m_texWidth), static_cast<uint32_t>(m_texHeight));
       	transitionImageLayout(imageBuffer.image, VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL, VK_IMAGE_LAYOUT_GENERAL);//VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL ///!!!!
@@ -628,7 +636,7 @@ void CTextureImage::CreateTextureImage_rainbow_mipmap(void* texels, VkImageUsage
 }
 
 void CTextureImage::generateMipmaps(std::string rainbowCheckerboardTexturePath, VkImageUsageFlags usage){ //rainbow mipmaps case
-    if(mipLevels <= 1) return;
+    if(m_mipLevels <= 1) return;
 
 	std::array<CWxjImageBuffer, MIPMAP_TEXTURE_COUNT> tmpTextureBufferForRainbowMipmaps;//create temp mipmaps
 	for (int i = 0; i < MIPMAP_TEXTURE_COUNT; i++) {//fill temp mipmaps

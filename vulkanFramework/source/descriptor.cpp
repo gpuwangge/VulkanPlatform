@@ -127,42 +127,45 @@ void CGraphicsDescriptorManager::addVPUniformBuffer(){
     }
 }
 
-void CGraphicsDescriptorManager::addImageSamplerUniformBuffer(uint32_t mipLevels){
+void CGraphicsDescriptorManager::addImageSamplerUniformBuffer(std::vector<int> mipLevels){
     //bUseSampler = true;
     uniformBufferUsageFlags |= UNIFORM_BUFFER_SAMPLER_BIT;//non-static content
     //std::cout<<"addImageSamplerUniformBuffer::uniformBufferUsageFlags = " << uniformBufferUsageFlags<<std::endl;
 
-	VkPhysicalDeviceProperties properties{};
-	vkGetPhysicalDeviceProperties(CContext::GetHandle().GetPhysicalDevice(), &properties);
+    for(int i = 0; i < mipLevels.size(); i++){
 
-	VkSamplerCreateInfo samplerInfo{};
-	samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
-	samplerInfo.magFilter = VK_FILTER_LINEAR;
-	samplerInfo.minFilter = VK_FILTER_LINEAR;
-	samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-	samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-	samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-	samplerInfo.anisotropyEnable = VK_TRUE;
-	samplerInfo.maxAnisotropy = properties.limits.maxSamplerAnisotropy;
-	samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
-	samplerInfo.unnormalizedCoordinates = VK_FALSE;
-	samplerInfo.compareEnable = VK_FALSE;
-	samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
+        VkPhysicalDeviceProperties properties{};
+        vkGetPhysicalDeviceProperties(CContext::GetHandle().GetPhysicalDevice(), &properties);
 
-	if (mipLevels > 1) {
-        //std::cout<<"Sampler MipLevels = "<< mipLevels<<"(>1). Enable mipmap for all textures using this sampler"<<std::endl;
-		samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;// VK_SAMPLER_MIPMAP_MODE_NEAREST;
-	 	samplerInfo.minLod = 0.0f;
-	 	samplerInfo.maxLod = static_cast<float>(mipLevels / 2);
-	 	samplerInfo.mipLodBias = 0.0f;
-	}
+        VkSamplerCreateInfo samplerInfo{};
+        samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+        samplerInfo.magFilter = VK_FILTER_LINEAR;
+        samplerInfo.minFilter = VK_FILTER_LINEAR;
+        samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+        samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+        samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+        samplerInfo.anisotropyEnable = VK_TRUE;
+        samplerInfo.maxAnisotropy = properties.limits.maxSamplerAnisotropy;
+        samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
+        samplerInfo.unnormalizedCoordinates = VK_FALSE;
+        samplerInfo.compareEnable = VK_FALSE;
+        samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
 
-    VkSampler sampler;
-	VkResult result = vkCreateSampler(CContext::GetHandle().GetLogicalDevice(), &samplerInfo, nullptr, &sampler);
-    //textureSamplers[textureSamplerCount++]
-    textureSamplers.push_back(sampler);
-    samplerCount++;
-	//REPORT("vkCreateSampler");
+        if (mipLevels[i] > 1) {
+            //std::cout<<"Sampler MipLevels = "<< mipLevels<<"(>1). Enable mipmap for all textures using this sampler"<<std::endl;
+            samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;// VK_SAMPLER_MIPMAP_MODE_NEAREST;
+            samplerInfo.minLod = 0.0f;
+            samplerInfo.maxLod = static_cast<float>(mipLevels[i] / 2);
+            samplerInfo.mipLodBias = 0.0f;
+        }
+
+        VkSampler sampler;
+        VkResult result = vkCreateSampler(CContext::GetHandle().GetLogicalDevice(), &samplerInfo, nullptr, &sampler);
+        //textureSamplers[textureSamplerCount++]
+        textureSamplers.push_back(sampler);
+        samplerCount++;
+        //REPORT("vkCreateSampler");
+    }
 }
 
 void CComputeDescriptorManager::addStorageBuffer(VkDeviceSize storageBufferSize, VkBufferUsageFlags usage){

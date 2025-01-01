@@ -1,24 +1,25 @@
 Object:
   Models: [viking_room.obj]
   Textures: [viking_room.png]
-  TextureMipmaps: [false]
+  TextureMipmaps: [1]
+  TextureSamplers: [0] 
   TextureCubemap: [false]
   VertexShaders: [simpleObjLoader/shader.vert.spv]
   FragmentShaders: [simpleObjLoader/shader.frag.spv]
   ComputeShaders: []
   
   ModelList: [0]
-  TextureList: [0]
+  TextureList: [[0]]
   GraphicsPipelineList: [0]
 
 Uniform:
-  # Graphcis: CustomGraphics_MVP_VP (assume all graphics pipelines use the same descriptor uniform layout/set)
+  # Graphcis: CustomGraphics_MVP_VP 
   Graphics: [[false, true, false]]
-  # Sampler: SamplersNumber
-  Sampler: [1]
-  # Compute: CustomCompute_Storage_SwapchainStorage_TextureStorage (assume all compute pipelines use the same descriptor uniform layout/set)
+  # Compute: CustomCompute_Storage_SwapchainStorage_TextureStorage
   Compute: []
-
+  # SamplerAttributes: mipLevel0, mipLevel2, mipLevel3
+  SamplerAttributes: [1]
+  
 Feature:
   GraphicsDepthTest: true
   GraphicsMSAA: false

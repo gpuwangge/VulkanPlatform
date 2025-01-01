@@ -5,7 +5,8 @@
 
 struct TextureAttributeInfo{
     std::string name;
-    bool enableMipmap;
+    int miplevel;
+    int samplerid;
     bool enableCubemap;
 };
 

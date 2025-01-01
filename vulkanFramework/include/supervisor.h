@@ -48,7 +48,7 @@ public:
      *****************************/
     static VkDeviceSize GraphicsCustomUniformBufferSize;
     static VkDescriptorSetLayoutBinding GraphicsCustomBinding; 
-    static int m_samplerCount;
+    //static int m_samplerCount;
 
     static void Activate_Uniform_Graphics_VP();
     static bool Query_Uniform_Graphics_VP();
@@ -59,7 +59,7 @@ public:
     static void Activate_Uniform_Graphics_Custom(VkDeviceSize graphicsCustomUniformBufferSize, VkDescriptorSetLayoutBinding graphicsCustomBinding);
     static bool Query_Uniform_Graphics_Custom();
     
-    static void Activate_Uniform_Graphics_Sampler(int samplerCount = 1);
+    static void Activate_Uniform_Graphics_Sampler();
     static bool Query_Uniform_Graphics_Sampler();
 
     /*****************************

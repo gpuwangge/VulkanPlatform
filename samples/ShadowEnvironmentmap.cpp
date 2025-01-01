@@ -43,17 +43,20 @@ public:
 		appInfo.Uniform.GraphicsCustom.Binding = CustomUniformBufferObject::GetBinding();
 
 		CApplication::initialize();
-		for(int i = 0; i < objectList.size()-1; i++)
+		for(int i = 1; i < objectList.size()-1; i++)
 			objectList[i].SetScale(0.01f, 0.01f, 0.01f);
 
-		objectList[0].SetPosition(-1, 0, 0) ;
-		objectList[1].SetPosition(1, 0, 0) ;
-		objectList[2].SetPosition(0, -1, 0) ;
-		objectList[3].SetPosition(0, 1, 0) ;
-		objectList[4].SetPosition(0, 0, -1) ;
-		objectList[5].SetPosition(0, 0, 1) ;
+		objectList[0].SetScale(0.05f, 0.05f, 0.05f);
+		objectList[0].SetPosition(0, -7, 0); //table
 
-		objectList[6].SetAngularVelocity(10,10,10);
+		objectList[1].SetPosition(-1, 0, 0);
+		objectList[2].SetPosition(1, 0, 0);
+		objectList[3].SetPosition(0, -1, 0);
+		objectList[4].SetPosition(0, 1, 0);
+		objectList[5].SetPosition(0, 0, -1);
+		objectList[6].SetPosition(0, 0, 1);
+
+		objectList[7].SetAngularVelocity(10,10,10);
 	}
 
 	void update(){
@@ -72,12 +75,12 @@ public:
 		customUBO.cameraPos = mainCamera.Position;
 		graphicsDescriptorManager.updateCustomUniformBuffer<CustomUniformBufferObject>(renderer.currentFrame, durationTime, customUBO);
 
-		objectList[0].SetVelocity(glm::cross(objectList[0].Position - glm::vec3(0,0,0), glm::vec3(0,0,1)));
 		objectList[1].SetVelocity(glm::cross(objectList[1].Position - glm::vec3(0,0,0), glm::vec3(0,0,1)));
 		objectList[2].SetVelocity(glm::cross(objectList[2].Position - glm::vec3(0,0,0), glm::vec3(0,0,1)));
 		objectList[3].SetVelocity(glm::cross(objectList[3].Position - glm::vec3(0,0,0), glm::vec3(0,0,1)));
-		objectList[4].SetVelocity(glm::cross(objectList[4].Position - glm::vec3(0,0,0), glm::vec3(0.5,0.5,0)));
+		objectList[4].SetVelocity(glm::cross(objectList[4].Position - glm::vec3(0,0,0), glm::vec3(0,0,1)));
 		objectList[5].SetVelocity(glm::cross(objectList[5].Position - glm::vec3(0,0,0), glm::vec3(0.5,0.5,0)));
+		objectList[6].SetVelocity(glm::cross(objectList[6].Position - glm::vec3(0,0,0), glm::vec3(0.5,0.5,0)));
 
 		CApplication::update();
 	}

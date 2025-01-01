@@ -1,23 +1,24 @@
 Object:
   Models: [cube.obj]
   Textures: [skybox_interstellar.jpg]
-  TextureMipmaps: [false]
+  TextureMipmaps: [1]
+  TextureSamplers: [0] 
   TextureCubemap: [true]
   VertexShaders: [simpleEnvironmentmap/environmentmap.vert.spv, simpleEnvironmentmap/skybox.vert.spv]
   FragmentShaders: [simpleEnvironmentmap/environmentmap.frag.spv, simpleEnvironmentmap/skybox.frag.spv]
   ComputeShaders: []
   
   ModelList: [0, 0, 0, 0, 0, 0, 0, 0]
-  TextureList: [0, 0, 0, 0, 0, 0, 0, 0]
+  TextureList: [[0], [0], [0], [0], [0], [0], [0], [0]]
   GraphicsPipelineList: [0, 0, 0, 0, 0, 0, 0, 1]
 
 Uniform:
-  # Graphcis: CustomGraphics_MVP_VP (assume all graphics pipelines use the same descriptor uniform layout/set)
+  # Graphcis: CustomGraphics_MVP_VP
   Graphics: [[true, true, false]]
-  # Sampler: SamplersNumber
-  Sampler: [1]
-  # Compute: CustomCompute_Storage_SwapchainStorage_TextureStorage (assume all compute pipelines use the same descriptor uniform layout/set)
+  # Compute: CustomCompute_Storage_SwapchainStorage_TextureStorage
   Compute: []
+  # SamplerAttributes: mipLevel0, mipLevel2, mipLevel3
+  SamplerAttributes: [1]
 
 Feature:
   GraphicsDepthTest: true

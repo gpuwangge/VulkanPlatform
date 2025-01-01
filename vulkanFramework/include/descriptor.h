@@ -79,7 +79,7 @@ public:
     //bool bUseSampler;
     //static int textureSamplerCount;
     static std::vector<VkSampler> textureSamplers;
-    static void addImageSamplerUniformBuffer(uint32_t mipLevels);
+    static void addImageSamplerUniformBuffer(std::vector<int> mipLevels);
 
     static int getLayoutSize();
     static int getSetSize();

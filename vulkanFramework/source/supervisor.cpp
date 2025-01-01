@@ -15,7 +15,7 @@ VkDeviceSize CSupervisor::ComputeStorageBufferSize;
 VkBufferUsageFlags CSupervisor::ComputeStorageBufferUsage;
 VkDeviceSize CSupervisor::ComputeCustomUniformBufferSize;
 VkDescriptorSetLayoutBinding CSupervisor::ComputeCustomBinding;
-int CSupervisor::m_samplerCount;
+//int CSupervisor::m_samplerCount;
 //bool CMastermind::bDepthTest;
 //bool CMastermind::bMSAA;
 bool CSupervisor::b48bpt;
@@ -39,7 +39,7 @@ void CSupervisor::Activate_Uniform_Graphics_Custom(VkDeviceSize graphicsCustomUn
     GraphicsCustomBinding = graphicsCustomBinding;
 }
 bool CSupervisor::Query_Uniform_Graphics_Custom(){return CDescriptorManager::uniformBufferUsageFlags & UNIFORM_BUFFER_CUSTOM_GRAPHICS_BIT;}
-void CSupervisor::Activate_Uniform_Graphics_Sampler(int samplerCount){ m_samplerCount = samplerCount; CDescriptorManager::uniformBufferUsageFlags |= UNIFORM_BUFFER_SAMPLER_BIT;}
+void CSupervisor::Activate_Uniform_Graphics_Sampler(){ CDescriptorManager::uniformBufferUsageFlags |= UNIFORM_BUFFER_SAMPLER_BIT;}
 bool CSupervisor::Query_Uniform_Graphics_Sampler(){return CDescriptorManager::uniformBufferUsageFlags & UNIFORM_BUFFER_SAMPLER_BIT;}
 
 void CSupervisor::Activate_Uniform_Compute_Custom(VkDeviceSize graphicsCustomUniformBufferSize, VkDescriptorSetLayoutBinding graphicsCustomBinding){ 
@@ -113,21 +113,21 @@ void CSupervisor::Activate_Texture(std::unique_ptr<std::vector<TextureAttributeI
         for(int i = 0; i < textureAttributes->size(); i++){
             //auto startTextureTime = std::chrono::high_resolution_clock::now();
 
-            if((*textureAttributes)[i].enableMipmap) //mipmap
+            if((*textureAttributes)[i].miplevel > 1) //mipmap
                 usage = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
             else 
                 if(Query_Uniform_Compute_StorageImage()) usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT;
                 else usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
             if(!b48bpt) //24bpt
-                if(Query_Uniform_Compute_StorageImage_Swapchain()) m_app->textureManager.CreateTextureImage((*textureAttributes)[i].name, usage, m_app->renderer.commandPool, (*textureAttributes)[i].enableMipmap, m_app->swapchain.swapChainImageFormat);
-                else m_app->textureManager.CreateTextureImage((*textureAttributes)[i].name, usage, m_app->renderer.commandPool, (*textureAttributes)[i].enableMipmap,  VK_FORMAT_R8G8B8A8_SRGB, 8, (*textureAttributes)[i].enableCubemap);  
+                if(Query_Uniform_Compute_StorageImage_Swapchain()) m_app->textureManager.CreateTextureImage((*textureAttributes)[i].name, usage, m_app->renderer.commandPool, (*textureAttributes)[i].miplevel, (*textureAttributes)[i].samplerid, m_app->swapchain.swapChainImageFormat);
+                else m_app->textureManager.CreateTextureImage((*textureAttributes)[i].name, usage, m_app->renderer.commandPool, (*textureAttributes)[i].miplevel, (*textureAttributes)[i].samplerid, VK_FORMAT_R8G8B8A8_SRGB, 8, (*textureAttributes)[i].enableCubemap);  
             else //48bpt
-                m_app->textureManager.CreateTextureImage((*textureAttributes)[i].name, usage, m_app->renderer.commandPool, (*textureAttributes)[i].enableMipmap, VK_FORMAT_R16G16B16A16_UNORM, 16, (*textureAttributes)[i].enableCubemap); 
+                m_app->textureManager.CreateTextureImage((*textureAttributes)[i].name, usage, m_app->renderer.commandPool, (*textureAttributes)[i].miplevel, (*textureAttributes)[i].samplerid, VK_FORMAT_R16G16B16A16_UNORM, 16, (*textureAttributes)[i].enableCubemap); 
             
             if(bRainbowMipmap){
                 VkImageUsageFlags usage_mipmap = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
-                if((*textureAttributes)[i].enableMipmap) m_app->textureManager.textureImages[i].generateMipmaps("checkerboard", usage_mipmap);
-            }else if((*textureAttributes)[i].enableMipmap) m_app->textureManager.textureImages[i].generateMipmaps();
+                if((*textureAttributes)[i].miplevel > 1) m_app->textureManager.textureImages[i].generateMipmaps("checkerboard", usage_mipmap);
+            }else if((*textureAttributes)[i].miplevel > 1) m_app->textureManager.textureImages[i].generateMipmaps();
             
             //auto endTextureTime = std::chrono::high_resolution_clock::now();
             //auto durationTime = std::chrono::duration<float, std::chrono::seconds::period>(endTextureTime - startTextureTime).count()*1000;
@@ -198,8 +198,9 @@ void CSupervisor::Activate_Pipeline(){ //*customBinding = NULL
         //But the sampler is using first miplevels for all textures
         //Need make change so only mipmaped texture use mipmaped sampler
         if(Query_Uniform_Graphics_Sampler())
-            for(int i = 0; i < m_samplerCount; i++)
-                CGraphicsDescriptorManager::addImageSamplerUniformBuffer(m_app->textureManager.textureImages[i].mipLevels);
+            CGraphicsDescriptorManager::addImageSamplerUniformBuffer(m_app->appInfo.Uniform.SamplerAttributes);
+            //for(int i = 0; i < m_samplerCount; i++)
+                //CGraphicsDescriptorManager::addImageSamplerUniformBuffer(m_app->textureManager.textureImages[i].mipLevels);//TODO: mipLevels is per texture image; but there are multiple pipelines, which texture sampler to use?
         if(Query_Uniform_Graphics_Custom()) CGraphicsDescriptorManager::addCustomUniformBuffer(GraphicsCustomUniformBufferSize);
     }
     if(Query_Pipeline_Compute()){

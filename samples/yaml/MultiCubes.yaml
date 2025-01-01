@@ -1,23 +1,24 @@
 Object:
   Models: [cube.obj]
   Textures: [viking_room.png, fur.jpg, skin.jpg]
-  TextureMipmaps: [false, false, false]
+  TextureMipmaps: [1, 1, 1]
+  TextureSamplers: [0, 0, 0] 
   TextureCubemap: [false, false, false]
   VertexShaders: [multiCubes/shader1.vert.spv, multiCubes/shader2.vert.spv]
   FragmentShaders: [multiCubes/shader1.frag.spv, multiCubes/shader2.frag.spv]
   ComputeShaders: []
   
   ModelList: [0,0,0,0,0]
-  TextureList: [0,1,2,1,2]
+  TextureList: [[0],[1],[2],[1],[2]]
   GraphicsPipelineList: [1,0,1,0,0]
 
 Uniform:
-  # Graphcis: CustomGraphics_MVP_VP (assume all graphics pipelines use the same descriptor uniform layout/set)
+  # Graphcis: CustomGraphics_MVP_VP
   Graphics: [[false, true, false]]
-  # Sampler: SamplersNumber
-  Sampler: [1]
-  # Compute: CustomCompute_Storage_SwapchainStorage_TextureStorage (assume all compute pipelines use the same descriptor uniform layout/set)
+  # Compute: CustomCompute_Storage_SwapchainStorage_TextureStorage
   Compute: []
+  # SamplerAttributes: mipLevel0, mipLevel2, mipLevel3
+  SamplerAttributes: [1]
 
 Feature:
   GraphicsDepthTest: false

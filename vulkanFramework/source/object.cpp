@@ -7,7 +7,7 @@
 CObject::CObject(){
     bUseMVP_VP = false;
     bSticker = false;
-    bUseTextureSampler = false;
+    //bUseTextureSampler = false;
     bSkybox = false;
     bUpdate = true;
 
@@ -86,13 +86,13 @@ void CObject::CleanUp(){
     //textureDescriptor.DestroyAndFree();
 }
 
-void CObject::CreateTextureDescriptorSets(CTextureImage &textureImage, VkDescriptorPool &descriptorPool, VkDescriptorSetLayout &descriptorSetLayout, VkSampler &sampler, std::vector<VkImageView> *swapchainImageViews){
-    std::vector<CTextureImage> textureImages{textureImage};
-    std::vector<VkSampler> samplers{sampler};
-    CreateTextureDescriptorSets(textureImages, descriptorPool, descriptorSetLayout, samplers, swapchainImageViews);
-}
+// void CObject::CreateTextureDescriptorSets(CTextureImage &textureImage, VkDescriptorPool &descriptorPool, VkDescriptorSetLayout &descriptorSetLayout, VkSampler &sampler, std::vector<VkImageView> *swapchainImageViews){
+//     std::vector<CTextureImage> textureImages{textureImage};
+//     std::vector<VkSampler> samplers{sampler};
+//     CreateTextureDescriptorSets(textureImages, descriptorPool, descriptorSetLayout, samplers, swapchainImageViews);
+// }
 
-void CObject::CreateTextureDescriptorSets(std::vector<CTextureImage> &textureImages, VkDescriptorPool &descriptorPool, VkDescriptorSetLayout &descriptorSetLayout, std::vector<VkSampler> &samplers, std::vector<VkImageView> *swapchainImageViews){
+void CObject::CreateTextureDescriptorSets(VkDescriptorPool &descriptorPool, VkDescriptorSetLayout &descriptorSetLayout, std::vector<VkSampler> &samplers, std::vector<VkImageView> *swapchainImageViews){
     //std::cout<<"TextureDescriptor::createDescriptorSets."<<std::endl;
     
     int descriptorSize = samplers.size();//getDescriptorSize();
@@ -125,9 +125,17 @@ void CObject::CreateTextureDescriptorSets(std::vector<CTextureImage> &textureIma
         //if(uniformBufferUsageFlags & UNIFORM_BUFFER_SAMPLER_BIT){
         imageInfo.resize(samplers.size());
         for(int j = 0; j < samplers.size(); j++){
+            //std::cout<<"CreateTextureDescriptorSets::samplers:"<<j<<std::endl;
             imageInfo[j].imageLayout = VK_IMAGE_LAYOUT_GENERAL; //test compute storage image: ?need figure this out. VK_IMAGE_LAYOUT_GENERAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
-            imageInfo[j].imageView = textureImages[j].m_textureImageBuffer.view;
-            imageInfo[j].sampler = samplers[j];
+            //imageInfo[j].imageView = textureImages[j].m_textureImageBuffer.view;
+            //imageInfo[j].sampler = samplers[j];
+            if(j < m_texture_ids.size()){
+                imageInfo[j].imageView = p_textureManager->textureImages[m_texture_ids[j]].m_textureImageBuffer.view;
+                imageInfo[j].sampler = samplers[p_textureManager->textureImages[m_texture_ids[j]].m_sampler_id]; 
+            }else{ //There are more samplers than textures for this object, so use the first texture to fill other samplers
+                imageInfo[j].imageView = p_textureManager->textureImages[m_texture_ids[0]].m_textureImageBuffer.view;
+                imageInfo[j].sampler = samplers[p_textureManager->textureImages[m_texture_ids[0]].m_sampler_id]; 
+            }
             descriptorWrites[j].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
             descriptorWrites[j].dstSet = descriptorSets[i];
             descriptorWrites[j].dstBinding = j;
@@ -146,14 +154,12 @@ void CObject::CreateTextureDescriptorSets(std::vector<CTextureImage> &textureIma
     //std::cout<<"Done set descriptor. "<<std::endl;
 }
 
-void CObject::Register(CApplication *p_app, int texture_id, int model_id, int object_id, int graphics_pipeline_id, glm::vec3 length, glm::vec3 lengthMin, glm::vec3 lengthMax){ //-1 means no texture or model 
-    m_object_id = object_id;
-    m_texture_id = texture_id;
-    m_model_id = model_id;
-    m_graphics_pipeline_id = graphics_pipeline_id;
+void CObject::Register(CApplication *p_app, std::vector<int> texture_ids, int model_id, int object_id, int graphics_pipeline_id, glm::vec3 length, glm::vec3 lengthMin, glm::vec3 lengthMax){ //-1 means no texture or model 
+    m_object_id = object_id; 
+    m_texture_ids = texture_ids; //if use no texture, will be empty vector (sampler size should be equal to texture size)
+    m_model_id = model_id; //if use no model, will be -1
+    m_graphics_pipeline_id = graphics_pipeline_id; //if no graphics pipeline, will be -1
     bUseMVP_VP = CGraphicsDescriptorManager::CheckMVP();
-
-    std::cout<<"Register object:"<<m_object_id<<" with texture:"<<m_texture_id<<" and model:"<<model_id<<" and graphcis pipeline:"<<m_graphics_pipeline_id<<std::endl;
 
     Length_original = length;
     LengthMin_original = lengthMin;
@@ -169,28 +175,45 @@ void CObject::Register(CApplication *p_app, int texture_id, int model_id, int ob
     p_graphicsPipelineLayout = &(p_app->renderProcess.graphicsPipelineLayouts[m_graphics_pipeline_id]);
     //p_graphicsPipelineLayout = &(p_app->renderProcess.graphicsPipelineLayout);
     p_graphicsDescriptorSets = &(p_app->graphicsDescriptorManager.descriptorSets);
+    p_textureManager = &(p_app->textureManager);
+
+
+    //there are up to 3 samplers, support up to 3 different textures
+    //for(int i = 0; i < m_texture_ids.size(); i++)
+    //    std::cout<<"Register object:"<<m_object_id<<" with texture:"<<m_texture_ids[i]<<" and model:"<<model_id<<" and graphcis pipeline:"<<m_graphics_pipeline_id<<std::endl;
+
+    //bUseTextureSampler = true; 
+    if(m_texture_ids.size() > 0){
+        CreateTextureDescriptorSets(
+            CGraphicsDescriptorManager::descriptorPool,
+            CGraphicsDescriptorManager::textureDescriptorSetLayout,
+            CGraphicsDescriptorManager::textureSamplers
+        );
+    }
+
 
     //Create texture descriptor set
-    if(texture_id != -1){
-        bUseTextureSampler = true; //vertex3D has texture coord, assume texture is used
-        if(texture_id != INT_MAX){
-            //bUseCubemap = p_app->textureManager.textureImages[m_texture_id].bEnableCubemap; //if this object is skybox, the view matrix should ignore translate
-            CreateTextureDescriptorSets(
-                p_app->textureManager.textureImages[m_texture_id], 
-                CGraphicsDescriptorManager::descriptorPool,
-                CGraphicsDescriptorManager::textureDescriptorSetLayout,
-                CGraphicsDescriptorManager::textureSamplers[0]
-            );
-        }else{
-            //bUseCubemap = false; //the skybox with cubemap should use only one texture
-            CreateTextureDescriptorSets(
-                p_app->textureManager.textureImages, 
-                CGraphicsDescriptorManager::descriptorPool,
-                CGraphicsDescriptorManager::textureDescriptorSetLayout,
-                CGraphicsDescriptorManager::textureSamplers
-            );
-        }
-    }
+    // if(m_texture_ids[i] != -1){
+    //     bUseTextureSampler = true; 
+    //     //if(texture_id != INT_MAX){
+    //         //bUseCubemap = p_app->textureManager.textureImages[m_texture_id].bEnableCubemap; //if this object is skybox, the view matrix should ignore translate
+        
+    //     CreateTextureDescriptorSets(
+    //         p_app->textureManager.textureImages[m_texture_id], 
+    //         CGraphicsDescriptorManager::descriptorPool,
+    //         CGraphicsDescriptorManager::textureDescriptorSetLayout,
+    //         CGraphicsDescriptorManager::textureSamplers[0]
+    //     );
+    //     // }else{
+    //     //     //bUseCubemap = false; //the skybox with cubemap should use only one texture
+    //     //     CreateTextureDescriptorSets(
+    //     //         p_app->textureManager.textureImages, 
+    //     //         CGraphicsDescriptorManager::descriptorPool,
+    //     //         CGraphicsDescriptorManager::textureDescriptorSetLayout,
+    //     //         CGraphicsDescriptorManager::textureSamplers
+    //     //     );
+    //     // }
+    // }
 
 }
 
@@ -202,7 +225,7 @@ void CObject::Draw(uint32_t n){
 
     std::vector<std::vector<VkDescriptorSet>> dsSets; 
     if(p_graphicsDescriptorSets->size() > 0) dsSets.push_back(*p_graphicsDescriptorSets); //set = 0, general uniform
-    if(bUseTextureSampler) dsSets.push_back(descriptorSets); //set = 1, texture sampler uniform
+    if(m_texture_ids.size() > 0) dsSets.push_back(descriptorSets); //set = 1, texture sampler uniform
 
     if(dsSets.size() > 0){
         int dynamicOffsetIndex = -1; //-1 means not use dynamic offset (no MVP/VP used)

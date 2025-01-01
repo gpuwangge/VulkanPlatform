@@ -1,24 +1,25 @@
 Object:
   Models: [cube.obj]
   Textures: [skybox2_direction.png]
-  TextureMipmaps: [false]
+  TextureMipmaps: [1]
+  TextureSamplers: [0]
   TextureCubemap: [true]
   VertexShaders: [simpleSkybox/shader.vert.spv]
   FragmentShaders: [simpleSkybox/shader.frag.spv]
   ComputeShaders: []
   
   ModelList: [0]
-  TextureList: [0]
+  TextureList: [[0]]
   GraphicsPipelineList: [0]
 
 Uniform:
-  # Graphcis: CustomGraphics_MVP_VP (assume all graphics pipelines use the same descriptor uniform layout/set)
+  # Graphcis: CustomGraphics_MVP_VP
   Graphics: [[false, true, false]]
-  # Sampler: SamplersNumber
-  Sampler: [1]
-  # Compute: CustomCompute_Storage_SwapchainStorage_TextureStorage (assume all compute pipelines use the same descriptor uniform layout/set)
+  # Compute: CustomCompute_Storage_SwapchainStorage_TextureStorage
   Compute: []
-
+  # SamplerAttributes: mipLevel0, mipLevel2, mipLevel3
+  SamplerAttributes: [1]
+  
 Feature:
   GraphicsDepthTest: false
   GraphicsMSAA: false

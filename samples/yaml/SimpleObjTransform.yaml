@@ -1,23 +1,24 @@
 Object:
-  Models: [ElegantChairTable.obj]
-  Textures: [repeat-pattern2.jpg]
-  TextureMipmaps: [true]
-  TextureCubemap: [false]
+  Models: [sphere.obj, ElegantChairTable.obj]
+  Textures: [metal.jpg, repeat-pattern2.jpg]
+  TextureMipmaps: [1, 10]
+  TextureSamplers: [0, 1]
+  TextureCubemap: [false, false]
   VertexShaders: [simpleObjTransform/shader.vert.spv]
   FragmentShaders: [simpleObjTransform/shader.frag.spv]
   ComputeShaders: []
   
-  ModelList: [0]
-  TextureList: [0]
-  GraphicsPipelineList: [0]
+  ModelList: [1, 0]
+  TextureList: [[1], [0]]
+  GraphicsPipelineList: [0, 0]
 
 Uniform:
-  # Graphcis: CustomGraphics_MVP_VP (assume all graphics pipelines use the same descriptor uniform layout/set)
+  # Graphcis: CustomGraphics_MVP_VP
   Graphics: [[false, true, false]]
-  # Sampler: SamplersNumber
-  Sampler: [1]
-  # Compute: CustomCompute_Storage_SwapchainStorage_TextureStorage (assume all compute pipelines use the same descriptor uniform layout/set)
+  # Compute: CustomCompute_Storage_SwapchainStorage_TextureStorage
   Compute: []
+  # SamplerAttributes: mipLevel0, mipLevel2, mipLevel3
+  SamplerAttributes: [1, 10]  
 
 Feature:
   GraphicsDepthTest: false

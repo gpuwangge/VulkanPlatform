@@ -131,8 +131,10 @@ public:
     };
     struct UniformInfo{
         std::vector<std::vector<bool>> GraphicsVector;
-        std::vector<int> SamplerVector;
         std::vector<std::vector<bool>> ComputeVector;
+        std::vector<int> SamplerAttributes;
+        //std::vector<int> GraphicsPipelineSamplers;
+        //std::vector<int> GraphicsPipelineTextures;
 
         //bool EnableGraphicsVP = false; //yaml
         //bool EnableGraphicsMVP = false; //yaml
@@ -194,7 +196,7 @@ public:
             //std::vector<std::pair<std::string, bool>> *Names = NULL;
             //std::vector<int> *List = NULL; 
             std::unique_ptr<std::vector<TextureAttributeInfo>> Attributes; 
-            std::unique_ptr<std::vector<int>> List; //list[i]=j: the i'th object use j'th texture
+            std::unique_ptr<std::vector<std::vector<int>>> List; //list[i]=j: the i'th object use j'th texture
         }Texture;
         struct PipelineInfo{
             std::unique_ptr<std::vector<std::string>> VertexShader;

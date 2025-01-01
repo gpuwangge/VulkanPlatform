@@ -76,8 +76,9 @@ public:
     int m_texChannels; //8 or 16
     unsigned short m_texBptpc; //bit per texel per channel
 
-    uint32_t mipLevels = 1; //1 means no mipmap
-    bool bEnableMipMap = false;
+    uint32_t m_mipLevels = 1; //1 means no mipmap
+    uint32_t m_sampler_id = 0;
+    //bool bEnableMipMap = false;
     //bool bEnableCubemap = false; //when object register, need this information to handle view matrix so the ModelMat has not translate
 };
 
@@ -90,7 +91,7 @@ public:
     CTextureManager();
     ~CTextureManager();
     void CreateTextureImage(const std::string texturePath, VkImageUsageFlags usage, VkCommandPool &commandPool, 
-        bool bEnableMipmap = false,VkFormat imageFormat = VK_FORMAT_R8G8B8A8_SRGB, unsigned short bitPerTexelPerChannel = 8, bool bCubemap = false);
+        int miplevel, int sampler_id, VkFormat imageFormat = VK_FORMAT_R8G8B8A8_SRGB, unsigned short bitPerTexelPerChannel = 8, bool bCubemap = false);
     void Destroy();
 };
 

@@ -1,23 +1,24 @@
 Object:
   Models: [CUSTOM3D0]
   Textures: [fur.jpg, noise.png, wall.jpg]
-  TextureMipmaps: [false, false, false]
+  TextureMipmaps: [1, 1, 1]
+  TextureSamplers: [0, 1, 2]
   TextureCubemap: [false, false, false]
   VertexShaders: [furMark/shader.vert.spv]
   FragmentShaders: [furMark/shader.frag.spv]
   ComputeShaders: []
   
   ModelList: [0]
-  TextureList: [0]
+  TextureList: [[0,1,2]]
   GraphicsPipelineList: [0]
 
 Uniform:
-  # Graphcis: CustomGraphics_MVP_VP (assume all graphics pipelines use the same descriptor uniform layout/set)
+  # Graphcis: CustomGraphics_MVP_VP
   Graphics: [[true, false, false]]
   # Sampler: SamplersNumber
-  Sampler: [3]
-  # Compute: CustomCompute_Storage_SwapchainStorage_TextureStorage (assume all compute pipelines use the same descriptor uniform layout/set)
   Compute: []
+  # SamplerAttributes: mipLevel0, mipLevel2, mipLevel3
+  SamplerAttributes: [1, 1, 1]
 
 Feature:
   GraphicsDepthTest: false

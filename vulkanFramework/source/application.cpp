@@ -133,11 +133,12 @@ void CApplication::initialize(){
         return;
     }
 
-    //Log yaml data
+    //Log yaml data for debug
     PRINT("Object::Models Size:  %d", (int)config["Object"]["Models"].size());
     PRINT("Object::Textures Size:  %d", (int)config["Object"]["Textures"].size());
     PRINT("Object::TextureMipmaps Size:  %d", (int)config["Object"]["TextureMipmaps"].size());
-    PRINT("Object::TextureMipmaps Size:  %d", (int)config["Object"]["TextureCubemap"].size());
+    PRINT("Object::TextureSamplers Size:  %d", (int)config["Object"]["TextureSamplers"].size());
+    PRINT("Object::TextureCubemap Size:  %d", (int)config["Object"]["TextureCubemap"].size());
     PRINT("Object::VertexShaders Size:  %d", (int)config["Object"]["VertexShaders"].size());
     PRINT("Object::FragmentShaders Size:  %d", (int)config["Object"]["FragmentShaders"].size());
     PRINT("Object::ComputeShaders Size:  %d", (int)config["Object"]["ComputeShaders"].size());
@@ -145,31 +146,9 @@ void CApplication::initialize(){
     PRINT("Object::TextureList Size:  %d", (int)config["Object"]["TextureList"].size());
     PRINT("Object::GraphicsPipelineList Size:  %d\n", (int)config["Object"]["GraphicsPipelineList"].size());
 
-    appInfo.Uniform.GraphicsVector = config["Uniform"]["Graphics"].as<std::vector<std::vector<bool>>>();
-    //for(int i = 0; i < UniformGraphicsVector.size(); i++)
-    //    for(int j = 0; j < UniformGraphicsVector[i].size(); j++)
-    //        PRINT("Uniform::Graphcis:  %d", UniformGraphicsVector[i][j]);
-    if(appInfo.Uniform.GraphicsVector.size() > 0)
-        PRINT("Uniform::Graphcis Size:  %d, %d", (int)appInfo.Uniform.GraphicsVector.size(), (int)appInfo.Uniform.GraphicsVector[0].size());
-    appInfo.Uniform.SamplerVector = config["Uniform"]["Sampler"].as<std::vector<int>>();
-    //for(int i = 0; i < UniformSamplerVector.size(); i++)
-        //PRINT("Uniform::Sampler:  %d", UniformSamplerVector[i]);
-    if(appInfo.Uniform.SamplerVector.size() > 0)
-        PRINT("Uniform::Sampler Size:  %d", (int)appInfo.Uniform.SamplerVector.size());
-    appInfo.Uniform.ComputeVector = config["Uniform"]["Compute"].as<std::vector<std::vector<bool>>>();
-    //for(int i = 0; i < UniformComputeVector.size(); i++)
-        //for(int j = 0; j < UniformComputeVector[i].size(); j++)
-            //PRINT("Uniform::Compute:  %d", UniformComputeVector[i][j]);
-    if(appInfo.Uniform.ComputeVector.size() > 0)
-        PRINT("Uniform::Compute Size:  %d, %d", (int)appInfo.Uniform.ComputeVector.size(), (int)appInfo.Uniform.ComputeVector[0].size());
-    PRINT("\n");
-
-    // PRINT("Uniform::MVP:  %s", config["Uniform"]["MVP"].as<bool>() ? "true":"false"); //.as<bool> will convert true/false to 1/0, can print with %d
-    // PRINT("Uniform::VP:  %s", config["Uniform"]["VP"].as<bool>() ? "true":"false");
-    // PRINT("Uniform::SamplerCount:  %d", config["Uniform"]["SamplerCount"].as<int>());
-    // PRINT("Uniform::UseMultiSamplerForOneObject:  %s", config["Uniform"]["UseMultiSamplerForOneObject"].as<bool>() ? "true":"false");
-    // PRINT("Uniform::ComputeStorageImage:  %s", config["Uniform"]["ComputeStorageImage"].as<bool>() ? "true":"false");
-    // PRINT("Uniform::ComputeStorageImageSwapChain:  %s\n", config["Uniform"]["ComputeStorageImageSwapChain"].as<bool>() ? "true":"false");
+    PRINT("Uniform::Graphics Size:  %d", (int)config["Uniform"]["Graphics"].size());
+    PRINT("Uniform::Compute Size:  %d", (int)config["Uniform"]["Compute"].size());
+    PRINT("Uniform::SamplerAttributes Size:  %d\n", (int)config["Uniform"]["SamplerAttributes"].size());
 
     PRINT("Feature::GraphicsDepthTest:  %s", config["Feature"]["GraphicsDepthTest"].as<bool>() ? "true":"false");
     PRINT("Feature::GraphicsMSAA:  %s", config["Feature"]["GraphicsMSAA"].as<bool>() ? "true":"false");
@@ -194,7 +173,8 @@ void CApplication::initialize(){
     for(int i = 0; i < config["Object"]["Textures"].size(); i++){
         TextureAttributeInfo info;
         info.name = config["Object"]["Textures"][i].as<std::string>();
-        info.enableMipmap = config["Object"]["TextureMipmaps"][i].as<bool>();
+        info.miplevel = config["Object"]["TextureMipmaps"][i].as<int>();
+        info.samplerid = config["Object"]["TextureSamplers"][i].as<int>();
         info.enableCubemap = config["Object"]["TextureCubemap"][i].as<bool>();
         textureAttributes.push_back(info);
     }
@@ -213,20 +193,18 @@ void CApplication::initialize(){
     if(config["Object"]["ModelList"].size() > 0) appInfo.Object.Model.List = std::make_unique<std::vector<int>>(config["Object"]["ModelList"].as<std::vector<int>>());
     else appInfo.Object.Model.List = std::make_unique<std::vector<int>>(std::vector<int>());
 
-	if(config["Object"]["TextureList"].size() > 0) appInfo.Object.Texture.List = std::make_unique<std::vector<int>>(config["Object"]["TextureList"].as<std::vector<int>>());
-    else appInfo.Object.Texture.List = std::make_unique<std::vector<int>>(std::vector<int>());
+	if(config["Object"]["TextureList"].size() > 0) appInfo.Object.Texture.List = std::make_unique<std::vector<std::vector<int>>>(config["Object"]["TextureList"].as<std::vector<std::vector<int>>>());
+    else appInfo.Object.Texture.List = std::make_unique<std::vector<std::vector<int>>>(std::vector<std::vector<int>>());
 
 	if(config["Object"]["GraphicsPipelineList"].size() > 0) appInfo.Object.Pipeline.GraphicsList = std::make_unique<std::vector<int>>(config["Object"]["GraphicsPipelineList"].as<std::vector<int>>());
     else appInfo.Object.Pipeline.GraphicsList = std::make_unique<std::vector<int>>(std::vector<int>());
 
-
     //Handle uniform yaml data
-    // appInfo.Uniform.EnableGraphicsMVP = config["Uniform"]["MVP"].as<bool>();
-    // appInfo.Uniform.EnableGraphicsVP = config["Uniform"]["VP"].as<bool>();
-    // appInfo.Uniform.GraphicsSampler.Count = config["Uniform"]["SamplerCount"].as<int>();
-    // appInfo.Uniform.GraphicsSampler.UseMultiSamplerForOneObject = config["Uniform"]["UseMultiSamplerForOneObject"].as<bool>();
-    // appInfo.Uniform.EnableComputeStorageImage = config["Uniform"]["ComputeStorageImage"].as<bool>();
-    // appInfo.Uniform.EnableComputeStorageImageSwapChain = config["Uniform"]["ComputeStorageImageSwapChain"].as<bool>();
+    appInfo.Uniform.GraphicsVector = config["Uniform"]["Graphics"].as<std::vector<std::vector<bool>>>();
+    appInfo.Uniform.ComputeVector = config["Uniform"]["Compute"].as<std::vector<std::vector<bool>>>();
+    appInfo.Uniform.SamplerAttributes = config["Uniform"]["SamplerAttributes"].as<std::vector<int>>();
+    //appInfo.Uniform.GraphicsPipelineSamplers = config["Uniform"]["GraphicsPipelineSamplers"].as<std::vector<int>>();
+    //appInfo.Uniform.GraphicsPipelineTextures = config["Uniform"]["GraphicsPipelineTextures"].as<std::vector<int>>();
 
     //Handle feature yaml data
     appInfo.Feature.EnableGraphicsDepthTest = config["Feature"]["GraphicsDepthTest"].as<bool>();
@@ -246,36 +224,8 @@ void CApplication::initialize(){
     mainCamera.setPerspective(config["MainCamera"]["FOV"].as<float>(),  (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT,
         config["MainCamera"]["Z"][0].as<float>(), config["MainCamera"]["Z"][1].as<float>());
 
-    /*Demo code to use YAML*/
-    /*
-    std::cout << "name:" << config["name"].as<std::string>() << std::endl;
-    std::cout << "sex:" << config["sex"].as<std::string>() << std::endl;
-    std::cout << "age:" << config["age"].as<int>() << std::endl;
-    std::cout << "skills c++:" << config["skills"]["c++"].as<int>() << std::endl;
-    std::cout << "skills java:" << config["skills"]["java"].as<int>() << std::endl;
-    std::cout << "skills android:" << config["skills"]["android"].as<int>() << std::endl;
-    std::cout << "skills python:" << config["skills"]["python"].as<float>() << std::endl;
-
-    std::cout << "fruit:" << config["fruit"].as<std::string>() << std::endl;
-    std::cout << "multi:" << config["multi"]["sta"].as<int>() << std::endl;
-
-    for(YAML::const_iterator it= config["skills"].begin(); it != config["skills"].end();++it)
-        std::cout << it->first.as<std::string>() << ":" << it->second.as<float>() << std::endl;
     
-    //Type: Undefined, Null, Scalar, Sequence, Map
-    YAML::Node test1 = YAML::Load("[1,2,3,4]");
-    std::cout << " Type: " << test1.Type() << std::endl; //3
-    YAML::Node test2 = YAML::Load("1");
-    std::cout << " Type: " << test2.Type() << std::endl; //2
-    YAML::Node test3 = YAML::Load("{'id':1,'degree':'senior'}");
-    std::cout << " Type: " << test3.Type() << std::endl; //4
-
-    std::ofstream fout("testconfig.xml");
-    config["score"] = 99;
-    fout << config;
-    fout.close();
-    */
-
+    //Real Initialization Starts Here
     objectList.resize(appInfo.Object.Pipeline.GraphicsList->size()); //each object should have a pipeline reference, so use the pipeline size as object size. must set this before Set App Property(because of descriptor size rely on object size)
     
     //auto startAppTime = std::chrono::high_resolution_clock::now();
@@ -284,21 +234,19 @@ void CApplication::initialize(){
     //auto durationTime = std::chrono::duration<float, std::chrono::seconds::period>(endAppTime - startAppTime).count() * 1000;
     //std::cout<<"Total Set Application Property cost: "<<durationTime<<" milliseconds"<<std::endl;
 
-    int texture_id = -1; //-1 means not use this resrouce. INT_MAX means use all samplers
+    std::vector<int> texture_ids; 
     int model_id = -1;
     int graphics_pipeline_id = -1;
     for(int i = 0; i < objectList.size(); i++){
-        //std::cout<<i<<std::endl;
-        if(appInfo.Object.Texture.List->size() > 0 && appInfo.Uniform.SamplerVector.size() > 0) texture_id = (appInfo.Uniform.SamplerVector[0] > 1) ? INT_MAX : (*appInfo.Object.Texture.List)[i]; //TODO:now assume all objects use same sampler 
-        //std::cout<<"i: "<<(*appInfo.Object.Model.List)[i] <<std::endl;
+        if(appInfo.Object.Texture.List->size() > 0) texture_ids = (*appInfo.Object.Texture.List)[i]; 
         if(appInfo.Object.Model.List->size() > 0) model_id = (*appInfo.Object.Model.List)[i];
-        graphics_pipeline_id = (*appInfo.Object.Pipeline.GraphicsList)[i];
+        if(appInfo.Object.Pipeline.GraphicsList->size() > 0) graphics_pipeline_id = (*appInfo.Object.Pipeline.GraphicsList)[i];
+
         if(CSupervisor::VertexStructureType == VertexStructureTypes::TwoDimension || CSupervisor::VertexStructureType  == VertexStructureTypes::ThreeDimension)
-            objectList[i].Register((CApplication*)this, texture_id, model_id, i, graphics_pipeline_id, modelManager.modelLengths[model_id], modelManager.modelLengthsMin[model_id], modelManager.modelLengthsMax[model_id]); //must be set after initialize()::SetApplicationProperty(appInfo);
+            objectList[i].Register((CApplication*)this, texture_ids, model_id, i, graphics_pipeline_id, modelManager.modelLengths[model_id], modelManager.modelLengthsMin[model_id], modelManager.modelLengthsMax[model_id]); //must be set after initialize()::SetApplicationProperty(appInfo);
         else
-            objectList[i].Register((CApplication*)this, texture_id, model_id, i, graphics_pipeline_id, glm::vec3(), glm::vec3(), glm::vec3());
+            objectList[i].Register((CApplication*)this, texture_ids, model_id, i, graphics_pipeline_id, glm::vec3(), glm::vec3(), glm::vec3());
         if(graphics_pipeline_id == appInfo.Feature.GraphicsPipelineSkyboxID)  objectList[i].bSkybox = true;
-        //std::cout<<"registered object:"<<i<<std::endl;
     }
 
     renderer.CreateSyncObjects(swapchain.imageSize);
@@ -535,7 +483,9 @@ void CApplication::SetApplicationProperty(AppInfo &appInfo){
         if(appInfo.Uniform.GraphicsVector[i][1]) CSupervisor::Activate_Uniform_Graphics_MVP();
         if(appInfo.Uniform.GraphicsVector[i][2]) CSupervisor::Activate_Uniform_Graphics_VP();
     }
-    if(appInfo.Uniform.SamplerVector.size() > 0) CSupervisor::Activate_Uniform_Graphics_Sampler(appInfo.Uniform.SamplerVector[i]); //samplerCount
+    //if(appInfo.Uniform.SamplerVector.size() > 0) CSupervisor::Activate_Uniform_Graphics_Sampler(appInfo.Uniform.SamplerVector[i]); //samplerCount
+    if(appInfo.Uniform.SamplerAttributes.size() > 0) CSupervisor::Activate_Uniform_Graphics_Sampler(); //samplerCount
+    
     int j = 0; //assume all compute pipelines use the same descriptor uniform layout/set
     if(appInfo.Uniform.ComputeVector.size() > 0){ //assume sampler has exactly one compute pipeline, so the first index is 0
         //if(appInfo.Uniform.ComputeCustom.Size) CSupervisor::Activate_Uniform_Compute_Custom(appInfo.Uniform.ComputeCustom.Size, appInfo.Uniform.ComputeCustom.Binding);

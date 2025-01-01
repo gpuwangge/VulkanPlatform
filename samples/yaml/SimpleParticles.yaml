@@ -2,6 +2,7 @@ Object:
   Models: []
   Textures: []
   TextureMipmaps: []
+  TextureSamplers: []
   TextureCubemap: []
   VertexShaders: [simpleParticles/shader.vert.spv]
   FragmentShaders: [simpleParticles/shader.frag.spv]
@@ -12,13 +13,13 @@ Object:
   GraphicsPipelineList: [0]
 
 Uniform:
-  # Graphcis: CustomGraphics_MVP_VP (assume all graphics pipelines use the same descriptor uniform layout/set)
+  # Graphcis: CustomGraphics_MVP_VP
   Graphics: [[false, true, false]]
-  # Sampler: SamplersNumber
-  Sampler: [0]
-  # Compute: CustomCompute_Storage_SwapchainStorage_TextureStorage (assume all compute pipelines use the same descriptor uniform layout/set)
+  # Compute: CustomCompute_Storage_SwapchainStorage_TextureStorage
   Compute: [[true, true, false, false]]
-
+  # SamplerAttributes: mipLevel0, mipLevel2, mipLevel3
+  SamplerAttributes: []
+  
 Feature:
   GraphicsDepthTest: false
   GraphicsMSAA: false
