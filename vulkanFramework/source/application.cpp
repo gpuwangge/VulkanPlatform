@@ -136,7 +136,7 @@ void CApplication::initialize(){
     //Log yaml data for debug
     PRINT("Object::Models Size:  %d", (int)config["Object"]["Models"].size());
     PRINT("Object::Textures Size:  %d", (int)config["Object"]["Textures"].size());
-    PRINT("Object::TextureMipmaps Size:  %d", (int)config["Object"]["TextureMipmaps"].size());
+    PRINT("Object::TextureMiplevels Size:  %d", (int)config["Object"]["TextureMiplevels"].size());
     PRINT("Object::TextureSamplers Size:  %d", (int)config["Object"]["TextureSamplers"].size());
     PRINT("Object::TextureCubemap Size:  %d", (int)config["Object"]["TextureCubemap"].size());
     PRINT("Object::VertexShaders Size:  %d", (int)config["Object"]["VertexShaders"].size());
@@ -173,7 +173,7 @@ void CApplication::initialize(){
     for(int i = 0; i < config["Object"]["Textures"].size(); i++){
         TextureAttributeInfo info;
         info.name = config["Object"]["Textures"][i].as<std::string>();
-        info.miplevel = config["Object"]["TextureMipmaps"][i].as<int>();
+        info.miplevel = config["Object"]["TextureMiplevels"][i].as<int>();
         info.samplerid = config["Object"]["TextureSamplers"][i].as<int>();
         info.enableCubemap = config["Object"]["TextureCubemap"][i].as<bool>();
         textureAttributes.push_back(info);

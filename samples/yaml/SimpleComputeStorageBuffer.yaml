@@ -1,7 +1,7 @@
 Object:
   Models: []
   Textures: []
-  TextureMipmaps: []
+  TextureMiplevels: []
   TextureCubemap: []
   VertexShaders: []
   FragmentShaders: []

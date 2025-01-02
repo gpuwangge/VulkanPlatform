@@ -1,7 +1,7 @@
 Object:
   Models: [viking_room.obj]
   Textures: [viking_room.png]
-  TextureMipmaps: [1]
+  TextureMiplevels: [1]
   TextureSamplers: [0]
   TextureCubemap: [false]
   VertexShaders: [simpleShadowMap/shader.vert.spv]

@@ -1,7 +1,7 @@
 Object:
   Models: [cube.obj]
   Textures: [skybox_interstellar.jpg]
-  TextureMipmaps: [1]
+  TextureMiplevels: [1]
   TextureSamplers: [0] 
   TextureCubemap: [true]
   VertexShaders: [simpleEnvironmentmap/environmentmap.vert.spv, simpleEnvironmentmap/skybox.vert.spv]

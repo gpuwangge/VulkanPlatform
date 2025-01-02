@@ -1,7 +1,7 @@
 Object:
   Models: []
   Textures: []
-  TextureMipmaps: []
+  TextureMiplevels: []
   TextureSamplers: []
   TextureCubemap: []
   VertexShaders: [simpleUniformBuffer/shader.vert.spv]

@@ -1,7 +1,7 @@
 Object:
   Models: [sphere.obj, ElegantChairTable.obj]
   Textures: [metal.jpg, repeat-pattern2.jpg]
-  TextureMipmaps: [1, 10]
+  TextureMiplevels: [1, 10]
   TextureSamplers: [0, 1]
   TextureCubemap: [false, false]
   VertexShaders: [simpleObjTransform/shader.vert.spv]

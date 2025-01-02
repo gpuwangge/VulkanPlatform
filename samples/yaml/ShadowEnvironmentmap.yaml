@@ -1,7 +1,7 @@
 Object:
   Models: [sphere.obj, ElegantChairTable.obj]
   Textures: [repeat-pattern2.jpg, skybox_stormydays.jpg, metal.jpg]
-  TextureMipmaps: [9, 1, 1]
+  TextureMiplevels: [9, 1, 1]
   TextureSamplers: [1, 0, 0] 
   TextureCubemap: [false, true, false]
   VertexShaders: [shadowEnvironmentmap/environmentmap.vert.spv, shadowEnvironmentmap/skybox.vert.spv]

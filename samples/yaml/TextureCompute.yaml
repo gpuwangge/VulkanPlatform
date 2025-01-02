@@ -1,7 +1,7 @@
 Object:
   Models: []
   Textures: [texture.jpg]
-  TextureMipmaps: [1]
+  TextureMiplevels: [1]
   TextureSamplers: [0] 
   TextureCubemap: [false]
   VertexShaders: []

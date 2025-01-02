@@ -1,7 +1,7 @@
 Object:
   Models: [CUSTOM3D0]
   Textures: [48bpt.png]
-  TextureMipmaps: [5]
+  TextureMiplevels: [5]
   TextureSamplers: [0]
   TextureCubemap: [false]
   VertexShaders: [bptpc16Texture/shader.vert.spv]

@@ -1,7 +1,7 @@
 Object:
   Models: [CUSTOM2D0]
   Textures: []
-  TextureMipmaps: []
+  TextureMiplevels: []
   TextureSamplers: [] 
   TextureCubemap: []
   VertexShaders: [simpleVertexBuffer/shader.vert.spv]

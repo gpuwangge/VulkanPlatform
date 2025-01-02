@@ -1,7 +1,7 @@
 Object:
   Models: [hallway.obj]
   Textures: [checkerboard_marble.jpg]
-  TextureMipmaps: [11]
+  TextureMiplevels: [11]
   TextureSamplers: [0] 
   TextureCubemap: [false]
   VertexShaders: [simpleMipmap/shader.vert.spv]
