@@ -1,5 +1,5 @@
 Object:
-  Models: [cube.obj, ElegantChairTable.obj]
+  Models: [cube.obj, ElegantTable.obj]
   Textures: [metal.jpg, repeat-pattern2.jpg]
   TextureMiplevels: [1, 9]
   TextureSamplers: [0, 1]
