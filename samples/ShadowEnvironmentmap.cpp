@@ -87,10 +87,6 @@ public:
 
 	void recordGraphicsCommandBuffer(){
 		for(int i = 0; i < objectList.size(); i++) objectList[i].Draw();
-		//objectList[0].Draw();
-		//objectList[1].Draw();
-		//objectList[2].Draw();
-		//objectList[3].Draw();
 	}
 };
 

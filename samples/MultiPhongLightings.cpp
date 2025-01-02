@@ -1,5 +1,5 @@
 #include "..\\vulkanFramework\\include\\application.h"
-#define TEST_CLASS_NAME CSimplePhongLighting
+#define TEST_CLASS_NAME CMultiPhongLightings
 class TEST_CLASS_NAME: public CApplication{
 public:
 	struct CustomUniformBufferObject {
@@ -22,7 +22,11 @@ public:
 		appInfo.Uniform.GraphicsCustom.Binding = CustomUniformBufferObject::GetBinding();
 		CApplication::initialize();
 
-		objectList[0].SetRotation(-135,0,45);
+		//objectList[0].SetRotation(-135,0,45); 
+		objectList[0].SetPosition(0, 0, 0); //cube
+
+		objectList[1].SetScale(0.05f, 0.05f, 0.05f); //table
+		objectList[1].SetPosition(0, -7, 0); 
 	} 
 
 	void update(){

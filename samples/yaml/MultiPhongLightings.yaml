@@ -1,0 +1,39 @@
+Object:
+  Models: [cube.obj, ElegantChairTable.obj]
+  Textures: [metal.jpg, repeat-pattern2.jpg]
+  TextureMiplevels: [1, 9]
+  TextureSamplers: [0, 1]
+  TextureCubemap: [false, false]
+  VertexShaders: [multiPhoneLightings/shader.vert.spv]
+  FragmentShaders: [multiPhoneLightings/shader.frag.spv]
+  ComputeShaders: []
+  
+  ModelList: [0, 1]
+  TextureList: [[0], [1]]
+  GraphicsPipelineList: [0, 0]
+
+Uniform:
+  # Graphcis: CustomGraphics_MVP_VP
+  Graphics: [[true, true, false]]
+  # Compute: CustomCompute_Storage_SwapchainStorage_TextureStorage
+  Compute: []
+  # SamplerMiplevels: mipLevel0, mipLevel2, mipLevel3
+  SamplerMiplevels: [1, 9]
+  
+Feature:
+  GraphicsDepthTest: false
+  GraphicsMSAA: true
+  Graphics48BPT: false
+  GraphicsPushConstant: false
+  GraphicsBlend: false
+  GraphicsRainbowMipmap: false
+  GraphicsPipelineSkyboxID: -1
+
+MainCamera:
+  FreeMode: true
+  Position: [0,0,-3]
+  Rotation: [0,0,0]
+  TargetLocation: [0,0,0]
+  FOV: 90
+  Z: [0.1, 256]
+
