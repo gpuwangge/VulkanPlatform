@@ -198,7 +198,7 @@ void CSupervisor::Activate_Pipeline(){ //*customBinding = NULL
         //But the sampler is using first miplevels for all textures
         //Need make change so only mipmaped texture use mipmaped sampler
         if(Query_Uniform_Graphics_Sampler())
-            CGraphicsDescriptorManager::addImageSamplerUniformBuffer(m_app->appInfo.Uniform.SamplerAttributes);
+            CGraphicsDescriptorManager::addImageSamplerUniformBuffer(m_app->appInfo.Uniform.SamplerMiplevels);
             //for(int i = 0; i < m_samplerCount; i++)
                 //CGraphicsDescriptorManager::addImageSamplerUniformBuffer(m_app->textureManager.textureImages[i].mipLevels);//TODO: mipLevels is per texture image; but there are multiple pipelines, which texture sampler to use?
         if(Query_Uniform_Graphics_Custom()) CGraphicsDescriptorManager::addCustomUniformBuffer(GraphicsCustomUniformBufferSize);

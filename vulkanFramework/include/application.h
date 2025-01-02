@@ -132,7 +132,7 @@ public:
     struct UniformInfo{
         std::vector<std::vector<bool>> GraphicsVector;
         std::vector<std::vector<bool>> ComputeVector;
-        std::vector<int> SamplerAttributes;
+        std::vector<int> SamplerMiplevels;
         //std::vector<int> GraphicsPipelineSamplers;
         //std::vector<int> GraphicsPipelineTextures;
 

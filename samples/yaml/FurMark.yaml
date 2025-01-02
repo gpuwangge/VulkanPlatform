@@ -17,8 +17,8 @@ Uniform:
   Graphics: [[true, false, false]]
   # Sampler: SamplersNumber
   Compute: []
-  # SamplerAttributes: mipLevel0, mipLevel2, mipLevel3
-  SamplerAttributes: [1, 1, 1]
+  # SamplerMiplevels: mipLevel0, mipLevel2, mipLevel3
+  SamplerMiplevels: [1, 1, 1]
 
 Feature:
   GraphicsDepthTest: false

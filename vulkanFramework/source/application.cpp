@@ -148,7 +148,7 @@ void CApplication::initialize(){
 
     PRINT("Uniform::Graphics Size:  %d", (int)config["Uniform"]["Graphics"].size());
     PRINT("Uniform::Compute Size:  %d", (int)config["Uniform"]["Compute"].size());
-    PRINT("Uniform::SamplerAttributes Size:  %d\n", (int)config["Uniform"]["SamplerAttributes"].size());
+    PRINT("Uniform::SamplerMiplevels Size:  %d\n", (int)config["Uniform"]["SamplerMiplevels"].size());
 
     PRINT("Feature::GraphicsDepthTest:  %s", config["Feature"]["GraphicsDepthTest"].as<bool>() ? "true":"false");
     PRINT("Feature::GraphicsMSAA:  %s", config["Feature"]["GraphicsMSAA"].as<bool>() ? "true":"false");
@@ -202,9 +202,7 @@ void CApplication::initialize(){
     //Handle uniform yaml data
     appInfo.Uniform.GraphicsVector = config["Uniform"]["Graphics"].as<std::vector<std::vector<bool>>>();
     appInfo.Uniform.ComputeVector = config["Uniform"]["Compute"].as<std::vector<std::vector<bool>>>();
-    appInfo.Uniform.SamplerAttributes = config["Uniform"]["SamplerAttributes"].as<std::vector<int>>();
-    //appInfo.Uniform.GraphicsPipelineSamplers = config["Uniform"]["GraphicsPipelineSamplers"].as<std::vector<int>>();
-    //appInfo.Uniform.GraphicsPipelineTextures = config["Uniform"]["GraphicsPipelineTextures"].as<std::vector<int>>();
+    appInfo.Uniform.SamplerMiplevels = config["Uniform"]["SamplerMiplevels"].as<std::vector<int>>();
 
     //Handle feature yaml data
     appInfo.Feature.EnableGraphicsDepthTest = config["Feature"]["GraphicsDepthTest"].as<bool>();
@@ -213,7 +211,6 @@ void CApplication::initialize(){
     appInfo.Feature.EnableGraphicsPushConstant = config["Feature"]["GraphicsPushConstant"].as<bool>();
     appInfo.Feature.EnableGraphicsBlend = config["Feature"]["GraphicsBlend"].as<bool>();
     appInfo.Feature.EnableGraphicsRainbowMipmap = config["Feature"]["GraphicsRainbowMipmap"].as<bool>();
-    //appInfo.Feature.EnableGraphicsCubemap = config["Feature"]["GraphicsCubemap"].as<bool>();
     appInfo.Feature.GraphicsPipelineSkyboxID = config["Feature"]["GraphicsPipelineSkyboxID"].as<int>();
    
     //Handle camera yaml data
@@ -484,7 +481,7 @@ void CApplication::SetApplicationProperty(AppInfo &appInfo){
         if(appInfo.Uniform.GraphicsVector[i][2]) CSupervisor::Activate_Uniform_Graphics_VP();
     }
     //if(appInfo.Uniform.SamplerVector.size() > 0) CSupervisor::Activate_Uniform_Graphics_Sampler(appInfo.Uniform.SamplerVector[i]); //samplerCount
-    if(appInfo.Uniform.SamplerAttributes.size() > 0) CSupervisor::Activate_Uniform_Graphics_Sampler(); //samplerCount
+    if(appInfo.Uniform.SamplerMiplevels.size() > 0) CSupervisor::Activate_Uniform_Graphics_Sampler(); //samplerCount
     
     int j = 0; //assume all compute pipelines use the same descriptor uniform layout/set
     if(appInfo.Uniform.ComputeVector.size() > 0){ //assume sampler has exactly one compute pipeline, so the first index is 0

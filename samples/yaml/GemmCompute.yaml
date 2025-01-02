@@ -17,8 +17,8 @@ Uniform:
   Graphics: []
   # Compute: CustomCompute_Storage_SwapchainStorage_TextureStorage
   Compute: [[false, true, false, false]]
-  # SamplerAttributes: mipLevel0, mipLevel2, mipLevel3
-  SamplerAttributes: []
+  # SamplerMiplevels: mipLevel0, mipLevel2, mipLevel3
+  SamplerMiplevels: []
 
 Feature:
   GraphicsDepthTest: false
