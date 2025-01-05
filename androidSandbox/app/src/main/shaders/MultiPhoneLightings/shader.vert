@@ -1,6 +1,7 @@
-#version 450
+#version 450 core
 
 layout(set = 0, binding = 0) uniform UniformCustomBufferObject { 
+	//vec3 cameraPos;
     vec3 lightPos;
 } customUBO;
 
@@ -19,22 +20,18 @@ layout (location = 0) out vec3 outNormal;
 layout (location = 1) out vec3 outColor;
 layout (location = 2) out vec3 outViewVec;
 layout (location = 3) out vec3 outLightVec;
-layout (location = 4) out vec2 fragTexCoord;
+layout (location = 4) out vec2 outTexCoord;
 
 void main() 
 {
-	outNormal = inNormal;
-	outColor = inColor;
+	vec4 pos_view = ubo.proj * ubo.view * ubo.model * vec4(inPosition, 1.0);
+	vec4 pos_world = ubo.model * vec4(inPosition, 1.0);
 	
-	//gl_Position = ubo.proj * ubo.model * vec4(inPosition, 1.0);
-	gl_Position = ubo.proj * ubo.view * ubo.model * vec4(inPosition, 1.0);// - vec4(0.0f,0.0f,1.0f,0.0f));
-	
-	vec4 pos = ubo.model * vec4(inPosition, 1.0);
+	gl_Position = pos_view;
 	outNormal = mat3(ubo.model) * inNormal;
-	//vec3 lPos = mat3(ubo.model) * vec3(5.0f, 0.0f, 0.0f); //ubo.lightPos.xyz;
-	vec3 lPos = mat3(ubo.model) * customUBO.lightPos;
-	outLightVec = lPos - pos.xyz;
-	outViewVec = -pos.xyz;		
-
-	fragTexCoord = inTexCoord;
+	outColor = inColor;
+	//outViewVec = customUBO.cameraPos - pos_world.xyz;	
+	outViewVec = vec3(0,3,-10) - pos_world.xyz;	
+	outLightVec = customUBO.lightPos - pos_world.xyz;
+	outTexCoord = inTexCoord;
 }

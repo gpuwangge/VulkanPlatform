@@ -1,7 +1,7 @@
 Object:
   Models: [sphere.obj, ElegantChairTable.obj]
   Textures: [metal.jpg, repeat-pattern2.jpg]
-  TextureMiplevels: [1, 10]
+  TextureMiplevels: [1, 9]
   TextureSamplers: [0, 1]
   TextureCubemap: [false, false]
   VertexShaders: [simpleObjTransform/shader.vert.spv]
@@ -18,7 +18,7 @@ Uniform:
   # Compute: CustomCompute_Storage_SwapchainStorage_TextureStorage
   Compute: []
   # SamplerMiplevels: mipLevel0, mipLevel2, mipLevel3
-  SamplerMiplevels: [1, 10]  
+  SamplerMiplevels: [1, 9]  
 
 Feature:
   GraphicsDepthTest: false

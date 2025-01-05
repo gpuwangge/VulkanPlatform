@@ -1,5 +1,5 @@
 Object:
-  Models: [cube.obj, ElegantTable.obj]
+  Models: [cube.obj, sphere.obj, ElegantTable.obj]
   Textures: [metal.jpg, repeat-pattern2.jpg]
   TextureMiplevels: [1, 9]
   TextureSamplers: [0, 1]
@@ -8,9 +8,9 @@ Object:
   FragmentShaders: [multiPhoneLightings/shader.frag.spv]
   ComputeShaders: []
   
-  ModelList: [0, 1]
-  TextureList: [[0], [1]]
-  GraphicsPipelineList: [0, 0]
+  ModelList: [1, 2, 1]
+  TextureList: [[0], [1], [0]]
+  GraphicsPipelineList: [0, 0, 0]
 
 Uniform:
   # Graphcis: CustomGraphics_MVP_VP
@@ -31,7 +31,7 @@ Feature:
 
 MainCamera:
   FreeMode: true
-  Position: [0,0,-3]
+  Position: [0,3,-10]
   Rotation: [0,0,0]
   TargetLocation: [0,0,0]
   FOV: 90

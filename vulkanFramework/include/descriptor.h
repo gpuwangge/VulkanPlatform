@@ -58,6 +58,7 @@ public:
     static void addCustomUniformBuffer(VkDeviceSize customUniformBufferSize);
     template <typename T>
     void updateCustomUniformBuffer(uint32_t currentFrame, float durationTime, T customUniformBufferObject){
+        //std::cout<<"sizeof(customUniformBufferObject)="<<sizeof(customUniformBufferObject)<<std::endl;
         if(uniformBufferUsageFlags & UNIFORM_BUFFER_CUSTOM_GRAPHICS_BIT)
             memcpy(customUniformBuffersMapped[currentFrame], &customUniformBufferObject, sizeof(customUniformBufferObject));
     }

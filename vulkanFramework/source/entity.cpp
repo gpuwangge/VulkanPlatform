@@ -20,6 +20,7 @@ void CEntity::RollLeft(float angle, float speed){ TempAngularVelocity[RotationDi
 void CEntity::RollRight(float angle, float speed){ TempAngularVelocity[RotationDirections::ROLLRIGHT] = glm::vec4(0, 0, -speed, angle/speed); }
 
 void CEntity::SetPosition(float x, float y, float z){ Position = glm::vec3(x, y, z); }
+void CEntity::SetPosition(glm::vec3 v){ Position = v; }
 void CEntity::SetRotation(float pitch, float yaw, float roll){ Rotation = glm::vec3(pitch, yaw, roll); }
 
 void CEntity::MoveToPosition(float x, float y, float z, float t){
