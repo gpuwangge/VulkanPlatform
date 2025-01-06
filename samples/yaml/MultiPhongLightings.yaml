@@ -8,9 +8,9 @@ Object:
   FragmentShaders: [multiPhoneLightings/shader.frag.spv]
   ComputeShaders: []
   
-  ModelList: [1, 2, 1]
-  TextureList: [[0], [1], [0]]
-  GraphicsPipelineList: [0, 0, 0]
+  ModelList: [1, 2, 1, 1, 1]
+  TextureList: [[0], [1], [0], [0], [0]]
+  GraphicsPipelineList: [0, 0, 0, 0, 0]
 
 Uniform:
   # Graphcis: CustomGraphics_MVP_VP

@@ -1,10 +1,20 @@
 #include "..\\vulkanFramework\\include\\application.h"
 #define TEST_CLASS_NAME CMultiPhongLightings
+#define LIGHT_NUM 3
 class TEST_CLASS_NAME: public CApplication{
 public:
+	//each line must be aligned to 16 bytes. In shader use vec4 instead of vec3
+	struct LightStructure{
+		glm::vec4 cameraPos; 
+		glm::vec4 lightPos;
+		float ambientIntensity;
+		float diffuseIntensity;
+		float specularIntensity;
+		float padding;
+	};
+	
 	struct CustomUniformBufferObject {
-		//glm::vec3 cameraPos;
-		glm::vec3 lightPos;
+		alignas(16) LightStructure lights[LIGHT_NUM];
 
 		static VkDescriptorSetLayoutBinding GetBinding(){
 			VkDescriptorSetLayoutBinding binding;
@@ -19,6 +29,7 @@ public:
 	CustomUniformBufferObject customUBO{};
 
     void initialize(){
+		std::cout<<"sizeof(CustomUniformBufferObject)="<<sizeof(CustomUniformBufferObject)<<std::endl;
 		appInfo.Uniform.GraphicsCustom.Size = sizeof(CustomUniformBufferObject);
 		appInfo.Uniform.GraphicsCustom.Binding = CustomUniformBufferObject::GetBinding();
 		CApplication::initialize();
@@ -30,15 +41,29 @@ public:
 		objectList[1].SetPosition(0, -103, 0);  //table
 
 		objectList[2].SetScale(0.01f, 0.01f, 0.01f); //light sphere
-		//objectList[2].SetScale(0.05f, 0.05f, 0.05f);
+		objectList[3].SetScale(0.01f, 0.01f, 0.01f); //light sphere
+		objectList[4].SetScale(0.01f, 0.01f, 0.01f); //light sphere
+
+		for(int i = 0; i < LIGHT_NUM; i++){
+			customUBO.lights[i].ambientIntensity = 0.5;
+			customUBO.lights[i].diffuseIntensity = 2.0f;
+			customUBO.lights[i].specularIntensity = 4.0f;
+		}
+
 	} 
 
 	void update(){
-		customUBO.lightPos = glm::vec3(3.0f * sin(durationTime), 2, 3.0f * cos(durationTime));
-		//customUBO.cameraPos = glm::vec3(0, 3, -10);// mainCamera.Position;
+		customUBO.lights[0].lightPos = glm::vec4(glm::vec3(1.5f * sin(durationTime * 3), 2, 1.5f * cos(durationTime * 3)), 0);
+		customUBO.lights[0].cameraPos = glm::vec4(mainCamera.Position, 0);
+		customUBO.lights[1].lightPos = glm::vec4(glm::vec3(2.8 * cos(durationTime * 2), 2 + 2.8 * cos(durationTime * 2), 2.8 * sin(durationTime * 2)), 0);
+		customUBO.lights[1].cameraPos = glm::vec4(mainCamera.Position, 0);
+		customUBO.lights[2].lightPos = glm::vec4(glm::vec3(2.2f * cos(durationTime * 1), 2 + 2.2f * sin(durationTime * 1), 0), 0);
+		customUBO.lights[2].cameraPos = glm::vec4(mainCamera.Position, 0);
 		graphicsDescriptorManager.updateCustomUniformBuffer<CustomUniformBufferObject>(renderer.currentFrame, durationTime, customUBO);
 
-		objectList[2].SetPosition(customUBO.lightPos + glm::vec3(0,0,0));
+		objectList[2].SetPosition(glm::vec3(customUBO.lights[0].lightPos) + glm::vec3(0,0,0));
+		objectList[3].SetPosition(glm::vec3(customUBO.lights[1].lightPos) + glm::vec3(0,0,0));
+		objectList[4].SetPosition(glm::vec3(customUBO.lights[2].lightPos) + glm::vec3(0,0,0));
 		//objectList[0].SetAngularVelocity(0, 50, 0);
 
 		CApplication::update();
