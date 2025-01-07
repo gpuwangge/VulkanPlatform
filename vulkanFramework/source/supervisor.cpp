@@ -139,6 +139,8 @@ void CSupervisor::Activate_Texture(std::unique_ptr<std::vector<TextureAttributeI
 }
 
 void CSupervisor::Activate_Pipeline(){ //*customBinding = NULL
+    //std::cout<<"Activate_Pipeline()"<<std::endl;
+
     //Command buffers
     //m_app->renderer.CreateCommandPool(m_app->surface);
     if(Query_Pipeline_Graphics()) m_app->renderer.CreateGraphicsCommandBuffer();
@@ -189,6 +191,7 @@ void CSupervisor::Activate_Pipeline(){ //*customBinding = NULL
         if(bPushConstant) 
             m_app->shaderManager.CreatePushConstantRange<ModelPushConstants>(VK_SHADER_STAGE_VERTEX_BIT, 0);
 
+    //std::cout<<"before uniform()"<<std::endl;
     //Uniforms
     if(Query_Pipeline_Graphics()){
         if(Query_Uniform_Graphics_VP()) CGraphicsDescriptorManager::addVPUniformBuffer();
@@ -197,11 +200,14 @@ void CSupervisor::Activate_Pipeline(){ //*customBinding = NULL
         //TODO: Currently each texture can choose to compute mipmaps or not. 
         //But the sampler is using first miplevels for all textures
         //Need make change so only mipmaped texture use mipmaped sampler
+        //std::cout<<"before sampler()"<<std::endl;
         if(Query_Uniform_Graphics_Sampler())
             CGraphicsDescriptorManager::addImageSamplerUniformBuffer(m_app->appInfo.Uniform.SamplerMiplevels);
             //for(int i = 0; i < m_samplerCount; i++)
                 //CGraphicsDescriptorManager::addImageSamplerUniformBuffer(m_app->textureManager.textureImages[i].mipLevels);//TODO: mipLevels is per texture image; but there are multiple pipelines, which texture sampler to use?
+        //std::cout<<"before custom()"<<std::endl;
         if(Query_Uniform_Graphics_Custom()) CGraphicsDescriptorManager::addCustomUniformBuffer(GraphicsCustomUniformBufferSize);
+        //std::cout<<"after custom()"<<std::endl;
     }
     if(Query_Pipeline_Compute()){
         if(Query_Uniform_Compute_StorageBuffer()) {
@@ -213,9 +219,12 @@ void CSupervisor::Activate_Pipeline(){ //*customBinding = NULL
         if(Query_Uniform_Compute_Custom()) CComputeDescriptorManager::addCustomUniformBuffer(ComputeCustomUniformBufferSize);
     }
 
+    //std::cout<<"before pool()"<<std::endl;
     //Descriptor Pool
     //CDescriptorManager::createDescriptorPool(m_app->appInfo.Object.Count); 
     CDescriptorManager::createDescriptorPool(m_app->objectList.size()); 
+
+    //std::cout<<"after pool()"<<std::endl;
 
     //Descriptor Layout
     if(Query_Pipeline_Graphics()){

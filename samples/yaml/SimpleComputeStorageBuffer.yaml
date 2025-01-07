@@ -36,3 +36,8 @@ MainCamera:
   FOV: 90
   Z: [0.1, 256]
 
+Lighting:
+  Position: []
+  Intensity: []
+
+  

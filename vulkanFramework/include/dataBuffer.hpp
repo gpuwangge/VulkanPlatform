@@ -3,6 +3,34 @@
 #include "common.h"
 #include "context.h"
 
+//each line must be aligned to 16 bytes. In shader use vec4 instead of vec3
+struct LightAttribute{
+    glm::vec4 lightPos;
+    float ambientIntensity;
+    float diffuseIntensity;
+    float specularIntensity;
+    float padding;
+};
+
+//this class to create graphics descript layer(static), and non-texture descripter set(static), create sampler(static)
+//texture descripter leave to CObject
+//also provide function to update non-texture uniform(static) (TODO)
+#define LIGHT_NUM 3
+struct LightingUniformBufferObject {
+    alignas(16) LightAttribute lights[LIGHT_NUM];
+    alignas(16) glm::vec4 cameraPos; 
+
+    static VkDescriptorSetLayoutBinding GetBinding(){
+        VkDescriptorSetLayoutBinding binding;
+        binding.binding = 0;//not important, will be reset
+        binding.descriptorCount = 1;
+        binding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+        binding.pImmutableSamplers = nullptr;
+        binding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+        return binding;
+    }
+};
+
 struct TextureAttributeInfo{
     std::string name;
     int miplevel;

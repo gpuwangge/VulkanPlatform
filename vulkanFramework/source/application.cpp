@@ -165,6 +165,9 @@ void CApplication::initialize(){
     PRINT("MainCamera::FOV:  %f", config["MainCamera"]["FOV"].as<float>());
     PRINT("MainCamera::Z Size:  %d\n", (int)config["MainCamera"]["Z"].size());
 
+    PRINT("Lighting::Position Size:  %d", (int)config["Lighting"]["Position"].size());
+    PRINT("Lighting::Intensity Size:  %d\n", (int)config["Lighting"]["Intensity"].size());
+
     //Hanlde model yaml data
     if(config["Object"]["Models"].size() > 0) appInfo.Object.Model.Names = std::make_unique<std::vector<std::string>>(config["Object"]["Models"].as<std::vector<std::string>>()); //std::vector<std::string> {config["Object"]["Models"][0].as<std::string>()}
 	else appInfo.Object.Model.Names = std::make_unique<std::vector<std::string>>(std::vector<std::string>());
@@ -221,7 +224,27 @@ void CApplication::initialize(){
     mainCamera.setPerspective(config["MainCamera"]["FOV"].as<float>(),  (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT,
         config["MainCamera"]["Z"][0].as<float>(), config["MainCamera"]["Z"][1].as<float>());
 
+    //Handle Lighting data
+    if(config["Lighting"]["Intensity"].size() > 0) {
+        CDescriptorManager::uniformBufferUsageFlags |= UNIFORM_BUFFER_LIGHTING_GRAPHICS_BIT;
+        CGraphicsDescriptorManager::addLightingUniformBuffer();
+        
+        std::unique_ptr<std::vector<std::vector<float>>> lightIntensity = std::make_unique<std::vector<std::vector<float>>>(config["Lighting"]["Intensity"].as<std::vector<std::vector<float>>>());
+        for(int i = 0; i < lightIntensity->size(); i++){
+            graphicsDescriptorManager.m_lightingUBO.lights[i].ambientIntensity = (*lightIntensity)[i][0];
+            graphicsDescriptorManager.m_lightingUBO.lights[i].diffuseIntensity = (*lightIntensity)[i][1];
+            graphicsDescriptorManager.m_lightingUBO.lights[i].specularIntensity = (*lightIntensity)[i][2];
+        }
+    }
+    if(config["Lighting"]["Position"].size() > 0) {
+        std::unique_ptr<std::vector<std::vector<float>>> lightPosition = std::make_unique<std::vector<std::vector<float>>>(config["Lighting"]["Position"].as<std::vector<std::vector<float>>>());
+        for(int i = 0; i < lightPosition->size(); i++){
+            graphicsDescriptorManager.m_lightingUBO.lights[i].lightPos = glm::vec4(glm::vec3((*lightPosition)[i][0], (*lightPosition)[i][1], (*lightPosition)[i][2]), 0);
+        }
+    }
     
+    
+
     //Real Initialization Starts Here
     objectList.resize(appInfo.Object.Pipeline.GraphicsList->size()); //each object should have a pipeline reference, so use the pipeline size as object size. must set this before Set App Property(because of descriptor size rely on object size)
     
@@ -477,6 +500,10 @@ void CApplication::SetApplicationProperty(AppInfo &appInfo){
     if(appInfo.Uniform.GraphicsVector.size() > 0){
         //if(appInfo.Uniform.GraphicsCustom.Size) CSupervisor::Activate_Uniform_Graphics_Custom(appInfo.Uniform.GraphicsCustom.Size, appInfo.Uniform.GraphicsCustom.Binding);
         if(appInfo.Uniform.GraphicsVector[i][0]) CSupervisor::Activate_Uniform_Graphics_Custom(appInfo.Uniform.GraphicsCustom.Size, appInfo.Uniform.GraphicsCustom.Binding);
+
+        
+        
+
         if(appInfo.Uniform.GraphicsVector[i][1]) CSupervisor::Activate_Uniform_Graphics_MVP();
         if(appInfo.Uniform.GraphicsVector[i][2]) CSupervisor::Activate_Uniform_Graphics_VP();
     }

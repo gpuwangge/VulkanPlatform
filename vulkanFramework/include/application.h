@@ -64,18 +64,11 @@ public:
 	CSwapchain swapchain;
     CRenderProcess renderProcess;
     CShaderManager shaderManager;
-    //std::vector<CGraphicsDescriptorManager> descriptors;//to be remove
     CGraphicsDescriptorManager graphicsDescriptorManager;
     CComputeDescriptorManager computeDescriptorManager;
-    //CTextureDescriptor textureDescriptor;
     CRenderer renderer;
-    //std::vector<CTextureImage> textureImages; //temp
     CModelManager modelManager;
-    //std::vector<CTextureImage> textureImages1; //temp
-    //std::vector<CTextureImage> textureImages2; //temp
     CTextureManager textureManager;
-
-    //std::chrono::_V2::system_clock::time_point lastTime;
 
     static std::vector<CObject> objectList;
 
@@ -125,7 +118,6 @@ public:
     /*************
      * APP INFO
      *******/
-
     struct RenderInfo{
         CRenderer::RenderModes Mode = CRenderer::RENDER_GRAPHICS_Mode;
     };
@@ -133,20 +125,13 @@ public:
         std::vector<std::vector<bool>> GraphicsVector;
         std::vector<std::vector<bool>> ComputeVector;
         std::vector<int> SamplerMiplevels;
-        //std::vector<int> GraphicsPipelineSamplers;
-        //std::vector<int> GraphicsPipelineTextures;
 
-        //bool EnableGraphicsVP = false; //yaml
-        //bool EnableGraphicsMVP = false; //yaml
         struct GraphicsCustomInfo{
             //bool Enable = false;
             VkDeviceSize Size = 0;
             VkDescriptorSetLayoutBinding Binding;
+            //CustomUniformBufferObject* pointer; 
         }GraphicsCustom;
-        //struct GraphicsSamplerInfo{
-        //    int Count = 0; //yaml
-        //    bool UseMultiSamplerForOneObject = false; //yaml
-        //}GraphicsSampler;
         //--------------------------------------
         struct ComputeCustomInfo{
             VkDeviceSize Size = 0;
@@ -178,11 +163,6 @@ public:
             std::vector<Vertex2D> *Vertices2D = NULL;
         }GraphicsVertex;
     };
-    // struct ShaderInfo{
-    //     std::string Vertex;
-    //     std::string Fragment;
-    //     std::string Compute;
-    // };
 
     struct ObjectInfo{
         //int Count = 0;
@@ -209,7 +189,6 @@ public:
     struct AppInfo{
         ObjectInfo Object;
         RenderInfo Render;
-        //ShaderInfo Shader;
         UniformInfo Uniform;
         FeatureInfo Feature;
         BufferInfo Buffer;

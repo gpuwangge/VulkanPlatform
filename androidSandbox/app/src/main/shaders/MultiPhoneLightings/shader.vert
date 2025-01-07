@@ -2,7 +2,6 @@
 #define LIGHT_NUM 3
 
 struct LightStructure{
-	vec4 cameraPos; 
 	vec4 lightPos;
 	float ambientIntensity;
 	float diffuseIntensity;
@@ -12,6 +11,7 @@ struct LightStructure{
 
 layout(set = 0, binding = 0) uniform UniformCustomBufferObject { 
 	LightStructure lights[LIGHT_NUM];
+	vec4 cameraPos; 
 } customUBO;
 
 layout(set = 0, binding = 1) uniform UniformBufferObject {
@@ -47,7 +47,7 @@ void main()
 	outTexCoord = inTexCoord;
 
 	for(int i = 0; i < LIGHT_NUM; i++){
-		outViewVec[i] = customUBO.lights[i].cameraPos.xyz - pos_world.xyz;		
+		outViewVec[i] = customUBO.cameraPos.xyz - pos_world.xyz;		
 		outLightVec[i] = customUBO.lights[i].lightPos.xyz - pos_world.xyz;
 		outAmbientIntensity[i] = customUBO.lights[i].ambientIntensity;
 		outDiffuseIntensity[i] = customUBO.lights[i].diffuseIntensity;

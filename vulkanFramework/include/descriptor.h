@@ -18,7 +18,8 @@ typedef enum UniformBufferBits {
     UNIFORM_BUFFER_STORAGE_BIT = 0x00000020,
     UNIFORM_IMAGE_STORAGE_SWAPCHAIN_BIT = 0x00000040,
     UNIFORM_IMAGE_STORAGE_TEXTURE_BIT = 0x00000080,
-    UNIFORM_BUFFERG_BITS_MAX_ENUM = 0x7FFFFFFF
+    UNIFORM_BUFFER_LIGHTING_GRAPHICS_BIT = 0x00000100,
+    UNIFORM_BUFFER_BITS_MAX_ENUM = 0x7FFFFFFF
 } UniformBufferBits;
 
 
@@ -41,10 +42,8 @@ public:
 
 };
 
-//this class to create graphics descript layer(static), and non-texture descripter set(static), create sampler(static)
-//texture descripter leave to CObject
-//also provide function to update non-texture uniform(static) (TODO)
 class CGraphicsDescriptorManager: public CDescriptorManager{
+
 public:
     CGraphicsDescriptorManager();
     ~CGraphicsDescriptorManager();
@@ -61,6 +60,18 @@ public:
         //std::cout<<"sizeof(customUniformBufferObject)="<<sizeof(customUniformBufferObject)<<std::endl;
         if(uniformBufferUsageFlags & UNIFORM_BUFFER_CUSTOM_GRAPHICS_BIT)
             memcpy(customUniformBuffersMapped[currentFrame], &customUniformBufferObject, sizeof(customUniformBufferObject));
+    }
+
+    //Lighting
+    static LightingUniformBufferObject m_lightingUBO;
+    static std::vector<CWxjBuffer> m_lightingUniformBuffers; 
+	static std::vector<void*> m_lightingUniformBuffersMapped;
+    static VkDeviceSize m_lightingUniformBufferSize;
+    static void addLightingUniformBuffer();
+    static void updateLightingUniformBuffer(uint32_t currentFrame, float durationTime){
+        //std::cout<<"sizeof(customUniformBufferObject)="<<sizeof(customUniformBufferObject)<<std::endl;
+        if(uniformBufferUsageFlags & UNIFORM_BUFFER_LIGHTING_GRAPHICS_BIT)
+            memcpy(m_lightingUniformBuffersMapped[currentFrame], &m_lightingUBO, sizeof(m_lightingUBO));
     }
 
     //bool bUseMVP;

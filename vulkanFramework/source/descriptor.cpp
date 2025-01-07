@@ -16,6 +16,11 @@ std::vector<CWxjBuffer> CGraphicsDescriptorManager::customUniformBuffers;
 std::vector<void*> CGraphicsDescriptorManager::customUniformBuffersMapped;
 VkDeviceSize CGraphicsDescriptorManager::m_customUniformBufferSize;
 
+LightingUniformBufferObject CGraphicsDescriptorManager::m_lightingUBO;
+std::vector<CWxjBuffer> CGraphicsDescriptorManager::m_lightingUniformBuffers; 
+std::vector<void*> CGraphicsDescriptorManager::m_lightingUniformBuffersMapped;
+VkDeviceSize CGraphicsDescriptorManager::m_lightingUniformBufferSize;
+
 std::vector<VkSampler> CGraphicsDescriptorManager::textureSamplers;
 
 std::vector<CWxjBuffer> CGraphicsDescriptorManager::mvpUniformBuffers; //need one mvp buffer for each host resource: MAX_FRAMES_IN_FLIGHT
@@ -75,6 +80,25 @@ void CGraphicsDescriptorManager::addCustomUniformBuffer(VkDeviceSize customUnifo
 		VkResult result = customUniformBuffers[i].init(m_customUniformBufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
 		vkMapMemory(CContext::GetHandle().GetLogicalDevice(), customUniformBuffers[i].deviceMemory, 0, m_customUniformBufferSize, 0, &customUniformBuffersMapped[i]);
 	}
+}
+
+void CGraphicsDescriptorManager::addLightingUniformBuffer(){
+	//bUseCustomUniformBuffer = true;
+    uniformBufferUsageFlags |= UNIFORM_BUFFER_LIGHTING_GRAPHICS_BIT;
+    //std::cout<<"addCustomUniformBuffer::uniformBufferUsageFlags = " << uniformBufferUsageFlags<<std::endl;
+
+	m_lightingUniformBuffers.resize(MAX_FRAMES_IN_FLIGHT);
+	m_lightingUniformBuffersMapped.resize(MAX_FRAMES_IN_FLIGHT);
+
+	//m_customUniformBufferSize = customUniformBufferSize;
+    m_lightingUniformBufferSize = sizeof(LightingUniformBufferObject);
+    //std::cout<<"addLightingUniformBuffer::m_lightingUniformBufferSize = " << m_lightingUniformBufferSize<<std::endl;
+
+	for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+		VkResult result = m_lightingUniformBuffers[i].init( m_lightingUniformBufferSize, VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
+		vkMapMemory(CContext::GetHandle().GetLogicalDevice(), m_lightingUniformBuffers[i].deviceMemory, 0,  m_lightingUniformBufferSize, 0, & m_lightingUniformBuffersMapped[i]);
+	}
+    //std::cout<<"addLightingUniformBuffer DONE"<<std::endl;
 }
 
 void CComputeDescriptorManager::addCustomUniformBuffer(VkDeviceSize customUniformBufferSize){
@@ -225,6 +249,12 @@ void CDescriptorManager::createDescriptorPool(unsigned int object_count){//VkDes
     //std::cout<<"createDescriptorPool::textureSamplers.size() = " << textureSamplers.size()<<std::endl;
     //std::cout<<"Pool size = " << getPoolSize();//std::endl;
 
+    if(uniformBufferUsageFlags & UNIFORM_BUFFER_LIGHTING_GRAPHICS_BIT){
+        //std::cout<<": Lighting Buffer";
+        poolSizes[counter].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+	 	poolSizes[counter].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
+		counter++;
+	}
 	if((uniformBufferUsageFlags & UNIFORM_BUFFER_CUSTOM_GRAPHICS_BIT) ||(uniformBufferUsageFlags & UNIFORM_BUFFER_CUSTOM_COMPUTE_BIT)){
         //std::cout<<": Custom Buffer";
         poolSizes[counter].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
@@ -290,9 +320,18 @@ void CGraphicsDescriptorManager::createDescriptorSetLayout(VkDescriptorSetLayout
     graphicsBindings.resize(getLayoutSize());
     //graphicsBindings.resize(0);
 	int counter = 0;
-    //std::cout<<"Layout(Graphics, Non-sampler) size = " << graphicsBindings.size()<<std::endl;
+    std::cout<<"Layout(Graphics, Non-sampler) size = " << graphicsBindings.size()<<std::endl;
     //std::cout.flush();
 
+    if(uniformBufferUsageFlags & UNIFORM_BUFFER_LIGHTING_GRAPHICS_BIT){
+        graphicsBindings[counter].binding = counter;
+		graphicsBindings[counter].descriptorCount = m_lightingUBO.GetBinding().descriptorCount;
+		graphicsBindings[counter].descriptorType = m_lightingUBO.GetBinding().descriptorType;
+		graphicsBindings[counter].pImmutableSamplers = m_lightingUBO.GetBinding().pImmutableSamplers;
+		graphicsBindings[counter].stageFlags = m_lightingUBO.GetBinding().stageFlags;
+		counter++;
+        std::cout<<"created lighting bindings "<<std::endl;
+	}
 	if(uniformBufferUsageFlags & UNIFORM_BUFFER_CUSTOM_GRAPHICS_BIT){
         graphicsBindings[counter].binding = counter;
 		graphicsBindings[counter].descriptorCount = customBinding->descriptorCount;
@@ -372,6 +411,7 @@ void CGraphicsDescriptorManager::createDescriptorSetLayout(VkDescriptorSetLayout
 	VkResult result = vkCreateDescriptorSetLayout(CContext::GetHandle().GetLogicalDevice(), &layoutInfo, nullptr, OUT &descriptorSetLayout);
 	if (result != VK_SUCCESS) throw std::runtime_error("failed to create descriptor set layout!");
 	//REPORT("vkCreateDescriptorSetLayout");
+    //std::cout<<"created bindings DONE"<<std::endl;
 }
 
 void CGraphicsDescriptorManager::createTextureDescriptorSetLayout(){
@@ -428,6 +468,21 @@ void CGraphicsDescriptorManager::createDescriptorSets(){
 
         descriptorWrites.resize(descriptorSize);
         int counter = 0;
+
+        VkDescriptorBufferInfo lightingBufferInfo{}; //for lighting uniform
+        if(uniformBufferUsageFlags & UNIFORM_BUFFER_LIGHTING_GRAPHICS_BIT){
+            lightingBufferInfo.buffer = m_lightingUniformBuffers[i].buffer;
+            lightingBufferInfo.offset = 0;
+            lightingBufferInfo.range = m_lightingUniformBufferSize;
+            descriptorWrites[counter].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+            descriptorWrites[counter].dstSet = descriptorSets[i];
+            descriptorWrites[counter].dstBinding = counter;
+            descriptorWrites[counter].dstArrayElement = 0;
+            descriptorWrites[counter].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+            descriptorWrites[counter].descriptorCount = 1;
+            descriptorWrites[counter].pBufferInfo = &lightingBufferInfo;
+            counter++;
+        }
 
         VkDescriptorBufferInfo customBufferInfo{}; //for custom uniform
         if(uniformBufferUsageFlags & UNIFORM_BUFFER_CUSTOM_GRAPHICS_BIT){
@@ -662,6 +717,7 @@ bool CGraphicsDescriptorManager::CheckMVP(){
 int CDescriptorManager::getPoolSize(){
     //std::cout<<"getPoolSize::uniformBufferUsageFlags = " << uniformBufferUsageFlags<<std::endl;
 	int descriptorPoolSize = 0;
+    descriptorPoolSize += (uniformBufferUsageFlags & UNIFORM_BUFFER_LIGHTING_GRAPHICS_BIT) ? 1:0;
 	descriptorPoolSize += ((uniformBufferUsageFlags & UNIFORM_BUFFER_CUSTOM_GRAPHICS_BIT) || (uniformBufferUsageFlags & UNIFORM_BUFFER_CUSTOM_COMPUTE_BIT)) ? 1:0;
 	descriptorPoolSize += (uniformBufferUsageFlags & UNIFORM_BUFFER_MVP_BIT || uniformBufferUsageFlags & UNIFORM_BUFFER_VP_BIT) ? 1:0;
 	descriptorPoolSize += uniformBufferUsageFlags & UNIFORM_BUFFER_SAMPLER_BIT ? samplerCount:0;
@@ -675,6 +731,7 @@ int CGraphicsDescriptorManager::getLayoutSize(){
     int descriptorPoolSize = 0;
     //std::cout<<"CGraphicsDescriptorManager::getLayoutSize(): uniformBufferUsageFlags = " << uniformBufferUsageFlags<<std::endl;
     //std::cout<<"descriptorPoolSize = "<<descriptorPoolSize<<std::endl;
+    descriptorPoolSize += uniformBufferUsageFlags & UNIFORM_BUFFER_LIGHTING_GRAPHICS_BIT ? 1:0;
 	descriptorPoolSize += uniformBufferUsageFlags & UNIFORM_BUFFER_CUSTOM_GRAPHICS_BIT ? 1:0;
     //std::cout<<"descriptorPoolSize = "<<descriptorPoolSize<<std::endl;
 	descriptorPoolSize += (uniformBufferUsageFlags & UNIFORM_BUFFER_MVP_BIT || uniformBufferUsageFlags & UNIFORM_BUFFER_VP_BIT) ? 1:0;
@@ -720,6 +777,10 @@ void CGraphicsDescriptorManager::DestroyAndFree(){
 
     for (size_t i = 0; i < vpUniformBuffers.size(); i++) {
         vpUniformBuffers[i].DestroyAndFree();
+    }
+
+    for (size_t i = 0; i < m_lightingUniformBuffers.size(); i++) {
+        m_lightingUniformBuffers[i].DestroyAndFree();
     }
 
     // for (size_t i = 0; i < storageBuffers.size(); i++) {

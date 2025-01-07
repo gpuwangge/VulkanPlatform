@@ -14,7 +14,7 @@ Object:
 
 Uniform:
   # Graphcis: CustomGraphics_MVP_VP
-  Graphics: [[true, true, false]]
+  Graphics: [[false, true, false]]
   # Compute: CustomCompute_Storage_SwapchainStorage_TextureStorage
   Compute: []
   # SamplerMiplevels: mipLevel0, mipLevel2, mipLevel3
@@ -37,3 +37,6 @@ MainCamera:
   FOV: 90
   Z: [0.1, 256]
 
+Lighting:
+  Position: [[0,2,0], [0,2,0], [0,2,0]]
+  Intensity: [[0.5,2,4], [0.5,2,4], [0.5,2,4]]
