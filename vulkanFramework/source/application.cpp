@@ -135,39 +135,39 @@ void CApplication::initialize(){
     }
 
     //Log yaml data for debug
-    PRINT("Object::Models Size:  %d", (int)config["Object"]["Models"].size());
-    PRINT("Object::Textures Size:  %d", (int)config["Object"]["Textures"].size());
-    PRINT("Object::TextureMiplevels Size:  %d", (int)config["Object"]["TextureMiplevels"].size());
-    PRINT("Object::TextureSamplers Size:  %d", (int)config["Object"]["TextureSamplers"].size());
-    PRINT("Object::TextureCubemap Size:  %d", (int)config["Object"]["TextureCubemap"].size());
-    PRINT("Object::VertexShaders Size:  %d", (int)config["Object"]["VertexShaders"].size());
-    PRINT("Object::FragmentShaders Size:  %d", (int)config["Object"]["FragmentShaders"].size());
-    PRINT("Object::ComputeShaders Size:  %d", (int)config["Object"]["ComputeShaders"].size());
-    PRINT("Object::ModelList Size:  %d", (int)config["Object"]["ModelList"].size());
-    PRINT("Object::TextureList Size:  %d", (int)config["Object"]["TextureList"].size());
-    PRINT("Object::GraphicsPipelineList Size:  %d\n", (int)config["Object"]["GraphicsPipelineList"].size());
+    // PRINT("Object::Models Size:  %d", (int)config["Object"]["Models"].size());
+    // PRINT("Object::Textures Size:  %d", (int)config["Object"]["Textures"].size());
+    // PRINT("Object::TextureMiplevels Size:  %d", (int)config["Object"]["TextureMiplevels"].size());
+    // PRINT("Object::TextureSamplers Size:  %d", (int)config["Object"]["TextureSamplers"].size());
+    // PRINT("Object::TextureCubemap Size:  %d", (int)config["Object"]["TextureCubemap"].size());
+    // PRINT("Object::VertexShaders Size:  %d", (int)config["Object"]["VertexShaders"].size());
+    // PRINT("Object::FragmentShaders Size:  %d", (int)config["Object"]["FragmentShaders"].size());
+    // PRINT("Object::ComputeShaders Size:  %d", (int)config["Object"]["ComputeShaders"].size());
+    // PRINT("Object::ModelList Size:  %d", (int)config["Object"]["ModelList"].size());
+    // PRINT("Object::TextureList Size:  %d", (int)config["Object"]["TextureList"].size());
+    // PRINT("Object::GraphicsPipelineList Size:  %d\n", (int)config["Object"]["GraphicsPipelineList"].size());
 
-    PRINT("Uniform::Graphics Size:  %d", (int)config["Uniform"]["Graphics"].size());
-    PRINT("Uniform::Compute Size:  %d", (int)config["Uniform"]["Compute"].size());
-    PRINT("Uniform::SamplerMiplevels Size:  %d\n", (int)config["Uniform"]["SamplerMiplevels"].size());
+    // PRINT("Uniform::Graphics Size:  %d", (int)config["Uniform"]["Graphics"].size());
+    // PRINT("Uniform::Compute Size:  %d", (int)config["Uniform"]["Compute"].size());
+    // PRINT("Uniform::SamplerMiplevels Size:  %d\n", (int)config["Uniform"]["SamplerMiplevels"].size());
 
-    PRINT("Feature::GraphicsDepthTest:  %s", config["Feature"]["GraphicsDepthTest"].as<bool>() ? "true":"false");
-    PRINT("Feature::GraphicsMSAA:  %s", config["Feature"]["GraphicsMSAA"].as<bool>() ? "true":"false");
-    PRINT("Feature::Graphics48BPT:  %s", config["Feature"]["Graphics48BPT"].as<bool>() ? "true":"false");
-    PRINT("Feature::GraphicsPushConstant:  %s", config["Feature"]["GraphicsPushConstant"].as<bool>() ? "true":"false");
-    PRINT("Feature::GraphicsBlend:  %s", config["Feature"]["GraphicsBlend"].as<bool>() ? "true":"false");
-    PRINT("Feature::GraphicsRainbowMipmap:  %s", config["Feature"]["GraphicsRainbowMipmap"].as<bool>() ? "true":"false");
-    PRINT("Feature::GraphicsPipelineSkyboxID:  %d\n", config["Feature"]["GraphicsPipelineSkyboxID"].as<int>());
+    // PRINT("Feature::GraphicsDepthTest:  %s", config["Feature"]["GraphicsDepthTest"].as<bool>() ? "true":"false");
+    // PRINT("Feature::GraphicsMSAA:  %s", config["Feature"]["GraphicsMSAA"].as<bool>() ? "true":"false");
+    // PRINT("Feature::Graphics48BPT:  %s", config["Feature"]["Graphics48BPT"].as<bool>() ? "true":"false");
+    // PRINT("Feature::GraphicsPushConstant:  %s", config["Feature"]["GraphicsPushConstant"].as<bool>() ? "true":"false");
+    // PRINT("Feature::GraphicsBlend:  %s", config["Feature"]["GraphicsBlend"].as<bool>() ? "true":"false");
+    // PRINT("Feature::GraphicsRainbowMipmap:  %s", config["Feature"]["GraphicsRainbowMipmap"].as<bool>() ? "true":"false");
+    // PRINT("Feature::GraphicsPipelineSkyboxID:  %d\n", config["Feature"]["GraphicsPipelineSkyboxID"].as<int>());
 
-    PRINT("MainCamera::FreeMode:  %s", config["MainCamera"]["FreeMode"].as<bool>() ? "true":"false");
-    PRINT("MainCamera::Position Size:  %d", (int)config["MainCamera"]["Position"].size());
-    PRINT("MainCamera::Rotation Size:  %d", (int)config["MainCamera"]["Rotation"].size());
-    PRINT("MainCamera::TargetLocation Size:  %d", (int)config["MainCamera"]["TargetLocation"].size());
-    PRINT("MainCamera::FOV:  %f", config["MainCamera"]["FOV"].as<float>());
-    PRINT("MainCamera::Z Size:  %d\n", (int)config["MainCamera"]["Z"].size());
+    // PRINT("MainCamera::FreeMode:  %s", config["MainCamera"]["FreeMode"].as<bool>() ? "true":"false");
+    // PRINT("MainCamera::Position Size:  %d", (int)config["MainCamera"]["Position"].size());
+    // PRINT("MainCamera::Rotation Size:  %d", (int)config["MainCamera"]["Rotation"].size());
+    // PRINT("MainCamera::TargetLocation Size:  %d", (int)config["MainCamera"]["TargetLocation"].size());
+    // PRINT("MainCamera::FOV:  %f", config["MainCamera"]["FOV"].as<float>());
+    // PRINT("MainCamera::Z Size:  %d\n", (int)config["MainCamera"]["Z"].size());
 
-    PRINT("Lighting::Position Size:  %d", (int)config["Lighting"]["Position"].size());
-    PRINT("Lighting::Intensity Size:  %d\n", (int)config["Lighting"]["Intensity"].size());
+    // PRINT("Lighting::Position Size:  %d", (int)config["Lighting"]["Position"].size());
+    // PRINT("Lighting::Intensity Size:  %d\n", (int)config["Lighting"]["Intensity"].size());
 
     //Hanlde model yaml data
     if(config["Object"]["Models"].size() > 0) appInfo.Object.Model.Names = std::make_unique<std::vector<std::string>>(config["Object"]["Models"].as<std::vector<std::string>>()); //std::vector<std::string> {config["Object"]["Models"][0].as<std::string>()}
@@ -196,6 +196,9 @@ void CApplication::initialize(){
 
     if(config["Object"]["ModelList"].size() > 0) appInfo.Object.Model.List = std::make_unique<std::vector<int>>(config["Object"]["ModelList"].as<std::vector<int>>());
     else appInfo.Object.Model.List = std::make_unique<std::vector<int>>(std::vector<int>());
+
+    if(config["Object"]["ScaleList"].size() > 0) appInfo.Object.Model.ScaleList = std::make_unique<std::vector<float>>(config["Object"]["ScaleList"].as<std::vector<float>>());
+    else appInfo.Object.Model.ScaleList = std::make_unique<std::vector<float>>(std::vector<float>());
 
 	if(config["Object"]["TextureList"].size() > 0) appInfo.Object.Texture.List = std::make_unique<std::vector<std::vector<int>>>(config["Object"]["TextureList"].as<std::vector<std::vector<int>>>());
     else appInfo.Object.Texture.List = std::make_unique<std::vector<std::vector<int>>>(std::vector<std::vector<int>>());
@@ -249,13 +252,18 @@ void CApplication::initialize(){
     
 
     //Real Initialization Starts Here
-    objectList.resize(appInfo.Object.Pipeline.GraphicsList->size()); //each object should have a pipeline reference, so use the pipeline size as object size. must set this before Set App Property(because of descriptor size rely on object size)
+    //each object should have a pipeline reference, so use the pipeline size as object size. 
+    //must set this before Set App Property(because of descriptor size rely on object size)
+    //particle sample has one object
+    objectList.resize(appInfo.Object.Pipeline.GraphicsList->size()); 
     
+
     //auto startAppTime = std::chrono::high_resolution_clock::now();
     SetApplicationProperty(appInfo);
     //auto endAppTime = std::chrono::high_resolution_clock::now();
     //auto durationTime = std::chrono::duration<float, std::chrono::seconds::period>(endAppTime - startAppTime).count() * 1000;
     //std::cout<<"Total Set Application Property cost: "<<durationTime<<" milliseconds"<<std::endl;
+
 
     std::vector<int> texture_ids; 
     int model_id = -1;
@@ -265,11 +273,12 @@ void CApplication::initialize(){
         if(appInfo.Object.Model.List->size() > 0) model_id = (*appInfo.Object.Model.List)[i];
         if(appInfo.Object.Pipeline.GraphicsList->size() > 0) graphics_pipeline_id = (*appInfo.Object.Pipeline.GraphicsList)[i];
 
-        if(CSupervisor::VertexStructureType == VertexStructureTypes::TwoDimension || CSupervisor::VertexStructureType  == VertexStructureTypes::ThreeDimension)
-            objectList[i].Register((CApplication*)this, texture_ids, model_id, i, graphics_pipeline_id, modelManager.modelLengths[model_id], modelManager.modelLengthsMin[model_id], modelManager.modelLengthsMax[model_id]); //must be set after initialize()::SetApplicationProperty(appInfo);
-        else
-            objectList[i].Register((CApplication*)this, texture_ids, model_id, i, graphics_pipeline_id, glm::vec3(), glm::vec3(), glm::vec3());
+        objectList[i].Register((CApplication*)this, i, texture_ids, model_id, graphics_pipeline_id);
+        
         if(graphics_pipeline_id == appInfo.Feature.GraphicsPipelineSkyboxID)  objectList[i].bSkybox = true;
+
+        //set scale after model is registered, otherwise the length will not be computed correctly
+        if(appInfo.Object.Model.ScaleList->size() > 0)  objectList[i].SetScale((*appInfo.Object.Model.ScaleList)[i]);
     }
 
     renderer.CreateSyncObjects(swapchain.imageSize);

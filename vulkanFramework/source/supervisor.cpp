@@ -309,8 +309,11 @@ void CSupervisor::Activate_Pipeline(){ //*customBinding = NULL
     }
     if(Query_Pipeline_Compute()){ //for now assume only one compute pipeline
         //! only support one compute pipeline
+        //std::cout<<"before pipeline layout(compute)"<<std::endl;
         m_app->renderProcess.createComputePipelineLayout(CComputeDescriptorManager::descriptorSetLayout);
+        //std::cout<<"after pipeline layout(compute)"<<std::endl;
         m_app->renderProcess.createComputePipeline(m_app->shaderManager.compShaderModules[0]);
+        //std::cout<<"after pipeline(compute)"<<std::endl;
     }
 }
 

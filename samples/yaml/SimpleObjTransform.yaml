@@ -9,6 +9,7 @@ Object:
   ComputeShaders: []
   
   ModelList: [1, 0]
+  ScaleList: [0.01, 0.003]  
   TextureList: [[1], [0]]
   GraphicsPipelineList: [0, 0]
 
@@ -41,4 +42,3 @@ Lighting:
   Position: []
   Intensity: []
 
-  

@@ -7,11 +7,7 @@ public:
 
 		//objectList[0].SetRotation(-135,0,45); 
 		objectList[0].SetPosition(0, 2.0, 0); //reference sphere
-		objectList[0].SetScale(0.03, 0.03f, 0.03f);
-
 		objectList[1].SetPosition(0, -103, 0);  //table
-		
-		for(int i = 0; i < LightCount; i++) objectList[2+i].SetScale(0.01f, 0.01f, 0.01f); //light sphere
 	} 
 
 	void update(){
@@ -19,11 +15,10 @@ public:
 		CGraphicsDescriptorManager::updateLightingUniformBuffer(renderer.currentFrame, durationTime);
 
 		for(int i = 0; i < LightCount; i++) {
-			//CGraphicsDescriptorManager::m_lightingUBO.lights[i].dimmerSwitch = abs(cos(durationTime * i));
 			CGraphicsDescriptorManager::m_lightingUBO.lights[i].lightPos = 
 				glm::vec4(0,CGraphicsDescriptorManager::m_lightingUBO.lights[i].lightPos.y,0,0) + 
 				glm::vec4(glm::vec3( 2.5 *cos(durationTime * (i+1)), 0, 2.5 *sin(durationTime * (i+1))), 0); 
-			objectList[2+i].SetPosition(glm::vec3(CGraphicsDescriptorManager::m_lightingUBO.lights[i].lightPos) + glm::vec3(0,0,0));
+			objectList[2+i].SetPosition(glm::vec3(CGraphicsDescriptorManager::m_lightingUBO.lights[i].lightPos) + glm::vec3(0,0,0)); //sphere put on light's location
 		}
 
 		CApplication::update();

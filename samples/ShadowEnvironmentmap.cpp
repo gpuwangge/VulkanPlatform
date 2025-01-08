@@ -43,13 +43,9 @@ public:
 		appInfo.Uniform.GraphicsCustom.Binding = CustomUniformBufferObject::GetBinding();
 
 		CApplication::initialize();
-		for(int i = 1; i < objectList.size()-1; i++)
-			objectList[i].SetScale(0.01f, 0.01f, 0.01f);
 
-		objectList[0].SetScale(0.05f, 0.05f, 0.05f);
 		objectList[0].SetPosition(0, -7, 0); //table
-
-		objectList[1].SetPosition(-1, 0, 0);
+		objectList[1].SetPosition(-1, 0, 0); //spheres
 		objectList[2].SetPosition(1, 0, 0);
 		objectList[3].SetPosition(0, -1, 0);
 		objectList[4].SetPosition(0, 1, 0);

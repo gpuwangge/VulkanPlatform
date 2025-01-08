@@ -89,6 +89,7 @@ public:
     void SetVelocity(glm::vec3 v);
     void SetAngularVelocity(float vx, float vy, float vz);
 
+    void SetScale(float scale);
     void SetScale(float scale_x, float scale_y, float scale_z);
     void SetScaleRectangleXY(float x0, float y0, float x1, float y1); //set 2d image to rect((x0,y0),(x1,y1))
     void UpdateLength();

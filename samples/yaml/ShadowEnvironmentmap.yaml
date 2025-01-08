@@ -9,6 +9,7 @@ Object:
   ComputeShaders: []
   
   ModelList: [1, 0, 0, 0, 0, 0, 0, 0, 0]
+  ScaleList: [0.05, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 0.01, 1]  
   TextureList: [[0], [2], [2], [2], [2], [2], [2], [2], [1]]
   GraphicsPipelineList: [0, 0, 0, 0, 0, 0, 0, 0, 1]
 

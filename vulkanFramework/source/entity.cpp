@@ -34,6 +34,9 @@ void CEntity::SetVelocity(float vx, float vy, float vz){ Velocity = glm::vec3(vx
 void CEntity::SetVelocity(glm::vec3 v){ Velocity = v; }
 void CEntity::SetAngularVelocity(float vx, float vy, float vz){ AngularVelocity = glm::vec3(vx, vy, vz); }
 
+void CEntity::SetScale(float scale){
+    SetScale(scale, scale, scale);
+}
 void CEntity::SetScale(float scale_x, float scale_y, float scale_z){
     Scale = glm::vec3(scale_x, scale_y, scale_z);
     UpdateLength();
@@ -59,7 +62,7 @@ void CEntity::SetScaleRectangleXY(float x0, float y0, float x1, float y1){
 }
 void CEntity::UpdateLength(){
     Length = glm::vec3(Length_original.x * Scale.x, Length_original.y * Scale.y, Length_original.z * Scale.z);
-    //std::cout<<"Length Updated: "<<Length.x<<", "<<Length.y<<", "<<Length.z<<std::endl;
+    std::cout<<"Length Updated: "<<Length.x<<", "<<Length.y<<", "<<Length.z<<std::endl;
 }
 
 void CEntity::Update(float deltaTime){

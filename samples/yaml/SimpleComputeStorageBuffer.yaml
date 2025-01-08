@@ -8,6 +8,7 @@ Object:
   ComputeShaders: ["simpleComputeStorageBuffer/shader.comp.spv"]
   
   ModelList: []
+  ScaleList: []
   TextureList: []
   GraphicsPipelineList: []
 
@@ -40,4 +41,3 @@ Lighting:
   Position: []
   Intensity: []
 
-  

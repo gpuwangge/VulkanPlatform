@@ -9,6 +9,7 @@ Object:
   ComputeShaders: ["gemmCompute/shader.comp.spv"]
   
   ModelList: []
+  ScaleList: []
   TextureList: []
   GraphicsPipelineList: []
 
@@ -41,4 +42,3 @@ Lighting:
   Position: []
   Intensity: []
 
-  

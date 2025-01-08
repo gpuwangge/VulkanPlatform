@@ -866,7 +866,7 @@ void CComputeDescriptorManager::createDescriptorSets(std::vector<CTextureImage> 
     //HERE_I_AM("wxjCreateDescriptorSets");
 
     int descriptorSize = getSetSize();
-    std::cout<<"Set(Compute) size = "<<getSetSize()<<std::endl;
+    //std::cout<<"Set(Compute) size = "<<getSetSize()<<std::endl;
 
     VkResult result = VK_SUCCESS;
 
@@ -972,7 +972,7 @@ void CComputeDescriptorManager::createDescriptorSets(std::vector<CTextureImage> 
 
     }
 
-    //std::cout<<"Done set descriptor. "<<std::endl;
+    std::cout<<"Done set descriptor(compute). "<<std::endl;
 }
 
 int CComputeDescriptorManager::getLayoutSize(){

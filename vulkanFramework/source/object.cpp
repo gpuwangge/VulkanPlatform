@@ -154,17 +154,23 @@ void CObject::CreateTextureDescriptorSets(VkDescriptorPool &descriptorPool, VkDe
     //std::cout<<"Done set descriptor. "<<std::endl;
 }
 
-void CObject::Register(CApplication *p_app, std::vector<int> texture_ids, int model_id, int object_id, int graphics_pipeline_id, glm::vec3 length, glm::vec3 lengthMin, glm::vec3 lengthMax){ //-1 means no texture or model 
+void CObject::Register(CApplication *p_app, int object_id, std::vector<int> texture_ids, int model_id, int graphics_pipeline_id){
     m_object_id = object_id; 
     m_texture_ids = texture_ids; //if use no texture, will be empty vector (sampler size should be equal to texture size)
     m_model_id = model_id; //if use no model, will be -1
     m_graphics_pipeline_id = graphics_pipeline_id; //if no graphics pipeline, will be -1
     bUseMVP_VP = CGraphicsDescriptorManager::CheckMVP();
 
-    Length_original = length;
-    LengthMin_original = lengthMin;
-    LengthMax_original = lengthMax;
-    Length = length;
+    if(CSupervisor::VertexStructureType == VertexStructureTypes::TwoDimension || CSupervisor::VertexStructureType  == VertexStructureTypes::ThreeDimension){
+        Length_original = p_app->modelManager.modelLengths[model_id];
+        LengthMin_original = p_app->modelManager.modelLengthsMin[model_id];
+        LengthMax_original = p_app->modelManager.modelLengthsMax[model_id];
+    }else{
+        Length_original = glm::vec3();
+        LengthMin_original = glm::vec3();
+        LengthMax_original = glm::vec3();        
+    }
+    Length = Length_original;
     //std::cout<<"Length = "<<Length.x<<", "<<Length.y<<", "<<Length.z<<std::endl;
     //std::cout<<"LengthMin = "<<LengthMin.x<<", "<<LengthMin.y<<", "<<LengthMin.z<<std::endl;
     //std::cout<<"LengthMax = "<<LengthMax.x<<", "<<LengthMax.y<<", "<<LengthMax.z<<std::endl;

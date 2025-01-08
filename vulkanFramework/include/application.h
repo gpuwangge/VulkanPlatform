@@ -172,6 +172,7 @@ public:
             //std::vector<int> *List = NULL; 
             std::unique_ptr<std::vector<std::string>> Names; //models to be loaded
             std::unique_ptr<std::vector<int>> List; //list[i]=j: the i'th object use j'th model
+            std::unique_ptr<std::vector<float>> ScaleList; 
         }Model;
         struct TextureInfo{
             //std::vector<std::pair<std::string, bool>> *Names = NULL;

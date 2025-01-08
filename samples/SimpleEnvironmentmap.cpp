@@ -22,8 +22,6 @@ public:
 		appInfo.Uniform.GraphicsCustom.Binding = CustomUniformBufferObject::GetBinding();
 
 		CApplication::initialize();
-		for(int i = 0; i < objectList.size()-1; i++)
-			objectList[i].SetScale(0.2f, 0.2f, 0.2f);
 
 		objectList[0].SetPosition(-1, 0, 0) ;
 		objectList[1].SetPosition(1, 0, 0) ;
