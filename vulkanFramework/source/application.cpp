@@ -5,6 +5,7 @@
 Camera CApplication::mainCamera;
 bool CApplication::NeedToExit = false; 
 bool CApplication::NeedToPause = false;
+int CApplication::LightCount = 0;
 std::vector<CObject> CApplication::objectList; 
 
 CApplication::CApplication(){
@@ -225,23 +226,25 @@ void CApplication::initialize(){
         config["MainCamera"]["Z"][0].as<float>(), config["MainCamera"]["Z"][1].as<float>());
 
     //Handle Lighting data
-    if(config["Lighting"]["Intensity"].size() > 0) {
+    if(config["Lighting"]["Position"].size() > 0) {
+        std::unique_ptr<std::vector<std::vector<float>>> lightPosition = std::make_unique<std::vector<std::vector<float>>>(config["Lighting"]["Position"].as<std::vector<std::vector<float>>>());
+        for(int i = 0; i < lightPosition->size(); i++)
+            graphicsDescriptorManager.m_lightingUBO.lights[i].lightPos = glm::vec4(glm::vec3((*lightPosition)[i][0], (*lightPosition)[i][1], (*lightPosition)[i][2]), 0);
+
         CDescriptorManager::uniformBufferUsageFlags |= UNIFORM_BUFFER_LIGHTING_GRAPHICS_BIT;
         CGraphicsDescriptorManager::addLightingUniformBuffer();
-        
+        LightCount = lightPosition->size();
+    }
+    if(config["Lighting"]["Intensity"].size() > 0) {
         std::unique_ptr<std::vector<std::vector<float>>> lightIntensity = std::make_unique<std::vector<std::vector<float>>>(config["Lighting"]["Intensity"].as<std::vector<std::vector<float>>>());
         for(int i = 0; i < lightIntensity->size(); i++){
             graphicsDescriptorManager.m_lightingUBO.lights[i].ambientIntensity = (*lightIntensity)[i][0];
             graphicsDescriptorManager.m_lightingUBO.lights[i].diffuseIntensity = (*lightIntensity)[i][1];
             graphicsDescriptorManager.m_lightingUBO.lights[i].specularIntensity = (*lightIntensity)[i][2];
+            graphicsDescriptorManager.m_lightingUBO.lights[i].dimmerSwitch = (*lightIntensity)[i][3];
         }
     }
-    if(config["Lighting"]["Position"].size() > 0) {
-        std::unique_ptr<std::vector<std::vector<float>>> lightPosition = std::make_unique<std::vector<std::vector<float>>>(config["Lighting"]["Position"].as<std::vector<std::vector<float>>>());
-        for(int i = 0; i < lightPosition->size(); i++){
-            graphicsDescriptorManager.m_lightingUBO.lights[i].lightPos = glm::vec4(glm::vec3((*lightPosition)[i][0], (*lightPosition)[i][1], (*lightPosition)[i][2]), 0);
-        }
-    }
+    
     
     
 

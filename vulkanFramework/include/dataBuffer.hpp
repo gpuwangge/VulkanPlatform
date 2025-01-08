@@ -9,15 +9,17 @@ struct LightAttribute{
     float ambientIntensity;
     float diffuseIntensity;
     float specularIntensity;
-    float padding;
+    float dimmerSwitch;
 };
 
 //this class to create graphics descript layer(static), and non-texture descripter set(static), create sampler(static)
 //texture descripter leave to CObject
 //also provide function to update non-texture uniform(static) (TODO)
-#define LIGHT_NUM 3
+
+
+#define LIGHT_NUM 256
 struct LightingUniformBufferObject {
-    alignas(16) LightAttribute lights[LIGHT_NUM];
+    alignas(16) LightAttribute lights[LIGHT_NUM]; //support up to 256 lights: 256*32+16=8208 bytes. Normal uniform buffer size is 65536 bytes(64kb)
     alignas(16) glm::vec4 cameraPos; 
 
     static VkDescriptorSetLayoutBinding GetBinding(){
@@ -26,7 +28,7 @@ struct LightingUniformBufferObject {
         binding.descriptorCount = 1;
         binding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
         binding.pImmutableSamplers = nullptr;
-        binding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+        binding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;//VK_SHADER_STAGE_VERTEX_BIT;
         return binding;
     }
 };
@@ -307,6 +309,7 @@ struct MVPData{
     //Each element of pDynamicOffsets which corresponds to a descriptor binding with type VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC must be a multiple of VkPhysicalDeviceLimits::minUniformBufferOffsetAlignment
 };  
 
+#define MVP_NUM 256
 struct MVPUniformBufferObject {
 	//MVPData *mvpData; //dynamic doesn't work
 
@@ -314,7 +317,7 @@ struct MVPUniformBufferObject {
     //Each mvpData is to be aligned to be 256 bytes
     //Support up to 256 (MVP) objects. buffer size is 256*256 = 65536 bytes; Buffer range is 256 bytes(for each object)
     //65536 bytes = 64 kilo bytes
-    MVPData mvpData[256]; 
+    MVPData mvpData[MVP_NUM]; 
 
     static VkDescriptorSetLayoutBinding GetBinding(){
         VkDescriptorSetLayoutBinding binding;

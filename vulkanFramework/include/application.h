@@ -89,6 +89,7 @@ public:
     static Camera mainCamera; 
     static bool NeedToExit;
     static bool NeedToPause;
+    static int LightCount;
 
     /*Clean up Functions*/
     void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator);
