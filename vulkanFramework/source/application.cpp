@@ -134,78 +134,6 @@ void CApplication::initialize(){
         return;
     }
 
-    //Log yaml data for debug
-    // PRINT("Object::Models Size:  %d", (int)config["Object"]["Models"].size());
-    // PRINT("Object::Textures Size:  %d", (int)config["Object"]["Textures"].size());
-    // PRINT("Object::TextureMiplevels Size:  %d", (int)config["Object"]["TextureMiplevels"].size());
-    // PRINT("Object::TextureSamplers Size:  %d", (int)config["Object"]["TextureSamplers"].size());
-    // PRINT("Object::TextureCubemap Size:  %d", (int)config["Object"]["TextureCubemap"].size());
-    // PRINT("Object::VertexShaders Size:  %d", (int)config["Object"]["VertexShaders"].size());
-    // PRINT("Object::FragmentShaders Size:  %d", (int)config["Object"]["FragmentShaders"].size());
-    // PRINT("Object::ComputeShaders Size:  %d", (int)config["Object"]["ComputeShaders"].size());
-    // PRINT("Object::ModelList Size:  %d", (int)config["Object"]["ModelList"].size());
-    // PRINT("Object::TextureList Size:  %d", (int)config["Object"]["TextureList"].size());
-    // PRINT("Object::GraphicsPipelineList Size:  %d\n", (int)config["Object"]["GraphicsPipelineList"].size());
-
-    // PRINT("Uniform::Graphics Size:  %d", (int)config["Uniform"]["Graphics"].size());
-    // PRINT("Uniform::Compute Size:  %d", (int)config["Uniform"]["Compute"].size());
-    // PRINT("Uniform::SamplerMiplevels Size:  %d\n", (int)config["Uniform"]["SamplerMiplevels"].size());
-
-    // PRINT("Feature::GraphicsDepthTest:  %s", config["Feature"]["GraphicsDepthTest"].as<bool>() ? "true":"false");
-    // PRINT("Feature::GraphicsMSAA:  %s", config["Feature"]["GraphicsMSAA"].as<bool>() ? "true":"false");
-    // PRINT("Feature::Graphics48BPT:  %s", config["Feature"]["Graphics48BPT"].as<bool>() ? "true":"false");
-    // PRINT("Feature::GraphicsPushConstant:  %s", config["Feature"]["GraphicsPushConstant"].as<bool>() ? "true":"false");
-    // PRINT("Feature::GraphicsBlend:  %s", config["Feature"]["GraphicsBlend"].as<bool>() ? "true":"false");
-    // PRINT("Feature::GraphicsRainbowMipmap:  %s", config["Feature"]["GraphicsRainbowMipmap"].as<bool>() ? "true":"false");
-    // PRINT("Feature::GraphicsPipelineSkyboxID:  %d\n", config["Feature"]["GraphicsPipelineSkyboxID"].as<int>());
-
-    // PRINT("MainCamera::FreeMode:  %s", config["MainCamera"]["FreeMode"].as<bool>() ? "true":"false");
-    // PRINT("MainCamera::Position Size:  %d", (int)config["MainCamera"]["Position"].size());
-    // PRINT("MainCamera::Rotation Size:  %d", (int)config["MainCamera"]["Rotation"].size());
-    // PRINT("MainCamera::TargetLocation Size:  %d", (int)config["MainCamera"]["TargetLocation"].size());
-    // PRINT("MainCamera::FOV:  %f", config["MainCamera"]["FOV"].as<float>());
-    // PRINT("MainCamera::Z Size:  %d\n", (int)config["MainCamera"]["Z"].size());
-
-    // PRINT("Lighting::Position Size:  %d", (int)config["Lighting"]["Position"].size());
-    // PRINT("Lighting::Intensity Size:  %d\n", (int)config["Lighting"]["Intensity"].size());
-
-    //Hanlde model yaml data
-    if(config["Object"]["Models"].size() > 0) appInfo.Object.Model.Names = std::make_unique<std::vector<std::string>>(config["Object"]["Models"].as<std::vector<std::string>>()); //std::vector<std::string> {config["Object"]["Models"][0].as<std::string>()}
-	else appInfo.Object.Model.Names = std::make_unique<std::vector<std::string>>(std::vector<std::string>());
-    
-    std::vector<TextureAttributeInfo> textureAttributes = {};
-    for(int i = 0; i < config["Object"]["Textures"].size(); i++){
-        TextureAttributeInfo info;
-        info.name = config["Object"]["Textures"][i].as<std::string>();
-        info.miplevel = config["Object"]["TextureMiplevels"][i].as<int>();
-        info.samplerid = config["Object"]["TextureSamplers"][i].as<int>();
-        info.enableCubemap = config["Object"]["TextureCubemap"][i].as<bool>();
-        textureAttributes.push_back(info);
-    }
-    if(config["Object"]["Textures"].size() > 0) appInfo.Object.Texture.Attributes = std::make_unique<std::vector<TextureAttributeInfo>>(textureAttributes);
-    else appInfo.Object.Texture.Attributes = std::make_unique<std::vector<TextureAttributeInfo>>(std::vector<TextureAttributeInfo>());
-
-    if(config["Object"]["VertexShaders"].size() > 0) appInfo.Object.Pipeline.VertexShader = std::make_unique<std::vector<std::string>>(config["Object"]["VertexShaders"].as<std::vector<std::string>>());// {config["Object"]["VertexShaders"][0].as<std::string>()}
-	else appInfo.Object.Pipeline.VertexShader = std::make_unique<std::vector<std::string>>(std::vector<std::string>());
-
-    if(config["Object"]["FragmentShaders"].size() > 0) appInfo.Object.Pipeline.FragmentShader = std::make_unique<std::vector<std::string>>(config["Object"]["FragmentShaders"].as<std::vector<std::string>>()); //std::vector<std::string> {config["Object"]["FragmentShaders"][0].as<std::string>()}
-    else appInfo.Object.Pipeline.FragmentShader = std::make_unique<std::vector<std::string>>(std::vector<std::string>());
-
-    if(config["Object"]["ComputeShaders"].size() > 0) appInfo.Object.Pipeline.ComputeShader = std::make_unique<std::vector<std::string>>(config["Object"]["ComputeShaders"].as<std::vector<std::string>>());
-    else appInfo.Object.Pipeline.ComputeShader = std::make_unique<std::vector<std::string>>(std::vector<std::string>());
-
-    if(config["Object"]["ModelList"].size() > 0) appInfo.Object.Model.List = std::make_unique<std::vector<int>>(config["Object"]["ModelList"].as<std::vector<int>>());
-    else appInfo.Object.Model.List = std::make_unique<std::vector<int>>(std::vector<int>());
-
-    if(config["Object"]["ScaleList"].size() > 0) appInfo.Object.Model.ScaleList = std::make_unique<std::vector<float>>(config["Object"]["ScaleList"].as<std::vector<float>>());
-    else appInfo.Object.Model.ScaleList = std::make_unique<std::vector<float>>(std::vector<float>());
-
-	if(config["Object"]["TextureList"].size() > 0) appInfo.Object.Texture.List = std::make_unique<std::vector<std::vector<int>>>(config["Object"]["TextureList"].as<std::vector<std::vector<int>>>());
-    else appInfo.Object.Texture.List = std::make_unique<std::vector<std::vector<int>>>(std::vector<std::vector<int>>());
-
-	if(config["Object"]["GraphicsPipelineList"].size() > 0) appInfo.Object.Pipeline.GraphicsList = std::make_unique<std::vector<int>>(config["Object"]["GraphicsPipelineList"].as<std::vector<int>>());
-    else appInfo.Object.Pipeline.GraphicsList = std::make_unique<std::vector<int>>(std::vector<int>());
-
     //Handle uniform yaml data
     appInfo.Uniform.GraphicsVector = config["Uniform"]["Graphics"].as<std::vector<std::vector<bool>>>();
     appInfo.Uniform.ComputeVector = config["Uniform"]["Compute"].as<std::vector<std::vector<bool>>>();
@@ -248,38 +176,192 @@ void CApplication::initialize(){
         }
     }
     
-    
-    
-
     //Real Initialization Starts Here
-    //each object should have a pipeline reference, so use the pipeline size as object size. 
+    //each object should have a pipeline reference, so can use the pipeline size as object size. 
     //must set this before Set App Property(because of descriptor size rely on object size)
     //particle sample has one object
-    objectList.resize(appInfo.Object.Pipeline.GraphicsList->size()); 
-    
 
+    /****************************
+    * Initialize ObjectList
+    ****************************/
+    if (config["Objects"]) {
+        int objectSize = 0;
+        for (const auto& obj : config["Objects"]) {
+            int object_id = obj["object_id"] ? obj["object_id"].as<int>() : 0;
+            objectSize = (object_id > objectSize) ? object_id : objectSize;
+        }
+        objectList.resize(((objectSize+1) < config["Objects"].size())?(objectSize+1):config["Objects"].size()); 
+        std::cout<<"Object Number: "<<objectList.size()<<std::endl;
+    }
+
+     /****************************
+    * Set Application Property
+    ****************************/   
+   //CSupervisor::VertexStructureType = VertexStructureTypes::ThreeDimension;//?
     //auto startAppTime = std::chrono::high_resolution_clock::now();
     SetApplicationProperty(appInfo);
     //auto endAppTime = std::chrono::high_resolution_clock::now();
     //auto durationTime = std::chrono::duration<float, std::chrono::seconds::period>(endAppTime - startAppTime).count() * 1000;
     //std::cout<<"Total Set Application Property cost: "<<durationTime<<" milliseconds"<<std::endl;
 
+    /****************************
+    * Read Resources
+    ****************************/
+    for (const auto& resource : config["Resources"]) {
+        if (resource["Models"]) {
+            for (const auto& model : resource["Models"]) {
+                std::string name = model["resource_model_name"] ? model["resource_model_name"].as<std::string>() : "Default";
+                //std::cout<<"model name: "<<name<<std::endl;
+                //id is not really useful here, because the model id must be in order
+                int id = model["resource_model_id"] ? model["resource_model_id"].as<int>() : 0;
 
-    std::vector<int> texture_ids; 
-    int model_id = -1;
-    int graphics_pipeline_id = -1;
-    for(int i = 0; i < objectList.size(); i++){
-        if(appInfo.Object.Texture.List->size() > 0) texture_ids = (*appInfo.Object.Texture.List)[i]; 
-        if(appInfo.Object.Model.List->size() > 0) model_id = (*appInfo.Object.Model.List)[i];
-        if(appInfo.Object.Pipeline.GraphicsList->size() > 0) graphics_pipeline_id = (*appInfo.Object.Pipeline.GraphicsList)[i];
+                CSupervisor::VertexStructureType = VertexStructureTypes::ThreeDimension;
+                if(name == "CUSTOM3D0"){
+                    renderer.CreateVertexBuffer<Vertex3D>(modelManager.customModels3D[0].vertices); 
+                    renderer.CreateIndexBuffer(modelManager.customModels3D[0].indices);
+                    
+                    modelManager.modelLengths.push_back(modelManager.customModels3D[0].length);
+                    modelManager.modelLengthsMin.push_back(modelManager.customModels3D[0].lengthMin);
+                    modelManager.modelLengthsMax.push_back(modelManager.customModels3D[0].lengthMax);
+                }else if(name == "CUSTOM2D0"){
+                    CSupervisor::VertexStructureType = VertexStructureTypes::TwoDimension;
+                    renderer.CreateVertexBuffer<Vertex2D>(modelManager.customModels2D[0].vertices); 
 
-        objectList[i].Register((CApplication*)this, i, texture_ids, model_id, graphics_pipeline_id);
-        
-        if(graphics_pipeline_id == appInfo.Feature.GraphicsPipelineSkyboxID)  objectList[i].bSkybox = true;
+                    modelManager.modelLengths.push_back(modelManager.customModels2D[0].length);
+                    modelManager.modelLengthsMin.push_back(modelManager.customModels2D[0].lengthMin);
+                    modelManager.modelLengthsMax.push_back(modelManager.customModels2D[0].lengthMax);
+                }else{
+                    CSupervisor::VertexStructureType = VertexStructureTypes::ThreeDimension;
+                    std::vector<Vertex3D> modelVertices3D;
+                    std::vector<uint32_t> modelIndices3D;
+                    modelManager.LoadObjModel(name, modelVertices3D, modelIndices3D);
+                    renderer.CreateVertexBuffer<Vertex3D>(modelVertices3D); 
+                    renderer.CreateIndexBuffer(modelIndices3D);
+                }
+            }
+        }
 
-        //set scale after model is registered, otherwise the length will not be computed correctly
-        if(appInfo.Object.Model.ScaleList->size() > 0)  objectList[i].SetScale((*appInfo.Object.Model.ScaleList)[i]);
+        if (resource["Textures"]) {
+            //texture id is allocated by engine, instead of user, in order
+            for (const auto& texture : resource["Textures"]) {
+                std::string name = texture["resource_texture_name"].as<std::string>();
+                //int id = texture["resource_texture_id"].as<int>();
+                int miplevel = texture["resource_texture_miplevels"].as<int>();
+                bool enableCubemap = texture["resource_texture_cubmap"].as<bool>();
+                int samplerid = texture["uniform_Sampler_id"].as<int>();
+
+                VkImageUsageFlags usage;// = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+                //VkImageUsageFlags usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT;
+                //for(int i = 0; i < textureAttributes->size(); i++){
+                    //auto startTextureTime = std::chrono::high_resolution_clock::now();
+
+                if(miplevel > 1) //mipmap
+                    usage = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+                else 
+                    if(CSupervisor::Query_Uniform_Compute_StorageImage()) usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT;
+                    else usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+                if(!CSupervisor::b48bpt) //24bpt
+                    if(CSupervisor::Query_Uniform_Compute_StorageImage_Swapchain()) textureManager.CreateTextureImage(name, usage, renderer.commandPool, miplevel, samplerid, swapchain.swapChainImageFormat);
+                    else textureManager.CreateTextureImage(name, usage, renderer.commandPool, miplevel, samplerid, VK_FORMAT_R8G8B8A8_SRGB, 8, enableCubemap);  
+                else //48bpt
+                    textureManager.CreateTextureImage(name, usage, renderer.commandPool, miplevel, samplerid, VK_FORMAT_R16G16B16A16_UNORM, 16, enableCubemap); 
+                
+                if(CSupervisor::bRainbowMipmap){
+                    VkImageUsageFlags usage_mipmap = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+                    if(miplevel > 1) textureManager.textureImages[textureManager.textureImages.size()-1].generateMipmaps("checkerboard", usage_mipmap);
+                }else if(miplevel > 1) textureManager.textureImages[textureManager.textureImages.size()-1].generateMipmaps();
+                
+                    //auto endTextureTime = std::chrono::high_resolution_clock::now();
+                    //auto durationTime = std::chrono::duration<float, std::chrono::seconds::period>(endTextureTime - startTextureTime).count()*1000;
+                    //std::cout<<"Load Texture '"<< (*textureNames)[i].first <<"' cost: "<<durationTime<<" milliseconds"<<std::endl;
+                //}
+            }
+        }
+
+        //std::cout<<"test1"<<std::endl;
+        //shaders id is allocated by engine, not user, in order
+
+        if (resource["VertexShaders"]) {
+            auto vertexShaderList = std::make_unique<std::vector<std::string>>(std::vector<std::string>());
+            for (const auto& vertexShader : resource["VertexShaders"]) {
+                vertexShaderList->push_back(vertexShader["resource_vertexshader_name"].as<std::string>());
+            }
+            appInfo.Object.Pipeline.VertexShader = std::move(vertexShaderList);
+            std::cout<<"vertex shader:"<<appInfo.Object.Pipeline.VertexShader->size()<<std::endl;
+        }
+
+        if (resource["FragmentShaders"]) {
+            auto fragmentShaderList = std::make_unique<std::vector<std::string>>(std::vector<std::string>());
+            for (const auto& fragmentShader : resource["FragmentShaders"]) {
+                fragmentShaderList->push_back(fragmentShader["resource_fragmentshader_name"].as<std::string>());
+            }
+            appInfo.Object.Pipeline.FragmentShader = std::move(fragmentShaderList);
+        }
+
+        if (resource["ComputeShaders"]) {
+            auto computeShaderList = std::make_unique<std::vector<std::string>>(std::vector<std::string>());
+            for (const auto& computeShader : resource["ComputeShaders"]) {
+                computeShaderList->push_back(computeShader["resource_computeshader_name"].as<std::string>());
+            }
+            appInfo.Object.Pipeline.ComputeShader = std::move(computeShaderList);
+        }
     }
+
+    //std::cout<<"test2"<<std::endl;
+
+    CSupervisor::Activate_Pipeline();
+
+    /****************************
+    * Read and Register Objects
+    ****************************/
+    if (config["Objects"]) {
+        //std::cerr << "No 'Objects' key found in the YAML file!" << std::endl;
+        for (const auto& obj : config["Objects"]) {
+            int object_id = obj["object_id"] ? obj["object_id"].as<int>() : 0;
+            if(objectList[object_id].bRegistered) {
+                std::cout<<"WARNING: Trying to register a registered Object id("<<object_id<<")!"<<std::endl;
+                continue;
+            }
+
+            //std::cout<<"before register Object id("<<object_id<<")!"<<std::endl;
+            int resource_model_id = obj["resource_model_id"] ? obj["resource_model_id"].as<int>() : 0;
+            auto resource_texture_id_list = obj["resource_texture_id_list"] ? obj["resource_texture_id_list"].as<std::vector<int>>() : std::vector<int>(1, 0);
+            int resource_graphics_pipeline_id = obj["resource_graphics_pipeline_id"] ? obj["resource_graphics_pipeline_id"].as<int>() : 0;
+            //must load resources before object register
+            objectList[object_id].Register((CApplication*)this, object_id, resource_texture_id_list, resource_model_id, resource_graphics_pipeline_id);
+            //std::cout<<"after register Object id("<<object_id<<")!"<<std::endl;
+
+            std::string name = obj["object_name"] ? obj["object_name"].as<std::string>() : "Default";
+            objectList[object_id].Name = name;
+
+            //set scale after model is registered, otherwise the length will not be computed correctly
+            float object_scale = obj["object_scale"] ? obj["object_scale"].as<float>() : 1.0f;
+            objectList[object_id].SetScale(object_scale);
+
+            auto position = obj["object_position"] ? obj["object_position"].as<std::vector<float>>(): std::vector<float>(3, 0);
+            objectList[object_id].SetPosition(position[0], position[1], position[2]);
+
+            auto rotation = obj["object_rotation"] ? obj["object_rotation"].as<std::vector<float>>(): std::vector<float>(3, 0);
+            objectList[object_id].SetRotation(rotation[0], rotation[1], rotation[2]);
+
+            auto velocity = obj["object_velocity"] ? obj["object_velocity"].as<std::vector<float>>(): std::vector<float>(3, 0);
+            objectList[object_id].SetVelocity(velocity[0], velocity[1], velocity[2]);
+
+            auto angular_velocity = obj["object_angular_velocity"] ? obj["object_angular_velocity"].as<std::vector<float>>(): std::vector<float>(3, 0);
+            objectList[object_id].SetAngularVelocity(angular_velocity[0], angular_velocity[1], angular_velocity[2]);
+
+            bool isSkybox = obj["object_skybox"] ? obj["object_skybox"].as<bool>() : false;
+            objectList[object_id].bSkybox = isSkybox;
+            //if(graphics_pipeline_id == appInfo.Feature.GraphicsPipelineSkyboxID)  objectList[i].bSkybox = true;
+
+            std::cout<<"id:("<<object_id<<") "<<objectList[object_id].Name<<" Length:("<<objectList[object_id].Length.x<<","<<objectList[object_id].Length.y<<","<<objectList[object_id].Length.z<<")"
+                <<" Position:("<<objectList[object_id].Position.x<<","<<objectList[object_id].Position.y<<","<<objectList[object_id].Position.z<<")"<<std::endl;
+        }
+        for(int i = 0; i < objectList.size(); i++)
+            if(!objectList[i].bRegistered) std::cout<<"WARNING: Object id("<<i<<") is not registered!"<<std::endl;
+    }
+
+
 
     renderer.CreateSyncObjects(swapchain.imageSize);
     shaderManager.Destroy();
@@ -547,21 +629,21 @@ void CApplication::SetApplicationProperty(AppInfo &appInfo){
     //auto durationTime = std::chrono::duration<float, std::chrono::seconds::period>(endActivateTime - startActivateTime).count()*1000;
     //std::cout<<"Activate cost: "<<durationTime<<" milliseconds"<<std::endl;
 
-    auto startLoadModelTime = std::chrono::high_resolution_clock::now();
-    if(appInfo.Object.Model.Names != NULL) CSupervisor::Activate_Buffer_Graphics_Vertex(std::move(appInfo.Object.Model.Names), modelManager); 
-    auto endLoadModelTime = std::chrono::high_resolution_clock::now();
-    auto durationLoadModelTime = std::chrono::duration<float, std::chrono::seconds::period>(endLoadModelTime - startLoadModelTime).count()*1000;
-    std::cout<<"Load Model cost: "<<durationLoadModelTime<<" milliseconds"<<std::endl;
+    // auto startLoadModelTime = std::chrono::high_resolution_clock::now();
+    // if(appInfo.Object.Model.Names != NULL) CSupervisor::Activate_Buffer_Graphics_Vertex(std::move(appInfo.Object.Model.Names), modelManager); 
+    // auto endLoadModelTime = std::chrono::high_resolution_clock::now();
+    // auto durationLoadModelTime = std::chrono::duration<float, std::chrono::seconds::period>(endLoadModelTime - startLoadModelTime).count()*1000;
+    // std::cout<<"Load Model cost: "<<durationLoadModelTime<<" milliseconds"<<std::endl;
 
-    auto startTextureTime = std::chrono::high_resolution_clock::now();
-    if(appInfo.Object.Texture.Attributes != NULL)
-        CSupervisor::Activate_Texture(std::move(appInfo.Object.Texture.Attributes));
-    auto endTextureTime = std::chrono::high_resolution_clock::now();
-    auto durationTextureTime = std::chrono::duration<float, std::chrono::seconds::period>(endTextureTime - startTextureTime).count()*1000;
-    std::cout<<"Load Textures cost: "<<durationTextureTime<<" milliseconds"<<std::endl;
+    // auto startTextureTime = std::chrono::high_resolution_clock::now();
+    // if(appInfo.Object.Texture.Attributes != NULL)
+    //     CSupervisor::Activate_Texture(std::move(appInfo.Object.Texture.Attributes));
+    // auto endTextureTime = std::chrono::high_resolution_clock::now();
+    // auto durationTextureTime = std::chrono::duration<float, std::chrono::seconds::period>(endTextureTime - startTextureTime).count()*1000;
+    // std::cout<<"Load Textures cost: "<<durationTextureTime<<" milliseconds"<<std::endl;
 
     //auto startPipelineTime = std::chrono::high_resolution_clock::now();
-    CSupervisor::Activate_Pipeline();
+   // CSupervisor::Activate_Pipeline();
     //auto endPipelineTime = std::chrono::high_resolution_clock::now();
     //durationTime = std::chrono::duration<float, std::chrono::seconds::period>(endPipelineTime - startPipelineTime).count()*1000;
     //std::cout<<"Activate Pipeline cost: "<<durationTime<<" milliseconds"<<std::endl;

@@ -1,17 +1,28 @@
-Object:
-  Models: [hallway.obj]
-  Textures: [checkerboard_marble.jpg]
-  TextureMiplevels: [11]
-  TextureSamplers: [0] 
-  TextureCubemap: [false]
-  VertexShaders: [simpleMipmap/shader.vert.spv]
-  FragmentShaders: [simpleMipmap/shader.frag.spv]
-  ComputeShaders: []
-  
-  ModelList: [0]
-  ScaleList: [1]
-  TextureList: [[0]]
-  GraphicsPipelineList: [0]
+Objects:
+  - object_name: Hallway
+    object_id: 0
+    object_scale: 1
+    object_position: [0,0,0]
+    object_rotation: [0,0,0]
+    object_velocity: [0,0,0]
+    object_angular_velocity: [0,0,0]
+    object_skybox: false
+    resource_model_id: 0
+    resource_texture_id_list: [0]
+    resource_graphics_pipeline_id: 0
+
+Resources:
+  - Models:
+    - resource_model_name: hallway.obj
+  - Textures:
+    - resource_texture_name: checkerboard_marble.jpg
+      resource_texture_miplevels: 11
+      resource_texture_cubmap: false
+      uniform_Sampler_id: 0
+  - VertexShaders:
+    - resource_vertexshader_name: simpleMipmap/shader.vert.spv
+  - FragmentShaders:
+    - resource_fragmentshader_name: simpleMipmap/shader.frag.spv
 
 Uniform:
   # Graphcis: CustomGraphics_MVP_VP

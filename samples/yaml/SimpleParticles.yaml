@@ -1,17 +1,14 @@
-Object:
-  Models: []
-  Textures: []
-  TextureMiplevels: []
-  TextureSamplers: []
-  TextureCubemap: []
-  VertexShaders: [simpleParticles/shader.vert.spv]
-  FragmentShaders: [simpleParticles/shader.frag.spv]
-  ComputeShaders: [simpleParticles/shader.comp.spv]
-  
-  ModelList: []
-  ScaleList: []  
-  TextureList: []
-  GraphicsPipelineList: [0]
+Objects:
+  - object_name: ParticleGenerator
+    object_id: 0
+
+Resources:
+  - VertexShaders:
+    - resource_vertexshader_name: simpleParticles/shader.vert.spv
+  - FragmentShaders:
+    - resource_fragmentshader_name: simpleParticles/shader.frag.spv
+  - ComputeShaders:
+    - resource_computeshader_name: simpleParticles/shader.comp.spv
 
 Uniform:
   # Graphcis: CustomGraphics_MVP_VP

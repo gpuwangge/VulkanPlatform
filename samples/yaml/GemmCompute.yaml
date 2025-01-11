@@ -1,17 +1,6 @@
-Object:
-  Models: []
-  Textures: []
-  TextureMiplevels: []
-  TextureSamplers: []
-  TextureCubemap: []
-  VertexShaders: []
-  FragmentShaders: []
-  ComputeShaders: ["gemmCompute/shader.comp.spv"]
-  
-  ModelList: []
-  ScaleList: []
-  TextureList: []
-  GraphicsPipelineList: []
+Resources:
+  - ComputeShaders:
+    - resource_computeshader_name: gemmCompute/shader.comp.spv
 
 Uniform:
   # Graphcis: CustomGraphics_MVP_VP

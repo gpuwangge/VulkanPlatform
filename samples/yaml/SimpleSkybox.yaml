@@ -1,17 +1,28 @@
-Object:
-  Models: [cube.obj]
-  Textures: [skybox2_direction.png]
-  TextureMiplevels: [1]
-  TextureSamplers: [0]
-  TextureCubemap: [true]
-  VertexShaders: [simpleSkybox/shader.vert.spv]
-  FragmentShaders: [simpleSkybox/shader.frag.spv]
-  ComputeShaders: []
-  
-  ModelList: [0]
-  ScaleList: [1]  
-  TextureList: [[0]]
-  GraphicsPipelineList: [0]
+Objects:
+  - object_name: Cube
+    object_id: 0
+    object_scale: 1
+    object_position: [0,0,0]
+    object_rotation: [0,0,0]
+    object_velocity: [0,0,0]
+    object_angular_velocity: [0,0,0]
+    object_skybox: true
+    resource_model_id: 0
+    resource_texture_id_list: [0]
+    resource_graphics_pipeline_id: 0
+
+Resources:
+  - Models:
+    - resource_model_name: cube.obj
+  - Textures:
+    - resource_texture_name: skybox2_direction.png
+      resource_texture_miplevels: 1
+      resource_texture_cubmap: true
+      uniform_Sampler_id: 0
+  - VertexShaders:
+    - resource_vertexshader_name: simpleSkybox/shader.vert.spv
+  - FragmentShaders:
+    - resource_fragmentshader_name: simpleSkybox/shader.frag.spv
 
 Uniform:
   # Graphcis: CustomGraphics_MVP_VP

@@ -1,17 +1,28 @@
-Object:
-  Models: [viking_room.obj]
-  Textures: [viking_room.png]
-  TextureMiplevels: [1]
-  TextureSamplers: [0]
-  TextureCubemap: [false]
-  VertexShaders: [simpleShadowMap/shader.vert.spv]
-  FragmentShaders: [simpleShadowMap/shader.frag.spv]
-  ComputeShaders: []
-  
-  ModelList: [0]
-  ScaleList: [1]
-  TextureList: [[0]]
-  GraphicsPipelineList: [0]
+Objects:
+  - object_name: Viking
+    object_id: 0
+    object_scale: 1
+    object_position: [0,0,0]
+    object_rotation: [-135,0,45]
+    object_velocity: [0,0,0]
+    object_angular_velocity: [0,0,0]
+    object_skybox: false
+    resource_model_id: 0
+    resource_texture_id_list: [0]
+    resource_graphics_pipeline_id: 0
+
+Resources:
+  - Models:
+    - resource_model_name: viking_room.obj
+  - Textures:
+    - resource_texture_name: viking_room.png
+      resource_texture_miplevels: 1
+      resource_texture_cubmap: false
+      uniform_Sampler_id: 0
+  - VertexShaders:
+    - resource_vertexshader_name: simpleShadowMap/shader.vert.spv
+  - FragmentShaders:
+    - resource_fragmentshader_name: simpleShadowMap/shader.frag.spv
 
 Uniform:
   # Graphcis: CustomGraphics_MVP_VP 

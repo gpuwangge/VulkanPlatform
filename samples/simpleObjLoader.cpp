@@ -4,11 +4,9 @@ class TEST_CLASS_NAME: public CApplication{
 public:
     void initialize(){
 		CApplication::initialize();
-		objectList[0].SetRotation(-135,0,45);
 	}
 
 	void update(){
-		//objectList[0].SetAngularVelocity(50,0,0);
 		CApplication::update();
 	}
 

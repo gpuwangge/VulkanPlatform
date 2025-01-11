@@ -1,17 +1,44 @@
-Object:
-  Models: [sphere.obj, ElegantChairTable.obj]
-  Textures: [metal.jpg, repeat-pattern2.jpg]
-  TextureMiplevels: [1, 9]
-  TextureSamplers: [0, 1]
-  TextureCubemap: [false, false]
-  VertexShaders: [simpleObjTransform/shader.vert.spv]
-  FragmentShaders: [simpleObjTransform/shader.frag.spv]
-  ComputeShaders: []
-  
-  ModelList: [1, 0]
-  ScaleList: [0.01, 0.003]  
-  TextureList: [[1], [0]]
-  GraphicsPipelineList: [0, 0]
+Objects:
+  - object_name: Table
+    object_id: 0
+    object_scale: 0.01
+    object_position: [0,0,0]
+    object_rotation: [0,0,0]
+    object_velocity: [0,0,0]
+    object_angular_velocity: [0,0,0]
+    object_skybox: false
+    resource_model_id: 1
+    resource_texture_id_list: [1]
+    resource_graphics_pipeline_id: 0
+  - object_name: Sphere
+    object_id: 1
+    object_scale: 0.003
+    object_position: [0,1.25,0.75]
+    object_rotation: [0,0,0]
+    object_velocity: [0,0,0]
+    object_angular_velocity: [0,0,0]
+    object_skybox: false
+    resource_model_id: 0
+    resource_texture_id_list: [0]
+    resource_graphics_pipeline_id: 0
+
+Resources:
+  - Models:
+    - resource_model_name: sphere.obj
+    - resource_model_name: ElegantChairTable.obj
+  - Textures:
+    - resource_texture_name: metal.jpg
+      resource_texture_miplevels: 1
+      resource_texture_cubmap: false
+      uniform_Sampler_id: 0
+    - resource_texture_name: repeat-pattern2.jpg
+      resource_texture_miplevels: 9
+      resource_texture_cubmap: false
+      uniform_Sampler_id: 1
+  - VertexShaders:
+    - resource_vertexshader_name: simpleObjTransform/shader.vert.spv
+  - FragmentShaders:
+    - resource_fragmentshader_name: simpleObjTransform/shader.frag.spv
 
 Uniform:
   # Graphcis: CustomGraphics_MVP_VP

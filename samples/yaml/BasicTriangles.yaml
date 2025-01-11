@@ -1,17 +1,28 @@
-Object:
-  Models: [CUSTOM3D0]
-  Textures: [texture.jpg]
-  TextureMiplevels: [1]
-  TextureSamplers: [0] 
-  TextureCubemap: [false]
-  VertexShaders: [basicTriangles/shader.vert.spv]
-  FragmentShaders: [basicTriangles/shader.frag.spv]
-  ComputeShaders: []
-  # Each element in the list represent an object; graphics pipeline number == vertex/fragment number, because each pipeline connect one vertex shader and one fragment shader
-  ModelList: [0]
-  ScaleList: [3]
-  TextureList: [[0]]
-  GraphicsPipelineList: [0]
+Objects:
+  - object_name: Triangle
+    object_id: 0
+    object_scale: 3
+    object_position: [0,0,0]
+    object_rotation: [0,0,0]
+    object_velocity: [0,0,0]
+    object_angular_velocity: [0,0,0]
+    object_skybox: false
+    resource_model_id: 0
+    resource_texture_id_list: [0]
+    resource_graphics_pipeline_id: 0
+
+Resources:
+  - Models:
+    - resource_model_name: CUSTOM3D0
+  - Textures:
+    - resource_texture_name: texture.jpg
+      resource_texture_miplevels: 1
+      resource_texture_cubmap: false
+      uniform_Sampler_id: 0
+  - VertexShaders:
+    - resource_vertexshader_name: basicTriangles/shader.vert.spv
+  - FragmentShaders:
+    - resource_fragmentshader_name: basicTriangles/shader.frag.spv
 
 # assume all compute pipelines use the same descriptor uniform layout/set
 Uniform:

@@ -69,7 +69,7 @@ public:
 	void createComputeCommandBuffers(std::vector<VkCommandBuffer> &commandBuffers, std::vector<VkImage> &swapChainImages) {
         for (size_t i = 0; i < commandBuffers.size(); i++) {
 			renderer.currentFrame = i;
-			std::cout<<"commandbuffer i: "<<i<<std::endl;
+			//std::cout<<"commandbuffer i: "<<i<<std::endl;
             VkCommandBufferBeginInfo beginInfo{};
             beginInfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 

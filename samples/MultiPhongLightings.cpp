@@ -4,10 +4,6 @@ class TEST_CLASS_NAME: public CApplication{
 public:
     void initialize(){
 		CApplication::initialize();
-
-		//objectList[0].SetRotation(-135,0,45); 
-		objectList[0].SetPosition(0, 2.0, 0); //reference sphere
-		objectList[1].SetPosition(0, -103, 0);  //table
 	} 
 
 	void update(){

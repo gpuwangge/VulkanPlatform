@@ -330,7 +330,7 @@ void CGraphicsDescriptorManager::createDescriptorSetLayout(VkDescriptorSetLayout
 		graphicsBindings[counter].pImmutableSamplers = m_lightingUBO.GetBinding().pImmutableSamplers;
 		graphicsBindings[counter].stageFlags = m_lightingUBO.GetBinding().stageFlags;
 		counter++;
-        std::cout<<"created lighting bindings "<<std::endl;
+        //std::cout<<"created lighting bindings "<<std::endl;
 	}
 	if(uniformBufferUsageFlags & UNIFORM_BUFFER_CUSTOM_GRAPHICS_BIT){
         graphicsBindings[counter].binding = counter;
@@ -416,7 +416,7 @@ void CGraphicsDescriptorManager::createDescriptorSetLayout(VkDescriptorSetLayout
 
 void CGraphicsDescriptorManager::createTextureDescriptorSetLayout(){
     graphicsBindings.resize(textureSamplers.size());//sampleCount?
-    //std::cout<<"Layout(Sampler) size = "<<textureSamplers.size()<<std::endl;
+    std::cout<<"Layout(Sampler) size = "<<textureSamplers.size()<<std::endl;
 	int counter = 0;
 
     if(uniformBufferUsageFlags & UNIFORM_BUFFER_SAMPLER_BIT){
@@ -972,7 +972,7 @@ void CComputeDescriptorManager::createDescriptorSets(std::vector<CTextureImage> 
 
     }
 
-    std::cout<<"Done set descriptor(compute). "<<std::endl;
+    //std::cout<<"Done set descriptor(compute). "<<std::endl;
 }
 
 int CComputeDescriptorManager::getLayoutSize(){

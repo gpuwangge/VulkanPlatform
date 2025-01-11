@@ -62,7 +62,7 @@ void CEntity::SetScaleRectangleXY(float x0, float y0, float x1, float y1){
 }
 void CEntity::UpdateLength(){
     Length = glm::vec3(Length_original.x * Scale.x, Length_original.y * Scale.y, Length_original.z * Scale.z);
-    std::cout<<"Length Updated: "<<Length.x<<", "<<Length.y<<", "<<Length.z<<std::endl;
+    //std::cout<<"Length Updated: "<<Length.x<<", "<<Length.y<<", "<<Length.z<<std::endl;
 }
 
 void CEntity::Update(float deltaTime){

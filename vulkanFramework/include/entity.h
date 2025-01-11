@@ -1,6 +1,7 @@
 #ifndef H_ENTITY
 #define H_ENTITY
 #include <glm/gtc/quaternion.hpp>
+#include <string>
 
 class CEntity{
 public:
@@ -13,6 +14,8 @@ public:
     ~CEntity(){
 
     }
+
+    std::string Name;
 
     enum EntityType { general, camera }; //for first persion type the roll should be ignored
 	EntityType entityType = EntityType::general;

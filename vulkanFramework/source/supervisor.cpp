@@ -26,8 +26,8 @@ bool CSupervisor::bRainbowMipmap;
 
 void CSupervisor::Register(CApplication *app){ m_app = app; m_app->renderer.CreateCommandPool(m_app->surface);} 
 
-bool CSupervisor::Query_Pipeline_Graphics(){ return m_app->appInfo.Object.Pipeline.VertexShader->size()>0; } //VertexShader!="";
-bool CSupervisor::Query_Pipeline_Compute(){ return m_app->appInfo.Object.Pipeline.ComputeShader->size()>0; }//ComputeShader!="";
+bool CSupervisor::Query_Pipeline_Graphics(){ return m_app->appInfo.Object.Pipeline.VertexShader != NULL; } //VertexShader!=""; m_app->appInfo.Object.Pipeline.VertexShader->size()>0;
+bool CSupervisor::Query_Pipeline_Compute(){ return m_app->appInfo.Object.Pipeline.ComputeShader != NULL; }//ComputeShader!=""; m_app->appInfo.Object.Pipeline.ComputeShader->size()>0;
 
 void CSupervisor::Activate_Uniform_Graphics_VP(){ CDescriptorManager::uniformBufferUsageFlags |= UNIFORM_BUFFER_VP_BIT; }
 bool CSupervisor::Query_Uniform_Graphics_VP(){return CDescriptorManager::uniformBufferUsageFlags & UNIFORM_BUFFER_VP_BIT;}
@@ -141,11 +141,16 @@ void CSupervisor::Activate_Texture(std::unique_ptr<std::vector<TextureAttributeI
 void CSupervisor::Activate_Pipeline(){ //*customBinding = NULL
     //std::cout<<"Activate_Pipeline()"<<std::endl;
 
+    //std::cout<<"test commandbuffer"<<std::endl;
     //Command buffers
     //m_app->renderer.CreateCommandPool(m_app->surface);
-    if(Query_Pipeline_Graphics()) m_app->renderer.CreateGraphicsCommandBuffer();
+    if(Query_Pipeline_Graphics()) {
+        //std::cout<<"test create graphcis command buffer"<<std::endl;
+        m_app->renderer.CreateGraphicsCommandBuffer();
+    }
     if(Query_Pipeline_Compute()) m_app->renderer.CreateComputeCommandBuffer();
 
+    //std::cout<<"test framebuffer"<<std::endl;
     //Framebuffers
     if(Query_Pipeline_Graphics()){
         VkImageLayout imageLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
@@ -171,7 +176,7 @@ void CSupervisor::Activate_Pipeline(){ //*customBinding = NULL
 
         m_app->swapchain.CreateFramebuffers(m_app->renderProcess.renderPass);
     }
-
+    //std::cout<<"test shaders"<<std::endl;
     //Shaders
     if(Query_Pipeline_Graphics()){
         for(int i = 0; i < m_app->appInfo.Object.Pipeline.VertexShader->size(); i++){
@@ -218,14 +223,14 @@ void CSupervisor::Activate_Pipeline(){ //*customBinding = NULL
         if(Query_Uniform_Compute_StorageImage_Swapchain()) CComputeDescriptorManager::addStorageImage(UNIFORM_IMAGE_STORAGE_SWAPCHAIN_BIT);
         if(Query_Uniform_Compute_Custom()) CComputeDescriptorManager::addCustomUniformBuffer(ComputeCustomUniformBufferSize);
     }
-
+    //std::cout<<"test pool"<<std::endl;
     //std::cout<<"before pool()"<<std::endl;
     //Descriptor Pool
     //CDescriptorManager::createDescriptorPool(m_app->appInfo.Object.Count); 
     CDescriptorManager::createDescriptorPool(m_app->objectList.size()); 
 
     //std::cout<<"after pool()"<<std::endl;
-
+    //std::cout<<"test3"<<std::endl;
     //Descriptor Layout
     if(Query_Pipeline_Graphics()){
         if(Query_Uniform_Graphics_Custom()) {
@@ -238,7 +243,7 @@ void CSupervisor::Activate_Pipeline(){ //*customBinding = NULL
             CComputeDescriptorManager::createDescriptorSetLayout(&ComputeCustomBinding);
         }else CComputeDescriptorManager::createDescriptorSetLayout();
     }
-
+    //std::cout<<"test4"<<std::endl;
     //Descriptor Set
     if(Query_Pipeline_Graphics()){
         //if(Query_Uniform_Compute_StorageImage())
@@ -253,13 +258,15 @@ void CSupervisor::Activate_Pipeline(){ //*customBinding = NULL
             else m_app->computeDescriptorManager.createDescriptorSets(NULL, &(m_app->swapchain.views));
         }else m_app->computeDescriptorManager.createDescriptorSets();
     }
-
+    //std::cout<<"test5"<<std::endl;
     //Pipeline
     if(Query_Pipeline_Graphics()){
         std::vector<VkDescriptorSetLayout> dsLayouts;
         dsLayouts.push_back(CGraphicsDescriptorManager::descriptorSetLayout);
+        //std::cout<<"test5.5"<<std::endl;
         if(Query_Uniform_Graphics_Sampler()) dsLayouts.push_back(CGraphicsDescriptorManager::textureDescriptorSetLayout); //set = 1
 
+        //std::cout<<"test6"<<std::endl;
         //!!!Different cube can share the same texture descriptor.
         //suppose we have 100 objects, 100 different textures. cube x 50, sphere x 50. How many texture layouts? How many texture descriptor?
         //obviously, every objects need a different texture, so bind with objectId
@@ -271,11 +278,12 @@ void CSupervisor::Activate_Pipeline(){ //*customBinding = NULL
         
         //std::cout<<"Begin create graphics pipeline"<<std::endl;
         for(int i = 0; i < m_app->appInfo.Object.Pipeline.VertexShader->size(); i++){
+            //std::cout<<"test7"<<std::endl;
             //! All graphics pipelines use the same dsLayouts
             if(bPushConstant)  m_app->renderProcess.createGraphicsPipelineLayout(dsLayouts,  m_app->shaderManager.pushConstantRange, true, i);
             else m_app->renderProcess.createGraphicsPipelineLayout(dsLayouts, i);
 
-            //std::cout<<"create graphics pipeline: "<<i<<std::endl;
+            //std::cout<<"create graphics pipeline: "<<i<<","<<VertexStructureTypes::NoType<<std::endl;
             switch(VertexStructureType){
                 case VertexStructureTypes::NoType:
                     m_app->renderProcess.createGraphicsPipeline(
@@ -315,6 +323,7 @@ void CSupervisor::Activate_Pipeline(){ //*customBinding = NULL
         m_app->renderProcess.createComputePipeline(m_app->shaderManager.compShaderModules[0]);
         //std::cout<<"after pipeline(compute)"<<std::endl;
     }
+    //std::cout<<"Test Done"<<std::endl;
 }
 
 

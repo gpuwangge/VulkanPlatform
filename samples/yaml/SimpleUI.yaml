@@ -1,17 +1,71 @@
-Object:
-  Models: [CUSTOM3D0, cube.obj, hallway.obj]
-  Textures: [texture.jpg, viking_room.png, fur.jpg]
-  TextureMiplevels: [1, 1, 1]
-  TextureSamplers: [0, 0, 0] 
-  TextureCubemap: [false, false, false]
-  VertexShaders: [simpleUI/shader.vert.spv]
-  FragmentShaders: [simpleUI/shader.frag.spv]
-  ComputeShaders: []
-  
-  ModelList: [0,1,2,0]
-  ScaleList: [1,1,1,1]
-  TextureList: [[0],[1],[2],[0]]
-  GraphicsPipelineList: [0,0,0,0]
+Objects:
+  - object_name: UI
+    object_id: 0
+    object_scale: 1
+    object_position: [0,0,0]
+    object_rotation: [0,0,0]
+    object_velocity: [0,0,0]
+    object_angular_velocity: [0,0,0]
+    object_skybox: false
+    resource_model_id: 0
+    resource_texture_id_list: [0]
+    resource_graphics_pipeline_id: 0
+  - object_name: Cube
+    object_id: 1
+    object_scale: 1
+    object_position: [0,0,0]
+    object_rotation: [0,0,0]
+    object_velocity: [0,0,0]
+    object_angular_velocity: [0,0,0]
+    object_skybox: false
+    resource_model_id: 1
+    resource_texture_id_list: [1]
+    resource_graphics_pipeline_id: 0
+  - object_name: hallway
+    object_id: 2
+    object_scale: 1
+    object_position: [0,0,0]
+    object_rotation: [0,0,0]
+    object_velocity: [0,0,0]
+    object_angular_velocity: [0,0,0]
+    object_skybox: false
+    resource_model_id: 2
+    resource_texture_id_list: [2]
+    resource_graphics_pipeline_id: 0
+  - object_name: UI
+    object_id: 3
+    object_scale: 1
+    object_position: [0,0,0]
+    object_rotation: [0,0,0]
+    object_velocity: [0,0,0]
+    object_angular_velocity: [0,0,0]
+    object_skybox: false
+    resource_model_id: 0
+    resource_texture_id_list: [0]
+    resource_graphics_pipeline_id: 0
+
+Resources:
+  - Models:
+    - resource_model_name: CUSTOM3D0
+    - resource_model_name: cube.obj
+    - resource_model_name: hallway.obj
+  - Textures:
+    - resource_texture_name: texture.jpg
+      resource_texture_miplevels: 1
+      resource_texture_cubmap: false
+      uniform_Sampler_id: 0
+    - resource_texture_name: viking_room.png
+      resource_texture_miplevels: 1
+      resource_texture_cubmap: false
+      uniform_Sampler_id: 0
+    - resource_texture_name: fur.jpg
+      resource_texture_miplevels: 1
+      resource_texture_cubmap: false
+      uniform_Sampler_id: 0
+  - VertexShaders:
+    - resource_vertexshader_name: simpleUI/shader.vert.spv
+  - FragmentShaders:
+    - resource_fragmentshader_name: simpleUI/shader.frag.spv
 
 Uniform:
   # Graphcis: CustomGraphics_MVP_VP 

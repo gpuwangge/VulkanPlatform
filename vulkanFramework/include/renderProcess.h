@@ -252,9 +252,9 @@ public:
         /*********Create Graphics Pipeline**********/
         VkPipeline newpipeline;
         graphicsPipelines.push_back(newpipeline);
-        //std::cout<<"begin create pipeline "<<std::endl;
+        //std::cout<<"begin create graphics pipeline "<<std::endl;
         result = vkCreateGraphicsPipelines(CContext::GetHandle().GetLogicalDevice(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipelines[graphcisPipeline_id]);
-        //std::cout<<"done create pipeline "<<std::endl;
+        //std::cout<<"done create graphcis pipeline "<<std::endl;
         //result = vkCreateGraphicsPipelines(CContext::GetHandle().GetLogicalDevice(), VK_NULL_HANDLE, 1, &pipelineInfo, nullptr, &graphicsPipeline);
         if (result != VK_SUCCESS) throw std::runtime_error("failed to create graphics pipeline!");
         //REPORT("vkCreateGraphicsPipelines");

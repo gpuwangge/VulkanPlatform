@@ -60,6 +60,7 @@ void CRenderer::CreateCommandPool(VkSurfaceKHR &surface) {
 
 void CRenderer::CreateGraphicsCommandBuffer(){
     graphicsCmdId = commandBuffers.size();
+    //std::cout<<"graphicsCmdId="<<graphicsCmdId<<std::endl;
     CreateCommandBuffers();
 }
 void CRenderer::CreateComputeCommandBuffer(){
@@ -467,6 +468,8 @@ void CRenderer::SetScissor(VkExtent2D &extent){
     vkCmdSetScissor(commandBuffers[graphicsCmdId][currentFrame], 0, 1, &scissor);
 }
 void CRenderer::BindVertexBuffer(int objectId){
+    //std::cout<<"objectId="<<objectId<<", vertexDataBuffers.size()="<<vertexDataBuffers.size()<<std::endl;
+    if(vertexDataBuffers.size() <= 0) return;
 	VkBuffer vertexBuffers[] = {vertexDataBuffers[objectId].buffer };
 	VkDeviceSize offsets[] = { 0 };
 	vkCmdBindVertexBuffers(commandBuffers[graphicsCmdId][currentFrame], 0, 1, vertexBuffers, offsets);

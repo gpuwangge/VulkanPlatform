@@ -1,17 +1,14 @@
-Object:
-  Models: [CUSTOM2D0]
-  Textures: []
-  TextureMiplevels: []
-  TextureSamplers: [] 
-  TextureCubemap: []
-  VertexShaders: [simpleVertexBuffer/shader.vert.spv]
-  FragmentShaders: [simpleVertexBuffer/shader.frag.spv]
-  ComputeShaders: []
-  
-  ModelList: [0]
-  ScaleList: [1]
-  TextureList: []
-  GraphicsPipelineList: [0]
+Objects:
+  - object_name: Triangle
+    object_id: 0
+
+Resources:
+  - Models:
+    - resource_model_name: CUSTOM2D0
+  - VertexShaders:
+    - resource_vertexshader_name: simpleVertexBuffer/shader.vert.spv
+  - FragmentShaders:
+    - resource_fragmentshader_name: simpleVertexBuffer/shader.frag.spv
 
 Uniform:
   # Graphcis: CustomGraphics_MVP_VP

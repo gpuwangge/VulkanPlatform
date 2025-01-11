@@ -19,12 +19,6 @@ public:
 	
     void initialize(){
 		CApplication::initialize();
-		//objectList[0].MoveLeft(5, 100);
-		//objectList[2].MoveRight(5, 100);
-		objectList[0].SetPosition(-5,0,0);
-		objectList[2].SetPosition(5,0,0);
-		objectList[3].SetPosition(0,-5,0);
-		objectList[4].SetPosition(0,5,0);
 	}
 
 	void update(){

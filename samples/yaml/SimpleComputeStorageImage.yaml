@@ -1,16 +1,6 @@
-Object:
-  Models: []
-  Textures: []
-  TextureMiplevels: []
-  TextureCubemap: []
-  VertexShaders: []
-  FragmentShaders: []
-  ComputeShaders: ["simpleComputeStorageImage/shader.comp.spv"]
-  
-  ModelList: []
-  ScaleList: []
-  TextureList: []
-  GraphicsPipelineList: []
+Resources:
+  - ComputeShaders:
+    - resource_computeshader_name: simpleComputeStorageImage/shader.comp.spv
 
 Uniform:
   # Graphcis: CustomGraphics_MVP_VP 

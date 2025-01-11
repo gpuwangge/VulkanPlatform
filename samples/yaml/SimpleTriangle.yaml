@@ -1,17 +1,12 @@
-Object:
-  Models: []
-  Textures: []
-  TextureMiplevels: []
-  TextureSamplers: [] 
-  TextureCubemap: []
-  VertexShaders: [simpleTriangle/shader.vert.spv]
-  FragmentShaders: [simpleTriangle/shader.frag.spv]
-  ComputeShaders: []
-  
-  ModelList: []
-  ScaleList: []
-  TextureList: []
-  GraphicsPipelineList: [0]
+Objects:
+  - object_name: Triangle
+    object_id: 0
+
+Resources:
+  - VertexShaders:
+    - resource_vertexshader_name: simpleTriangle/shader.vert.spv
+  - FragmentShaders:
+    - resource_fragmentshader_name: simpleTriangle/shader.frag.spv
 
 Uniform:
   # Graphcis: CustomGraphics_MVP_VP

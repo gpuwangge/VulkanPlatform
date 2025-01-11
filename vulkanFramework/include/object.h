@@ -49,6 +49,7 @@ class CObject : public CEntity {
 public:
     CObject();
 
+    bool bRegistered;
     bool bSticker;
     bool bSkybox;
 

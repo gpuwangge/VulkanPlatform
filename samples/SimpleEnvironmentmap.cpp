@@ -22,15 +22,6 @@ public:
 		appInfo.Uniform.GraphicsCustom.Binding = CustomUniformBufferObject::GetBinding();
 
 		CApplication::initialize();
-
-		objectList[0].SetPosition(-1, 0, 0) ;
-		objectList[1].SetPosition(1, 0, 0) ;
-		objectList[2].SetPosition(0, -1, 0) ;
-		objectList[3].SetPosition(0, 1, 0) ;
-		objectList[4].SetPosition(0, 0, -1) ;
-		objectList[5].SetPosition(0, 0, 1) ;
-
-		objectList[6].SetAngularVelocity(10,10,10);
 	}
 
 	void update(){

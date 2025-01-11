@@ -4,8 +4,6 @@ class TEST_CLASS_NAME: public CApplication{
 public:
     void initialize(){
 		CApplication::initialize();
-
-		objectList[1].SetPosition(0,1.25,0.75);//sphere
 	}
 
 	void update(){

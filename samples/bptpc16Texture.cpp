@@ -16,7 +16,6 @@ public:
 	}
 
 	void update(){
-		objectList[0].SetAngularVelocity(0,0,50.0f); //clockwise rotation around z axis
 		CApplication::update();
 	}
 

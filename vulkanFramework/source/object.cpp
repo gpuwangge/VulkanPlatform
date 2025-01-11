@@ -5,11 +5,17 @@
 * Object
 *******************/
 CObject::CObject(){
+    bRegistered = false;
     bUseMVP_VP = false;
     bSticker = false;
     //bUseTextureSampler = false;
     bSkybox = false;
     bUpdate = true;
+
+    m_object_id = 0;
+    //std::vector<int> m_texture_ids;
+    m_model_id = 0;
+    m_graphics_pipeline_id = 0;
 
     Length_original = glm::vec3();
     LengthMin_original = glm::vec3();
@@ -47,6 +53,7 @@ CObject::CObject(){
 }
 
  void CObject::Update(float deltaTime){
+    if(!bRegistered)  return;
     if(!bUpdate) return;
     //std::cout<<"Update Object"<<m_object_id<<std::endl;
     //std::cout<<"deltaTime: "<<deltaTime<<std::endl;
@@ -94,6 +101,7 @@ void CObject::CleanUp(){
 
 void CObject::CreateTextureDescriptorSets(VkDescriptorPool &descriptorPool, VkDescriptorSetLayout &descriptorSetLayout, std::vector<VkSampler> &samplers, std::vector<VkImageView> *swapchainImageViews){
     //std::cout<<"TextureDescriptor::createDescriptorSets."<<std::endl;
+    if(samplers.size() < 1) return;
     
     int descriptorSize = samplers.size();//getDescriptorSize();
     //std::cout<<"createTextureDescriptorSets::samplers.size(): "<<samplers.size()<<std::endl;
@@ -156,9 +164,9 @@ void CObject::CreateTextureDescriptorSets(VkDescriptorPool &descriptorPool, VkDe
 
 void CObject::Register(CApplication *p_app, int object_id, std::vector<int> texture_ids, int model_id, int graphics_pipeline_id){
     m_object_id = object_id; 
-    m_texture_ids = texture_ids; //if use no texture, will be empty vector (sampler size should be equal to texture size)
-    m_model_id = model_id; //if use no model, will be -1
-    m_graphics_pipeline_id = graphics_pipeline_id; //if no graphics pipeline, will be -1
+    m_texture_ids = texture_ids; 
+    m_model_id = model_id; 
+    m_graphics_pipeline_id = graphics_pipeline_id; 
     bUseMVP_VP = CGraphicsDescriptorManager::CheckMVP();
 
     if(CSupervisor::VertexStructureType == VertexStructureTypes::TwoDimension || CSupervisor::VertexStructureType  == VertexStructureTypes::ThreeDimension){
@@ -179,7 +187,6 @@ void CObject::Register(CApplication *p_app, int object_id, std::vector<int> text
     p_renderer = &(p_app->renderer);
     p_renderProcess = &(p_app->renderProcess);
     p_graphicsPipelineLayout = &(p_app->renderProcess.graphicsPipelineLayouts[m_graphics_pipeline_id]);
-    //p_graphicsPipelineLayout = &(p_app->renderProcess.graphicsPipelineLayout);
     p_graphicsDescriptorSets = &(p_app->graphicsDescriptorManager.descriptorSets);
     p_textureManager = &(p_app->textureManager);
 
@@ -220,29 +227,34 @@ void CObject::Register(CApplication *p_app, int object_id, std::vector<int> text
     //     //     );
     //     // }
     // }
-
+    bRegistered = true;
 }
 
 
 void CObject::Draw(uint32_t n){
+    if(!bRegistered) return;
+    //std::cout<<"test1."<<std::endl;
     p_renderer->BindPipeline(p_renderProcess->graphicsPipelines[m_graphics_pipeline_id], 
-    //p_renderer->BindPipeline(p_renderProcess->graphicsPipeline, 
         VK_PIPELINE_BIND_POINT_GRAPHICS, p_renderer->graphicsCmdId);
+    //std::cout<<"test2. p_graphicsDescriptorSets->size()="<<p_graphicsDescriptorSets->size()<<std::endl;
+    //std::cout<<"test2. m_texture_ids.size()="<<m_texture_ids.size()<<std::endl;
 
     std::vector<std::vector<VkDescriptorSet>> dsSets; 
-    if(p_graphicsDescriptorSets->size() > 0) dsSets.push_back(*p_graphicsDescriptorSets); //set = 0, general uniform
-    if(m_texture_ids.size() > 0) dsSets.push_back(descriptorSets); //set = 1, texture sampler uniform
-
+    //set = 0 is for general uniform; set = 1 is for texture sampler uniform
+    if(CGraphicsDescriptorManager::getSetSize() > 0) dsSets.push_back(*p_graphicsDescriptorSets); 
+    if(CGraphicsDescriptorManager::textureSamplers.size() > 0) dsSets.push_back(descriptorSets); 
+    //std::cout<<"test3.dsSets.size()="<<dsSets.size()<<std::endl;
+    
     if(dsSets.size() > 0){
         int dynamicOffsetIndex = -1; //-1 means not use dynamic offset (no MVP/VP used)
         if(bUseMVP_VP) dynamicOffsetIndex = m_object_id; //assume descriptor uniform(MVP/VP) offset is m_id
         p_renderer->BindGraphicsDescriptorSets(*p_graphicsPipelineLayout, dsSets, dynamicOffsetIndex);
     }//else std::cout<<"No Descritpor is used."<<std::endl;
-
+    //std::cout<<"test4."<<std::endl;
     //if(!vertices3D.empty() || !vertices2D.empty()){
-    if(m_model_id!=-1) p_renderer->BindVertexBuffer(m_model_id);
+    p_renderer->BindVertexBuffer(m_model_id);
     //}//else std::cout<<"No vertex buffer is used."<<std::endl;
-    
+    //std::cout<<"test5."<<std::endl;
     //if(indices3D.empty()){
     if(p_renderer->indices3Ds.empty()){
         //std::cout<<"No index buffer is used."<<std::endl;
@@ -251,20 +263,23 @@ void CObject::Draw(uint32_t n){
         p_renderer->BindIndexBuffer(m_model_id);
         p_renderer->DrawIndexed(m_model_id);
     }
+   //std::cout<<"test6."<<std::endl;
 }
 
 
 void CObject::Draw(std::vector<CWxjBuffer> &buffer, uint32_t n){ //const VkBuffer *pBuffers
     //this function is used in sample:simpleparticle only
-
+    //std::cout<<"testdraw1,"<<m_graphics_pipeline_id<<","<<p_renderer->graphicsCmdId<<std::endl;
     p_renderer->BindPipeline(p_renderProcess->graphicsPipelines[m_graphics_pipeline_id], 
     //p_renderer->BindPipeline(p_renderProcess->graphicsPipeline, 
         VK_PIPELINE_BIND_POINT_GRAPHICS, p_renderer->graphicsCmdId);
 
     //TODO: bind descriptor set
+    //std::cout<<"testdraw2"<<std::endl;
 
     //VkDeviceSize offsets[] = { 0 };
     //vkCmdBindVertexBuffers(p_renderer->commandBuffers[p_renderer->graphicsCmdId][p_renderer->currentFrame], 0, 1, &buffer[p_renderer->currentFrame].buffer, offsets);
     p_renderer->BindExternalBuffer(buffer);
     p_renderer->Draw(n);
+    //std::cout<<"testdraw3"<<std::endl;
 }

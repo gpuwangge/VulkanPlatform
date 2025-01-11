@@ -46,6 +46,7 @@ public:
 		CApplication::initialize();
 		
 		std::cout<<"init done."<<std::endl;
+		//std::cout<<"renderer.graphicsCmdId="<<renderer.graphicsCmdId<<std::endl;
 
 		//Initial Host data
 		//Initialize particles
@@ -89,9 +90,11 @@ public:
 		//descriptors[1].updateStorageBuffer<StructStorageBuffer>(renderer.currentFrame+1, durationTime, storageBufferObject);
 		
 		std::cout<<"Host >> Device done."<<std::endl;
+		//std::cout<<"renderer.graphicsCmdId="<<renderer.graphicsCmdId<<std::endl;
 	}
 
 	void update(){
+		//std::cout<<"renderer.graphicsCmdId="<<renderer.graphicsCmdId<<std::endl;
 		//static int counter = 1;
 		//if(counter==KernelRunNumber) NeedToExit = true;
 		//counter++;
@@ -106,6 +109,7 @@ public:
 
 	void recordGraphicsCommandBuffer(){
 		//this sample doesn't need BindDescriptorSets
+		//std::cout<<"renderer.graphicsCmdId="<<renderer.graphicsCmdId<<std::endl;
 		objectList[0].Draw(computeDescriptorManager.storageBuffers, PARTICLE_COUNT);
 	}
 

@@ -43,16 +43,6 @@ public:
 		appInfo.Uniform.GraphicsCustom.Binding = CustomUniformBufferObject::GetBinding();
 
 		CApplication::initialize();
-
-		objectList[0].SetPosition(0, -7, 0); //table
-		objectList[1].SetPosition(-1, 0, 0); //spheres
-		objectList[2].SetPosition(1, 0, 0);
-		objectList[3].SetPosition(0, -1, 0);
-		objectList[4].SetPosition(0, 1, 0);
-		objectList[5].SetPosition(0, 0, -1);
-		objectList[6].SetPosition(0, 0, 1);
-
-		objectList[7].SetAngularVelocity(10,10,10);
 	}
 
 	void update(){
