@@ -50,12 +50,12 @@ Features:
   feature_graphics_pipeline_skybox_id: -1
 
 MainCamera:
-  FreeMode: false
-  Position: [0,0,-3]
-  Rotation: [0,0,0]
-  TargetLocation: [0,0,0]
-  FOV: 90
-  Z: [0.1, 256]
+  camera_free_mode: false
+  camera_position: [0,0,-3]
+  camera_rotation: [0,0,0]
+  camera_target_position: [0,0,0]
+  camera_fov: 90
+  camera_z: [0.1, 256]
 
 Lighting:
   Position: []

@@ -135,17 +135,6 @@ void CApplication::initialize(){
     }
 
 
-
-
-   
-    //Handle camera yaml data
-    if(config["MainCamera"]["FreeMode"].as<bool>() == true) mainCamera.cameraType = Camera::CameraType::freemove;
-    mainCamera.SetTargetPosition(config["MainCamera"]["TargetLocation"][0].as<float>(), config["MainCamera"]["TargetLocation"][1].as<float>(), config["MainCamera"]["TargetLocation"][2].as<float>());
-    mainCamera.SetPosition(config["MainCamera"]["Position"][0].as<float>(), config["MainCamera"]["Position"][1].as<float>(), config["MainCamera"]["Position"][2].as<float>());
-    mainCamera.SetRotation(config["MainCamera"]["Rotation"][0].as<float>(), config["MainCamera"]["Rotation"][1].as<float>(), config["MainCamera"]["Rotation"][2].as<float>());
-    mainCamera.setPerspective(config["MainCamera"]["FOV"].as<float>(),  (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT,
-        config["MainCamera"]["Z"][0].as<float>(), config["MainCamera"]["Z"][1].as<float>());
-
     //Handle Lighting data
     if(config["Lighting"]["Position"].size() > 0) {
         std::unique_ptr<std::vector<std::vector<float>>> lightPosition = std::make_unique<std::vector<std::vector<float>>>(config["Lighting"]["Position"].as<std::vector<std::vector<float>>>());
@@ -230,26 +219,7 @@ void CApplication::initialize(){
     renderProcess.skyboxID = feature_graphics_pipeline_skybox_id;
     
 
-    // appInfo.Feature.EnableGraphicsMSAA = config["Feature"]["GraphicsMSAA"].as<bool>();
-    // appInfo.Feature.EnableGraphics48BPT = config["Feature"]["Graphics48BPT"].as<bool>();
-    // appInfo.Feature.EnableGraphicsPushConstant = config["Feature"]["GraphicsPushConstant"].as<bool>();
-    // appInfo.Feature.EnableGraphicsBlend = config["Feature"]["GraphicsBlend"].as<bool>();
-    // appInfo.Feature.EnableGraphicsRainbowMipmap = config["Feature"]["GraphicsRainbowMipmap"].as<bool>();
-    // appInfo.Feature.GraphicsPipelineSkyboxID = config["Feature"]["GraphicsPipelineSkyboxID"].as<int>();
 
-    
-
-    //if(appInfo.Feature.EnableGraphicsBlend) CSupervisor::Activate_Feature_Graphics_Blend();
-    //if(appInfo.Feature.EnableGraphicsDepthTest) CSupervisor::Activate_Feature_Graphics_DepthTest();
-    //if(appInfo.Feature.EnableGraphicsMSAA) CSupervisor::Activate_Feature_Graphics_MSAA();
-    //if(appInfo.Feature.EnableGraphics48BPT) CSupervisor::Activate_Feature_Graphics_48BPT();
-    //if(appInfo.Feature.EnableGraphicsPushConstant) CSupervisor::Activate_Feature_Graphics_PushConstant();
-    // if(appInfo.Feature.EnableGraphicsRainbowMipmap) CSupervisor::Activate_Feature_Graphics_RainbowMipmap();
-    // if(appInfo.Feature.GraphicsPipelineSkyboxID != -1) {
-    //     renderProcess.skyboxID = appInfo.Feature.GraphicsPipelineSkyboxID;
-    // }
-    // if(appInfo.Buffer.GraphicsVertex.StructureType != VertexStructureTypes::NoType) CSupervisor::Activate_Buffer_Graphics_Vertex(appInfo.Buffer.GraphicsVertex.StructureType);
-    
     
 
     /****************************
@@ -531,6 +501,28 @@ void CApplication::initialize(){
     }
 
 
+    /****************************
+    * Read Main Camera
+    ****************************/
+    bool b_camera_free_mode = config["MainCamera"]["camera_free_mode"] ? config["MainCamera"]["camera_free_mode"].as<bool>() : false;
+    if(b_camera_free_mode) mainCamera.cameraType = Camera::CameraType::freemove;
+    mainCamera.SetPosition(
+        config["MainCamera"]["camera_position"][0].as<float>(), 
+        config["MainCamera"]["camera_position"][1].as<float>(), 
+        config["MainCamera"]["camera_position"][2].as<float>());
+    mainCamera.SetRotation(
+        config["MainCamera"]["camera_rotation"][0].as<float>(), 
+        config["MainCamera"]["camera_rotation"][1].as<float>(), 
+        config["MainCamera"]["camera_rotation"][2].as<float>());
+    mainCamera.SetTargetPosition(
+        config["MainCamera"]["camera_target_position"][0].as<float>(), 
+        config["MainCamera"]["camera_target_position"][1].as<float>(), 
+        config["MainCamera"]["camera_target_position"][2].as<float>());
+    mainCamera.setPerspective(
+        config["MainCamera"]["camera_fov"].as<float>(),  
+        (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT,
+        config["MainCamera"]["camera_z"][0].as<float>(), 
+        config["MainCamera"]["camera_z"][1].as<float>());
 
     renderer.CreateSyncObjects(swapchain.imageSize);
     shaderManager.Destroy();
