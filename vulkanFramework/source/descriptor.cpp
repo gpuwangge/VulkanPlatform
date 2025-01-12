@@ -320,7 +320,7 @@ void CGraphicsDescriptorManager::createDescriptorSetLayout(VkDescriptorSetLayout
     graphicsBindings.resize(getLayoutSize());
     //graphicsBindings.resize(0);
 	int counter = 0;
-    std::cout<<"Layout(Graphics, Non-sampler) size = " << graphicsBindings.size()<<std::endl;
+    std::cout<<"Layout(Graphics General) size = " << graphicsBindings.size()<<std::endl;
     //std::cout.flush();
 
     if(uniformBufferUsageFlags & UNIFORM_BUFFER_LIGHTING_GRAPHICS_BIT){
@@ -342,6 +342,7 @@ void CGraphicsDescriptorManager::createDescriptorSetLayout(VkDescriptorSetLayout
 	}
     if(uniformBufferUsageFlags & UNIFORM_BUFFER_MVP_BIT){
         VkDescriptorSetLayoutBinding binding = MVPUniformBufferObject::GetBinding();
+        //std::cout<<"DEBUG: MVP Layout binding="<<counter<<std::endl;
         graphicsBindings[counter].binding = counter;
 		graphicsBindings[counter].descriptorCount = binding.descriptorCount;
 		graphicsBindings[counter].descriptorType = binding.descriptorType;
@@ -416,7 +417,7 @@ void CGraphicsDescriptorManager::createDescriptorSetLayout(VkDescriptorSetLayout
 
 void CGraphicsDescriptorManager::createTextureDescriptorSetLayout(){
     graphicsBindings.resize(textureSamplers.size());//sampleCount?
-    std::cout<<"Layout(Sampler) size = "<<textureSamplers.size()<<std::endl;
+    std::cout<<"Layout(Graphcis Sampler) size = "<<textureSamplers.size()<<std::endl;
 	int counter = 0;
 
     if(uniformBufferUsageFlags & UNIFORM_BUFFER_SAMPLER_BIT){
@@ -879,7 +880,9 @@ void CComputeDescriptorManager::createDescriptorSets(std::vector<CTextureImage> 
 
     descriptorSets.resize(MAX_FRAMES_IN_FLIGHT);///!!!
     //Step 3
+    //std::cout<<"before vkAllocateDescriptorSets(). "<<std::endl;
     result = vkAllocateDescriptorSets(CContext::GetHandle().GetLogicalDevice(), &allocInfo, descriptorSets.data());
+    //std::cout<<"after vkAllocateDescriptorSets(). "<<std::endl;
     if (result != VK_SUCCESS) throw std::runtime_error("failed to allocate descriptor sets!");
     //REPORT("vkAllocateDescriptorSets");
 
@@ -891,6 +894,7 @@ void CComputeDescriptorManager::createDescriptorSets(std::vector<CTextureImage> 
         descriptorWrites.resize(descriptorSize);
         int counter = 0;
 
+        //std::cout<<"m_customUniformBufferSize = "<<m_customUniformBufferSize<<std::endl;
         VkDescriptorBufferInfo customBufferInfo{}; //for custom uniform
         if(uniformBufferUsageFlags & UNIFORM_BUFFER_CUSTOM_COMPUTE_BIT){
             customBufferInfo.buffer = customUniformBuffers[i].buffer;
@@ -906,6 +910,7 @@ void CComputeDescriptorManager::createDescriptorSets(std::vector<CTextureImage> 
             counter++;
         }
 
+        //std::cout<<"m_storageBufferSize = "<<m_storageBufferSize<<std::endl;
         if(uniformBufferUsageFlags & UNIFORM_BUFFER_STORAGE_BIT){ //for storage buffer 1
             VkDescriptorBufferInfo storageBufferInfo_1{};
             storageBufferInfo_1.buffer = storageBuffers[(i - 1) % MAX_FRAMES_IN_FLIGHT].buffer; //storage buffer of last frame in flight as compute shader input
@@ -936,6 +941,8 @@ void CComputeDescriptorManager::createDescriptorSets(std::vector<CTextureImage> 
             descriptorWrites[counter].pBufferInfo = &storageBufferInfo_2;
             counter++;
         }
+
+        //std::cout<<"UNIFORM_IMAGE_STORAGE_TEXTURE_BIT"<<std::endl;
         if(uniformBufferUsageFlags & UNIFORM_IMAGE_STORAGE_TEXTURE_BIT){
             VkDescriptorImageInfo storageImageInfo{};
             storageImageInfo.imageLayout = VK_IMAGE_LAYOUT_GENERAL;
@@ -951,6 +958,8 @@ void CComputeDescriptorManager::createDescriptorSets(std::vector<CTextureImage> 
             descriptorWrites[counter].pImageInfo = &storageImageInfo;
             counter++;
         }
+
+        //std::cout<<"UNIFORM_IMAGE_STORAGE_SWAPCHAIN_BIT"<<std::endl;
         if(uniformBufferUsageFlags & UNIFORM_IMAGE_STORAGE_SWAPCHAIN_BIT){
             VkDescriptorImageInfo storageImageInfo{};
             storageImageInfo.imageLayout = VK_IMAGE_LAYOUT_GENERAL;
@@ -966,10 +975,11 @@ void CComputeDescriptorManager::createDescriptorSets(std::vector<CTextureImage> 
             descriptorWrites[counter].pImageInfo = &storageImageInfo;
             counter++;
         }
-
+        
         //Step 4
+        //std::cout<<"before vkUpdateDescriptorSets(). "<<std::endl;
         vkUpdateDescriptorSets(CContext::GetHandle().GetLogicalDevice(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
-
+        //std::cout<<"after vkUpdateDescriptorSets(). "<<std::endl;
     }
 
     //std::cout<<"Done set descriptor(compute). "<<std::endl;

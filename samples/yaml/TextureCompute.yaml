@@ -7,22 +7,22 @@ Resources:
   - ComputeShaders:
     - resource_computeshader_name: textureCompute/shader.comp.spv
 
-Uniform:
-  # Graphcis: CustomGraphics_MVP_VP
-  Graphics: []
-  # Compute: CustomCompute_Storage_SwapchainStorage_TextureStorage
-  Compute: [[false, false, true, true]]
-  # SamplerMiplevels: mipLevel0, mipLevel2, mipLevel3
-  SamplerMiplevels: []
+Uniforms:
+  - Compute:
+    - uniform_compute_name: Compute
+      uniform_compute_custom: false
+      uniform_compute_storage: false
+      uniform_compute_swapchain_storage: true
+      uniform_compute_texture_storage: true
 
-Feature:
-  GraphicsDepthTest: false
-  GraphicsMSAA: false
-  Graphics48BPT: false
-  GraphicsPushConstant: false
-  GraphicsBlend: false
-  GraphicsRainbowMipmap: false
-  GraphicsPipelineSkyboxID: -1
+Features:
+  feature_graphics_depth_test: false
+  feature_graphics_msaa: false
+  feature_graphics_48pbt: false
+  feature_graphics_push_constant: false
+  feature_graphics_blend: false
+  feature_graphics_rainbow_mipmap: false
+  feature_graphics_pipeline_skybox_id: -1
 
 MainCamera:
   FreeMode: false

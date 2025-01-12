@@ -32,22 +32,34 @@ Resources:
   - FragmentShaders:
     - resource_fragmentshader_name: furMark/shader.frag.spv
 
-Uniform:
-  # Graphcis: CustomGraphics_MVP_VP
-  Graphics: [[true, false, false]]
-  # Sampler: SamplersNumber
-  Compute: []
-  # SamplerMiplevels: mipLevel0, mipLevel2, mipLevel3
-  SamplerMiplevels: [1, 1, 1]
+Uniforms:
+  - Graphics:
+    - uniform_graphics_name: Graphics
+      uniform_graphics_custom: true
+      uniform_graphics_mvp: false
+      uniform_graphics_vp: false
+  - Compute:
+    - uniform_compute_name: Compute
+      uniform_compute_custom: false
+      uniform_compute_storage: false
+      uniform_compute_swapchain_storage: false
+      uniform_compute_texture_storage: false
+  - Samplers:
+    - uniform_sampler_name: Sampler
+      uniform_sampler_miplevel: 1
+    - uniform_sampler_name: Sampler
+      uniform_sampler_miplevel: 1
+    - uniform_sampler_name: Sampler
+      uniform_sampler_miplevel: 1
 
-Feature:
-  GraphicsDepthTest: false
-  GraphicsMSAA: false
-  Graphics48BPT: false
-  GraphicsPushConstant: false
-  GraphicsBlend: false
-  GraphicsRainbowMipmap: false
-  GraphicsPipelineSkyboxID: -1
+Features:
+  feature_graphics_depth_test: false
+  feature_graphics_msaa: false
+  feature_graphics_48pbt: false
+  feature_graphics_push_constant: false
+  feature_graphics_blend: false
+  feature_graphics_rainbow_mipmap: false
+  feature_graphics_pipeline_skybox_id: -1
 
 MainCamera:
   FreeMode: false

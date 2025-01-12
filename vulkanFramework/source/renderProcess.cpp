@@ -242,6 +242,7 @@ void CRenderProcess::createGraphicsPipelineLayout(std::vector<VkDescriptorSetLay
 	// 	pipelineLayoutInfo.setLayoutCount = 0;
 	// 	pipelineLayoutInfo.pSetLayouts = nullptr;
 	// }else {
+	//std::cout<<"DEBUG: create graphics pipeline layout: descriptorSetLayouts.size()="<<descriptorSetLayouts.size()<<std::endl;
 	pipelineLayoutInfo.setLayoutCount = descriptorSetLayouts.size();
 	pipelineLayoutInfo.pSetLayouts = descriptorSetLayouts.data();//  descriptorSetLayout;//todo: LAYOUT
 	//}
@@ -254,7 +255,9 @@ void CRenderProcess::createGraphicsPipelineLayout(std::vector<VkDescriptorSetLay
 	//Create Graphics Pipeline Layout
 	VkPipelineLayout newlayout;
 	graphicsPipelineLayouts.push_back(newlayout);
+	//std::cout<<"before vkCreatePipelineLayout()"<<std::endl;
 	result = vkCreatePipelineLayout(CContext::GetHandle().GetLogicalDevice(), &pipelineLayoutInfo, nullptr, &graphicsPipelineLayouts[graphicsPipelineLayout_id]);
+	//std::cout<<"after vkCreatePipelineLayout()"<<std::endl;
 	//result = vkCreatePipelineLayout(CContext::GetHandle().GetLogicalDevice(), &pipelineLayoutInfo, nullptr, &graphicsPipelineLayout);
 	
 	if (result != VK_SUCCESS) throw std::runtime_error("failed to create pipeline layout!");

@@ -134,19 +134,9 @@ void CApplication::initialize(){
         return;
     }
 
-    //Handle uniform yaml data
-    appInfo.Uniform.GraphicsVector = config["Uniform"]["Graphics"].as<std::vector<std::vector<bool>>>();
-    appInfo.Uniform.ComputeVector = config["Uniform"]["Compute"].as<std::vector<std::vector<bool>>>();
-    appInfo.Uniform.SamplerMiplevels = config["Uniform"]["SamplerMiplevels"].as<std::vector<int>>();
 
-    //Handle feature yaml data
-    appInfo.Feature.EnableGraphicsDepthTest = config["Feature"]["GraphicsDepthTest"].as<bool>();
-    appInfo.Feature.EnableGraphicsMSAA = config["Feature"]["GraphicsMSAA"].as<bool>();
-    appInfo.Feature.EnableGraphics48BPT = config["Feature"]["Graphics48BPT"].as<bool>();
-    appInfo.Feature.EnableGraphicsPushConstant = config["Feature"]["GraphicsPushConstant"].as<bool>();
-    appInfo.Feature.EnableGraphicsBlend = config["Feature"]["GraphicsBlend"].as<bool>();
-    appInfo.Feature.EnableGraphicsRainbowMipmap = config["Feature"]["GraphicsRainbowMipmap"].as<bool>();
-    appInfo.Feature.GraphicsPipelineSkyboxID = config["Feature"]["GraphicsPipelineSkyboxID"].as<int>();
+
+
    
     //Handle camera yaml data
     if(config["MainCamera"]["FreeMode"].as<bool>() == true) mainCamera.cameraType = Camera::CameraType::freemove;
@@ -191,22 +181,171 @@ void CApplication::initialize(){
             objectSize = (object_id > objectSize) ? object_id : objectSize;
         }
         objectList.resize(((objectSize+1) < config["Objects"].size())?(objectSize+1):config["Objects"].size()); 
-        std::cout<<"Object Number: "<<objectList.size()<<std::endl;
+        //std::cout<<"Object Number: "<<objectList.size()<<std::endl;
     }
 
      /****************************
-    * Set Application Property
+    * Read Features
     ****************************/   
+   renderer.m_renderMode = appInfo.Render.Mode;
+   if(appInfo.Buffer.GraphicsVertex.StructureType != VertexStructureTypes::NoType) CSupervisor::Activate_Buffer_Graphics_Vertex(appInfo.Buffer.GraphicsVertex.StructureType);
    //CSupervisor::VertexStructureType = VertexStructureTypes::ThreeDimension;//?
     //auto startAppTime = std::chrono::high_resolution_clock::now();
-    SetApplicationProperty(appInfo);
+    //SetApplicationProperty(appInfo);
     //auto endAppTime = std::chrono::high_resolution_clock::now();
     //auto durationTime = std::chrono::duration<float, std::chrono::seconds::period>(endAppTime - startAppTime).count() * 1000;
     //std::cout<<"Total Set Application Property cost: "<<durationTime<<" milliseconds"<<std::endl;
 
+    bool b_feature_graphics_depth_test = config["Features"]["feature_graphics_depth_test"] ? config["Features"]["feature_graphics_depth_test"].as<bool>() : false;
+    bool b_feature_graphics_msaa = config["Features"]["feature_graphics_msaa"] ? config["Features"]["feature_graphics_msaa"].as<bool>() : false;
+    bool b_feature_graphics_48pbt = config["Features"]["feature_graphics_48pbt"] ? config["Features"]["feature_graphics_48pbt"].as<bool>() : false;
+    bool b_feature_graphics_push_constant = config["Features"]["feature_graphics_push_constant"] ? config["Features"]["feature_graphics_push_constant"].as<bool>() : false;
+    bool b_feature_graphics_blend = config["Features"]["feature_graphics_blend"] ? config["Features"]["feature_graphics_blend"].as<bool>() : false;
+    bool b_feature_graphics_rainbow_mipmap = config["Features"]["feature_graphics_rainbow_mipmap"] ? config["Features"]["feature_graphics_rainbow_mipmap"].as<bool>() : false;
+    int feature_graphics_pipeline_skybox_id = config["Features"]["feature_graphics_pipeline_skybox_id"] ? config["Features"]["feature_graphics_pipeline_skybox_id"].as<int>() : -1;
+    
+    
+    //appInfo.Feature.EnableGraphicsDepthTest = config["Feature"]["GraphicsDepthTest"].as<bool>();
+    if(b_feature_graphics_depth_test){
+        swapchain.EnableDepthTest();
+    }
+    if(b_feature_graphics_msaa){
+        swapchain.EnableMSAA();
+        swapchain.EnableDepthTest();//If enable MSAA, must also enable Depth Test
+    }
+    if(b_feature_graphics_48pbt){
+        CSupervisor::Activate_Feature_Graphics_48BPT();
+    }
+    if(b_feature_graphics_push_constant){
+        CSupervisor::Activate_Feature_Graphics_PushConstant();
+    }
+    if(b_feature_graphics_blend){
+        renderProcess.addColorBlendAttachment(
+            VK_BLEND_OP_ADD, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,
+            VK_BLEND_OP_ADD, VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO);        
+    }
+    if(b_feature_graphics_rainbow_mipmap){
+        CSupervisor::Activate_Feature_Graphics_RainbowMipmap();
+    }
+    renderProcess.skyboxID = feature_graphics_pipeline_skybox_id;
+    
+
+    // appInfo.Feature.EnableGraphicsMSAA = config["Feature"]["GraphicsMSAA"].as<bool>();
+    // appInfo.Feature.EnableGraphics48BPT = config["Feature"]["Graphics48BPT"].as<bool>();
+    // appInfo.Feature.EnableGraphicsPushConstant = config["Feature"]["GraphicsPushConstant"].as<bool>();
+    // appInfo.Feature.EnableGraphicsBlend = config["Feature"]["GraphicsBlend"].as<bool>();
+    // appInfo.Feature.EnableGraphicsRainbowMipmap = config["Feature"]["GraphicsRainbowMipmap"].as<bool>();
+    // appInfo.Feature.GraphicsPipelineSkyboxID = config["Feature"]["GraphicsPipelineSkyboxID"].as<int>();
+
+    
+
+    //if(appInfo.Feature.EnableGraphicsBlend) CSupervisor::Activate_Feature_Graphics_Blend();
+    //if(appInfo.Feature.EnableGraphicsDepthTest) CSupervisor::Activate_Feature_Graphics_DepthTest();
+    //if(appInfo.Feature.EnableGraphicsMSAA) CSupervisor::Activate_Feature_Graphics_MSAA();
+    //if(appInfo.Feature.EnableGraphics48BPT) CSupervisor::Activate_Feature_Graphics_48BPT();
+    //if(appInfo.Feature.EnableGraphicsPushConstant) CSupervisor::Activate_Feature_Graphics_PushConstant();
+    // if(appInfo.Feature.EnableGraphicsRainbowMipmap) CSupervisor::Activate_Feature_Graphics_RainbowMipmap();
+    // if(appInfo.Feature.GraphicsPipelineSkyboxID != -1) {
+    //     renderProcess.skyboxID = appInfo.Feature.GraphicsPipelineSkyboxID;
+    // }
+    // if(appInfo.Buffer.GraphicsVertex.StructureType != VertexStructureTypes::NoType) CSupervisor::Activate_Buffer_Graphics_Vertex(appInfo.Buffer.GraphicsVertex.StructureType);
+    
+    
+
+    /****************************
+    * Read Uniforms
+    ****************************/
+    bool b_uniform_graphics_custom = false;
+    bool b_uniform_graphics_mvp = false;
+    bool b_uniform_graphics_vp = false;
+    bool b_uniform_compute_custom = false;
+    bool b_uniform_compute_storage = false;
+    bool b_uniform_compute_swapchain_storage = false;
+    bool b_uniform_compute_texture_storage = false;
+
+    for (const auto& uniform : config["Uniforms"]) {
+        if (uniform["Graphics"]) {
+            for (const auto& graphicsUniform : uniform["Graphics"]) {
+                std::string name = graphicsUniform["uniform_graphics_name"] ? graphicsUniform["uniform_graphics_name"].as<std::string>() : "Default";
+                b_uniform_graphics_custom = graphicsUniform["uniform_graphics_custom"] ? graphicsUniform["uniform_graphics_custom"].as<bool>() : false;
+                b_uniform_graphics_mvp = graphicsUniform["uniform_graphics_mvp"] ? graphicsUniform["uniform_graphics_mvp"].as<bool>() : false;
+                b_uniform_graphics_vp = graphicsUniform["uniform_graphics_vp"] ? graphicsUniform["uniform_graphics_vp"].as<bool>() : false;
+                
+                if(b_uniform_graphics_custom){
+                    CDescriptorManager::uniformBufferUsageFlags |= UNIFORM_BUFFER_CUSTOM_GRAPHICS_BIT;
+                    CGraphicsDescriptorManager::addCustomUniformBuffer(appInfo.Uniform.GraphicsCustom.Size);
+                }
+
+                if(b_uniform_graphics_mvp){
+                    CDescriptorManager::uniformBufferUsageFlags |= UNIFORM_BUFFER_MVP_BIT;
+                    CGraphicsDescriptorManager::addMVPUniformBuffer();
+                }
+
+                if(b_uniform_graphics_vp){
+                    CDescriptorManager::uniformBufferUsageFlags |= UNIFORM_BUFFER_VP_BIT;
+                    CGraphicsDescriptorManager::addVPUniformBuffer();
+                }
+            }
+        }
+
+        if (uniform["Compute"]) {
+            for (const auto& computeUniform : uniform["Compute"]) {
+                std::string name = computeUniform["uniform_compute_name"] ? computeUniform["uniform_compute_name"].as<std::string>() : "Default";
+                b_uniform_compute_custom = computeUniform["uniform_compute_custom"] ? computeUniform["uniform_compute_custom"].as<bool>() : false;
+                b_uniform_compute_storage = computeUniform["uniform_compute_storage"] ? computeUniform["uniform_compute_storage"].as<bool>() : false;
+                b_uniform_compute_swapchain_storage = computeUniform["uniform_compute_swapchain_storage"] ? computeUniform["uniform_compute_swapchain_storage"].as<bool>() : false;
+                b_uniform_compute_texture_storage = computeUniform["uniform_compute_texture_storage"] ? computeUniform["uniform_compute_texture_storage"].as<bool>() : false;
+            
+                if(b_uniform_compute_custom){
+                    CDescriptorManager::uniformBufferUsageFlags |= UNIFORM_BUFFER_CUSTOM_COMPUTE_BIT;
+                    CComputeDescriptorManager::addCustomUniformBuffer(appInfo.Uniform.ComputeCustom.Size);
+                }
+
+                if(b_uniform_compute_storage){
+                    CDescriptorManager::uniformBufferUsageFlags |= UNIFORM_BUFFER_STORAGE_BIT;
+                    CComputeDescriptorManager::addStorageBuffer(appInfo.Uniform.ComputeStorageBuffer.Size, appInfo.Uniform.ComputeStorageBuffer.Usage);
+                }
+
+                if(b_uniform_compute_swapchain_storage){
+                    CDescriptorManager::uniformBufferUsageFlags |= UNIFORM_IMAGE_STORAGE_SWAPCHAIN_BIT;
+                    CComputeDescriptorManager::addStorageImage(UNIFORM_IMAGE_STORAGE_SWAPCHAIN_BIT);
+                }
+
+                if(b_uniform_compute_texture_storage){
+                    CDescriptorManager::uniformBufferUsageFlags |= UNIFORM_IMAGE_STORAGE_TEXTURE_BIT;
+                    CComputeDescriptorManager::addStorageImage(UNIFORM_IMAGE_STORAGE_TEXTURE_BIT);
+                }
+            }  
+        }
+
+        if (uniform["Samplers"]) {
+            std::vector<int> miplevels;
+            for (const auto& samplerUniform : uniform["Samplers"]) {
+                std::string name = samplerUniform["uniform_sampler_name"] ? samplerUniform["uniform_sampler_name"].as<std::string>() : "Default";
+                int miplevel = samplerUniform["uniform_sampler_miplevel"] ? samplerUniform["uniform_sampler_miplevel"].as<int>() : 1;
+                miplevels.push_back(miplevel);
+            }
+            CDescriptorManager::uniformBufferUsageFlags |= UNIFORM_BUFFER_SAMPLER_BIT;
+            CGraphicsDescriptorManager::addImageSamplerUniformBuffer(miplevels);
+        }
+    }
+
+    bool b_uniform_graphics = b_uniform_graphics_custom || b_uniform_graphics_mvp || b_uniform_graphics_vp;
+    bool b_uniform_compute = b_uniform_compute_custom || b_uniform_compute_storage || b_uniform_compute_swapchain_storage || b_uniform_compute_texture_storage;
+
+    // std::cout<<"b_uniform_graphics_custom="<<b_uniform_graphics_custom<<std::endl;
+    // std::cout<<"b_uniform_graphics_mvp="<<b_uniform_graphics_mvp<<std::endl;
+    // std::cout<<"b_uniform_graphics_vp="<<b_uniform_graphics_vp<<std::endl;
+    // std::cout<<"b_uniform_compute_custom="<<b_uniform_compute_custom<<std::endl;
+    // std::cout<<"b_uniform_compute_storage="<<b_uniform_compute_storage<<std::endl;
+    // std::cout<<"b_uniform_compute_swapchain_storage="<<b_uniform_compute_swapchain_storage<<std::endl;
+    // std::cout<<"b_uniform_compute_texture_storage="<<b_uniform_compute_texture_storage<<std::endl;
+
+
     /****************************
     * Read Resources
     ****************************/
+    //When creating texture resource, need uniform information, so must read uniforms before read resources
     for (const auto& resource : config["Resources"]) {
         if (resource["Models"]) {
             for (const auto& model : resource["Models"]) {
@@ -278,7 +417,6 @@ void CApplication::initialize(){
             }
         }
 
-        //std::cout<<"test1"<<std::endl;
         //shaders id is allocated by engine, not user, in order
 
         if (resource["VertexShaders"]) {
@@ -287,7 +425,7 @@ void CApplication::initialize(){
                 vertexShaderList->push_back(vertexShader["resource_vertexshader_name"].as<std::string>());
             }
             appInfo.Object.Pipeline.VertexShader = std::move(vertexShaderList);
-            std::cout<<"vertex shader:"<<appInfo.Object.Pipeline.VertexShader->size()<<std::endl;
+            //std::cout<<"vertex shader:"<<appInfo.Object.Pipeline.VertexShader->size()<<std::endl;
         }
 
         if (resource["FragmentShaders"]) {
@@ -307,9 +445,40 @@ void CApplication::initialize(){
         }
     }
 
+    /****************************
+    * Create Uniform Descriptors
+    ****************************/
+    //UNIFORM STEP 1/3 (Pool)
+    CDescriptorManager::createDescriptorPool(objectList.size()); 
+    //UNIFORM STEP 2/3 (Layer)
+    if(b_uniform_graphics){
+        if(b_uniform_graphics_custom) 
+             CGraphicsDescriptorManager::createDescriptorSetLayout(&appInfo.Uniform.GraphicsCustom.Binding); 
+        else CGraphicsDescriptorManager::createDescriptorSetLayout(); 
+        if(CGraphicsDescriptorManager::textureSamplers.size()>0) CGraphicsDescriptorManager::createTextureDescriptorSetLayout(); 
+    }
+    if(b_uniform_compute){
+        if(b_uniform_compute_custom) CComputeDescriptorManager::createDescriptorSetLayout(&appInfo.Uniform.ComputeCustom.Binding);
+        else CComputeDescriptorManager::createDescriptorSetLayout();
+    }
+    //UNIFORM STEP 3/3 (Set)
+    if(b_uniform_graphics)
+        graphicsDescriptorManager.createDescriptorSets(); 
+    if(b_uniform_compute){
+        if(b_uniform_compute_swapchain_storage) {
+            if(b_uniform_compute_texture_storage)
+                computeDescriptorManager.createDescriptorSets(&(textureManager.textureImages), &(swapchain.views));//this must be called after texture resource is loaded
+            else computeDescriptorManager.createDescriptorSets(NULL, &(swapchain.views));
+        }else computeDescriptorManager.createDescriptorSets();
+    }
     //std::cout<<"test2"<<std::endl;
 
+    /****************************
+    * Create Pipelines
+    ****************************/
+    //std::cout<<"before Activate_Pipeline()"<<std::endl;
     CSupervisor::Activate_Pipeline();
+    //std::cout<<"after Activate_Pipeline()"<<std::endl;
 
     /****************************
     * Read and Register Objects
@@ -578,74 +747,4 @@ CApplication::~CApplication(){
  *******/
 void CApplication::Dispatch(int numWorkGroupsX, int numWorkGroupsY, int numWorkGroupsZ){
     CSupervisor::Dispatch(numWorkGroupsX, numWorkGroupsY, numWorkGroupsZ);
-}
-
-void CApplication::SetApplicationProperty(AppInfo &appInfo){
-    //auto startActivateTime = std::chrono::high_resolution_clock::now();
-
-    renderer.m_renderMode = appInfo.Render.Mode;
-
-    //CSupervisor::ComputeShader = appInfo.Shader.Compute;
-	//CSupervisor::VertexShader = appInfo.Shader.Vertex;
-	//CSupervisor::FragmentShader = appInfo.Shader.Fragment;
-
-    //Uniforms
-    int i = 0; //assume all graphics pipelines use the same descriptor uniform layout/set
-    if(appInfo.Uniform.GraphicsVector.size() > 0){
-        //if(appInfo.Uniform.GraphicsCustom.Size) CSupervisor::Activate_Uniform_Graphics_Custom(appInfo.Uniform.GraphicsCustom.Size, appInfo.Uniform.GraphicsCustom.Binding);
-        if(appInfo.Uniform.GraphicsVector[i][0]) CSupervisor::Activate_Uniform_Graphics_Custom(appInfo.Uniform.GraphicsCustom.Size, appInfo.Uniform.GraphicsCustom.Binding);
-
-        
-        
-
-        if(appInfo.Uniform.GraphicsVector[i][1]) CSupervisor::Activate_Uniform_Graphics_MVP();
-        if(appInfo.Uniform.GraphicsVector[i][2]) CSupervisor::Activate_Uniform_Graphics_VP();
-    }
-    //if(appInfo.Uniform.SamplerVector.size() > 0) CSupervisor::Activate_Uniform_Graphics_Sampler(appInfo.Uniform.SamplerVector[i]); //samplerCount
-    if(appInfo.Uniform.SamplerMiplevels.size() > 0) CSupervisor::Activate_Uniform_Graphics_Sampler(); //samplerCount
-    
-    int j = 0; //assume all compute pipelines use the same descriptor uniform layout/set
-    if(appInfo.Uniform.ComputeVector.size() > 0){ //assume sampler has exactly one compute pipeline, so the first index is 0
-        //if(appInfo.Uniform.ComputeCustom.Size) CSupervisor::Activate_Uniform_Compute_Custom(appInfo.Uniform.ComputeCustom.Size, appInfo.Uniform.ComputeCustom.Binding);
-        //if(appInfo.Uniform.ComputeStorageBuffer.Size) CSupervisor::Activate_Uniform_Compute_StorageBuffer(appInfo.Uniform.ComputeStorageBuffer.Size, appInfo.Uniform.ComputeStorageBuffer.Usage);
-        if(appInfo.Uniform.ComputeVector[j][0]) CSupervisor::Activate_Uniform_Compute_Custom(appInfo.Uniform.ComputeCustom.Size, appInfo.Uniform.ComputeCustom.Binding);
-        if(appInfo.Uniform.ComputeVector[j][1]) CSupervisor::Activate_Uniform_Compute_StorageBuffer(appInfo.Uniform.ComputeStorageBuffer.Size, appInfo.Uniform.ComputeStorageBuffer.Usage);
-        if(appInfo.Uniform.ComputeVector[j][2]) CSupervisor::Activate_Uniform_Compute_StorageImage_Swapchain();//EnableComputeStorageImageSwapChain
-        if(appInfo.Uniform.ComputeVector[j][3]) CSupervisor::Activate_Uniform_Compute_StorageImage(); //EnableComputeStorageImage
-    }
-
-    if(appInfo.Feature.EnableGraphicsBlend) CSupervisor::Activate_Feature_Graphics_Blend();
-    if(appInfo.Feature.EnableGraphicsDepthTest) CSupervisor::Activate_Feature_Graphics_DepthTest();
-    if(appInfo.Feature.EnableGraphicsMSAA) CSupervisor::Activate_Feature_Graphics_MSAA();
-    if(appInfo.Feature.EnableGraphics48BPT) CSupervisor::Activate_Feature_Graphics_48BPT();
-    if(appInfo.Feature.EnableGraphicsPushConstant) CSupervisor::Activate_Feature_Graphics_PushConstant();
-    if(appInfo.Feature.EnableGraphicsRainbowMipmap) CSupervisor::Activate_Feature_Graphics_RainbowMipmap();
-    if(appInfo.Feature.GraphicsPipelineSkyboxID != -1) {
-        //objectList[appInfo.Feature.GraphicsPipelineSkyboxID].bSkybox = true;
-        renderProcess.skyboxID = appInfo.Feature.GraphicsPipelineSkyboxID;
-    }
-    if(appInfo.Buffer.GraphicsVertex.StructureType != VertexStructureTypes::NoType) CSupervisor::Activate_Buffer_Graphics_Vertex(appInfo.Buffer.GraphicsVertex.StructureType);
-    //auto endActivateTime = std::chrono::high_resolution_clock::now();
-    //auto durationTime = std::chrono::duration<float, std::chrono::seconds::period>(endActivateTime - startActivateTime).count()*1000;
-    //std::cout<<"Activate cost: "<<durationTime<<" milliseconds"<<std::endl;
-
-    // auto startLoadModelTime = std::chrono::high_resolution_clock::now();
-    // if(appInfo.Object.Model.Names != NULL) CSupervisor::Activate_Buffer_Graphics_Vertex(std::move(appInfo.Object.Model.Names), modelManager); 
-    // auto endLoadModelTime = std::chrono::high_resolution_clock::now();
-    // auto durationLoadModelTime = std::chrono::duration<float, std::chrono::seconds::period>(endLoadModelTime - startLoadModelTime).count()*1000;
-    // std::cout<<"Load Model cost: "<<durationLoadModelTime<<" milliseconds"<<std::endl;
-
-    // auto startTextureTime = std::chrono::high_resolution_clock::now();
-    // if(appInfo.Object.Texture.Attributes != NULL)
-    //     CSupervisor::Activate_Texture(std::move(appInfo.Object.Texture.Attributes));
-    // auto endTextureTime = std::chrono::high_resolution_clock::now();
-    // auto durationTextureTime = std::chrono::duration<float, std::chrono::seconds::period>(endTextureTime - startTextureTime).count()*1000;
-    // std::cout<<"Load Textures cost: "<<durationTextureTime<<" milliseconds"<<std::endl;
-
-    //auto startPipelineTime = std::chrono::high_resolution_clock::now();
-   // CSupervisor::Activate_Pipeline();
-    //auto endPipelineTime = std::chrono::high_resolution_clock::now();
-    //durationTime = std::chrono::duration<float, std::chrono::seconds::period>(endPipelineTime - startPipelineTime).count()*1000;
-    //std::cout<<"Activate Pipeline cost: "<<durationTime<<" milliseconds"<<std::endl;
-    
 }

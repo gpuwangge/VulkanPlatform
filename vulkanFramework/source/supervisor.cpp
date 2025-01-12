@@ -198,72 +198,75 @@ void CSupervisor::Activate_Pipeline(){ //*customBinding = NULL
 
     //std::cout<<"before uniform()"<<std::endl;
     //Uniforms
-    if(Query_Pipeline_Graphics()){
-        if(Query_Uniform_Graphics_VP()) CGraphicsDescriptorManager::addVPUniformBuffer();
-        if(Query_Uniform_Graphics_MVP()) CGraphicsDescriptorManager::addMVPUniformBuffer();//make MVP default for all sample. even some sample doesn't need
+    //if(Query_Pipeline_Graphics()){
+        //if(Query_Uniform_Graphics_VP()) CGraphicsDescriptorManager::addVPUniformBuffer();
+        //if(Query_Uniform_Graphics_MVP()) CGraphicsDescriptorManager::addMVPUniformBuffer();//make MVP default for all sample. even some sample doesn't need
         //uint32_t mipLevels = m_app->textureManager.textureImages[0].mipLevels;//use the miplevels from the first texture image
         //TODO: Currently each texture can choose to compute mipmaps or not. 
         //But the sampler is using first miplevels for all textures
         //Need make change so only mipmaped texture use mipmaped sampler
         //std::cout<<"before sampler()"<<std::endl;
-        if(Query_Uniform_Graphics_Sampler())
-            CGraphicsDescriptorManager::addImageSamplerUniformBuffer(m_app->appInfo.Uniform.SamplerMiplevels);
+        //if(Query_Uniform_Graphics_Sampler())
+            //CGraphicsDescriptorManager::addImageSamplerUniformBuffer(m_app->appInfo.Uniform.SamplerMiplevels);
             //for(int i = 0; i < m_samplerCount; i++)
                 //CGraphicsDescriptorManager::addImageSamplerUniformBuffer(m_app->textureManager.textureImages[i].mipLevels);//TODO: mipLevels is per texture image; but there are multiple pipelines, which texture sampler to use?
         //std::cout<<"before custom()"<<std::endl;
-        if(Query_Uniform_Graphics_Custom()) CGraphicsDescriptorManager::addCustomUniformBuffer(GraphicsCustomUniformBufferSize);
+        //if(Query_Uniform_Graphics_Custom()) CGraphicsDescriptorManager::addCustomUniformBuffer(GraphicsCustomUniformBufferSize);
         //std::cout<<"after custom()"<<std::endl;
-    }
-    if(Query_Pipeline_Compute()){
-        if(Query_Uniform_Compute_StorageBuffer()) {
-            //VkBufferUsageFlags usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT
-            CComputeDescriptorManager::addStorageBuffer(ComputeStorageBufferSize, ComputeStorageBufferUsage);
-        }
-        if(Query_Uniform_Compute_StorageImage()) CComputeDescriptorManager::addStorageImage(UNIFORM_IMAGE_STORAGE_TEXTURE_BIT);
-        if(Query_Uniform_Compute_StorageImage_Swapchain()) CComputeDescriptorManager::addStorageImage(UNIFORM_IMAGE_STORAGE_SWAPCHAIN_BIT);
-        if(Query_Uniform_Compute_Custom()) CComputeDescriptorManager::addCustomUniformBuffer(ComputeCustomUniformBufferSize);
-    }
+    //}
+    // if(Query_Pipeline_Compute()){
+    //     if(Query_Uniform_Compute_StorageBuffer()) {
+    //         //VkBufferUsageFlags usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT | VK_BUFFER_USAGE_TRANSFER_DST_BIT
+    //         CComputeDescriptorManager::addStorageBuffer(ComputeStorageBufferSize, ComputeStorageBufferUsage);
+    //     }
+    //     if(Query_Uniform_Compute_StorageImage()) CComputeDescriptorManager::addStorageImage(UNIFORM_IMAGE_STORAGE_TEXTURE_BIT);
+    //     if(Query_Uniform_Compute_StorageImage_Swapchain()) CComputeDescriptorManager::addStorageImage(UNIFORM_IMAGE_STORAGE_SWAPCHAIN_BIT);
+    //     if(Query_Uniform_Compute_Custom()) CComputeDescriptorManager::addCustomUniformBuffer(ComputeCustomUniformBufferSize);
+    // }
     //std::cout<<"test pool"<<std::endl;
     //std::cout<<"before pool()"<<std::endl;
     //Descriptor Pool
     //CDescriptorManager::createDescriptorPool(m_app->appInfo.Object.Count); 
-    CDescriptorManager::createDescriptorPool(m_app->objectList.size()); 
+
+    //CDescriptorManager::createDescriptorPool(m_app->objectList.size()); 
 
     //std::cout<<"after pool()"<<std::endl;
     //std::cout<<"test3"<<std::endl;
     //Descriptor Layout
-    if(Query_Pipeline_Graphics()){
-        if(Query_Uniform_Graphics_Custom()) {
-            CGraphicsDescriptorManager::createDescriptorSetLayout(&GraphicsCustomBinding); 
-        }else CGraphicsDescriptorManager::createDescriptorSetLayout();
-        if(Query_Uniform_Graphics_Sampler())CGraphicsDescriptorManager::createTextureDescriptorSetLayout(); 
-    }
-    if(Query_Pipeline_Compute()){
-        if(Query_Uniform_Compute_Custom()){
-            CComputeDescriptorManager::createDescriptorSetLayout(&ComputeCustomBinding);
-        }else CComputeDescriptorManager::createDescriptorSetLayout();
-    }
+    // if(Query_Pipeline_Graphics()){
+    //     if(Query_Uniform_Graphics_Custom()) {
+    //         CGraphicsDescriptorManager::createDescriptorSetLayout(&GraphicsCustomBinding); 
+    //     }else CGraphicsDescriptorManager::createDescriptorSetLayout();
+    //     if(Query_Uniform_Graphics_Sampler())CGraphicsDescriptorManager::createTextureDescriptorSetLayout(); 
+    // }
+    // if(Query_Pipeline_Compute()){
+    //     if(Query_Uniform_Compute_Custom()){
+    //         CComputeDescriptorManager::createDescriptorSetLayout(&ComputeCustomBinding);
+    //     }else CComputeDescriptorManager::createDescriptorSetLayout();
+    // }
     //std::cout<<"test4"<<std::endl;
     //Descriptor Set
-    if(Query_Pipeline_Graphics()){
-        //if(Query_Uniform_Compute_StorageImage())
-        //    m_app->graphicsDescriptorManager.createDescriptorSets(&(m_app->textureManager.textureImages));
-        //else 
-        m_app->graphicsDescriptorManager.createDescriptorSets();
-    }
-    if(Query_Pipeline_Compute()){
-        if(Query_Uniform_Compute_StorageImage_Swapchain()) {
-            if(Query_Uniform_Compute_StorageImage())
-                m_app->computeDescriptorManager.createDescriptorSets(&(m_app->textureManager.textureImages), &(m_app->swapchain.views));
-            else m_app->computeDescriptorManager.createDescriptorSets(NULL, &(m_app->swapchain.views));
-        }else m_app->computeDescriptorManager.createDescriptorSets();
-    }
-    //std::cout<<"test5"<<std::endl;
+    // if(Query_Pipeline_Graphics()){
+    //     //if(Query_Uniform_Compute_StorageImage())
+    //     //    m_app->graphicsDescriptorManager.createDescriptorSets(&(m_app->textureManager.textureImages));
+    //     //else 
+    //     m_app->graphicsDescriptorManager.createDescriptorSets();
+    // }
+    // if(Query_Pipeline_Compute()){
+    //     if(Query_Uniform_Compute_StorageImage_Swapchain()) {
+    //         if(Query_Uniform_Compute_StorageImage())
+    //             m_app->computeDescriptorManager.createDescriptorSets(&(m_app->textureManager.textureImages), &(m_app->swapchain.views));
+    //         else m_app->computeDescriptorManager.createDescriptorSets(NULL, &(m_app->swapchain.views));
+    //     }else m_app->computeDescriptorManager.createDescriptorSets();
+    // }
+    //std::cout<<"test Pipeline"<<std::endl;
     //Pipeline
     if(Query_Pipeline_Graphics()){
         std::vector<VkDescriptorSetLayout> dsLayouts;
-        dsLayouts.push_back(CGraphicsDescriptorManager::descriptorSetLayout);
-        //std::cout<<"test5.5"<<std::endl;
+        //std::cout<<"test push general layout"<<std::endl;
+        if(CDescriptorManager::uniformBufferUsageFlags & UNIFORM_BUFFER_VP_BIT || CDescriptorManager::uniformBufferUsageFlags & UNIFORM_BUFFER_MVP_BIT || CDescriptorManager::uniformBufferUsageFlags & UNIFORM_BUFFER_CUSTOM_GRAPHICS_BIT)
+            dsLayouts.push_back(CGraphicsDescriptorManager::descriptorSetLayout);
+        //std::cout<<"test push texture layout"<<std::endl;
         if(Query_Uniform_Graphics_Sampler()) dsLayouts.push_back(CGraphicsDescriptorManager::textureDescriptorSetLayout); //set = 1
 
         //std::cout<<"test6"<<std::endl;
@@ -278,12 +281,12 @@ void CSupervisor::Activate_Pipeline(){ //*customBinding = NULL
         
         //std::cout<<"Begin create graphics pipeline"<<std::endl;
         for(int i = 0; i < m_app->appInfo.Object.Pipeline.VertexShader->size(); i++){
-            //std::cout<<"test7"<<std::endl;
+            //std::cout<<"test create pipeline"<<std::endl;
             //! All graphics pipelines use the same dsLayouts
             if(bPushConstant)  m_app->renderProcess.createGraphicsPipelineLayout(dsLayouts,  m_app->shaderManager.pushConstantRange, true, i);
             else m_app->renderProcess.createGraphicsPipelineLayout(dsLayouts, i);
 
-            //std::cout<<"create graphics pipeline: "<<i<<","<<VertexStructureTypes::NoType<<std::endl;
+            //std::cout<<"create graphics pipeline: "<<i<<", VertexStructureType="<<VertexStructureType<<std::endl;
             switch(VertexStructureType){
                 case VertexStructureTypes::NoType:
                     m_app->renderProcess.createGraphicsPipeline(
@@ -323,7 +326,7 @@ void CSupervisor::Activate_Pipeline(){ //*customBinding = NULL
         m_app->renderProcess.createComputePipeline(m_app->shaderManager.compShaderModules[0]);
         //std::cout<<"after pipeline(compute)"<<std::endl;
     }
-    //std::cout<<"Test Done"<<std::endl;
+    //std::cout<<"Test pipeline Done"<<std::endl;
 }
 
 

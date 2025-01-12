@@ -233,7 +233,6 @@ void CObject::Register(CApplication *p_app, int object_id, std::vector<int> text
 
 void CObject::Draw(uint32_t n){
     if(!bRegistered) return;
-    //std::cout<<"test1."<<std::endl;
     p_renderer->BindPipeline(p_renderProcess->graphicsPipelines[m_graphics_pipeline_id], 
         VK_PIPELINE_BIND_POINT_GRAPHICS, p_renderer->graphicsCmdId);
     //std::cout<<"test2. p_graphicsDescriptorSets->size()="<<p_graphicsDescriptorSets->size()<<std::endl;

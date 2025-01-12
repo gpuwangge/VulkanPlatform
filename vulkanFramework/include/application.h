@@ -195,8 +195,6 @@ public:
         FeatureInfo Feature;
         BufferInfo Buffer;
     }appInfo;
-
-    void SetApplicationProperty(AppInfo &appInfo);
 };
 
 
