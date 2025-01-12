@@ -68,11 +68,7 @@ public:
 	static std::vector<void*> m_lightingUniformBuffersMapped;
     static VkDeviceSize m_lightingUniformBufferSize;
     static void addLightingUniformBuffer();
-    static void updateLightingUniformBuffer(uint32_t currentFrame, float durationTime){
-        //std::cout<<"sizeof(customUniformBufferObject)="<<sizeof(customUniformBufferObject)<<std::endl;
-        if(uniformBufferUsageFlags & UNIFORM_BUFFER_LIGHTING_GRAPHICS_BIT)
-            memcpy(m_lightingUniformBuffersMapped[currentFrame], &m_lightingUBO, sizeof(m_lightingUBO));
-    }
+    static void updateLightingUniformBuffer(uint32_t currentFrame, float durationTime, Camera &mainCamera);
 
     //bool bUseMVP;
     static std::vector<CWxjBuffer> mvpUniformBuffers; //need one mvp buffer for each host resource: MAX_FRAMES_IN_FLIGHT

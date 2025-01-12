@@ -38,7 +38,7 @@ public:
     float previous_mouse_y = 0;
     bool bFirstPersonMouseRotate = false;
 
-    void createWindow(int &windowWidth, int &windowHeight);
+    void createWindow(int &windowWidth, int &windowHeight, std::string windowTitle);
     void queryRequiredInstanceExtensions(std::vector<const char*> &requiredInstanceExtensions);
     void createSurface(std::unique_ptr<CInstance> &instance, VkSurfaceKHR &surface);
 

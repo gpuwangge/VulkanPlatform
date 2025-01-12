@@ -702,11 +702,16 @@ void CGraphicsDescriptorManager::updateMVPUniformBuffer(uint32_t currentFrame, f
 
 void CGraphicsDescriptorManager::updateVPUniformBuffer(uint32_t currentFrame, float durationTime, Camera &mainCamera) {
     if(uniformBufferUsageFlags & UNIFORM_BUFFER_VP_BIT){
-        //UniformBufferObject ubo{};
         vpUBO.view = mainCamera.matrices.view;
         vpUBO.proj = mainCamera.matrices.perspective;
-
         memcpy(vpUniformBuffersMapped[currentFrame], &vpUBO, sizeof(vpUBO));
+    }
+}
+
+void CGraphicsDescriptorManager::updateLightingUniformBuffer(uint32_t currentFrame, float durationTime, Camera &mainCamera){
+    if(uniformBufferUsageFlags & UNIFORM_BUFFER_LIGHTING_GRAPHICS_BIT){
+        m_lightingUBO.cameraPos = glm::vec4(mainCamera.Position, 0);
+        memcpy(m_lightingUniformBuffersMapped[currentFrame], &m_lightingUBO, sizeof(m_lightingUBO));
     }
 }
 

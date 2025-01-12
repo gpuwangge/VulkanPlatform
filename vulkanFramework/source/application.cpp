@@ -24,10 +24,11 @@ void CApplication::run(){ //Entrance Function
     * Five steps with third-party(GLFW or SDL) initialization
     * Step 1: Create Window
     *****************/
+    m_sampleName.erase(0, 1);
 #ifdef SDL
-    sdlManager.createWindow(OUT windowWidth, OUT windowHeight);
+    sdlManager.createWindow(OUT windowWidth, OUT windowHeight, m_sampleName);
 #else
-    glfwManager.createWindow(OUT windowWidth, OUT windowHeight);
+    glfwManager.createWindow(OUT windowWidth, OUT windowHeight, m_sampleName);
 #endif
 	PRINT("run: Created Window. Window width = %d,  height = %d.", windowWidth, windowHeight);
 
@@ -120,11 +121,7 @@ void CApplication::run(){ //Entrance Function
 }
 #endif
 
-//void CApplication::initialize(){}//for sample to call
 void CApplication::initialize(){
-    //Open yaml input file
-    m_sampleName.erase(0, 1);
-    std::cout<<m_sampleName<<std::endl;
     std::string fullYamlName = "../samples/yaml/" + m_sampleName + ".yaml";
     YAML::Node config;
     try{
@@ -134,34 +131,8 @@ void CApplication::initialize(){
         return;
     }
 
-
-    //Handle Lighting data
-    if(config["Lighting"]["Position"].size() > 0) {
-        std::unique_ptr<std::vector<std::vector<float>>> lightPosition = std::make_unique<std::vector<std::vector<float>>>(config["Lighting"]["Position"].as<std::vector<std::vector<float>>>());
-        for(int i = 0; i < lightPosition->size(); i++)
-            graphicsDescriptorManager.m_lightingUBO.lights[i].lightPos = glm::vec4(glm::vec3((*lightPosition)[i][0], (*lightPosition)[i][1], (*lightPosition)[i][2]), 0);
-
-        CDescriptorManager::uniformBufferUsageFlags |= UNIFORM_BUFFER_LIGHTING_GRAPHICS_BIT;
-        CGraphicsDescriptorManager::addLightingUniformBuffer();
-        LightCount = lightPosition->size();
-    }
-    if(config["Lighting"]["Intensity"].size() > 0) {
-        std::unique_ptr<std::vector<std::vector<float>>> lightIntensity = std::make_unique<std::vector<std::vector<float>>>(config["Lighting"]["Intensity"].as<std::vector<std::vector<float>>>());
-        for(int i = 0; i < lightIntensity->size(); i++){
-            graphicsDescriptorManager.m_lightingUBO.lights[i].ambientIntensity = (*lightIntensity)[i][0];
-            graphicsDescriptorManager.m_lightingUBO.lights[i].diffuseIntensity = (*lightIntensity)[i][1];
-            graphicsDescriptorManager.m_lightingUBO.lights[i].specularIntensity = (*lightIntensity)[i][2];
-            graphicsDescriptorManager.m_lightingUBO.lights[i].dimmerSwitch = (*lightIntensity)[i][3];
-        }
-    }
-    
-    //Real Initialization Starts Here
-    //each object should have a pipeline reference, so can use the pipeline size as object size. 
-    //must set this before Set App Property(because of descriptor size rely on object size)
-    //particle sample has one object
-
     /****************************
-    * Initialize ObjectList
+    * 1 Initialize ObjectList
     ****************************/
     if (config["Objects"]) {
         int objectSize = 0;
@@ -173,17 +144,11 @@ void CApplication::initialize(){
         //std::cout<<"Object Number: "<<objectList.size()<<std::endl;
     }
 
-     /****************************
-    * Read Features
+    /****************************
+    * 2 Read Features
     ****************************/   
-   renderer.m_renderMode = appInfo.Render.Mode;
-   if(appInfo.Buffer.GraphicsVertex.StructureType != VertexStructureTypes::NoType) CSupervisor::Activate_Buffer_Graphics_Vertex(appInfo.Buffer.GraphicsVertex.StructureType);
-   //CSupervisor::VertexStructureType = VertexStructureTypes::ThreeDimension;//?
-    //auto startAppTime = std::chrono::high_resolution_clock::now();
-    //SetApplicationProperty(appInfo);
-    //auto endAppTime = std::chrono::high_resolution_clock::now();
-    //auto durationTime = std::chrono::duration<float, std::chrono::seconds::period>(endAppTime - startAppTime).count() * 1000;
-    //std::cout<<"Total Set Application Property cost: "<<durationTime<<" milliseconds"<<std::endl;
+    renderer.m_renderMode = appInfo.Render.Mode;
+    if(appInfo.Buffer.GraphicsVertex.StructureType != VertexStructureTypes::NoType) CSupervisor::Activate_Buffer_Graphics_Vertex(appInfo.Buffer.GraphicsVertex.StructureType);
 
     bool b_feature_graphics_depth_test = config["Features"]["feature_graphics_depth_test"] ? config["Features"]["feature_graphics_depth_test"].as<bool>() : false;
     bool b_feature_graphics_msaa = config["Features"]["feature_graphics_msaa"] ? config["Features"]["feature_graphics_msaa"].as<bool>() : false;
@@ -193,8 +158,6 @@ void CApplication::initialize(){
     bool b_feature_graphics_rainbow_mipmap = config["Features"]["feature_graphics_rainbow_mipmap"] ? config["Features"]["feature_graphics_rainbow_mipmap"].as<bool>() : false;
     int feature_graphics_pipeline_skybox_id = config["Features"]["feature_graphics_pipeline_skybox_id"] ? config["Features"]["feature_graphics_pipeline_skybox_id"].as<int>() : -1;
     
-    
-    //appInfo.Feature.EnableGraphicsDepthTest = config["Feature"]["GraphicsDepthTest"].as<bool>();
     if(b_feature_graphics_depth_test){
         swapchain.EnableDepthTest();
     }
@@ -217,17 +180,14 @@ void CApplication::initialize(){
         CSupervisor::Activate_Feature_Graphics_RainbowMipmap();
     }
     renderProcess.skyboxID = feature_graphics_pipeline_skybox_id;
-    
-
-
-    
 
     /****************************
-    * Read Uniforms
+    * 4 Read Uniforms
     ****************************/
     bool b_uniform_graphics_custom = false;
     bool b_uniform_graphics_mvp = false;
     bool b_uniform_graphics_vp = false;
+    bool b_uniform_graphics_lighting = false;
     bool b_uniform_compute_custom = false;
     bool b_uniform_compute_storage = false;
     bool b_uniform_compute_swapchain_storage = false;
@@ -240,7 +200,8 @@ void CApplication::initialize(){
                 b_uniform_graphics_custom = graphicsUniform["uniform_graphics_custom"] ? graphicsUniform["uniform_graphics_custom"].as<bool>() : false;
                 b_uniform_graphics_mvp = graphicsUniform["uniform_graphics_mvp"] ? graphicsUniform["uniform_graphics_mvp"].as<bool>() : false;
                 b_uniform_graphics_vp = graphicsUniform["uniform_graphics_vp"] ? graphicsUniform["uniform_graphics_vp"].as<bool>() : false;
-                
+                b_uniform_graphics_lighting = graphicsUniform["uniform_graphics_lighting"] ? graphicsUniform["uniform_graphics_lighting"].as<bool>() : false;
+
                 if(b_uniform_graphics_custom){
                     CDescriptorManager::uniformBufferUsageFlags |= UNIFORM_BUFFER_CUSTOM_GRAPHICS_BIT;
                     CGraphicsDescriptorManager::addCustomUniformBuffer(appInfo.Uniform.GraphicsCustom.Size);
@@ -254,6 +215,11 @@ void CApplication::initialize(){
                 if(b_uniform_graphics_vp){
                     CDescriptorManager::uniformBufferUsageFlags |= UNIFORM_BUFFER_VP_BIT;
                     CGraphicsDescriptorManager::addVPUniformBuffer();
+                }
+
+                if(b_uniform_graphics_lighting){
+                    CDescriptorManager::uniformBufferUsageFlags |= UNIFORM_BUFFER_LIGHTING_GRAPHICS_BIT;
+                    CGraphicsDescriptorManager::addLightingUniformBuffer();
                 }
             }
         }
@@ -313,7 +279,7 @@ void CApplication::initialize(){
 
 
     /****************************
-    * Read Resources
+    * 5 Read Resources
     ****************************/
     //When creating texture resource, need uniform information, so must read uniforms before read resources
     for (const auto& resource : config["Resources"]) {
@@ -416,7 +382,7 @@ void CApplication::initialize(){
     }
 
     /****************************
-    * Create Uniform Descriptors
+    * 6 Create Uniform Descriptors
     ****************************/
     //UNIFORM STEP 1/3 (Pool)
     CDescriptorManager::createDescriptorPool(objectList.size()); 
@@ -444,14 +410,14 @@ void CApplication::initialize(){
     //std::cout<<"test2"<<std::endl;
 
     /****************************
-    * Create Pipelines
+    * 7 Create Pipelines
     ****************************/
     //std::cout<<"before Activate_Pipeline()"<<std::endl;
     CSupervisor::Activate_Pipeline();
     //std::cout<<"after Activate_Pipeline()"<<std::endl;
 
     /****************************
-    * Read and Register Objects
+    * 8 Read and Register Objects
     ****************************/
     if (config["Objects"]) {
         //std::cerr << "No 'Objects' key found in the YAML file!" << std::endl;
@@ -500,9 +466,28 @@ void CApplication::initialize(){
             if(!objectList[i].bRegistered) std::cout<<"WARNING: Object id("<<i<<") is not registered!"<<std::endl;
     }
 
+    /****************************
+    * 3 Read Lightings
+    ****************************/
+    if(config["Lighting"]["Position"].size() > 0) {
+        std::unique_ptr<std::vector<std::vector<float>>> lightPosition = std::make_unique<std::vector<std::vector<float>>>(config["Lighting"]["Position"].as<std::vector<std::vector<float>>>());
+        for(int i = 0; i < lightPosition->size(); i++)
+            graphicsDescriptorManager.m_lightingUBO.lights[i].lightPos = glm::vec4(glm::vec3((*lightPosition)[i][0], (*lightPosition)[i][1], (*lightPosition)[i][2]), 0);
+        LightCount = lightPosition->size();
+    }
+    if(config["Lighting"]["Intensity"].size() > 0) {
+        std::unique_ptr<std::vector<std::vector<float>>> lightIntensity = std::make_unique<std::vector<std::vector<float>>>(config["Lighting"]["Intensity"].as<std::vector<std::vector<float>>>());
+        for(int i = 0; i < lightIntensity->size(); i++){
+            graphicsDescriptorManager.m_lightingUBO.lights[i].ambientIntensity = (*lightIntensity)[i][0];
+            graphicsDescriptorManager.m_lightingUBO.lights[i].diffuseIntensity = (*lightIntensity)[i][1];
+            graphicsDescriptorManager.m_lightingUBO.lights[i].specularIntensity = (*lightIntensity)[i][2];
+            graphicsDescriptorManager.m_lightingUBO.lights[i].dimmerSwitch = (*lightIntensity)[i][3];
+        }
+    }
+
 
     /****************************
-    * Read Main Camera
+    * 9 Read Main Camera
     ****************************/
     bool b_camera_free_mode = config["MainCamera"]["camera_free_mode"] ? config["MainCamera"]["camera_free_mode"].as<bool>() : false;
     if(b_camera_free_mode) mainCamera.cameraType = Camera::CameraType::freemove;
@@ -524,6 +509,9 @@ void CApplication::initialize(){
         config["MainCamera"]["camera_z"][0].as<float>(), 
         config["MainCamera"]["camera_z"][1].as<float>());
 
+    /****************************
+    * 10 Create Sync Objects and Clean up Shaders
+    ****************************/
     renderer.CreateSyncObjects(swapchain.imageSize);
     shaderManager.Destroy();
 
@@ -557,10 +545,18 @@ void CApplication::update(){
 
     mainCamera.update(deltaTime);
 
-    for(int i = 0; i < objectList.size(); i++) objectList[i].Update(deltaTime);
+    //update model matrix
+    for(int i = 0; i < objectList.size(); i++) objectList[i].Update(deltaTime); 
 
+    //update view and perspective matrices, then memcpy to GPU memory
     graphicsDescriptorManager.updateMVPUniformBuffer(renderer.currentFrame, durationTime, mainCamera, objectList);
     graphicsDescriptorManager.updateVPUniformBuffer(renderer.currentFrame, durationTime, mainCamera);
+
+    //update camera pos, then memcpy to GPU memory
+    graphicsDescriptorManager.updateLightingUniformBuffer(renderer.currentFrame, durationTime, mainCamera);
+
+   //CGraphicsDescriptorManager::m_lightingUBO.cameraPos = glm::vec4(mainCamera.Position, 0);
+
 }
 
 void CApplication::recordGraphicsCommandBuffer(){}
@@ -739,4 +735,13 @@ CApplication::~CApplication(){
  *******/
 void CApplication::Dispatch(int numWorkGroupsX, int numWorkGroupsY, int numWorkGroupsZ){
     CSupervisor::Dispatch(numWorkGroupsX, numWorkGroupsY, numWorkGroupsZ);
+}
+void CApplication::SetLightPosition(int lightId, glm::vec3 lightPos){
+    CGraphicsDescriptorManager::m_lightingUBO.lights[lightId].lightPos = glm::vec4(lightPos,0);
+}
+glm::vec3 CApplication::GetLightPosition(int lightId){
+    return CGraphicsDescriptorManager::m_lightingUBO.lights[lightId].lightPos;
+}
+int CApplication::GetLightSize(){
+    return LightCount;
 }

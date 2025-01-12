@@ -10,7 +10,7 @@ CSDLManager::~CSDLManager(){
 }
 
 
-void CSDLManager::createWindow(int &windowWidth, int &windowHeight){
+void CSDLManager::createWindow(int &windowWidth, int &windowHeight, std::string windowTitle){
     if(!SDL_Init(SDL_INIT_VIDEO)) {
         std::cout << "Could not initialize SDL." << std::endl;
         //return 1;
@@ -24,7 +24,7 @@ void CSDLManager::createWindow(int &windowWidth, int &windowHeight){
     m_windowCenterX = WINDOW_WIDTH/2;
     m_windowCenterY = WINDOW_HEIGHT/2;
 
-    window = SDL_CreateWindow("Vulkan Window", windowWidth, windowHeight, SDL_WINDOW_VULKAN);
+    window = SDL_CreateWindow(windowTitle.c_str(), windowWidth, windowHeight, SDL_WINDOW_VULKAN);
     if(window == NULL) {
         std::cout << "Could not create SDL window." << std::endl;
         //return 1;

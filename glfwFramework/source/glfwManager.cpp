@@ -49,32 +49,32 @@ void CGLFWManager::GLFWKeyboard(GLFWwindow * window, int key, int scancode, int 
 	if (action == GLFW_PRESS) {
 		switch (key) {
 		case 262:
-			CApplication::mainCamera.keys.right = true;
+			//CApplication::mainCamera.keys.right = true;
 			break;
 		case 263:
-			CApplication::mainCamera.keys.left = true;
+			//CApplication::mainCamera.keys.left = true;
 			break;
 		case 264:
-			CApplication::mainCamera.keys.down = true;
+			//CApplication::mainCamera.keys.down = true;
 			break;
 		case 265:
-			CApplication::mainCamera.keys.up = true;
+			//CApplication::mainCamera.keys.up = true;
 			break;
 		case 'w':
 		case 'W':
-			CApplication::mainCamera.keys.forward = true;
+			//CApplication::mainCamera.keys.forward = true;
 			break;
 		case 's':
 		case 'S':
-			CApplication::mainCamera.keys.backward = true;
+			//CApplication::mainCamera.keys.backward = true;
 			break;
 		case 'a':
 		case 'A':
-			CApplication::mainCamera.keys.turnLeft = true;
+			//CApplication::mainCamera.keys.turnLeft = true;
 			break;
 		case 'd':
 		case 'D':
-			CApplication::mainCamera.keys.turnRight = true;
+			//CApplication::mainCamera.keys.turnRight = true;
 			break;
 
 		case 'i':
@@ -126,32 +126,32 @@ void CGLFWManager::GLFWKeyboard(GLFWwindow * window, int key, int scancode, int 
 	if (action == GLFW_RELEASE) {	
 		switch (key) {
 		case 262:
-			CApplication::mainCamera.keys.right = false;
+			//CApplication::mainCamera.keys.right = false;
 			break;
 		case 263:
-			CApplication::mainCamera.keys.left = false;
+			//CApplication::mainCamera.keys.left = false;
 			break;
 		case 264:
-			CApplication::mainCamera.keys.down = false;
+			//CApplication::mainCamera.keys.down = false;
 			break;
 		case 265:
-			CApplication::mainCamera.keys.up = false;
+			//CApplication::mainCamera.keys.up = false;
 			break;
 		case 'w':
 		case 'W':
-			CApplication::mainCamera.keys.forward = false;
+			//CApplication::mainCamera.keys.forward = false;
 			break;
 		case 's':
 		case 'S':
-			CApplication::mainCamera.keys.backward = false;
+			//CApplication::mainCamera.keys.backward = false;
 			break;
 		case 'a':
 		case 'A':
-			CApplication::mainCamera.keys.turnLeft = false;
+			//CApplication::mainCamera.keys.turnLeft = false;
 			break;
 		case 'd':
 		case 'D':
-			CApplication::mainCamera.keys.turnRight = false;
+			//CApplication::mainCamera.keys.turnRight = false;
 			break;
 		default:
 			break;
@@ -239,12 +239,12 @@ static void framebufferResizeCallback(GLFWwindow* window, int width, int height)
 	//app->framebufferResized = true;
 }
 
-void CGLFWManager::createWindow(int &windowWidth, int &windowHeight){
+void CGLFWManager::createWindow(int &windowWidth, int &windowHeight, std::string windowTitle){
 		glfwInit();
 
 		glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
 
-		window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "GLFW Appliciation", nullptr, nullptr);
+		window = glfwCreateWindow(WINDOW_WIDTH, WINDOW_HEIGHT, windowTitle.c_str(), nullptr, nullptr);
 
 		glfwSetWindowUserPointer(window, this);
 		glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);

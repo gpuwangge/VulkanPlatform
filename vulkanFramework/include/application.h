@@ -99,6 +99,9 @@ public:
 
     std::string m_sampleName;
 
+    /******************
+    * Core Functions
+    ******************/
     /*Virtual function: base and derived class will implement. If drived class not implement, call base's verson*/
     virtual void initialize(); //use this to call sample initialization
     //void initialize(); //base: create sync object, destroy shader resource
@@ -110,11 +113,13 @@ public:
     /*Pure virtual function(=0): base class not implment, derived class must implement*/
     //NA
 
-    /*************
-     * Helper Functions
-     *******/
+    /******************
+    * Helper Functions
+    ******************/
     void Dispatch(int numWorkGroupsX, int numWorkGroupsY, int numWorkGroupsZ);  
-
+    void SetLightPosition(int lightId, glm::vec3 lightPos);
+    glm::vec3 GetLightPosition(int lightId);
+    int GetLightSize();
 
     /*************
      * APP INFO
