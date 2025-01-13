@@ -91,7 +91,7 @@ void CApplication::run(){ //Entrance Function
     swapchain.createImages(surface, windowWidth, windowHeight);
 	swapchain.createImageViews(VK_IMAGE_ASPECT_COLOR_BIT);
 
-    CSupervisor::Register((CApplication*)this);
+    renderer.CreateCommandPool(surface);
 
     std::cout<<"======================================="<<std::endl;
     std::cout<<"======Welcome to Vulkan Platform======="<<std::endl;
@@ -174,9 +174,9 @@ void CApplication::initialize(){
         swapchain.EnableMSAA();
         swapchain.EnableDepthTest();//If enable MSAA, must also enable Depth Test
     }
-    if(b_feature_graphics_48pbt){
-        CSupervisor::Activate_Feature_Graphics_48BPT();
-    }
+    // if(b_feature_graphics_48pbt){
+    //     CSupervisor::Activate_Feature_Graphics_48BPT();
+    // }
     if(b_feature_graphics_push_constant){
         //CSupervisor::Activate_Feature_Graphics_PushConstant();
         //if(appInfo.Object.Pipeline.VertexShader != NULL)
@@ -187,9 +187,9 @@ void CApplication::initialize(){
             VK_BLEND_OP_ADD, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,
             VK_BLEND_OP_ADD, VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO);        
     }
-    if(b_feature_graphics_rainbow_mipmap){
-        CSupervisor::Activate_Feature_Graphics_RainbowMipmap();
-    }
+    //if(b_feature_graphics_rainbow_mipmap){
+    //    CSupervisor::Activate_Feature_Graphics_RainbowMipmap();
+    //}
     renderProcess.skyboxID = feature_graphics_pipeline_skybox_id;
 
     /****************************
@@ -344,15 +344,15 @@ void CApplication::initialize(){
                 if(miplevel > 1) //mipmap
                     usage = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
                 else 
-                    if(CSupervisor::Query_Uniform_Compute_StorageImage()) usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT;
+                    if(CDescriptorManager::uniformBufferUsageFlags & UNIFORM_IMAGE_STORAGE_TEXTURE_BIT) usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT;
                     else usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
-                if(!CSupervisor::b48bpt) //24bpt
-                    if(CSupervisor::Query_Uniform_Compute_StorageImage_Swapchain()) textureManager.CreateTextureImage(name, usage, renderer.commandPool, miplevel, samplerid, swapchain.swapChainImageFormat);
+                if(!b_feature_graphics_48pbt) //24bpt
+                    if(CDescriptorManager::uniformBufferUsageFlags & UNIFORM_IMAGE_STORAGE_SWAPCHAIN_BIT) textureManager.CreateTextureImage(name, usage, renderer.commandPool, miplevel, samplerid, swapchain.swapChainImageFormat);
                     else textureManager.CreateTextureImage(name, usage, renderer.commandPool, miplevel, samplerid, VK_FORMAT_R8G8B8A8_SRGB, 8, enableCubemap);  
                 else //48bpt
                     textureManager.CreateTextureImage(name, usage, renderer.commandPool, miplevel, samplerid, VK_FORMAT_R16G16B16A16_UNORM, 16, enableCubemap); 
                 
-                if(CSupervisor::bRainbowMipmap){
+                if(b_feature_graphics_rainbow_mipmap){
                     VkImageUsageFlags usage_mipmap = VK_IMAGE_USAGE_TRANSFER_SRC_BIT | VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
                     if(miplevel > 1) textureManager.textureImages[textureManager.textureImages.size()-1].generateMipmaps("checkerboard", usage_mipmap);
                 }else if(miplevel > 1) textureManager.textureImages[textureManager.textureImages.size()-1].generateMipmaps();
@@ -720,10 +720,17 @@ CApplication::~CApplication(){
  * Helper Functions
  *******/
 void CApplication::Dispatch(int numWorkGroupsX, int numWorkGroupsY, int numWorkGroupsZ){
-    CSupervisor::Dispatch(numWorkGroupsX, numWorkGroupsY, numWorkGroupsZ);
+    //CSupervisor::Dispatch(numWorkGroupsX, numWorkGroupsY, numWorkGroupsZ);
+    std::vector<std::vector<VkDescriptorSet>> dsSets; 
+    dsSets.push_back(computeDescriptorManager.descriptorSets);
+
+    renderer.BindComputeDescriptorSets(renderProcess.computePipelineLayout, dsSets, -1); //-1 to offset means no dynamic offset
+
+    //std::cout<<"Record Compute command buffer. "<<std::endl;
+    renderer.Dispatch(numWorkGroupsX, numWorkGroupsY, numWorkGroupsZ);
 }
 void CApplication::CreatePipelines(){
-    bool bVerbose = true;
+    bool bVerbose = false;
 
     /****************************
     * Command Buffer

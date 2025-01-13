@@ -13,8 +13,6 @@
 #include "renderer.h"
 #include "texture.h" //this includes imageManager.h
 #include "modelManager.h"
-
-#include "supervisor.h"
 #include "object.h"
 #include "light.h"
 

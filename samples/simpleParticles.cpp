@@ -114,7 +114,7 @@ public:
 	}
 
 	void recordComputeCommandBuffer(){
-		CSupervisor::Dispatch(PARTICLE_COUNT/256,1,1);
+		Dispatch(PARTICLE_COUNT/256,1,1);
 
 		static int counter = 0;
 		if(counter % 1000 == 0)std::cout<<"Dispatched Counter: "<<counter<<std::endl;
