@@ -12,7 +12,7 @@ public:
 	StructStorageBuffer storageBufferObject;
 
 	void initialize(){
-		appInfo.Render.Mode = renderer.RENDER_COMPUTE_Mode;
+		appInfo.RenderMode = renderer.RENDER_COMPUTE_Mode;
 		appInfo.Uniform.ComputeStorageBuffer.Size = 1; //this can be any non-zero number, in order to enable storage buffer
 		appInfo.Uniform.ComputeStorageBuffer.Usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;
 		CApplication::initialize();

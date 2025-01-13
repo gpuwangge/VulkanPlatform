@@ -97,7 +97,8 @@ public:
     float deltaTime = 0;
 
     std::string m_sampleName;
-
+    YAML::Node config;
+    
     /******************
     * Core Functions
     ******************/
@@ -115,28 +116,30 @@ public:
     /******************
     * Helper Functions
     ******************/
-    void Dispatch(int numWorkGroupsX, int numWorkGroupsY, int numWorkGroupsZ);  
+    void ReadFeatures(bool& b_feature_graphics_depth_test, bool& b_feature_graphics_msaa, bool& b_feature_graphics_48pbt,
+                    bool& b_feature_graphics_push_constant, bool& b_feature_graphics_blend, bool& b_feature_graphics_rainbow_mipmap,
+                    int& feature_graphics_pipeline_skybox_id);
+    void ReadUniforms(bool& b_uniform_graphics_custom, bool&b_uniform_graphics_mvp, bool&b_uniform_graphics_vp, bool&b_uniform_graphics_lighting,
+                    bool&b_uniform_compute_custom, bool&b_uniform_compute_storage, bool&b_uniform_compute_swapchain_storage, bool&b_uniform_compute_texture_storage);
+    void ReadResources(bool b_feature_graphics_48pbt, bool b_feature_graphics_rainbow_mipmap);
+    void CreateUniformDescriptors(bool b_uniform_graphics, bool b_uniform_compute, 
+                                bool b_uniform_graphics_custom, bool b_uniform_compute_custom,
+                                bool b_uniform_compute_swapchain_storage, bool b_uniform_compute_texture_storage);
     void CreatePipelines();
- 
-
+    void ReadRegisterObjects();
+    void ReadLightings();
+    void ReadMainCamera();
+    void Dispatch(int numWorkGroupsX, int numWorkGroupsY, int numWorkGroupsZ);  
+    
+    
     /*************
      * APP INFO
      *******/
-    struct RenderInfo{
-        CRenderer::RenderModes Mode = CRenderer::RENDER_GRAPHICS_Mode;
-    };
     struct UniformInfo{
-        std::vector<std::vector<bool>> GraphicsVector;
-        std::vector<std::vector<bool>> ComputeVector;
-        std::vector<int> SamplerMiplevels;
-
         struct GraphicsCustomInfo{
-            //bool Enable = false;
             VkDeviceSize Size = 0;
             VkDescriptorSetLayoutBinding Binding;
-            //CustomUniformBufferObject* pointer; 
         }GraphicsCustom;
-        //--------------------------------------
         struct ComputeCustomInfo{
             VkDeviceSize Size = 0;
             VkDescriptorSetLayoutBinding Binding;
@@ -145,58 +148,15 @@ public:
             VkDeviceSize Size = 0;
             VkBufferUsageFlags Usage;
         }ComputeStorageBuffer;
-        //bool EnableComputeStorageImage = false; //yaml
-        //bool EnableComputeStorageImageSwapChain = false; //yaml
-    };
-    struct FeatureInfo{
-        bool EnableGraphicsDepthTest = false; //yaml
-        bool EnableGraphicsMSAA = false; //yaml
-        bool EnableGraphics48BPT = false; //yaml
-        bool EnableGraphicsPushConstant = false; //yaml
-        bool EnableGraphicsBlend = false; //yaml
-        bool EnableGraphicsRainbowMipmap = false; //yaml
-        //bool EnableGraphicsCubemap = false;
-        int GraphicsPipelineSkyboxID = -1; //yaml
-    };
-    struct BufferInfo{
-        struct GraphicsVertexInfo{
-            //bool Enable = false;
-            VertexStructureTypes StructureType = (VertexStructureTypes)NULL;
-            //std::vector<Vertex3D> *Vertices3D = NULL;
-            //std::vector<uint32_t> *Indices3D = NULL;
-            std::vector<Vertex2D> *Vertices2D = NULL;
-        }GraphicsVertex;
-    };
-
-    struct ObjectInfo{
-        //int Count = 0;
-        struct ModelInfo{
-            //std::vector<std::string> *Names = NULL;
-            //std::vector<int> *List = NULL; 
-            std::unique_ptr<std::vector<std::string>> Names; //models to be loaded
-            std::unique_ptr<std::vector<int>> List; //list[i]=j: the i'th object use j'th model
-            std::unique_ptr<std::vector<float>> ScaleList; 
-        }Model;
-        struct TextureInfo{
-            //std::vector<std::pair<std::string, bool>> *Names = NULL;
-            //std::vector<int> *List = NULL; 
-            std::unique_ptr<std::vector<TextureAttributeInfo>> Attributes; 
-            std::unique_ptr<std::vector<std::vector<int>>> List; //list[i]=j: the i'th object use j'th texture
-        }Texture;
-        struct PipelineInfo{
-            std::unique_ptr<std::vector<std::string>> VertexShader;
-            std::unique_ptr<std::vector<std::string>> FragmentShader;
-            std::unique_ptr<std::vector<std::string>> ComputeShader;
-            std::unique_ptr<std::vector<int>> GraphicsList; //list[i]=j: the i'th object use j'th pipeline
-        }Pipeline;
     };
 
     struct AppInfo{
-        ObjectInfo Object;
-        RenderInfo Render;
         UniformInfo Uniform;
-        FeatureInfo Feature;
-        BufferInfo Buffer;
+        std::unique_ptr<std::vector<std::string>> VertexShader;
+        std::unique_ptr<std::vector<std::string>> FragmentShader;
+        std::unique_ptr<std::vector<std::string>> ComputeShader;
+        CRenderer::RenderModes RenderMode = CRenderer::RENDER_GRAPHICS_Mode;
+        VertexStructureTypes VertexBufferType = (VertexStructureTypes)NULL;
     }appInfo;
 };
 

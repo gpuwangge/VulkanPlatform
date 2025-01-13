@@ -36,8 +36,8 @@ public:
 
 	void initialize(){
 		//appInfo.Object.Count = 1;//One object, that is the particle generator
-		appInfo.Buffer.GraphicsVertex.StructureType = VertexStructureTypes::ParticleType;
-		appInfo.Render.Mode = CRenderer::RENDER_COMPUTE_GRAPHICS_Mode;
+		appInfo.VertexBufferType = VertexStructureTypes::ParticleType;
+		appInfo.RenderMode = CRenderer::RENDER_COMPUTE_GRAPHICS_Mode;
 
 		appInfo.Uniform.ComputeCustom.Size = sizeof(CustomUniformBufferObject);
 		appInfo.Uniform.ComputeCustom.Binding = CustomUniformBufferObject::GetBinding();

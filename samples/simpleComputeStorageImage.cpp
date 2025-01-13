@@ -16,7 +16,7 @@ public:
 	}
 
 	void initialize(){
-        appInfo.Render.Mode = renderer.RENDER_COMPUTE_SWAPCHAIN_Mode;
+        appInfo.RenderMode = renderer.RENDER_COMPUTE_SWAPCHAIN_Mode;
 		CApplication::initialize();
 		createComputeCommandBuffers(renderer.commandBuffers[renderer.computeCmdId], swapchain.images);
 	}

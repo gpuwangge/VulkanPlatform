@@ -144,7 +144,7 @@ void CObject::Register(CApplication *p_app, int object_id, std::vector<int> text
     m_graphics_pipeline_id = graphics_pipeline_id; 
     bUseMVP_VP = CGraphicsDescriptorManager::CheckMVP();
 
-    if(p_app->appInfo.Buffer.GraphicsVertex.StructureType == VertexStructureTypes::TwoDimension || p_app->appInfo.Buffer.GraphicsVertex.StructureType == VertexStructureTypes::ThreeDimension){
+    if(p_app->appInfo.VertexBufferType == VertexStructureTypes::TwoDimension || p_app->appInfo.VertexBufferType == VertexStructureTypes::ThreeDimension){
         Length_original = p_app->modelManager.modelLengths[model_id];
         LengthMin_original = p_app->modelManager.modelLengthsMin[model_id];
         LengthMax_original = p_app->modelManager.modelLengthsMax[model_id];
