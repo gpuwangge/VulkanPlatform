@@ -118,6 +118,8 @@ public:
     * Helper Functions
     ******************/
     void Dispatch(int numWorkGroupsX, int numWorkGroupsY, int numWorkGroupsZ);  
+    void CreatePipelines();
+ 
 
     /*************
      * APP INFO

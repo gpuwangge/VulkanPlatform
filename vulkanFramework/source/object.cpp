@@ -144,7 +144,7 @@ void CObject::Register(CApplication *p_app, int object_id, std::vector<int> text
     m_graphics_pipeline_id = graphics_pipeline_id; 
     bUseMVP_VP = CGraphicsDescriptorManager::CheckMVP();
 
-    if(CSupervisor::VertexStructureType == VertexStructureTypes::TwoDimension || CSupervisor::VertexStructureType  == VertexStructureTypes::ThreeDimension){
+    if(p_app->appInfo.Buffer.GraphicsVertex.StructureType == VertexStructureTypes::TwoDimension || p_app->appInfo.Buffer.GraphicsVertex.StructureType == VertexStructureTypes::ThreeDimension){
         Length_original = p_app->modelManager.modelLengths[model_id];
         LengthMin_original = p_app->modelManager.modelLengthsMin[model_id];
         LengthMax_original = p_app->modelManager.modelLengthsMax[model_id];
@@ -179,29 +179,6 @@ void CObject::Register(CApplication *p_app, int object_id, std::vector<int> text
         );
     }
 
-
-    //Create texture descriptor set
-    // if(m_texture_ids[i] != -1){
-    //     bUseTextureSampler = true; 
-    //     //if(texture_id != INT_MAX){
-    //         //bUseCubemap = p_app->textureManager.textureImages[m_texture_id].bEnableCubemap; //if this object is skybox, the view matrix should ignore translate
-        
-    //     CreateTextureDescriptorSets(
-    //         p_app->textureManager.textureImages[m_texture_id], 
-    //         CGraphicsDescriptorManager::descriptorPool,
-    //         CGraphicsDescriptorManager::textureDescriptorSetLayout,
-    //         CGraphicsDescriptorManager::textureSamplers[0]
-    //     );
-    //     // }else{
-    //     //     //bUseCubemap = false; //the skybox with cubemap should use only one texture
-    //     //     CreateTextureDescriptorSets(
-    //     //         p_app->textureManager.textureImages, 
-    //     //         CGraphicsDescriptorManager::descriptorPool,
-    //     //         CGraphicsDescriptorManager::textureDescriptorSetLayout,
-    //     //         CGraphicsDescriptorManager::textureSamplers
-    //     //     );
-    //     // }
-    // }
     bRegistered = true;
 }
 

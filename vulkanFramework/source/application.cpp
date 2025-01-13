@@ -157,7 +157,7 @@ void CApplication::initialize(){
     * 2 Read Features
     ****************************/   
     renderer.m_renderMode = appInfo.Render.Mode;
-    if(appInfo.Buffer.GraphicsVertex.StructureType != VertexStructureTypes::NoType) CSupervisor::Activate_Buffer_Graphics_Vertex(appInfo.Buffer.GraphicsVertex.StructureType);
+    //if(appInfo.Buffer.GraphicsVertex.StructureType != VertexStructureTypes::NoType) Activate_Buffer_Graphics_Vertex(appInfo.Buffer.GraphicsVertex.StructureType);
 
     bool b_feature_graphics_depth_test = config["Features"]["feature_graphics_depth_test"] ? config["Features"]["feature_graphics_depth_test"].as<bool>() : false;
     bool b_feature_graphics_msaa = config["Features"]["feature_graphics_msaa"] ? config["Features"]["feature_graphics_msaa"].as<bool>() : false;
@@ -178,7 +178,9 @@ void CApplication::initialize(){
         CSupervisor::Activate_Feature_Graphics_48BPT();
     }
     if(b_feature_graphics_push_constant){
-        CSupervisor::Activate_Feature_Graphics_PushConstant();
+        //CSupervisor::Activate_Feature_Graphics_PushConstant();
+        //if(appInfo.Object.Pipeline.VertexShader != NULL)
+        shaderManager.CreatePushConstantRange<ModelPushConstants>(VK_SHADER_STAGE_VERTEX_BIT, 0);
     }
     if(b_feature_graphics_blend){
         renderProcess.addColorBlendAttachment(
@@ -299,7 +301,7 @@ void CApplication::initialize(){
                 //id is not really useful here, because the model id must be in order
                 int id = model["resource_model_id"] ? model["resource_model_id"].as<int>() : 0;
 
-                CSupervisor::VertexStructureType = VertexStructureTypes::ThreeDimension;
+                appInfo.Buffer.GraphicsVertex.StructureType = VertexStructureTypes::ThreeDimension;
                 if(name == "CUSTOM3D0"){
                     renderer.CreateVertexBuffer<Vertex3D>(modelManager.customModels3D[0].vertices); 
                     renderer.CreateIndexBuffer(modelManager.customModels3D[0].indices);
@@ -308,14 +310,14 @@ void CApplication::initialize(){
                     modelManager.modelLengthsMin.push_back(modelManager.customModels3D[0].lengthMin);
                     modelManager.modelLengthsMax.push_back(modelManager.customModels3D[0].lengthMax);
                 }else if(name == "CUSTOM2D0"){
-                    CSupervisor::VertexStructureType = VertexStructureTypes::TwoDimension;
+                    appInfo.Buffer.GraphicsVertex.StructureType = VertexStructureTypes::TwoDimension;
                     renderer.CreateVertexBuffer<Vertex2D>(modelManager.customModels2D[0].vertices); 
 
                     modelManager.modelLengths.push_back(modelManager.customModels2D[0].length);
                     modelManager.modelLengthsMin.push_back(modelManager.customModels2D[0].lengthMin);
                     modelManager.modelLengthsMax.push_back(modelManager.customModels2D[0].lengthMax);
                 }else{
-                    CSupervisor::VertexStructureType = VertexStructureTypes::ThreeDimension;
+                    appInfo.Buffer.GraphicsVertex.StructureType = VertexStructureTypes::ThreeDimension;
                     std::vector<Vertex3D> modelVertices3D;
                     std::vector<uint32_t> modelIndices3D;
                     modelManager.LoadObjModel(name, modelVertices3D, modelIndices3D);
@@ -422,7 +424,8 @@ void CApplication::initialize(){
     * 7 Create Pipelines
     ****************************/
     //std::cout<<"before Activate_Pipeline()"<<std::endl;
-    CSupervisor::Activate_Pipeline();
+    //CSupervisor::Activate_Pipeline();
+    CreatePipelines();
     //std::cout<<"after Activate_Pipeline()"<<std::endl;
 
     /****************************
@@ -490,15 +493,10 @@ void CApplication::initialize(){
 
             auto position = light["light_position"] ? light["light_position"].as<std::vector<float>>(): std::vector<float>(3,0);
             glm::vec3 glm_position(position[0], position[1], position[2]);
-            //graphicsDescriptorManager.m_lightingUBO.lights[id].lightPos = glm::vec4(glm_position, 0);
-
             auto intensity = light["light_intensity"] ? light["light_intensity"].as<std::vector<float>>(): std::vector<float>(4,0);
-            // graphicsDescriptorManager.m_lightingUBO.lights[id].ambientIntensity = intensity[0];
-            // graphicsDescriptorManager.m_lightingUBO.lights[id].diffuseIntensity = intensity[1];
-            // graphicsDescriptorManager.m_lightingUBO.lights[id].specularIntensity = intensity[2];
-            // graphicsDescriptorManager.m_lightingUBO.lights[id].dimmerSwitch = intensity[3];
-            
+
             lightList[id].Register(name, id, glm_position, intensity);
+
             std::cout<<"LightId:("<<id<<") Name:("<<lightList[id].GetLightName()<<") Intensity:("<<lightList[id].GetIntensity(0)<<","<<lightList[id].GetIntensity(1)<<","<<lightList[id].GetIntensity(2)<<","<<lightList[id].GetIntensity(3)<<")"
                 <<" Position:("<<lightList[id].GetLightPosition().x<<","<<lightList[id].GetLightPosition().y<<","<<lightList[id].GetLightPosition().z<<")"<<std::endl;
  
@@ -507,25 +505,6 @@ void CApplication::initialize(){
             if(!lightList[i].bRegistered) std::cout<<"WARNING: Light id("<<i<<") is not registered!"<<std::endl;
     }
     
-
-
-
-    // if(config["Lighting"]["Position"].size() > 0) {
-    //     std::unique_ptr<std::vector<std::vector<float>>> lightPosition = std::make_unique<std::vector<std::vector<float>>>(config["Lighting"]["Position"].as<std::vector<std::vector<float>>>());
-    //     for(int i = 0; i < lightPosition->size(); i++) //SetLightPosition(i, (*lightPosition)[i]);
-    //         graphicsDescriptorManager.m_lightingUBO.lights[i].lightPos = glm::vec4(glm::vec3((*lightPosition)[i][0], (*lightPosition)[i][1], (*lightPosition)[i][2]), 0);
-    //     LightCount = lightPosition->size();
-    // }
-    // if(config["Lighting"]["Intensity"].size() > 0) {
-    //     std::unique_ptr<std::vector<std::vector<float>>> lightIntensity = std::make_unique<std::vector<std::vector<float>>>(config["Lighting"]["Intensity"].as<std::vector<std::vector<float>>>());
-    //     for(int i = 0; i < lightIntensity->size(); i++){
-    //         graphicsDescriptorManager.m_lightingUBO.lights[i].ambientIntensity = (*lightIntensity)[i][0];
-    //         graphicsDescriptorManager.m_lightingUBO.lights[i].diffuseIntensity = (*lightIntensity)[i][1];
-    //         graphicsDescriptorManager.m_lightingUBO.lights[i].specularIntensity = (*lightIntensity)[i][2];
-    //         graphicsDescriptorManager.m_lightingUBO.lights[i].dimmerSwitch = (*lightIntensity)[i][3];
-    //     }
-    // }
-
 
     /****************************
     * 9 Read Main Camera
@@ -691,28 +670,6 @@ void CApplication::UpdateRecordRender(){
         break;
     }
 
-    //renderer.RecordCompute();
-    //recordComputeCommandBuffer();
-    //renderer.RecordGraphics();
-    //recordGraphicsCommandBuffer();
-
-    //renderer.AquireSwapchainImage(swapchain);
-    //renderer.SubmitCompute();
-    //renderer.SubmitGraphics();
-    //renderer.PresentSwapchainImage(swapchain);     
-
-    //if(renderProcess.bCreateGraphicsPipeline){
-        //renderer.preRecordGraphicsCommandBuffer(swapchain);
-        //recordGraphicsCommandBuffer();
-        //renderer.postRecordGraphicsCommandBuffer(swapchain);
-    //}
-
-    //if(renderProcess.bCreateComputePipeline){
-        //recordComputeCommandBuffer();
-        //renderer.preRecordComputeCommandBuffer(swapchain);
-        //renderer.postRecordComputeCommandBuffer(swapchain);
-   //}
-
     postUpdate();
 
     renderer.Update(); //update currentFrame    
@@ -764,4 +721,135 @@ CApplication::~CApplication(){
  *******/
 void CApplication::Dispatch(int numWorkGroupsX, int numWorkGroupsY, int numWorkGroupsZ){
     CSupervisor::Dispatch(numWorkGroupsX, numWorkGroupsY, numWorkGroupsZ);
+}
+void CApplication::CreatePipelines(){
+    bool bVerbose = true;
+
+    /****************************
+    * Command Buffer
+    ****************************/
+    if(appInfo.Object.Pipeline.VertexShader != NULL) renderer.CreateGraphicsCommandBuffer();
+    if(appInfo.Object.Pipeline.ComputeShader != NULL) renderer.CreateComputeCommandBuffer();
+    if(bVerbose) std::cout<<"CreatePipeline: Done Command Buffer"<<std::endl;
+
+    /****************************
+    * Frame Buffer
+    ****************************/
+    if(appInfo.Object.Pipeline.VertexShader != NULL){
+        VkImageLayout imageLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+        renderProcess.addColorAttachment( 
+            swapchain.swapChainImageFormat,  
+            swapchain.bEnableDepthTest,  
+            swapchain.depthFormat,  
+            swapchain.msaaSamples, 
+            imageLayout); //add this function will enable color attachment (bUseColorAttachment = true)
+        renderProcess.createSubpass();
+        if(swapchain.bEnableDepthTest){
+            VkPipelineStageFlags srcPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+            VkPipelineStageFlags dstPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+            renderProcess.createDependency(srcPipelineStageFlag, dstPipelineStageFlag);
+        }else renderProcess.createDependency();
+        renderProcess.createRenderPass();
+
+        // if(bBlend)
+        //     renderProcess.addColorBlendAttachment(
+        //         VK_BLEND_OP_ADD, VK_BLEND_FACTOR_SRC_ALPHA, VK_BLEND_FACTOR_ONE_MINUS_SRC_ALPHA,
+        //         VK_BLEND_OP_ADD, VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO);
+
+        swapchain.CreateFramebuffers(renderProcess.renderPass);
+    }
+    if(bVerbose) std::cout<<"CreatePipeline: Done Frame Buffer"<<std::endl;
+    
+    /****************************
+    * Create Shaders
+    ****************************/
+    if(appInfo.Object.Pipeline.VertexShader != NULL){
+        for(int i = 0; i < appInfo.Object.Pipeline.VertexShader->size(); i++){
+            shaderManager.CreateShader((*appInfo.Object.Pipeline.VertexShader)[i], shaderManager.VERT);
+            shaderManager.CreateShader((*appInfo.Object.Pipeline.FragmentShader)[i], shaderManager.FRAG);
+        }
+    }
+    if(appInfo.Object.Pipeline.ComputeShader != NULL)
+        for(int i = 0; i < appInfo.Object.Pipeline.ComputeShader->size(); i++)
+            shaderManager.CreateShader((*appInfo.Object.Pipeline.ComputeShader)[i], shaderManager.COMP);
+    if(bVerbose) std::cout<<"CreatePipeline: Done Create Shaders"<<std::endl;
+
+    /****************************
+    * Create Pipelines
+    ****************************/
+    if(appInfo.Object.Pipeline.VertexShader != NULL){
+        std::vector<VkDescriptorSetLayout> dsLayouts; //2 sets for graphics
+
+        if((CDescriptorManager::uniformBufferUsageFlags & UNIFORM_BUFFER_VP_BIT) || 
+            (CDescriptorManager::uniformBufferUsageFlags & UNIFORM_BUFFER_MVP_BIT) || 
+            (CDescriptorManager::uniformBufferUsageFlags & UNIFORM_BUFFER_CUSTOM_GRAPHICS_BIT) ||
+            (CDescriptorManager::uniformBufferUsageFlags & UNIFORM_BUFFER_LIGHTING_GRAPHICS_BIT)){
+            if(bVerbose) std::cout<<"CreatePipeline: Add layout set0: graphics general layout"<<std::endl;
+            dsLayouts.push_back(CGraphicsDescriptorManager::descriptorSetLayout); //set = 0
+        }
+
+        if(CDescriptorManager::uniformBufferUsageFlags & UNIFORM_BUFFER_SAMPLER_BIT) {
+            if(bVerbose) std::cout<<"CreatePipeline: Add layout set1: sampler(texture) layout"<<std::endl;
+            dsLayouts.push_back(CGraphicsDescriptorManager::textureDescriptorSetLayout); //set = 1
+        }
+
+  
+        //Different cube can share the same texture descriptor.
+        //suppose we have 100 objects, 100 different textures. cube x 50, sphere x 50. How many texture layouts? How many texture descriptor?
+        //obviously, every objects need a different texture, so bind with objectId
+        //but for layout, can use one. That means texture layout should be object property, while the descriptor set(associate with image) should be cube[i]/sphere[i] bound
+
+        //each object can have muti texture image, multi descriptor set(when creating descritpor set, need a sampler)
+        //all objects share the same descriptor pool and descriptor layout, they are universal
+        //sampler should also be universal
+        
+        //std::cout<<"Begin create graphics pipeline"<<std::endl;
+        for(int i = 0; i < appInfo.Object.Pipeline.VertexShader->size(); i++){
+            //std::cout<<"test create pipeline"<<std::endl;
+            //! All graphics pipelines use the same dsLayouts
+            if(shaderManager.bEnablePushConstant){
+                if(bVerbose) std::cout<<"CreatePipeline: Try Create Push Constant Layout"<<std::endl;
+                renderProcess.createGraphicsPipelineLayout(dsLayouts,  shaderManager.pushConstantRange, true, i);
+                if(bVerbose) std::cout<<"CreatePipeline: Done Create Push Constant Layout"<<std::endl;
+            }
+            else renderProcess.createGraphicsPipelineLayout(dsLayouts, i);
+
+            if(bVerbose) std::cout<<"CreatePipeline: Try Create graphics pipeline: "<<i<<", VertexStructureType="<<appInfo.Buffer.GraphicsVertex.StructureType<<std::endl;
+            switch(appInfo.Buffer.GraphicsVertex.StructureType){
+                case VertexStructureTypes::NoType:
+                    renderProcess.createGraphicsPipeline(
+                        VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
+                        shaderManager.vertShaderModules[i], 
+                        shaderManager.fragShaderModules[i], i);  
+                break;
+                case VertexStructureTypes::ThreeDimension:
+                    renderProcess.createGraphicsPipeline<Vertex3D>(
+                        VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
+                        shaderManager.vertShaderModules[i], 
+                        shaderManager.fragShaderModules[i], true, i);  
+                break;
+                case VertexStructureTypes::TwoDimension:
+                    renderProcess.createGraphicsPipeline<Vertex2D>(
+                        VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
+                        shaderManager.vertShaderModules[i], 
+                        shaderManager.fragShaderModules[i], true, i);
+                break;
+                case VertexStructureTypes::ParticleType:
+                    renderProcess.createGraphicsPipeline<Particle>(
+                        VK_PRIMITIVE_TOPOLOGY_POINT_LIST, 
+                        shaderManager.vertShaderModules[i], 
+                        shaderManager.fragShaderModules[i], true, i);  
+                break;
+                default:
+                break;
+            }
+        }
+        //std::cout<<"Done create graphics pipeline"<<std::endl;
+    }
+    if(appInfo.Object.Pipeline.ComputeShader != NULL){ //for now assume only one compute pipeline
+        //! only support one compute pipeline
+        renderProcess.createComputePipelineLayout(CComputeDescriptorManager::descriptorSetLayout);
+        renderProcess.createComputePipeline(shaderManager.compShaderModules[0]);
+    }
+    if(bVerbose) std::cout<<"CreatePipeline: Done Create Pipelines"<<std::endl;
 }

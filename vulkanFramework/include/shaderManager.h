@@ -24,11 +24,11 @@ public:
     //void CreateComputeShader(const std::string shaderName);
     void CreateShader(const std::string shaderName, short shaderType);
 
-    //bool bEnablePushConstant;
+    bool bEnablePushConstant = false;
     VkPushConstantRange pushConstantRange;
     template<typename T>
     void CreatePushConstantRange(VkShaderStageFlagBits shaderStageFlagBits, uint32_t offset){
-        //bEnablePushConstant = true;
+        bEnablePushConstant = true;
         pushConstantRange.stageFlags = shaderStageFlagBits;
         pushConstantRange.offset = offset;
         pushConstantRange.size = sizeof(T);

@@ -43,9 +43,9 @@ void CEntity::SetScale(float scale_x, float scale_y, float scale_z){
 }
 void CEntity::SetScaleRectangleXY(float x0, float y0, float x1, float y1){
     //Screen Coordinate is (-1,-1) to (1,1)
-    std::cout<<"Position: "<<Position.x<<", "<<Position.y<<", "<<Position.z<<std::endl;
-    std::cout<<"Length_original: "<<Length_original.x<<", "<<Length_original.y<<", "<<Length_original.z<<std::endl;
-    std::cout<<"Scale: "<<Scale.x<<", "<<Scale.y<<", "<<Scale.z<<std::endl;
+    std::cout<<"SetScaleRectangleXY::Position: "<<Position.x<<", "<<Position.y<<", "<<Position.z<<std::endl;
+    std::cout<<"SetScaleRectangleXY::Length_original: "<<Length_original.x<<", "<<Length_original.y<<", "<<Length_original.z<<std::endl;
+    std::cout<<"SetScaleRectangleXY::Scale: "<<Scale.x<<", "<<Scale.y<<", "<<Scale.z<<std::endl;
 
     //Step 1: Update Scale
     glm::vec3 destinationLength = glm::vec3(x1-x0, y1-y0, 0);
@@ -54,9 +54,9 @@ void CEntity::SetScaleRectangleXY(float x0, float y0, float x1, float y1){
     //Step 2: Update Position
     Position = glm::vec3(x0+destinationLength.x/2, y0+destinationLength.y/2, 0);
 
-    std::cout<<"Position: "<<Position.x<<", "<<Position.y<<", "<<Position.z<<std::endl;
-    std::cout<<"Length_original: "<<Length_original.x<<", "<<Length_original.y<<", "<<Length_original.z<<std::endl;
-    std::cout<<"Scale: "<<Scale.x<<", "<<Scale.y<<", "<<Scale.z<<std::endl;
+    std::cout<<"SetScaleRectangleXY::Position: "<<Position.x<<", "<<Position.y<<", "<<Position.z<<std::endl;
+    std::cout<<"SetScaleRectangleXY::Length_original: "<<Length_original.x<<", "<<Length_original.y<<", "<<Length_original.z<<std::endl;
+    std::cout<<"SetScaleRectangleXY::Scale: "<<Scale.x<<", "<<Scale.y<<", "<<Scale.z<<std::endl;
 
     UpdateLength();
 }
