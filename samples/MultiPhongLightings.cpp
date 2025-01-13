@@ -7,12 +7,12 @@ public:
 	} 
 
 	void update(){
-		for(int i = 0; i < GetLightSize(); i++) {
-			SetLightPosition(i,
-				glm::vec3(0,GetLightPosition(i).y,0) +
-				glm::vec3( 2.5 *cos(durationTime * (i+1)), 0, 2.5 *sin(durationTime * (i+1)))
+		for(int i = 0; i < lightList.size(); i++) {
+			lightList[i].SetLightPosition(
+				glm::vec3(0, lightList[i].GetLightPosition().y,0) +
+				glm::vec3(2.5 *cos(durationTime * (i+1)), 0, 2.5 *sin(durationTime * (i+1)))
 			);
-			objectList[2+i].SetPosition(GetLightPosition(i)); 
+			objectList[2+i].SetPosition(lightList[i].GetLightPosition()); 
 		}
 
 		CApplication::update();

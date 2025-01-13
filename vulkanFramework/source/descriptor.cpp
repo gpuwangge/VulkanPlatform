@@ -663,58 +663,6 @@ void CGraphicsDescriptorManager::createDescriptorSets(){
     //std::cout<<"Done set descriptor. "<<std::endl;
 }
 
-
-void CGraphicsDescriptorManager::updateMVPUniformBuffer(uint32_t currentFrame, float durationTime, Camera &mainCamera, std::vector<CObject> &objectList) {
-    if(uniformBufferUsageFlags & UNIFORM_BUFFER_MVP_BIT){
-        // UniformBufferObject ubo{};
-        // ubo.view = glm::lookAt(glm::vec3(2.0f, 2.0f, 2.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-        // glm::mat4x4 m = glm::perspective(glm::radians(45.0f), WINDOW_WIDTH / (float)WINDOW_HEIGHT, 0.1f, 10.0f);
-        // m[1][1] *= -1;
-        // ubo.proj = m;
-        // ubo.model = glm::rotate(glm::mat4(1.0f), durationTime * glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-
-        //UniformBufferObject ubo{};
-        //mvpUBO.view = mainCamera.matrices.view;
-        //mvpUBO.proj = mainCamera.matrices.perspective;
-
-        for(int i = 0; i < objectCount; i++){
-            if(!objectList[i].bSticker){
-                if(objectList[i].bSkybox) {
-                    //std::cout<<"remove translate from object = "<<i<<std::endl;
-                    mvpUBO.mvpData[i].view = glm::mat4(glm::mat3(mainCamera.matrices.view)); ///remove translate
-                }else mvpUBO.mvpData[i].view = mainCamera.matrices.view;
-                mvpUBO.mvpData[i].proj = mainCamera.matrices.perspective;
-            }else{
-                mvpUBO.mvpData[i].view = glm::mat4(1.0f);//mainCamera.matrices.view;
-                mvpUBO.mvpData[i].proj = glm::mat4(1.0f);//mainCamera.matrices.perspective;
-            }
-        }
-
-        //mvpUBO.mvpData.view = mainCamera.matrices.view;
-        //mvpUBO.mvpData.proj = mainCamera.matrices.perspective;
-
-        //std::cout<<"sizeof(mvpUBO) = "<<sizeof(mvpUBO)<<std::endl;
-        //int size_mvpUBO = 256*2;
-
-        memcpy(mvpUniformBuffersMapped[currentFrame], &mvpUBO, sizeof(mvpUBO));
-    }
-}
-
-void CGraphicsDescriptorManager::updateVPUniformBuffer(uint32_t currentFrame, float durationTime, Camera &mainCamera) {
-    if(uniformBufferUsageFlags & UNIFORM_BUFFER_VP_BIT){
-        vpUBO.view = mainCamera.matrices.view;
-        vpUBO.proj = mainCamera.matrices.perspective;
-        memcpy(vpUniformBuffersMapped[currentFrame], &vpUBO, sizeof(vpUBO));
-    }
-}
-
-void CGraphicsDescriptorManager::updateLightingUniformBuffer(uint32_t currentFrame, float durationTime, Camera &mainCamera){
-    if(uniformBufferUsageFlags & UNIFORM_BUFFER_LIGHTING_GRAPHICS_BIT){
-        m_lightingUBO.cameraPos = glm::vec4(mainCamera.Position, 0);
-        memcpy(m_lightingUniformBuffersMapped[currentFrame], &m_lightingUBO, sizeof(m_lightingUBO));
-    }
-}
-
 bool CGraphicsDescriptorManager::CheckMVP(){
     return ((uniformBufferUsageFlags & UNIFORM_BUFFER_MVP_BIT) || (uniformBufferUsageFlags & UNIFORM_BUFFER_VP_BIT));
 }

@@ -13,12 +13,12 @@
 class CApplication;
 
 class CObject : public CEntity {
-    int m_object_id;
+    int m_object_id = 0;
     std::vector<int> m_texture_ids;
-    int m_model_id;
-    int m_graphics_pipeline_id;
+    int m_model_id = 0;
+    int m_graphics_pipeline_id = 0;
 
-    bool bUseMVP_VP;
+    bool bUseMVP_VP = false;
 
     //bool bUseTextureSampler;
     std::vector<VkDescriptorSet> descriptorSets; //This descritpor is for texture sampler. one descriptor set for each host resource (MAX_FRAMES_IN_FLIGHT)
@@ -49,17 +49,17 @@ class CObject : public CEntity {
 public:
     CObject();
 
-    bool bRegistered;
-    bool bSticker;
-    bool bSkybox;
+    bool bSticker = false;
+    bool bSkybox = false;
 
     int GetObjectID(){return m_object_id;}
     std::vector<int> GetTextureID(){return m_texture_ids;}
     int GetModelID(){return m_model_id;}
 
-    bool bUpdate;
-    void Update(float deltaTime);
+    bool bUpdate = true;
+    void Update(float deltaTime, int currentFrame, Camera &mainCamera);
 
+    bool bRegistered = false;
     void Register(CApplication *p_app, int object_id, std::vector<int> texture_ids, int model_id, int graphics_pipeline_id); 
 
     //draw with renderer's buffer, or no buffer

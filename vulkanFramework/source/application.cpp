@@ -5,8 +5,8 @@
 Camera CApplication::mainCamera;
 bool CApplication::NeedToExit = false; 
 bool CApplication::NeedToPause = false;
-int CApplication::LightCount = 0;
 std::vector<CObject> CApplication::objectList; 
+std::vector<CLight> CApplication::lightList; 
 
 CApplication::CApplication(){
     //debugger = new CDebugger("../logs/application.log");
@@ -132,16 +132,25 @@ void CApplication::initialize(){
     }
 
     /****************************
-    * 1 Initialize ObjectList
+    * 1 Initialize ObjectList and LightList
     ****************************/
     if (config["Objects"]) {
-        int objectSize = 0;
+        int max_object_id = 0;
         for (const auto& obj : config["Objects"]) {
             int object_id = obj["object_id"] ? obj["object_id"].as<int>() : 0;
-            objectSize = (object_id > objectSize) ? object_id : objectSize;
+            max_object_id = (object_id > max_object_id) ? object_id : max_object_id;
         }
-        objectList.resize(((objectSize+1) < config["Objects"].size())?(objectSize+1):config["Objects"].size()); 
-        //std::cout<<"Object Number: "<<objectList.size()<<std::endl;
+        objectList.resize(((max_object_id+1) < config["Objects"].size())?(max_object_id+1):config["Objects"].size()); 
+        std::cout<<"Object Size: "<<objectList.size()<<std::endl;
+    }
+    if (config["Lights"]) {
+        int max_light_d = 0;
+        for (const auto& light : config["Lights"]) {
+            int light_id = light["light_id"] ? light["light_id"].as<int>() : 0;
+            max_light_d = (light_id > max_light_d) ? light_id : max_light_d;
+        }
+        lightList.resize(((max_light_d+1) < config["Lights"].size())?(max_light_d+1):config["Lights"].size()); 
+        std::cout<<"Light Size: "<<lightList.size()<<std::endl;
     }
 
     /****************************
@@ -459,7 +468,7 @@ void CApplication::initialize(){
             objectList[object_id].bSkybox = isSkybox;
             //if(graphics_pipeline_id == appInfo.Feature.GraphicsPipelineSkyboxID)  objectList[i].bSkybox = true;
 
-            std::cout<<"id:("<<object_id<<") "<<objectList[object_id].Name<<" Length:("<<objectList[object_id].Length.x<<","<<objectList[object_id].Length.y<<","<<objectList[object_id].Length.z<<")"
+            std::cout<<"ObjectId:("<<object_id<<") Name:("<<objectList[object_id].Name<<") Length:("<<objectList[object_id].Length.x<<","<<objectList[object_id].Length.y<<","<<objectList[object_id].Length.z<<")"
                 <<" Position:("<<objectList[object_id].Position.x<<","<<objectList[object_id].Position.y<<","<<objectList[object_id].Position.z<<")"<<std::endl;
         }
         for(int i = 0; i < objectList.size(); i++)
@@ -469,21 +478,53 @@ void CApplication::initialize(){
     /****************************
     * 3 Read Lightings
     ****************************/
-    if(config["Lighting"]["Position"].size() > 0) {
-        std::unique_ptr<std::vector<std::vector<float>>> lightPosition = std::make_unique<std::vector<std::vector<float>>>(config["Lighting"]["Position"].as<std::vector<std::vector<float>>>());
-        for(int i = 0; i < lightPosition->size(); i++)
-            graphicsDescriptorManager.m_lightingUBO.lights[i].lightPos = glm::vec4(glm::vec3((*lightPosition)[i][0], (*lightPosition)[i][1], (*lightPosition)[i][2]), 0);
-        LightCount = lightPosition->size();
-    }
-    if(config["Lighting"]["Intensity"].size() > 0) {
-        std::unique_ptr<std::vector<std::vector<float>>> lightIntensity = std::make_unique<std::vector<std::vector<float>>>(config["Lighting"]["Intensity"].as<std::vector<std::vector<float>>>());
-        for(int i = 0; i < lightIntensity->size(); i++){
-            graphicsDescriptorManager.m_lightingUBO.lights[i].ambientIntensity = (*lightIntensity)[i][0];
-            graphicsDescriptorManager.m_lightingUBO.lights[i].diffuseIntensity = (*lightIntensity)[i][1];
-            graphicsDescriptorManager.m_lightingUBO.lights[i].specularIntensity = (*lightIntensity)[i][2];
-            graphicsDescriptorManager.m_lightingUBO.lights[i].dimmerSwitch = (*lightIntensity)[i][3];
+    if (config["Lights"]) {
+        for (const auto& light : config["Lights"]) {
+            int id = light["light_id"] ? light["light_id"].as<int>() : 0;
+            if(lightList[id].bRegistered) {
+                std::cout<<"WARNING: Trying to register a registered Light id("<<id<<")!"<<std::endl;
+                continue;
+            }
+            
+            std::string name = light["light_name"] ? light["light_name"].as<std::string>() : "Default";
+
+            auto position = light["light_position"] ? light["light_position"].as<std::vector<float>>(): std::vector<float>(3,0);
+            glm::vec3 glm_position(position[0], position[1], position[2]);
+            //graphicsDescriptorManager.m_lightingUBO.lights[id].lightPos = glm::vec4(glm_position, 0);
+
+            auto intensity = light["light_intensity"] ? light["light_intensity"].as<std::vector<float>>(): std::vector<float>(4,0);
+            // graphicsDescriptorManager.m_lightingUBO.lights[id].ambientIntensity = intensity[0];
+            // graphicsDescriptorManager.m_lightingUBO.lights[id].diffuseIntensity = intensity[1];
+            // graphicsDescriptorManager.m_lightingUBO.lights[id].specularIntensity = intensity[2];
+            // graphicsDescriptorManager.m_lightingUBO.lights[id].dimmerSwitch = intensity[3];
+            
+            lightList[id].Register(name, id, glm_position, intensity);
+            std::cout<<"LightId:("<<id<<") Name:("<<lightList[id].GetLightName()<<") Intensity:("<<lightList[id].GetIntensity(0)<<","<<lightList[id].GetIntensity(1)<<","<<lightList[id].GetIntensity(2)<<","<<lightList[id].GetIntensity(3)<<")"
+                <<" Position:("<<lightList[id].GetLightPosition().x<<","<<lightList[id].GetLightPosition().y<<","<<lightList[id].GetLightPosition().z<<")"<<std::endl;
+ 
         }
+        for(int i = 0; i < lightList.size(); i++)
+            if(!lightList[i].bRegistered) std::cout<<"WARNING: Light id("<<i<<") is not registered!"<<std::endl;
     }
+    
+
+
+
+    // if(config["Lighting"]["Position"].size() > 0) {
+    //     std::unique_ptr<std::vector<std::vector<float>>> lightPosition = std::make_unique<std::vector<std::vector<float>>>(config["Lighting"]["Position"].as<std::vector<std::vector<float>>>());
+    //     for(int i = 0; i < lightPosition->size(); i++) //SetLightPosition(i, (*lightPosition)[i]);
+    //         graphicsDescriptorManager.m_lightingUBO.lights[i].lightPos = glm::vec4(glm::vec3((*lightPosition)[i][0], (*lightPosition)[i][1], (*lightPosition)[i][2]), 0);
+    //     LightCount = lightPosition->size();
+    // }
+    // if(config["Lighting"]["Intensity"].size() > 0) {
+    //     std::unique_ptr<std::vector<std::vector<float>>> lightIntensity = std::make_unique<std::vector<std::vector<float>>>(config["Lighting"]["Intensity"].as<std::vector<std::vector<float>>>());
+    //     for(int i = 0; i < lightIntensity->size(); i++){
+    //         graphicsDescriptorManager.m_lightingUBO.lights[i].ambientIntensity = (*lightIntensity)[i][0];
+    //         graphicsDescriptorManager.m_lightingUBO.lights[i].diffuseIntensity = (*lightIntensity)[i][1];
+    //         graphicsDescriptorManager.m_lightingUBO.lights[i].specularIntensity = (*lightIntensity)[i][2];
+    //         graphicsDescriptorManager.m_lightingUBO.lights[i].dimmerSwitch = (*lightIntensity)[i][3];
+    //     }
+    // }
 
 
     /****************************
@@ -533,8 +574,6 @@ void CApplication::initialize(){
 }
 
 void CApplication::update(){
-    //printf("app update...\n");
-
     static auto startTime = std::chrono::high_resolution_clock::now();
     static auto lastTime = std::chrono::high_resolution_clock::now();
 
@@ -544,19 +583,9 @@ void CApplication::update(){
     lastTime = currentTime;
 
     mainCamera.update(deltaTime);
-
-    //update model matrix
-    for(int i = 0; i < objectList.size(); i++) objectList[i].Update(deltaTime); 
-
-    //update view and perspective matrices, then memcpy to GPU memory
-    graphicsDescriptorManager.updateMVPUniformBuffer(renderer.currentFrame, durationTime, mainCamera, objectList);
-    graphicsDescriptorManager.updateVPUniformBuffer(renderer.currentFrame, durationTime, mainCamera);
-
-    //update camera pos, then memcpy to GPU memory
-    graphicsDescriptorManager.updateLightingUniformBuffer(renderer.currentFrame, durationTime, mainCamera);
-
-   //CGraphicsDescriptorManager::m_lightingUBO.cameraPos = glm::vec4(mainCamera.Position, 0);
-
+    for(int i = 0; i < objectList.size(); i++) objectList[i].Update(deltaTime, renderer.currentFrame, mainCamera); 
+    for(int i = 0; i < lightList.size(); i++) lightList[i].Update(deltaTime, renderer.currentFrame, mainCamera); 
+    
 }
 
 void CApplication::recordGraphicsCommandBuffer(){}
@@ -735,13 +764,4 @@ CApplication::~CApplication(){
  *******/
 void CApplication::Dispatch(int numWorkGroupsX, int numWorkGroupsY, int numWorkGroupsZ){
     CSupervisor::Dispatch(numWorkGroupsX, numWorkGroupsY, numWorkGroupsZ);
-}
-void CApplication::SetLightPosition(int lightId, glm::vec3 lightPos){
-    CGraphicsDescriptorManager::m_lightingUBO.lights[lightId].lightPos = glm::vec4(lightPos,0);
-}
-glm::vec3 CApplication::GetLightPosition(int lightId){
-    return CGraphicsDescriptorManager::m_lightingUBO.lights[lightId].lightPos;
-}
-int CApplication::GetLightSize(){
-    return LightCount;
 }

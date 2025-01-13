@@ -68,20 +68,18 @@ public:
 	static std::vector<void*> m_lightingUniformBuffersMapped;
     static VkDeviceSize m_lightingUniformBufferSize;
     static void addLightingUniformBuffer();
-    static void updateLightingUniformBuffer(uint32_t currentFrame, float durationTime, Camera &mainCamera);
 
     //bool bUseMVP;
     static std::vector<CWxjBuffer> mvpUniformBuffers; //need one mvp buffer for each host resource: MAX_FRAMES_IN_FLIGHT
 	static std::vector<void*> mvpUniformBuffersMapped;
     static void addMVPUniformBuffer();
     static MVPUniformBufferObject mvpUBO;
-    void updateMVPUniformBuffer(uint32_t currentFrame, float durationTime, Camera &mainCamera, std::vector<CObject> &objectList);
+
     //bool bUseVP;
     static std::vector<CWxjBuffer> vpUniformBuffers; 
 	static std::vector<void*> vpUniformBuffersMapped;
     static void addVPUniformBuffer();
     static VPUniformBufferObject vpUBO;
-    void updateVPUniformBuffer(uint32_t currentFrame, float durationTime, Camera &mainCamera);
     static bool CheckMVP(); //to check if all objects associate this graphcis descriptor use MVP/VP or not. If return true, means it will use dynamic descriptor offset
 
     //bool bUseSampler;

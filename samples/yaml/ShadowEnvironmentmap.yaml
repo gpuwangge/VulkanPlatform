@@ -127,9 +127,10 @@ Resources:
 Uniforms:
   - Graphics:
     - uniform_graphics_name: Graphics
-      uniform_graphics_custom: true
+      uniform_graphics_custom: false
       uniform_graphics_mvp: true
       uniform_graphics_vp: false
+      uniform_graphics_lighting: true
   - Compute:
     - uniform_compute_name: Compute
       uniform_compute_custom: false
@@ -159,9 +160,13 @@ MainCamera:
   camera_fov: 60
   camera_z: [0.1, 256]
 
+Lights:
+  - light_name: Light
+    light_id: 0
+    light_position: [0,0,-2]
+    light_intensity: [0.5,2,4,1]
+  - light_name: Light
+    light_id: 1
+    light_position: [0,10,-2]
+    light_intensity: [0.5,2,4,1]
 
-Lighting:
-  Position: []
-  Intensity: []
-
-  

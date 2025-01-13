@@ -5,24 +5,10 @@
 * Object
 *******************/
 CObject::CObject(){
-    bRegistered = false;
-    bUseMVP_VP = false;
-    bSticker = false;
-    //bUseTextureSampler = false;
-    bSkybox = false;
-    bUpdate = true;
-
-    m_object_id = 0;
-    //std::vector<int> m_texture_ids;
-    m_model_id = 0;
-    m_graphics_pipeline_id = 0;
-
     Length_original = glm::vec3();
     LengthMin_original = glm::vec3();
     LengthMax_original = glm::vec3();
     Length = glm::vec3();
-
-    //ObjectState = ObjectStates::IDLE;
 
     Position = glm::vec3();
     Rotation = glm::vec3();
@@ -42,35 +28,41 @@ CObject::CObject(){
 
     TempMoveVelocity = glm::vec4();
     TempMoveAngularVelocity = glm::vec4();
-    // MaxSpeed = 1.0f;
-    // Speed = 0.0f;
-    // MaxRotateSpeed = 50.0f;
-    // RotateSpeed = 0.0f;
-    // TargetPosition = glm::vec3();
-    // TargetDirection = glm::vec3();
-
-    //Scale = 1.0f;
 }
 
- void CObject::Update(float deltaTime){
+ void CObject::Update(float deltaTime, int currentFrame, Camera &mainCamera){
     if(!bRegistered)  return;
     if(!bUpdate) return;
-    //std::cout<<"Update Object"<<m_object_id<<std::endl;
-    //std::cout<<"deltaTime: "<<deltaTime<<std::endl;
 
     CEntity::Update(deltaTime); //update translateMatrix, RotationMatrix and ScaleMatrix
-
-    //static unsigned count = 0;
-    //if(count % 3000 == 0){
-    //    std::cout<<"Object Position="<<Position.x<<","<<Position.y<<","<<Position.z<<std::endl;
-        //std::cout<<"Object Rotation="<<Rotation.x<<","<<Rotation.y<<","<<Rotation.z<<std::endl;
-    //}
-    //count++;
 
     /**********
     * Calculate model matrix based on Translation, Rotation and Scale
     **********/
-    CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].model = TranslateMatrix * RotationMatrix * ScaleMatrix;
+    if(CGraphicsDescriptorManager::uniformBufferUsageFlags & UNIFORM_BUFFER_MVP_BIT){
+        //update model matrix to ubo
+        CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].model = TranslateMatrix * RotationMatrix * ScaleMatrix;
+
+        //update view and perspective matrices to ubo
+        if(!bSticker){
+            if(bSkybox) {
+                CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].view = glm::mat4(glm::mat3(mainCamera.matrices.view)); ///remove translate
+            }else CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].view = mainCamera.matrices.view;
+            CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].proj = mainCamera.matrices.perspective;
+        }else{
+            CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].view = glm::mat4(1.0f);//mainCamera.matrices.view;
+            CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].proj = glm::mat4(1.0f);//mainCamera.matrices.perspective;
+        }
+        
+        //memcpy to GPU memory
+        memcpy(CGraphicsDescriptorManager::mvpUniformBuffersMapped[currentFrame], &CGraphicsDescriptorManager::mvpUBO, sizeof(CGraphicsDescriptorManager::mvpUBO));
+    }
+
+    if(CGraphicsDescriptorManager::uniformBufferUsageFlags & UNIFORM_BUFFER_VP_BIT){
+        CGraphicsDescriptorManager::vpUBO.view = mainCamera.matrices.view;
+        CGraphicsDescriptorManager::vpUBO.proj = mainCamera.matrices.perspective;
+        memcpy(CGraphicsDescriptorManager::vpUniformBuffersMapped[currentFrame], &CGraphicsDescriptorManager::vpUBO, sizeof(CGraphicsDescriptorManager::vpUBO));
+    }
  }
 
 // float CObject::ComputeDifference(glm::vec3 v1, glm::vec3 v2){
@@ -78,26 +70,9 @@ CObject::CObject(){
 // }
 
 
-//void CObject::SetRotation(glm::mat4 m){
-    //graphicsDescriptorManager.mvpUBO.mvpData[0].model = glm::rotate(glm::mat4(1.0f), durationTime * glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-	//objectList[0].SetRotation(glm::rotate(glm::mat4(1.0f), durationTime * glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
-
-    //CGraphicsDescriptorManager::mvpUBO.mvpData[0].model = glm::rotate(glm::mat4(1.0f), durationTime * glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f));
-	//objectList[0].SetRotation(glm::rotate(glm::mat4(1.0f), durationTime * glm::radians(45.0f), glm::vec3(0.0f, 0.0f, 1.0f)));
-    
-    //CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].model = m;
-//}
-
-
 void CObject::CleanUp(){
     //textureDescriptor.DestroyAndFree();
 }
-
-// void CObject::CreateTextureDescriptorSets(CTextureImage &textureImage, VkDescriptorPool &descriptorPool, VkDescriptorSetLayout &descriptorSetLayout, VkSampler &sampler, std::vector<VkImageView> *swapchainImageViews){
-//     std::vector<CTextureImage> textureImages{textureImage};
-//     std::vector<VkSampler> samplers{sampler};
-//     CreateTextureDescriptorSets(textureImages, descriptorPool, descriptorSetLayout, samplers, swapchainImageViews);
-// }
 
 void CObject::CreateTextureDescriptorSets(VkDescriptorPool &descriptorPool, VkDescriptorSetLayout &descriptorSetLayout, std::vector<VkSampler> &samplers, std::vector<VkImageView> *swapchainImageViews){
     //std::cout<<"TextureDescriptor::createDescriptorSets."<<std::endl;

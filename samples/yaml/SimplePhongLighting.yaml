@@ -10,12 +10,22 @@ Objects:
     resource_model_id: 0
     resource_texture_id_list: [0]
     resource_graphics_pipeline_id: 0
+  - object_name: LightSphere
+    object_id: 1
+    object_scale: 0.004
+    resource_model_id: 1
+    resource_texture_id_list: [1]
 
 Resources:
   - Models:
     - resource_model_name: viking_room.obj
+    - resource_model_name: sphere.obj
   - Textures:
     - resource_texture_name: viking_room.png
+      resource_texture_miplevels: 1
+      resource_texture_cubmap: false
+      uniform_Sampler_id: 0
+    - resource_texture_name: metal.jpg
       resource_texture_miplevels: 1
       resource_texture_cubmap: false
       uniform_Sampler_id: 0
@@ -27,9 +37,10 @@ Resources:
 Uniforms:
   - Graphics:
     - uniform_graphics_name: Graphics
-      uniform_graphics_custom: true
+      uniform_graphics_custom: false
       uniform_graphics_mvp: true
       uniform_graphics_vp: false
+      uniform_graphics_lighting: true
   - Compute:
     - uniform_compute_name: Compute
       uniform_compute_custom: false
@@ -57,7 +68,10 @@ MainCamera:
   camera_fov: 90
   camera_z: [0.1, 256]
 
-Lighting:
-  Position: []
-  Intensity: []
+Lights:
+  - light_name: Light
+    light_id: 0
+    light_position: [0,0,-1]
+    light_intensity: [0.5,2,4,1]
+
 

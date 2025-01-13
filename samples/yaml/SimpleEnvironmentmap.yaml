@@ -109,6 +109,7 @@ Uniforms:
       uniform_graphics_custom: true
       uniform_graphics_mvp: true
       uniform_graphics_vp: false
+      uniform_graphics_lighting: false
   - Compute:
     - uniform_compute_name: Compute
       uniform_compute_custom: false
@@ -136,9 +137,3 @@ MainCamera:
   camera_fov: 60
   camera_z: [0.01, 256]
 
-
-Lighting:
-  Position: []
-  Intensity: []
-
-  

@@ -1,7 +1,4 @@
 #version 450 core
-#define LIGHT_NUM 256
-
-
 
 layout(set = 0, binding = 1) uniform UniformBufferObject {
     mat4 model;
@@ -26,8 +23,6 @@ layout (location = 3) out vec3 outPosWorld;
 // layout (location = 3+4*LIGHT_NUM) out float outSpecularIntensity[LIGHT_NUM];
 
 void main() {
-	//vec4 pos_view = mvpUBO.proj * mvpUBO.view * mvpUBO.model * vec4(inPosition, 1.0);
-	//vec4 pos_world = mvpUBO.model * vec4(inPosition, 1.0);
 	gl_Position = mvpUBO.proj * mvpUBO.view * mvpUBO.model * vec4(inPosition, 1.0);;
 
 	outNormal = mat3(mvpUBO.model) * inNormal;
@@ -35,11 +30,4 @@ void main() {
 	outTexCoord = inTexCoord;
 	outPosWorld = vec3(mvpUBO.model * vec4(inPosition, 1.0));
 
-	// for(int i = 0; i < LIGHT_NUM; i++){
-	// 	outViewVec[i] = customUBO.cameraPos.xyz - pos_world.xyz;		
-	// 	outLightVec[i] = customUBO.lights[i].lightPos.xyz - pos_world.xyz;
-	// 	outAmbientIntensity[i] = customUBO.lights[i].ambientIntensity * customUBO.lights[i].dimmerSwitch;
-	// 	outDiffuseIntensity[i] = customUBO.lights[i].diffuseIntensity * customUBO.lights[i].dimmerSwitch;
-	// 	outSpecularIntensity[i] = customUBO.lights[i].specularIntensity * customUBO.lights[i].dimmerSwitch;
-	// }
 }

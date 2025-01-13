@@ -27,7 +27,5 @@ MainCamera:
   camera_fov: 90
   camera_z: [0.1, 256]
 
-Lighting:
-  Position: []
-  Intensity: []
+
 

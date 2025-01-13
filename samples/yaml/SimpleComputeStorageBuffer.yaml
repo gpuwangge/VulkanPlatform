@@ -28,7 +28,3 @@ MainCamera:
   camera_z: [0.1, 256]
 
 
-Lighting:
-  Position: []
-  Intensity: []
-

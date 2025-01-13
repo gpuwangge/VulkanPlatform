@@ -16,6 +16,7 @@
 
 #include "supervisor.h"
 #include "object.h"
+#include "light.h"
 
 //Macro to convert the macro value to a string
 #define STRINGIFY(x) #x
@@ -71,6 +72,7 @@ public:
     CTextureManager textureManager;
 
     static std::vector<CObject> objectList;
+    static std::vector<CLight> lightList;
 
     void CleanUp();
 
@@ -89,7 +91,6 @@ public:
     static Camera mainCamera; 
     static bool NeedToExit;
     static bool NeedToPause;
-    static int LightCount;
 
     /*Clean up Functions*/
     void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator);
@@ -117,9 +118,6 @@ public:
     * Helper Functions
     ******************/
     void Dispatch(int numWorkGroupsX, int numWorkGroupsY, int numWorkGroupsZ);  
-    void SetLightPosition(int lightId, glm::vec3 lightPos);
-    glm::vec3 GetLightPosition(int lightId);
-    int GetLightSize();
 
     /*************
      * APP INFO
