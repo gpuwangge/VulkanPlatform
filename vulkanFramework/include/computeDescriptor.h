@@ -3,7 +3,6 @@
 
 #include "context.h"
 #include "dataBuffer.hpp"
-#include "camera.hpp"
 #include "../include/texture.h"
 
 class CComputeDescriptorManager{

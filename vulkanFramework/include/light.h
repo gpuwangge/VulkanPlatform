@@ -5,6 +5,7 @@
 #include <glm/gtc/quaternion.hpp>
 #include <string>
 #include <vector>
+#include <camera.hpp>
 
 class CLight {
     std::string m_name;
