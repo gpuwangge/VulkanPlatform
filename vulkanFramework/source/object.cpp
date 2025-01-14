@@ -39,7 +39,7 @@ CObject::CObject(){
     /**********
     * Calculate model matrix based on Translation, Rotation and Scale
     **********/
-    if(CGraphicsDescriptorManager::uniformBufferUsageFlags & UNIFORM_BUFFER_MVP_BIT){
+    if(CGraphicsDescriptorManager::graphicsUniformTypes & GRAPHCIS_UNIFORMBUFFER_MVP){
         //update model matrix to ubo
         CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].model = TranslateMatrix * RotationMatrix * ScaleMatrix;
 
@@ -58,7 +58,7 @@ CObject::CObject(){
         memcpy(CGraphicsDescriptorManager::mvpUniformBuffersMapped[currentFrame], &CGraphicsDescriptorManager::mvpUBO, sizeof(CGraphicsDescriptorManager::mvpUBO));
     }
 
-    if(CGraphicsDescriptorManager::uniformBufferUsageFlags & UNIFORM_BUFFER_VP_BIT){
+    if(CGraphicsDescriptorManager::graphicsUniformTypes & GRAPHCIS_UNIFORMBUFFER_VP){
         CGraphicsDescriptorManager::vpUBO.view = mainCamera.matrices.view;
         CGraphicsDescriptorManager::vpUBO.proj = mainCamera.matrices.perspective;
         memcpy(CGraphicsDescriptorManager::vpUniformBuffersMapped[currentFrame], &CGraphicsDescriptorManager::vpUBO, sizeof(CGraphicsDescriptorManager::vpUBO));
@@ -162,7 +162,7 @@ void CObject::Register(CApplication *p_app, int object_id, std::vector<int> text
     p_renderer = &(p_app->renderer);
     p_renderProcess = &(p_app->renderProcess);
     p_graphicsPipelineLayout = &(p_app->renderProcess.graphicsPipelineLayouts[m_graphics_pipeline_id]);
-    p_graphicsDescriptorSets = &(p_app->graphicsDescriptorManager.descriptorSets);
+    p_graphicsDescriptorSets = &(p_app->graphicsDescriptorManager.descriptorSets_general);//?
     p_textureManager = &(p_app->textureManager);
 
 
@@ -173,8 +173,8 @@ void CObject::Register(CApplication *p_app, int object_id, std::vector<int> text
     //bUseTextureSampler = true; 
     if(m_texture_ids.size() > 0){
         CreateTextureDescriptorSets(
-            CGraphicsDescriptorManager::descriptorPool,
-            CGraphicsDescriptorManager::textureDescriptorSetLayout,
+            CGraphicsDescriptorManager::graphicsDescriptorPool,
+            CGraphicsDescriptorManager::descriptorSetLayout_texture,
             CGraphicsDescriptorManager::textureSamplers
         );
     }
@@ -192,7 +192,7 @@ void CObject::Draw(uint32_t n){
 
     std::vector<std::vector<VkDescriptorSet>> dsSets; 
     //set = 0 is for general uniform; set = 1 is for texture sampler uniform
-    if(CGraphicsDescriptorManager::getSetSize() > 0) dsSets.push_back(*p_graphicsDescriptorSets); 
+    if(CGraphicsDescriptorManager::getSetSize_General() > 0) dsSets.push_back(*p_graphicsDescriptorSets); 
     if(CGraphicsDescriptorManager::textureSamplers.size() > 0) dsSets.push_back(descriptorSets); 
     //std::cout<<"test3.dsSets.size()="<<dsSets.size()<<std::endl;
     

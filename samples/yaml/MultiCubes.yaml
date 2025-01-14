@@ -9,20 +9,20 @@ Objects:
     object_skybox: false
     resource_model_id: 0
     resource_texture_id_list: [0]
-    resource_graphics_pipeline_id: 1
+    resource_graphics_pipeline_id: 0
   - object_name: Cube
     object_id: 1
     object_scale: 2
     object_position: [5,0,0]
     resource_model_id: 0
-    resource_texture_id_list: [1]
-    resource_graphics_pipeline_id: 0
+    resource_texture_id_list: [0]
+    resource_graphics_pipeline_id: 1
   - object_name: Cube
     object_id: 2
     object_scale: 2
     object_position: [-5,0,0]
     resource_model_id: 0
-    resource_texture_id_list: [2]
+    resource_texture_id_list: [0]
     resource_graphics_pipeline_id: 1
   - object_name: Cube
     object_id: 3
@@ -30,14 +30,14 @@ Objects:
     object_position: [0,5,0]
     resource_model_id: 0
     resource_texture_id_list: [1]
-    resource_graphics_pipeline_id: 0
+    resource_graphics_pipeline_id: 1
   - object_name: Cube
     object_id: 4
     object_scale: 2
     object_position: [0,-5,0]
     resource_model_id: 0
     resource_texture_id_list: [2]
-    resource_graphics_pipeline_id: 0
+    resource_graphics_pipeline_id: 1
 
 Resources:
   - Models:

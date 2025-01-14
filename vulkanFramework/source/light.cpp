@@ -6,7 +6,7 @@ void CLight::Update(float deltaTime, int currentFrame, Camera &mainCamera){
     if(!bUpdate) return;
 
     //update camera pos to ubo, then memcpy to GPU memory
-    if(CGraphicsDescriptorManager::uniformBufferUsageFlags & UNIFORM_BUFFER_LIGHTING_GRAPHICS_BIT){
+    if(CGraphicsDescriptorManager::graphicsUniformTypes & GRAPHCIS_UNIFORMBUFFER_LIGHTING){
         //update light pos and intensity to ubo
         CGraphicsDescriptorManager::m_lightingUBO.lights[m_light_id].lightPos = glm::vec4(m_position, 0);
         CGraphicsDescriptorManager::m_lightingUBO.lights[m_light_id].ambientIntensity = m_intensity[0];

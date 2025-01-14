@@ -2,7 +2,7 @@
 #define H_OBJECT
 
 //#include <glm/gtc/quaternion.hpp>
-#include "descriptor.h"
+#include "graphicsDescriptor.h"
 #include "entity.h"
 #include "renderProcess.h"
 

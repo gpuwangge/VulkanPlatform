@@ -1,7 +1,7 @@
 #ifndef H_LIGHT
 #define H_LIGHT
 
-#include "descriptor.h"
+#include "graphicsDescriptor.h"
 #include <glm/gtc/quaternion.hpp>
 #include <string>
 #include <vector>
