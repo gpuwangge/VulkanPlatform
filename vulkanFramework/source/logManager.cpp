@@ -92,3 +92,11 @@ void CLogManager::print(std::string s, unsigned long int n){
     androidLogManager.printLog(s, n);
 #endif 
 }
+
+void CLogManager::print(std::string s, unsigned int n){
+#ifndef ANDROID
+    desktopLogManager.printLog(s, n);
+#else
+    androidLogManager.printLog(s, n);
+#endif 
+}

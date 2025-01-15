@@ -59,7 +59,7 @@ public:
 		
 		CApplication::update(); //update deltaTime and durationTime (and mainCamera and MVP, VP)
 		//std::cout<<"update(): Delta Time: "<<deltaTime<<", Duration Time: "<<durationTime<<std::endl;
-		PRINT("update(): Delta Time: %f, Duration Time: %f", deltaTime, durationTime);
+		//PRINT("update(): Delta Time: %f, Duration Time: %f", deltaTime, durationTime);
 	}
 
 	void recordComputeCommandBuffer(){
@@ -72,7 +72,7 @@ public:
 
 		CApplication::update(); //update deltaTime and durationTime (and mainCamera and MVP, VP)
 		//std::cout<<"update(): Delta Time: "<<deltaTime<<", Duration Time: "<<durationTime<<std::endl;
-		PRINT("update(): Delta Time: %f, Duration Time: %f", deltaTime, durationTime);
+		//PRINT("update(): Delta Time: %f, Duration Time: %f", deltaTime, durationTime);
 
 		//Device >> Host
 		//if(bVerbose) memcpy(storageBufferObject.MatC, descriptors[0].storageBuffersMapped[renderer.currentFrame], sizeof(storageBufferObject.MatC));//2

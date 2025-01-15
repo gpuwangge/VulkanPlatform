@@ -56,3 +56,7 @@ void CAndroidLogManager::printLog(std::string s, int *n, int size){
 void CAndroidLogManager::printLog(std::string s, unsigned long int n){
     LOGV(s.c_str(), n);
 }
+
+void CAndroidLogManager::printLog(std::string s, unsigned int n){
+    LOGV(s.c_str(), n);
+}

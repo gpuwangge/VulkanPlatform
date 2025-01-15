@@ -55,10 +55,6 @@ struct TextureAttributeInfo{
     bool enableCubemap;
 };
 
-// struct GraphicsPipelineAttributeInfo{
-//     bool enableSkybox;
-// };
-
 enum VertexStructureTypes{
     NoType,
     TwoDimension,

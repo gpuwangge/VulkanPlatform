@@ -29,7 +29,7 @@ public:
     void print(std::string s, float *n, int size);
     void print(std::string s, int *n, int size);
     void print(std::string s, unsigned long int n); //uint32_t
-
+    void print(std::string s, unsigned int n);
 
 private:
 #ifndef ANDROID

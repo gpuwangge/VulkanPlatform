@@ -65,6 +65,7 @@ public:
 	void printLog(std::string s, float *n, int size);
 	void printLog(std::string s, int *n, int size);
 	void printLog(std::string s, unsigned long int n);
+	void printLog(std::string s, unsigned int n);
 
 	void printVkError(VkResult result, std::string prefix);
 

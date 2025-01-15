@@ -75,6 +75,11 @@ void CDesktopLogManager::printLog(std::string s, unsigned long int n){
 	if(Verbose) fprintf(FpDebug, "\n");
 }
 
+void CDesktopLogManager::printLog(std::string s, unsigned int n){
+	if(Verbose) fprintf(FpDebug, s.c_str(), n);
+	if(Verbose) fprintf(FpDebug, "\n");
+}
+
 void CDesktopLogManager::printVkError(VkResult result, std::string prefix){
 	if (Verbose  &&  result == VK_SUCCESS)
 	{

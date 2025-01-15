@@ -32,7 +32,7 @@ public:
 		
 		CApplication::update(); //update deltaTime and durationTime (and mainCamera and MVP, VP)
 		//std::cout<<"update(): Delta Time: "<<deltaTime<<", Duration Time: "<<durationTime<<std::endl;
-		PRINT("update(): Delta Time: %f, Duration Time: %f", deltaTime, durationTime);
+		//PRINT("update(): Delta Time: %f, Duration Time: %f", deltaTime, durationTime);
 	}
 
 	void postUpdate(){
@@ -40,7 +40,7 @@ public:
 
 		CApplication::update(); //update deltaTime and durationTime (and mainCamera and MVP, VP)
 		//std::cout<<"update(): Delta Time: "<<deltaTime<<", Duration Time: "<<durationTime<<std::endl;
-		PRINT("update(): Delta Time: %f, Duration Time: %f", deltaTime, durationTime);
+		//PRINT("update(): Delta Time: %f, Duration Time: %f", deltaTime, durationTime);
 	}
 
 	void recordImageBarrier(VkCommandBuffer buffer, VkImage image, VkImageLayout oldLayout, VkImageLayout newLayout,
