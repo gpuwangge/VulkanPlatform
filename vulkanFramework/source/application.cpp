@@ -852,8 +852,7 @@ void CApplication::ReadLightings(){
 }
 
 void CApplication::ReadMainCamera(){
-    bool b_camera_free_mode = config["MainCamera"]["camera_free_mode"] ? config["MainCamera"]["camera_free_mode"].as<bool>() : false;
-    if(b_camera_free_mode) mainCamera.cameraType = Camera::CameraType::freemove;
+    mainCamera.cameraType = (Camera::CameraType)(config["MainCamera"]["camera_mode"] ? config["MainCamera"]["camera_mode"].as<int>() : 0);
     mainCamera.SetPosition(
         config["MainCamera"]["camera_position"][0].as<float>(), 
         config["MainCamera"]["camera_position"][1].as<float>(), 

@@ -20,7 +20,7 @@ Features:
   feature_graphics_pipeline_skybox_id: -1
 
 MainCamera:
-  camera_free_mode: false
+  camera_mode: 0
   camera_position: [0,0,-3]
   camera_rotation: [0,0,0]
   camera_target_position: [0,0,0]

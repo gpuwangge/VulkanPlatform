@@ -9,49 +9,12 @@ private:
 	float fov;
 	float znear, zfar;
 
-	/* legacy code
-	void updateViewMatrix()
-	{
-		glm::mat4 rotM = glm::mat4(1.0f);
-		glm::mat4 transM;
-
-		rotM = glm::rotate(rotM, glm::radians(rotation.x * (flipY ? -1.0f : 1.0f)), glm::vec3(1.0f, 0.0f, 0.0f));
-		rotM = glm::rotate(rotM, glm::radians(rotation.y), glm::vec3(0.0f, 1.0f, 0.0f));
-		rotM = glm::rotate(rotM, glm::radians(rotation.z), glm::vec3(0.0f, 0.0f, 1.0f));
-
-		glm::vec3 translation = position;
-		if (flipY) {
-			translation.y *= -1.0f;
-		}
-		transM = glm::translate(glm::mat4(1.0f), translation);
-
-		if (type == CameraType::firstperson)
-		{
-			matrices.view = rotM * transM;
-		}
-		else
-		{
-			matrices.view = transM * rotM;
-		}
-
-		viewPos = glm::vec4(position, 0.0f) * glm::vec4(-1.0f, 1.0f, -1.0f, 1.0f);
-
-		updated = true;
-	};*/
 public:
-	enum CameraType { lookat, freemove };
-	CameraType cameraType = CameraType::lookat;
+	enum CameraType { LOCK, FREE, SELECT }; //SELECT is not implemented yet
+	CameraType cameraType = CameraType::LOCK;
 
 	glm::vec3 TargetPosition = glm::vec3(0.0f, 0.0f, 0.0f);
 	void SetTargetPosition(float x, float y, float z){ TargetPosition = glm::vec3(x, y, z); }
-	//glm::vec3 rotation = glm::vec3();
-	//glm::vec3 position = glm::vec3();
-	//glm::vec4 viewPos = glm::vec4();
-	//float rotationSpeed = 1.0f;
-	//float movementSpeed = 1.0f;
-	//bool updated = false;
-
-	//bool flipY = false;
 
 	Camera(){
 		entityType = EntityType::camera;
@@ -79,14 +42,6 @@ public:
 		bool rollright = false;
 	} state;
 
-	// bool active(){
-	// 	return state.left || state.right || state.up || state.down || state.forward || state.backward 
-	// 		|| state.pitchup || state.pitchdown || state.yawleft || state.yawright || state.rollleft || state.rollright;
-	// }
-
-	//float getNearClip() {  return znear; }
-	//float getFarClip() { return zfar;}
-
 	//this function is provided to user
 	void setPerspective(float fov, float aspect, float znear, float zfar){ 
 		this->fov = fov;
@@ -102,49 +57,33 @@ public:
 		//if (flipY) matrices.perspective[1][1] *= -1.0f;
 	}
 
-	/* legacy code
-	void setPosition(glm::vec3 position)
-	{
-		this->position = position;
-		updateViewMatrix();
-	}
-
-	void setRotation(glm::vec3 rotation)
-	{
-		this->rotation = rotation;
-		updateViewMatrix();
-	}
-
-	void rotate(glm::vec3 delta)
-	{
-		this->rotation += delta;
-		updateViewMatrix();
-	}
-
-	void setTranslation(glm::vec3 translation)
-	{
-		this->position = translation;
-		updateViewMatrix();
-	};
-
-	void translate(glm::vec3 delta)
-	{
-		this->position += delta;
-		updateViewMatrix();
-	}
-
-	void setRotationSpeed(float rotationSpeed)
-	{
-		this->rotationSpeed = rotationSpeed;
-	}
-
-	void setMovementSpeed(float movementSpeed)
-	{
-		this->movementSpeed = movementSpeed;
-	}*/
-
 	void update(float deltaTime){
+		
+		if(cameraType == CameraType::LOCK){ //calculate angular velocity so focus is on target
+			glm::vec3 cameraPos2TargetPos = TargetPosition - Position;
+			AngularVelocity.x = 100 * glm::dot(glm::cross(DirectionFront, cameraPos2TargetPos), DirectionLeft);
+			AngularVelocity.y = 100 * glm::dot(glm::cross(cameraPos2TargetPos, DirectionFront), DirectionUp);
+		}
+
 		CEntity::Update(deltaTime); //update TranslateMatrix RotationMatrix ScaleMatrix
+
+		matrices.view = glm::lookAt(Position, Position + DirectionFront, DirectionUp);
+
+
+
+		//legacy code
+		//if(cameraType == CameraType::FREE){ //FREE mode will focus on a place that is in front of the camera
+			// glm::vec3 cameraPos = Position;
+			// glm::vec3 cameraFront = DirectionFront;
+			// glm::vec3 cameraUp = DirectionUp;
+			// matrices.view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
+		//}
+		// else if(cameraType == CameraType::LOCK){//LOCK: target position will be set to a object
+		// 	glm::vec3 cameraPos = Position;
+		// 	glm::vec3 cameraUp = DirectionUp;
+		// 	matrices.view = glm::lookAt(cameraPos, TargetPosition, cameraUp);
+		// }
+
 		//matrices.view = TranslateMatrix * RotationMatrix;
 		//matrices.view =  RotationMatrix * TranslateMatrix;
 
@@ -154,19 +93,6 @@ public:
 			//std::cout<<"Camera Rotation="<<Rotation.x<<","<<Rotation.y<<","<<Rotation.z<<std::endl;
 		//}
 		//count++;
-
-		
-		if(cameraType == CameraType::freemove){
-			glm::vec3 cameraPos = Position;//glm::vec3(0.0f, 0.0f, 3.0f);
-			glm::vec3 cameraFront = DirectionFront;//glm::vec3(0.0f, 0.0f, -1.0f);
-			glm::vec3 cameraUp = DirectionUp;// glm::vec3(0.0f, 1.0f, 0.0f);
-			matrices.view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-		}else if(cameraType == CameraType::lookat){
-			glm::vec3 cameraPos = Position;//glm::vec3(0.0f, 0.0f, 3.0f);
-			//glm::vec3 cameraFront = DirectionFront;//glm::vec3(0.0f, 0.0f, -1.0f);
-			glm::vec3 cameraUp = DirectionUp;// glm::vec3(0.0f, 1.0f, 0.0f);
-			matrices.view = glm::lookAt(cameraPos, TargetPosition, cameraUp);//TODO
-		}
 
 		//std::cout<<"DirectionFront="<<DirectionFront.x<<","<<DirectionFront.y<<","<<DirectionFront.z<<std::endl;
 		//std::cout<<"DirectionLeft="<<DirectionLeft.x<<","<<DirectionLeft.y<<","<<DirectionLeft.z<<std::endl;
@@ -179,63 +105,12 @@ public:
 		//std::cout<<"TempVelocity[LEFT].w="<<TempVelocity[LEFT].w<<std::endl;
 
 		
-
 		//glm::vec3 r;
 		//r.x = RotationMatrix[0][0] * Position[0] +  RotationMatrix[0][1] * Position[1] +  RotationMatrix[0][2] * Position[2]; 
 		//r.y = RotationMatrix[1][0] * Position[0] +  RotationMatrix[1][1] * Position[1] +  RotationMatrix[1][2] * Position[2]; 
 		//r.z = RotationMatrix[2][0] * Position[0] +  RotationMatrix[2][1] * Position[1] +  RotationMatrix[2][2] * Position[2]; 
 		//std::cout<<"r="<<r.x<<","<<r.y<<","<<r.z<<std::endl;
 
-
-		// if (active()){
-		// 	if(state.forward);
-		// 	if(state.backward);
-		// 	if(state.left);
-		// 	if(state.right);
-		// 	if(state.up);
-		// 	if(state.down);
-		// 	if(state.pitchup);
-		// 	if(state.pitchdown);
-		// 	if(state.yawleft);
-		// 	if(state.yawright);
-		// 	if(state.rollleft);
-		// 	if(state.rollright);
-		// }
-
-		/* legacy code
-		updated = false;
-		if (type == CameraType::firstperson)
-		{
-			if (moving())
-			{
-				glm::vec3 camFront;
-				camFront.x = -cos(glm::radians(rotation.x)) * sin(glm::radians(rotation.y));
-				camFront.y = sin(glm::radians(rotation.x));
-				camFront.z = cos(glm::radians(rotation.x)) * cos(glm::radians(rotation.y));
-				camFront = glm::normalize(camFront);
-
-				float moveSpeed = deltaTime * movementSpeed;
-				float rotSpeed = deltaTime * rotationSpeed;
-
-				if (keys.up)//TODO: debug
-					position += glm::normalize(glm::cross(camFront, glm::vec3(0.0f, 0.0f, 1.0f))) * moveSpeed;
-				if (keys.down)//TODO: debug
-					position -= glm::normalize(glm::cross(camFront, glm::vec3(0.0f, 0.0f, 1.0f))) * moveSpeed;
-				if (keys.left)
-					position -= glm::normalize(glm::cross(camFront, glm::vec3(0.0f, 1.0f, 0.0f))) * moveSpeed;
-				if (keys.right)
-					position += glm::normalize(glm::cross(camFront, glm::vec3(0.0f, 1.0f, 0.0f))) * moveSpeed;
-				if (keys.forward)
-					position += camFront * moveSpeed;
-				if (keys.backward)
-					position -= camFront * moveSpeed;
-				if (keys.turnLeft)
-					rotation -= glm::vec3(0.0f, 1.0f, 0.0f) * rotSpeed;
-				if (keys.turnRight)
-					rotation += glm::vec3(0.0f, 1.0f, 0.0f) * rotSpeed;
-			}
-		}
-		updateViewMatrix();*/
 	};
 
 	/* disable Game Pad for now

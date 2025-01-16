@@ -133,9 +133,9 @@ void CEntity::Update(float deltaTime){
         DirectionLeft = glm::normalize(glm::cross(DirectionUp, DirectionFront));
         
         // static unsigned count = 0;
-        // if(count %10000 == 0){
-        //     //std::cout<<"CameraPosition="<<Position.x<<","<<Position.y<<","<<Position.z<<std::endl;
-        //     std::cout<<"CameraRotation="<<Rotation.x<<","<<Rotation.y<<","<<Rotation.z<<std::endl;
+        // if(count %100 == 0){
+        //     std::cout<<"CameraPosition="<<Position.x<<","<<Position.y<<","<<Position.z
+        //                                 <<Rotation.x<<","<<Rotation.y<<","<<Rotation.z<<std::endl;
         // }
         // count++;
    }

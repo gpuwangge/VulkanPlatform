@@ -10,7 +10,6 @@
 #define VK_USE_PLATFORM_WIN32_KHR
 #endif
 
-
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_vulkan.h>
 
@@ -21,8 +20,8 @@
 class CSDLManager final{
 
 public:
-    CSDLManager();
-    ~CSDLManager();
+    CSDLManager(){};
+    ~CSDLManager(){};
 
     //GLFWwindow * window;
     SDL_Window* window;
@@ -33,10 +32,11 @@ public:
     bool bKeyDown = false;
     bool bMouseDown = false;
 
-    float mouse_sensitive = 0.2f;
-    float previous_mouse_x = 0;
-    float previous_mouse_y = 0;
-    bool bFirstPersonMouseRotate = false;
+    float mouse_sensitive = 40;//0.2f;
+    float keyboard_sensitive = 3;
+    //float previous_mouse_x = 0;
+    //float previous_mouse_y = 0;
+    //bool bFirstPersonMouseRotate = false;
 
     void createWindow(int &windowWidth, int &windowHeight, std::string windowTitle);
     void queryRequiredInstanceExtensions(std::vector<const char*> &requiredInstanceExtensions);
