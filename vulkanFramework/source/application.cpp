@@ -5,6 +5,7 @@
 Camera CApplication::mainCamera;
 bool CApplication::NeedToExit = false; 
 bool CApplication::NeedToPause = false;
+int CApplication::focusObjectId = 0;
 std::vector<CObject> CApplication::objectList; 
 std::vector<CLight> CApplication::lightList; 
 
@@ -251,6 +252,8 @@ void CApplication::update(){
     deltaTime = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - lastTime).count();
     lastTime = currentTime;
 
+    if(objectList.size() > 0 && focusObjectId < objectList.size())
+        mainCamera.SetTargetPosition(objectList[focusObjectId].Position);
     mainCamera.update(deltaTime);
     for(int i = 0; i < objectList.size(); i++) objectList[i].Update(deltaTime, renderer.currentFrame, mainCamera); 
     for(int i = 0; i < lightList.size(); i++) lightList[i].Update(deltaTime, renderer.currentFrame, mainCamera); 
@@ -861,15 +864,29 @@ void CApplication::ReadMainCamera(){
         config["MainCamera"]["camera_rotation"][0].as<float>(), 
         config["MainCamera"]["camera_rotation"][1].as<float>(), 
         config["MainCamera"]["camera_rotation"][2].as<float>());
-    mainCamera.SetTargetPosition(
-        config["MainCamera"]["camera_target_position"][0].as<float>(), 
-        config["MainCamera"]["camera_target_position"][1].as<float>(), 
-        config["MainCamera"]["camera_target_position"][2].as<float>());
+        
+    focusObjectId = config["MainCamera"]["object_id_target"] ? config["MainCamera"]["object_id_target"].as<int>() : 0;
+    // mainCamera.SetTargetPosition(
+    //     config["MainCamera"]["camera_target_position"][0].as<float>(), 
+    //     config["MainCamera"]["camera_target_position"][1].as<float>(), 
+    //     config["MainCamera"]["camera_target_position"][2].as<float>());
     mainCamera.setPerspective(
         config["MainCamera"]["camera_fov"].as<float>(),  
         (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT,
         config["MainCamera"]["camera_z"][0].as<float>(), 
         config["MainCamera"]["camera_z"][1].as<float>());
+
+    //mainCamera.keyboard_sensitive = config["MainCamera"]["camera_keyboard_sensitive"] ? config["MainCamera"]["camera_keyboard_sensitive"].as<float>() : 0;
+    //mainCamera.mouse_sensitive = config["MainCamera"]["camera_mouse_sensitive"] ? config["MainCamera"]["camera_mouse_sensitive"].as<float>() : 0;
+
+#ifdef SDL
+    sdlManager.keyboard_sensitive = config["MainCamera"]["camera_keyboard_sensitive"] ? config["MainCamera"]["camera_keyboard_sensitive"].as<float>() : 3;
+    sdlManager.mouse_sensitive = config["MainCamera"]["camera_mouse_sensitive"] ? config["MainCamera"]["camera_mouse_sensitive"].as<float>() : 60;
+#else    
+    glfwManager.keyboard_sensitive = config["MainCamera"]["camera_keyboard_sensitive"] ? config["MainCamera"]["camera_keyboard_sensitive"].as<float>() : 3;
+    glfwManager.mouse_sensitive = config["MainCamera"]["camera_mouse_sensitive"] ? config["MainCamera"]["camera_mouse_sensitive"].as<float>() : 60;
+#endif
+ 
 }
 
 void CApplication::Dispatch(int numWorkGroupsX, int numWorkGroupsY, int numWorkGroupsZ){

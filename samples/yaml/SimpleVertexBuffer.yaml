@@ -23,9 +23,10 @@ MainCamera:
   camera_mode: 0
   camera_position: [0,0,-3]
   camera_rotation: [0,0,0]
-  camera_target_position: [0,0,0]
+  object_id_target: 0
   camera_fov: 90
   camera_z: [0.1, 256]  
-
+  camera_keyboard_sensitive: 3
+  camera_mouse_sensitive: 60
 
 

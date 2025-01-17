@@ -32,8 +32,9 @@ public:
     bool bKeyDown = false;
     bool bMouseDown = false;
 
-    float mouse_sensitive = 40;//0.2f;
     float keyboard_sensitive = 3;
+    float mouse_sensitive = 60;//0.2f;
+    
     //float previous_mouse_x = 0;
     //float previous_mouse_y = 0;
     //bool bFirstPersonMouseRotate = false;

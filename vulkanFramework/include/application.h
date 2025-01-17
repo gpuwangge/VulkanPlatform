@@ -70,6 +70,7 @@ public:
     CModelManager modelManager;
     CTextureManager textureManager;
 
+    static int focusObjectId;
     static std::vector<CObject> objectList;
     static std::vector<CLight> lightList;
 

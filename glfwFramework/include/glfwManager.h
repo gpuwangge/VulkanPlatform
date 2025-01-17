@@ -17,6 +17,9 @@ public:
     GLFWwindow * window;
     int m_windowWidth, m_windowHeight;
 
+    float keyboard_sensitive = 3;
+    float mouse_sensitive = 60;
+
     void createWindow(int &windowWidth, int &windowHeight, std::string windowTitle);
     void queryRequiredInstanceExtensions(std::vector<const char*> &requiredInstanceExtensions);
     void createSurface(std::unique_ptr<CInstance> &instance, VkSurfaceKHR &surface);

@@ -13,8 +13,12 @@ public:
 	enum CameraType { LOCK, FREE, SELECT }; //SELECT is not implemented yet
 	CameraType cameraType = CameraType::LOCK;
 
+	// float keyboard_sensitive = 60;
+  	// float mouse_sensitive = 3;
+
 	glm::vec3 TargetPosition = glm::vec3(0.0f, 0.0f, 0.0f);
 	void SetTargetPosition(float x, float y, float z){ TargetPosition = glm::vec3(x, y, z); }
+	void SetTargetPosition(glm::vec3 pos){ TargetPosition = pos; }
 
 	Camera(){
 		entityType = EntityType::camera;
