@@ -6,8 +6,8 @@ Camera CApplication::mainCamera;
 bool CApplication::NeedToExit = false; 
 bool CApplication::NeedToPause = false;
 int CApplication::focusObjectId = 0;
-std::vector<CObject> CApplication::objectList; 
-std::vector<CLight> CApplication::lightList; 
+std::vector<CObject> CApplication::objects; 
+std::vector<CLight> CApplication::lights; 
 
 CApplication::CApplication(){
     //debugger = new CDebugger("../logs/application.log");
@@ -140,8 +140,8 @@ void CApplication::initialize(){
             int object_id = obj["object_id"] ? obj["object_id"].as<int>() : 0;
             max_object_id = (object_id > max_object_id) ? object_id : max_object_id;
         }
-        objectList.resize(((max_object_id+1) < config["Objects"].size())?(max_object_id+1):config["Objects"].size()); 
-        std::cout<<"Object Size: "<<objectList.size()<<std::endl;
+        objects.resize(((max_object_id+1) < config["Objects"].size())?(max_object_id+1):config["Objects"].size()); 
+        std::cout<<"Object Size: "<<objects.size()<<std::endl;
     }
     if (config["Lights"]) {
         int max_light_d = 0;
@@ -149,8 +149,8 @@ void CApplication::initialize(){
             int light_id = light["light_id"] ? light["light_id"].as<int>() : 0;
             max_light_d = (light_id > max_light_d) ? light_id : max_light_d;
         }
-        lightList.resize(((max_light_d+1) < config["Lights"].size())?(max_light_d+1):config["Lights"].size()); 
-        std::cout<<"Light Size: "<<lightList.size()<<std::endl;
+        lights.resize(((max_light_d+1) < config["Lights"].size())?(max_light_d+1):config["Lights"].size()); 
+        std::cout<<"Light Size: "<<lights.size()<<std::endl;
     }
 
     /****************************
@@ -252,11 +252,11 @@ void CApplication::update(){
     deltaTime = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - lastTime).count();
     lastTime = currentTime;
 
-    if(objectList.size() > 0 && focusObjectId < objectList.size())
-        mainCamera.SetTargetPosition(objectList[focusObjectId].Position);
+    if(objects.size() > 0 && focusObjectId < objects.size())
+        mainCamera.SetTargetPosition(objects[focusObjectId].Position);
     mainCamera.update(deltaTime);
-    for(int i = 0; i < objectList.size(); i++) objectList[i].Update(deltaTime, renderer.currentFrame, mainCamera); 
-    for(int i = 0; i < lightList.size(); i++) lightList[i].Update(deltaTime, renderer.currentFrame, mainCamera); 
+    for(int i = 0; i < objects.size(); i++) objects[i].Update(deltaTime, renderer.currentFrame, mainCamera); 
+    for(int i = 0; i < lights.size(); i++) lights[i].Update(deltaTime, renderer.currentFrame, mainCamera); 
     
 }
 
@@ -622,7 +622,7 @@ void CApplication::CreateUniformDescriptors(bool b_uniform_graphics, bool b_unif
                                             bool b_uniform_graphics_custom, bool b_uniform_compute_custom,
                                             bool b_uniform_compute_swapchain_storage, bool b_uniform_compute_texture_storage){
     //UNIFORM STEP 1/3 (Pool)
-    CGraphicsDescriptorManager::createDescriptorPool(objectList.size()); 
+    CGraphicsDescriptorManager::createDescriptorPool(objects.size()); 
     CComputeDescriptorManager::createDescriptorPool(); 
     //UNIFORM STEP 2/3 (Layer)
     if(b_uniform_graphics){
@@ -784,7 +784,7 @@ void CApplication::ReadRegisterObjects(){
         //std::cerr << "No 'Objects' key found in the YAML file!" << std::endl;
         for (const auto& obj : config["Objects"]) {
             int object_id = obj["object_id"] ? obj["object_id"].as<int>() : 0;
-            if(objectList[object_id].bRegistered) {
+            if(objects[object_id].bRegistered) {
                 std::cout<<"WARNING: Trying to register a registered Object id("<<object_id<<")!"<<std::endl;
                 continue;
             }
@@ -794,37 +794,37 @@ void CApplication::ReadRegisterObjects(){
             auto resource_texture_id_list = obj["resource_texture_id_list"] ? obj["resource_texture_id_list"].as<std::vector<int>>() : std::vector<int>(1, 0);
             int resource_graphics_pipeline_id = obj["resource_graphics_pipeline_id"] ? obj["resource_graphics_pipeline_id"].as<int>() : 0;
             //must load resources before object register
-            objectList[object_id].Register((CApplication*)this, object_id, resource_texture_id_list, resource_model_id, resource_graphics_pipeline_id);
+            objects[object_id].Register((CApplication*)this, object_id, resource_texture_id_list, resource_model_id, resource_graphics_pipeline_id);
             //std::cout<<"after register Object id("<<object_id<<")!"<<std::endl;
 
             std::string name = obj["object_name"] ? obj["object_name"].as<std::string>() : "Default";
-            objectList[object_id].Name = name;
+            objects[object_id].Name = name;
 
             //set scale after model is registered, otherwise the length will not be computed correctly
             float object_scale = obj["object_scale"] ? obj["object_scale"].as<float>() : 1.0f;
-            objectList[object_id].SetScale(object_scale);
+            objects[object_id].SetScale(object_scale);
 
             auto position = obj["object_position"] ? obj["object_position"].as<std::vector<float>>(): std::vector<float>(3, 0);
-            objectList[object_id].SetPosition(position[0], position[1], position[2]);
+            objects[object_id].SetPosition(position[0], position[1], position[2]);
 
             auto rotation = obj["object_rotation"] ? obj["object_rotation"].as<std::vector<float>>(): std::vector<float>(3, 0);
-            objectList[object_id].SetRotation(rotation[0], rotation[1], rotation[2]);
+            objects[object_id].SetRotation(rotation[0], rotation[1], rotation[2]);
 
             auto velocity = obj["object_velocity"] ? obj["object_velocity"].as<std::vector<float>>(): std::vector<float>(3, 0);
-            objectList[object_id].SetVelocity(velocity[0], velocity[1], velocity[2]);
+            objects[object_id].SetVelocity(velocity[0], velocity[1], velocity[2]);
 
             auto angular_velocity = obj["object_angular_velocity"] ? obj["object_angular_velocity"].as<std::vector<float>>(): std::vector<float>(3, 0);
-            objectList[object_id].SetAngularVelocity(angular_velocity[0], angular_velocity[1], angular_velocity[2]);
+            objects[object_id].SetAngularVelocity(angular_velocity[0], angular_velocity[1], angular_velocity[2]);
 
             bool isSkybox = obj["object_skybox"] ? obj["object_skybox"].as<bool>() : false;
-            objectList[object_id].bSkybox = isSkybox;
+            objects[object_id].bSkybox = isSkybox;
             //if(graphics_pipeline_id == appInfo.Feature.GraphicsPipelineSkyboxID)  objectList[i].bSkybox = true;
 
-            std::cout<<"ObjectId:("<<object_id<<") Name:("<<objectList[object_id].Name<<") Length:("<<objectList[object_id].Length.x<<","<<objectList[object_id].Length.y<<","<<objectList[object_id].Length.z<<")"
-                <<" Position:("<<objectList[object_id].Position.x<<","<<objectList[object_id].Position.y<<","<<objectList[object_id].Position.z<<")"<<std::endl;
+            std::cout<<"ObjectId:("<<object_id<<") Name:("<<objects[object_id].Name<<") Length:("<<objects[object_id].Length.x<<","<<objects[object_id].Length.y<<","<<objects[object_id].Length.z<<")"
+                <<" Position:("<<objects[object_id].Position.x<<","<<objects[object_id].Position.y<<","<<objects[object_id].Position.z<<")"<<std::endl;
         }
-        for(int i = 0; i < objectList.size(); i++)
-            if(!objectList[i].bRegistered) std::cout<<"WARNING: Object id("<<i<<") is not registered!"<<std::endl;
+        for(int i = 0; i < objects.size(); i++)
+            if(!objects[i].bRegistered) std::cout<<"WARNING: Object id("<<i<<") is not registered!"<<std::endl;
     }
 }
 
@@ -832,7 +832,7 @@ void CApplication::ReadLightings(){
     if (config["Lights"]) {
         for (const auto& light : config["Lights"]) {
             int id = light["light_id"] ? light["light_id"].as<int>() : 0;
-            if(lightList[id].bRegistered) {
+            if(lights[id].bRegistered) {
                 std::cout<<"WARNING: Trying to register a registered Light id("<<id<<")!"<<std::endl;
                 continue;
             }
@@ -843,14 +843,14 @@ void CApplication::ReadLightings(){
             glm::vec3 glm_position(position[0], position[1], position[2]);
             auto intensity = light["light_intensity"] ? light["light_intensity"].as<std::vector<float>>(): std::vector<float>(4,0);
 
-            lightList[id].Register(name, id, glm_position, intensity);
+            lights[id].Register(name, id, glm_position, intensity);
 
-            std::cout<<"LightId:("<<id<<") Name:("<<lightList[id].GetLightName()<<") Intensity:("<<lightList[id].GetIntensity(0)<<","<<lightList[id].GetIntensity(1)<<","<<lightList[id].GetIntensity(2)<<","<<lightList[id].GetIntensity(3)<<")"
-                <<" Position:("<<lightList[id].GetLightPosition().x<<","<<lightList[id].GetLightPosition().y<<","<<lightList[id].GetLightPosition().z<<")"<<std::endl;
+            std::cout<<"LightId:("<<id<<") Name:("<<lights[id].GetLightName()<<") Intensity:("<<lights[id].GetIntensity(0)<<","<<lights[id].GetIntensity(1)<<","<<lights[id].GetIntensity(2)<<","<<lights[id].GetIntensity(3)<<")"
+                <<" Position:("<<lights[id].GetLightPosition().x<<","<<lights[id].GetLightPosition().y<<","<<lights[id].GetLightPosition().z<<")"<<std::endl;
  
         }
-        for(int i = 0; i < lightList.size(); i++)
-            if(!lightList[i].bRegistered) std::cout<<"WARNING: Light id("<<i<<") is not registered!"<<std::endl;
+        for(int i = 0; i < lights.size(); i++)
+            if(!lights[i].bRegistered) std::cout<<"WARNING: Light id("<<i<<") is not registered!"<<std::endl;
     }
 }
 

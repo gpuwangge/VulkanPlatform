@@ -28,22 +28,22 @@ public:
 		modelManager.CreateCustomModel3D(vertices3D, indices3D); //create the 0th custom model 3D (CUSTOM3D0)
 		CApplication::initialize();
 
-		objectList[0].bSticker = true;
+		objects[0].bSticker = true;
 		//objectList[0].SetPosition(-0.5,-0.5,0.0);
 		//objectList[0].SetScale(1, 2, 1);
 		//objectList[0].SetScaleRectangleXY(0, 0, 1, 1);
-		objectList[0].SetScaleRectangleXY(-1, -1, 0, 0);
+		objects[0].SetScaleRectangleXY(-1, -1, 0, 0);
 		//objectList[0].SetPosition(-1, -1,0.1);
 
-		objectList[3].bSticker = true;
-		objectList[3].SetScaleRectangleXY(0.5, 0.5, 1, 1);
+		objects[3].bSticker = true;
+		objects[3].SetScaleRectangleXY(0.5, 0.5, 1, 1);
 	}
 
 	void update(){
 		//objectList[0].SetVelocity(0, sin(durationTime * 2), 0);
 		//objectList[0].SetAngularVelocity(0,0,50); //rotation around z axis
-		objectList[1].SetAngularVelocity(50,0,50); //rotation around x and z axis
-		objectList[2].SetVelocity(0, 3*sin(durationTime * 2), 0);
+		objects[1].SetAngularVelocity(50,0,50); //rotation around x and z axis
+		objects[2].SetVelocity(0, 3*sin(durationTime * 2), 0);
 		//objectList[3].SetVelocity(3*sin(durationTime * 2), 0, 0);
 		CApplication::update();
 	}
@@ -52,7 +52,7 @@ public:
 		//objectList[0].Draw();
 		//objectList[1].Draw();
 		//objectList[3].Draw();
-		for(int i = 0; i < objectList.size(); i++) objectList[i].Draw();
+		for(int i = 0; i < objects.size(); i++) objects[i].Draw();
 	}
 
 	// ~TEST_CLASS_NAME(){

@@ -11,7 +11,7 @@ public:
 	}
 
 	void recordGraphicsCommandBuffer(){
-		for(int i = 0; i < objectList.size(); i++) objectList[i].Draw();
+		for(int i = 0; i < objects.size(); i++) objects[i].Draw();
 	}
 };
 

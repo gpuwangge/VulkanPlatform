@@ -22,14 +22,14 @@ public:
 	}
 
 	void update(){
-		objectList[0].SetVelocity(0, 3*sin(durationTime * 2), 0);
-		objectList[1].SetAngularVelocity(50,0,50); //rotation around x and z axis
-		objectList[2].SetVelocity(0, 3*sin(durationTime * 4), 0);
+		objects[0].SetVelocity(0, 3*sin(durationTime * 2), 0);
+		objects[1].SetAngularVelocity(50,0,50); //rotation around x and z axis
+		objects[2].SetVelocity(0, 3*sin(durationTime * 4), 0);
 		CApplication::update();
 	}
 
 	void recordGraphicsCommandBuffer(){
-		for(int i = 0; i < objectList.size(); i++) objectList[i].Draw();
+		for(int i = 0; i < objects.size(); i++) objects[i].Draw();
 	}
 
 	// ~TEST_CLASS_NAME(){

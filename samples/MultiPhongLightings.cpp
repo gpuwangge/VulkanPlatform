@@ -7,19 +7,19 @@ public:
 	} 
 
 	void update(){
-		for(int i = 0; i < lightList.size(); i++) {
-			lightList[i].SetLightPosition(
-				glm::vec3(0, lightList[i].GetLightPosition().y,0) +
+		for(int i = 0; i < lights.size(); i++) {
+			lights[i].SetLightPosition(
+				glm::vec3(0, lights[i].GetLightPosition().y,0) +
 				glm::vec3(2.5 *cos(durationTime * (i+1)), 0, 2.5 *sin(durationTime * (i+1)))
 			);
-			objectList[2+i].SetPosition(lightList[i].GetLightPosition()); 
+			objects[2+i].SetPosition(lights[i].GetLightPosition()); 
 		}
 
 		CApplication::update();
 	}
 
 	void recordGraphicsCommandBuffer(){
-		for(int i = 0; i < objectList.size(); i++) objectList[i].Draw();
+		for(int i = 0; i < objects.size(); i++) objects[i].Draw();
 	}		
 };
 

@@ -11,7 +11,7 @@ public:
 	}
 
 	void recordGraphicsCommandBuffer(){
-		objectList[0].Draw();
+		objects[0].Draw();
 	}	
 };
 

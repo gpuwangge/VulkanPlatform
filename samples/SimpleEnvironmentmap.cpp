@@ -28,18 +28,18 @@ public:
 		customUBO.cameraPos = mainCamera.Position;
 		graphicsDescriptorManager.updateCustomUniformBuffer<CustomUniformBufferObject>(renderer.currentFrame, durationTime, customUBO);
 
-		objectList[0].SetVelocity(glm::cross(objectList[0].Position - glm::vec3(0,0,0), glm::vec3(0,0,1)));
-		objectList[1].SetVelocity(glm::cross(objectList[1].Position - glm::vec3(0,0,0), glm::vec3(0,0,1)));
-		objectList[2].SetVelocity(glm::cross(objectList[2].Position - glm::vec3(0,0,0), glm::vec3(0,0,1)));
-		objectList[3].SetVelocity(glm::cross(objectList[3].Position - glm::vec3(0,0,0), glm::vec3(0,0,1)));
-		objectList[4].SetVelocity(glm::cross(objectList[4].Position - glm::vec3(0,0,0), glm::vec3(0.5,0.5,0)));
-		objectList[5].SetVelocity(glm::cross(objectList[5].Position - glm::vec3(0,0,0), glm::vec3(0.5,0.5,0)));
+		objects[0].SetVelocity(glm::cross(objects[0].Position - glm::vec3(0,0,0), glm::vec3(0,0,1)));
+		objects[1].SetVelocity(glm::cross(objects[1].Position - glm::vec3(0,0,0), glm::vec3(0,0,1)));
+		objects[2].SetVelocity(glm::cross(objects[2].Position - glm::vec3(0,0,0), glm::vec3(0,0,1)));
+		objects[3].SetVelocity(glm::cross(objects[3].Position - glm::vec3(0,0,0), glm::vec3(0,0,1)));
+		objects[4].SetVelocity(glm::cross(objects[4].Position - glm::vec3(0,0,0), glm::vec3(0.5,0.5,0)));
+		objects[5].SetVelocity(glm::cross(objects[5].Position - glm::vec3(0,0,0), glm::vec3(0.5,0.5,0)));
 
 		CApplication::update();
 	}
 
 	void recordGraphicsCommandBuffer(){
-		for(int i = 0; i < objectList.size(); i++) objectList[i].Draw();
+		for(int i = 0; i < objects.size(); i++) objects[i].Draw();
 	}
 };
 

@@ -30,7 +30,7 @@ public:
 		renderer.PushConstantToCommand<ModelPushConstants>(pushConstants, renderProcess.graphicsPipelineLayouts[0], shaderManager.pushConstantRange);
 		//renderer.PushConstantToCommand<ModelPushConstants>(pushConstants, renderProcess.graphicsPipelineLayout, shaderManager.pushConstantRange);
 
-		objectList[0].Draw();
+		objects[0].Draw();
 	}
 };
 

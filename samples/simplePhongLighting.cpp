@@ -7,9 +7,9 @@ public:
 	} 
 
 	void update(){
-		for(int i = 0; i < lightList.size(); i++) {
-			lightList[i].SetLightPosition(glm::vec3(1.5f * cos(durationTime * 1.2), 1.5f * cos(durationTime * 0.85), 1.5f * cos(durationTime * 1)));
-			objectList[1+i].SetPosition(lightList[i].GetLightPosition()); 
+		for(int i = 0; i < lights.size(); i++) {
+			lights[i].SetLightPosition(glm::vec3(1.5f * cos(durationTime * 1.2), 1.5f * cos(durationTime * 0.85), 1.5f * cos(durationTime * 1)));
+			objects[1+i].SetPosition(lights[i].GetLightPosition()); 
 		}
 
 		//objectList[0].SetAngularVelocity(0, 50, 0);
@@ -18,7 +18,7 @@ public:
 	}
 
 	void recordGraphicsCommandBuffer(){
-		for(int i = 0; i < objectList.size(); i++) objectList[i].Draw();
+		for(int i = 0; i < objects.size(); i++) objects[i].Draw();
 	}		
 };
 

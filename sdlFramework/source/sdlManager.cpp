@@ -86,7 +86,7 @@ void CSDLManager::eventHandle(){
                     case SDLK_TAB:
                         if(CApplication::mainCamera.cameraType == Camera::CameraType::LOCK) {
                             CApplication::focusObjectId += 1;
-                            CApplication::focusObjectId = CApplication::focusObjectId % CApplication::objectList.size();
+                            CApplication::focusObjectId = CApplication::focusObjectId % CApplication::objects.size();
                         }
                         break;
 

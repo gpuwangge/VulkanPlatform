@@ -71,8 +71,8 @@ public:
     CTextureManager textureManager;
 
     static int focusObjectId;
-    static std::vector<CObject> objectList;
-    static std::vector<CLight> lightList;
+    static std::vector<CObject> objects;
+    static std::vector<CLight> lights;
 
     void CleanUp();
 
