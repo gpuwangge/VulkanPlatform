@@ -23,11 +23,10 @@ layout (location = 3) out vec3 outPosWorld;
 // layout (location = 3+4*LIGHT_NUM) out float outSpecularIntensity[LIGHT_NUM];
 
 void main() {
-	gl_Position = mvpUBO.proj * mvpUBO.view * mvpUBO.model * vec4(inPosition, 1.0);;
+	gl_Position = mvpUBO.proj * mvpUBO.view * mvpUBO.model * vec4(inPosition, 1.0);
 
 	outNormal = mat3(mvpUBO.model) * inNormal;
 	outColor = inColor;
 	outTexCoord = inTexCoord;
 	outPosWorld = vec3(mvpUBO.model * vec4(inPosition, 1.0));
-
 }

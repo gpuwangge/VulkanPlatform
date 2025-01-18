@@ -1,8 +1,8 @@
 Objects:
   - object_name: Table
     object_id: 0
-    object_scale: 0.01
-    object_position: [0,0,0]
+    object_scale: 1
+    object_position: [0,-103,0]
     object_rotation: [0,0,0]
     object_velocity: [0,0,0]
     object_angular_velocity: [0,0,0]
@@ -12,8 +12,8 @@ Objects:
     resource_graphics_pipeline_id: 0
   - object_name: Sphere
     object_id: 1
-    object_scale: 0.003
-    object_position: [0,1.25,0.75]
+    object_scale: 0.04
+    object_position: [0,2,0]
     object_rotation: [0,0,0]
     object_velocity: [0,0,0]
     object_angular_velocity: [0,0,0]
@@ -70,7 +70,7 @@ Features:
 
 MainCamera:
   camera_mode: 1
-  camera_position: [0,1.2,0]
+  camera_position: [0,1.2,-5]
   camera_rotation: [0,0,0]
   object_id_target: 0
   camera_fov: 90
