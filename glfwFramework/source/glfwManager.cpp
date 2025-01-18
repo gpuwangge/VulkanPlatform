@@ -25,7 +25,8 @@ const float MINSCALE = { 0.05f };
 // bool NeedToExit = false;
 // Camera mainCamera;
 
-
+float CGLFWManager::keyboard_sensitive = 3;
+float CGLFWManager::mouse_sensitive = 60;
 
 CGLFWManager::CGLFWManager(){
 	m_windowHeight = 0;
@@ -48,33 +49,49 @@ void CGLFWManager::GLFWKeyboard(GLFWwindow * window, int key, int scancode, int 
 
 	if (action == GLFW_PRESS) {
 		switch (key) {
-		case 262:
-			//CApplication::mainCamera.keys.right = true;
+		case GLFW_KEY_RIGHT:
 			break;
-		case 263:
-			//CApplication::mainCamera.keys.left = true;
+		case GLFW_KEY_LEFT:
 			break;
-		case 264:
-			//CApplication::mainCamera.keys.down = true;
+		case GLFW_KEY_DOWN: 
+			CApplication::mainCamera.Velocity.y = 1 * keyboard_sensitive;
 			break;
-		case 265:
-			//CApplication::mainCamera.keys.up = true;
+		case GLFW_KEY_UP: 
+			CApplication::mainCamera.Velocity.y = -1 * keyboard_sensitive;
 			break;
 		case 'w':
 		case 'W':
-			//CApplication::mainCamera.keys.forward = true;
+			CApplication::mainCamera.Velocity.z = 1 * keyboard_sensitive;
 			break;
 		case 's':
 		case 'S':
-			//CApplication::mainCamera.keys.backward = true;
+			CApplication::mainCamera.Velocity.z = -1 * keyboard_sensitive;
 			break;
 		case 'a':
 		case 'A':
-			//CApplication::mainCamera.keys.turnLeft = true;
+			CApplication::mainCamera.Velocity.x = 1 * keyboard_sensitive; 
 			break;
 		case 'd':
 		case 'D':
-			//CApplication::mainCamera.keys.turnRight = true;
+			CApplication::mainCamera.Velocity.x = -1 * keyboard_sensitive; 
+			break;
+
+		case 'f':
+		case 'F':
+			if(CApplication::mainCamera.cameraType == Camera::CameraType::LOCK) CApplication::mainCamera.cameraType = Camera::CameraType::FREE;
+        	else if(CApplication::mainCamera.cameraType == Camera::CameraType::FREE) CApplication::mainCamera.cameraType = Camera::CameraType::LOCK;
+            break;
+
+		case GLFW_KEY_TAB:
+			if(CApplication::mainCamera.cameraType == Camera::CameraType::LOCK) {
+				CApplication::focusObjectId += 1;
+				CApplication::focusObjectId = CApplication::focusObjectId % CApplication::objects.size();
+			}
+			break;
+
+		case GLFW_KEY_ESCAPE:
+			//CApplication::NeedToExit = true;
+			glfwSetWindowShouldClose(window, true);
 			break;
 
 		case 'i':
@@ -99,12 +116,6 @@ void CGLFWManager::GLFWKeyboard(GLFWwindow * window, int key, int scancode, int 
 			Paused = !Paused;
 			break;
 
-		case 'q':
-		case 'Q':
-		case GLFW_KEY_ESCAPE:
-			CApplication::NeedToExit = true;
-			break;
-
 		case 'r':
 		case 'R':
 			UseRotate = !UseRotate;
@@ -125,33 +136,31 @@ void CGLFWManager::GLFWKeyboard(GLFWwindow * window, int key, int scancode, int 
 
 	if (action == GLFW_RELEASE) {	
 		switch (key) {
-		case 262:
-			//CApplication::mainCamera.keys.right = false;
+		case GLFW_KEY_RIGHT:
 			break;
-		case 263:
-			//CApplication::mainCamera.keys.left = false;
+		case GLFW_KEY_LEFT:
 			break;
-		case 264:
-			//CApplication::mainCamera.keys.down = false;
+		case GLFW_KEY_DOWN:
+			CApplication::mainCamera.Velocity.y = 0;
 			break;
-		case 265:
-			//CApplication::mainCamera.keys.up = false;
+		case GLFW_KEY_UP:
+			CApplication::mainCamera.Velocity.y = 0;
 			break;
 		case 'w':
 		case 'W':
-			//CApplication::mainCamera.keys.forward = false;
+			CApplication::mainCamera.Velocity.z = 0;
 			break;
 		case 's':
 		case 'S':
-			//CApplication::mainCamera.keys.backward = false;
+			CApplication::mainCamera.Velocity.z = 0;
 			break;
 		case 'a':
 		case 'A':
-			//CApplication::mainCamera.keys.turnLeft = false;
+			CApplication::mainCamera.Velocity.x = 0;
 			break;
 		case 'd':
 		case 'D':
-			//CApplication::mainCamera.keys.turnRight = false;
+			CApplication::mainCamera.Velocity.x = 0;
 			break;
 		default:
 			break;
@@ -161,10 +170,34 @@ void CGLFWManager::GLFWKeyboard(GLFWwindow * window, int key, int scancode, int 
 }
 
 void CGLFWManager::GLFWMouseMotion(GLFWwindow *window, double xpos, double ypos){
+	static float lastX = 0.0;
+	static float lastY = 0.0;
+	static bool firstMouseMotion = true;
+
+	if(firstMouseMotion){
+		lastX = xpos;
+		lastY = ypos;
+		firstMouseMotion = false;
+	}
+
+	float deltaX = xpos - lastX;
+	float deltaY = ypos - lastY;
+	//std::cout <<std::fixed<< "Relative Movement: DeltaX = " << deltaX << ", DeltaY = " << deltaY << std::endl;
+
+	lastX = xpos;
+	lastY = ypos;
+
+	if(CApplication::mainCamera.cameraType == Camera::CameraType::FREE){
+        CApplication::mainCamera.AngularVelocity.x = -mouse_sensitive*deltaY;
+        CApplication::mainCamera.AngularVelocity.y = mouse_sensitive*deltaX;
+    }
+
+
+	/* Legacy code
 	static int				Xmouse, Ymouse;			// mouse values
 	static float				Xrot, Yrot;			// rotation angles in degrees
 	static int				ActiveButton;			// current button that is down
-	static float				Scale;				// scaling facto
+	static float				Scale;				// scaling facto 
 
 	int dx = (int)xpos - Xmouse;		// change in mouse coords
 	int dy = (int)ypos - Ymouse;
@@ -188,6 +221,9 @@ void CGLFWManager::GLFWMouseMotion(GLFWwindow *window, double xpos, double ypos)
 
 	Xmouse = (int)xpos;			// new current position
 	Ymouse = (int)ypos;
+	*/
+	
+	
 }
 
 void CGLFWManager::GLFWMouseButton(GLFWwindow *window, int button, int action, int mods) {
@@ -201,17 +237,16 @@ void CGLFWManager::GLFWMouseButton(GLFWwindow *window, int button, int action, i
 
 					// get the proper button bit mask:
 
-	switch (button)
-	{
+	switch (button){
 	case GLFW_MOUSE_BUTTON_LEFT:
-		b = LEFT;		break;
-
+		b = LEFT;		
+		break;
 	case GLFW_MOUSE_BUTTON_MIDDLE:
-		b = MIDDLE;		break;
-
+		b = MIDDLE;		
+		break;
 	case GLFW_MOUSE_BUTTON_RIGHT:
-		b = RIGHT;		break;
-
+		b = RIGHT;		
+		break;
 	default:
 		b = 0;
 		//fprintf(FpDebug, "Unknown mouse button: %d\n", button);
@@ -227,12 +262,43 @@ void CGLFWManager::GLFWMouseButton(GLFWwindow *window, int button, int action, i
 		Xmouse = (int)xpos;
 		Ymouse = (int)ypos;
 		ActiveButton |= b;		// set the proper bit
+
+		if(CApplication::mainCamera.cameraType == Camera::CameraType::LOCK) {
+			CApplication::mainCamera.cameraType = Camera::CameraType::FREE;
+			//std::cout<<"Free Mode"<<std::endl;
+		}
+        else if(CApplication::mainCamera.cameraType == Camera::CameraType::FREE) {
+			CApplication::mainCamera.cameraType = Camera::CameraType::LOCK;
+			//std::cout<<"Lock Mode"<<std::endl;
+		}
+
 	}
 	else
 	{
 		ActiveButton &= ~b;		// clear the proper bit
 	}
 }
+
+void CGLFWManager::GLFWMouseScroll(GLFWwindow* window, double xoffset, double yoffset) {
+    //std::cout << "Scroll Event: xoffset = " << xoffset << ", yoffset = " << yoffset << std::endl;
+
+	//vertical
+    if (yoffset > 0) {
+        //std::cout << "Scrolled Up" << std::endl;
+        CApplication::mainCamera.MoveForward(1, 2);
+    } else if (yoffset < 0) {
+        //std::cout << "Scrolled Down" << std::endl;
+        CApplication::mainCamera.MoveBackward(1, 2);
+    }
+	//horizontal
+	if (xoffset > 0) {
+		CApplication::mainCamera.MoveRight(1, 2);
+    } else if (xoffset < 0) {
+		CApplication::mainCamera.MoveLeft(1, 2);
+    }
+
+}
+
 
 static void framebufferResizeCallback(GLFWwindow* window, int width, int height) {
 	auto app = reinterpret_cast<CApplication*>(glfwGetWindowUserPointer(window));
@@ -254,9 +320,22 @@ void CGLFWManager::createWindow(int &windowWidth, int &windowHeight, std::string
 		glfwSetKeyCallback(window, GLFWKeyboard);
 		glfwSetCursorPosCallback(window, GLFWMouseMotion);
 		glfwSetMouseButtonCallback(window, GLFWMouseButton);
+		glfwSetScrollCallback(window, GLFWMouseScroll);
 
 		windowWidth = m_windowWidth;
 		windowHeight = m_windowHeight;
+
+		//GLFW_CURSOR_NORMAL
+		//GLFW_CURSOR_HIDDEN: hide curser
+		//GLFW_CURSOR_DISABLED: hide curser, and refine to window
+		glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+		const HWND hDesktop = GetDesktopWindow();
+		RECT desktop;
+		GetWindowRect(hDesktop, &desktop);
+		int horizontal = desktop.right;
+    	int vertical = desktop.bottom;
+		glfwSetWindowPos(window, horizontal/2, 50);
 }
 
 void CGLFWManager::queryRequiredInstanceExtensions(std::vector<const char*> &requiredInstanceExtensions){

@@ -111,11 +111,19 @@ void CApplication::run(){ //Entrance Function
         if(NeedToExit) break;
     }
 #else  
+    glfwSwapInterval(1); //set V-Sync. wait a refresh period, normally 16.67ms
     while (!glfwWindowShouldClose(glfwManager.window)) {
         glfwPollEvents();
         if(!NeedToPause) UpdateRecordRender();
         if(NeedToExit) break;
-	}
+
+        if(mainCamera.cameraType == Camera::CameraType::FREE){
+            mainCamera.AngularVelocity.x = 0;
+            mainCamera.AngularVelocity.y = 0;
+        }
+
+        glfwWaitEventsTimeout(1.0 / 60.0);
+    }
 #endif
 
 	vkDeviceWaitIdle(CContext::GetHandle().GetLogicalDevice());//Wait GPU to complete all jobs before CPU destroy resources
