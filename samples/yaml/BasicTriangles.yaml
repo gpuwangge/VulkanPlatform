@@ -25,22 +25,22 @@ Resources:
     - resource_fragmentshader_name: basicTriangles/shader.frag.spv
 
 Uniforms:
-  - Graphics:
+  - Graphics: #binding order(set0): custom->lighting->mvp->vp; 
     - uniform_graphics_name: Graphics
       uniform_graphics_custom: true
+      uniform_graphics_lighting: false
       uniform_graphics_mvp: true
       uniform_graphics_vp: false
-      uniform_graphics_lighting: false
-  - Compute:
+  - Samplers: #binding order(set1): sampler
+    - uniform_sampler_name: Sampler
+      uniform_sampler_miplevel: 1
+  - Compute: #binding order: custom->storage->texture->swapchain
     - uniform_compute_name: Compute
       uniform_compute_custom: false
       uniform_compute_storage: false
-      uniform_compute_swapchain_storage: false
       uniform_compute_texture_storage: false
-  - Samplers:
-    - uniform_sampler_name: Sampler
-      uniform_sampler_miplevel: 1
-
+      uniform_compute_swapchain_storage: false
+      
 Features:
   feature_graphics_depth_test: false
   feature_graphics_msaa: false

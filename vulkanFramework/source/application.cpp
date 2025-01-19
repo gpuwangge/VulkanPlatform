@@ -465,6 +465,11 @@ void CApplication::ReadUniforms(bool& b_uniform_graphics_custom, bool&b_uniform_
                     CGraphicsDescriptorManager::addCustomUniformBuffer(appInfo.Uniform.GraphicsCustom.Size);
                 }
 
+                if(b_uniform_graphics_lighting){
+                    CGraphicsDescriptorManager::graphicsUniformTypes |= GRAPHCIS_UNIFORMBUFFER_LIGHTING;
+                    CGraphicsDescriptorManager::addLightingUniformBuffer();
+                }
+
                 if(b_uniform_graphics_mvp){
                     CGraphicsDescriptorManager::graphicsUniformTypes |= GRAPHCIS_UNIFORMBUFFER_MVP;
                     CGraphicsDescriptorManager::addMVPUniformBuffer();
@@ -475,10 +480,6 @@ void CApplication::ReadUniforms(bool& b_uniform_graphics_custom, bool&b_uniform_
                     CGraphicsDescriptorManager::addVPUniformBuffer();
                 }
 
-                if(b_uniform_graphics_lighting){
-                    CGraphicsDescriptorManager::graphicsUniformTypes |= GRAPHCIS_UNIFORMBUFFER_LIGHTING;
-                    CGraphicsDescriptorManager::addLightingUniformBuffer();
-                }
             }
         }
 

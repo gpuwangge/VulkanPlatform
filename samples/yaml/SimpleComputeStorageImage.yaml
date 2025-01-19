@@ -7,8 +7,8 @@ Uniforms:
     - uniform_compute_name: Compute
       uniform_compute_custom: false
       uniform_compute_storage: false
-      uniform_compute_swapchain_storage: true
       uniform_compute_texture_storage: false
+      uniform_compute_swapchain_storage: true
   
 Features:
   feature_graphics_depth_test: false

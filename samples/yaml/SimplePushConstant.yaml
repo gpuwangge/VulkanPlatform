@@ -28,18 +28,18 @@ Uniforms:
   - Graphics:
     - uniform_graphics_name: Graphics
       uniform_graphics_custom: false
+      uniform_graphics_lighting: false
       uniform_graphics_mvp: false
       uniform_graphics_vp: true
-      uniform_graphics_lighting: false
+  - Samplers:
+    - uniform_sampler_name: Sampler
+      uniform_sampler_miplevel: 1
   - Compute:
     - uniform_compute_name: Compute
       uniform_compute_custom: false
       uniform_compute_storage: false
-      uniform_compute_swapchain_storage: false
       uniform_compute_texture_storage: false
-  - Samplers:
-    - uniform_sampler_name: Sampler
-      uniform_sampler_miplevel: 1
+      uniform_compute_swapchain_storage: false
   
 Features:
   feature_graphics_depth_test: false
