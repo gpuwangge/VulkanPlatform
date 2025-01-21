@@ -17,13 +17,13 @@ public:
      * 
      * ***********************/
     typedef enum RenderModes {
-        RENDER_GRAPHICS_Mode = 0,
-        RENDER_COMPUTE_Mode = 1,
-        RENDER_COMPUTE_SWAPCHAIN_Mode = 2,
-        RENDER_COMPUTE_GRAPHICS_Mode = 3,
+        GRAPHICS = 0,
+        COMPUTE = 1,
+        COMPUTE_SWAPCHAIN = 2,
+        COMPUTE_GRAPHICS = 3,
     } RenderModes;
 
-    RenderModes m_renderMode = RENDER_GRAPHICS_Mode;
+    RenderModes m_renderMode = GRAPHICS;
     //void RecordCompute();
     //void RecordGraphics();
 

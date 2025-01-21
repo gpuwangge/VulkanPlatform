@@ -157,7 +157,7 @@ public:
         std::unique_ptr<std::vector<std::string>> VertexShader;
         std::unique_ptr<std::vector<std::string>> FragmentShader;
         std::unique_ptr<std::vector<std::string>> ComputeShader;
-        CRenderer::RenderModes RenderMode = CRenderer::RENDER_GRAPHICS_Mode;
+        CRenderer::RenderModes RenderMode = CRenderer::GRAPHICS;
         VertexStructureTypes VertexBufferType = (VertexStructureTypes)NULL;
     }appInfo;
 };

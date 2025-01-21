@@ -27,7 +27,7 @@ public:
 	bool bVerify = true;
 
 	void initialize(){
-		appInfo.RenderMode = renderer.RENDER_COMPUTE_Mode;
+		appInfo.RenderMode = renderer.COMPUTE;
 
 		appInfo.Uniform.ComputeStorageBuffer.Size = sizeof(StructStorageBuffer);
 		appInfo.Uniform.ComputeStorageBuffer.Usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT;

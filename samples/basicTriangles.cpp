@@ -28,8 +28,6 @@ public:
 	void initialize(){
 		modelManager.CreateCustomModel3D(vertices3D, indices3D); //create the 0th custom model 3D (CUSTOM3D0)
 
-		//appInfo.Uniform.GraphicsSampler.Count = 1;
-		//appInfo.Uniform.EnableGraphicsMVP = true;
 		appInfo.Uniform.GraphicsCustom.Size = sizeof(CustomUniformBufferObject);
 		appInfo.Uniform.GraphicsCustom.Binding = CustomUniformBufferObject::GetBinding();
 		CApplication::initialize();

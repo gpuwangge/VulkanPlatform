@@ -134,13 +134,13 @@ void CRenderer::SubmitCompute(){
 
     //this code handles compute semaphores
     switch(m_renderMode){
-        case RENDER_GRAPHICS_Mode:
+        case GRAPHICS:
             //Pure graphics application doesn't use compute pipeline
         break;
-        case RENDER_COMPUTE_Mode:
+        case COMPUTE:
             //Pure compute application doesn't need swap image or present
         break;
-        case RENDER_COMPUTE_SWAPCHAIN_Mode:
+        case COMPUTE_SWAPCHAIN:
         {
             //Because this mode use swap image to present, wait swap image to be ready
             VkSemaphore waitSemaphores[] = { imageAvailableSemaphores[currentFrame] }; //to wait until image is ready
@@ -155,7 +155,7 @@ void CRenderer::SubmitCompute(){
             submitInfo.pSignalSemaphores = signalSemaphores;
         }
         break;
-        case RENDER_COMPUTE_GRAPHICS_Mode:
+        case COMPUTE_GRAPHICS:
         {
             //This mode doesn't interact with swap image, this semaphore is to tell graphics that compute is finished
             VkSemaphore signalSemaphores[] = { computeFinishedSemaphores[currentFrame] }; 
@@ -190,7 +190,7 @@ void CRenderer::SubmitGraphics(){
 
     //this code handles graphics semaphores
     switch(m_renderMode){
-        case RENDER_GRAPHICS_Mode:
+        case GRAPHICS:
         {
             //pure graphics pipeline, need wait swap image is ready
             VkSemaphore waitSemaphores[] = {imageAvailableSemaphores[currentFrame] };
@@ -200,13 +200,13 @@ void CRenderer::SubmitGraphics(){
             submitInfo.pWaitDstStageMask = waitStages;
         }
         break;
-        case RENDER_COMPUTE_Mode:
+        case COMPUTE:
             //pure compute application doen't need graphics pipeline
         break;
-        case RENDER_COMPUTE_SWAPCHAIN_Mode:
+        case COMPUTE_SWAPCHAIN:
             //if render direct on swap image, doesn't need graphics pipeline
         break;
-        case RENDER_COMPUTE_GRAPHICS_Mode:
+        case COMPUTE_GRAPHICS:
         {
             //graphics/compute pipeline hybrid, need wait both swap image and compute are ready
             VkSemaphore waitSemaphores[] = {computeFinishedSemaphores[currentFrame], imageAvailableSemaphores[currentFrame] };
@@ -250,18 +250,18 @@ void CRenderer::PresentSwapchainImage(CSwapchain &swapchain){
     presentInfo.waitSemaphoreCount = 1;
     VkSemaphore signalSemaphores[1];// = { computeFinishedSemaphores[currentFrame] }; //can not present until compute/graphics signal is ready renderFinishedSemaphores
     switch(m_renderMode){
-        case RENDER_GRAPHICS_Mode:
+        case GRAPHICS:
             //present only if render is finished
             signalSemaphores[0] = renderFinishedSemaphores[currentFrame]; 
         break;
-        case RENDER_COMPUTE_Mode:
+        case COMPUTE:
             //no need to present image for pure compute application
         break;
-        case RENDER_COMPUTE_SWAPCHAIN_Mode:
+        case COMPUTE_SWAPCHAIN:
             //present only if compute is finished
             signalSemaphores[0] = computeFinishedSemaphores[currentFrame]; 
         break;
-        case RENDER_COMPUTE_GRAPHICS_Mode:
+        case COMPUTE_GRAPHICS:
             //present only if render is finished
             signalSemaphores[0] = renderFinishedSemaphores[currentFrame]; 
         break;
