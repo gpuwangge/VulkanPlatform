@@ -45,9 +45,6 @@ public:
     void enableAttachmentDescriptionDepth(VkFormat depthFormat, VkSampleCountFlagBits msaaSamples);
     void enableAttachmentDescriptionColorMultiSample(
         VkFormat swapChainImageFormat,
-        bool bEnableDepthTest = false,
-        bool bEnableMSAA = false,
-        VkFormat depthFormat = VK_FORMAT_UNDEFINED,
         VkSampleCountFlagBits msaaSamples = VK_SAMPLE_COUNT_1_BIT, 
         VkImageLayout imageLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
    
@@ -57,7 +54,7 @@ public:
 								 VkBlendOp alphaBlendOp, VkBlendFactor srcAlphaBlendFactor, VkBlendFactor dstAlphaBlendFactor);
 
     VkSampleCountFlagBits m_msaaSamples;
-    VkFormat m_swapChainImageFormat;
+    //VkFormat m_swapChainImageFormat;
 
     bool bCreateGraphicsPipeline = false;
     //VkPipelineLayout graphicsPipelineLayout;

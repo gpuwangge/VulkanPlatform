@@ -10,7 +10,7 @@ CRenderProcess::CRenderProcess(){
 	bUseColorBlendAttachment = false;
 
     m_msaaSamples = VK_SAMPLE_COUNT_1_BIT;
-    m_swapChainImageFormat = VK_FORMAT_UNDEFINED;
+    //m_swapChainImageFormat = VK_FORMAT_UNDEFINED;
 }
 CRenderProcess::~CRenderProcess(){
 	//if (!debugger) delete debugger;
@@ -119,41 +119,25 @@ void CRenderProcess::enableAttachmentDescriptionDepth(VkFormat depthFormat, VkSa
     
 }
 
-void CRenderProcess::enableAttachmentDescriptionColorMultiSample(VkFormat swapChainImageFormat, bool bEnableDepthTest, bool bEnableMSAA, VkFormat depthFormat, VkSampleCountFlagBits msaaSamples, VkImageLayout imageLayout){  
+void CRenderProcess::enableAttachmentDescriptionColorMultiSample(VkFormat swapChainImageFormat, VkSampleCountFlagBits msaaSamples, VkImageLayout imageLayout){  
 	//Concept of attachment in Vulkan is like render target in OpenGL
 	//Subpass is a procedure to write/read attachments (a render process can has many subpasses, aka a render pass)
 	//Subpass is designed for mobile TBDR architecture
 	//At the beginning of subpass, attachment is loaded; at the end of attachment, attachment is stored
 	bUseAttachmentColorMultisample = true;
-	
-	m_msaaSamples = msaaSamples;
-    m_swapChainImageFormat = swapChainImageFormat;
-	
-	// if(bEnableDepthTest) {
-	// 	enableAttachmentDescriptionDepth(depthFormat);
-	// 	//std::cout<<"Depth Attachment added. Depth Test enabled. "<<std::endl;
-	// }
 
-	attachment_description_color_multisample.finalLayout = imageLayout;
-
-	//if(msaaSamples > 1) {//msaaSamples > 1 means swapchains'MSAA feature is enabled
-	// if(bEnableMSAA) {
-	// 	imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-	// 	addColorAttachmentResolve();
-	// 	//std::cout<<"Color Attachment Resolve added. MSAA enabled, msaaSamples = "<<msaaSamples<<std::endl;
-	// }
-
-	attachment_description_color_multisample.format = m_swapChainImageFormat;
+	attachment_description_color_multisample.format = swapChainImageFormat;
 	//std::cout<<"addColorAttachment::colorAttachment.format = "<<colorAttachment.format<<std::endl;
-	attachment_description_color_multisample.samples = m_msaaSamples;
+	attachment_description_color_multisample.samples = msaaSamples;
 	std::cout<<"attachment_description_color_multisample.samples = "<<attachment_description_color_multisample.samples<<std::endl;
 	attachment_description_color_multisample.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 	attachment_description_color_multisample.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
 	attachment_description_color_multisample.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
 	attachment_description_color_multisample.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
 	attachment_description_color_multisample.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	
+	attachment_description_color_multisample.finalLayout = imageLayout;
 
+	m_msaaSamples = msaaSamples;
 	//std::cout<<"Color Attachment added. "<<std::endl;
 }
 

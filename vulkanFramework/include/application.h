@@ -118,15 +118,10 @@ public:
     /******************
     * Helper Functions
     ******************/
-    void ReadFeatures(bool& b_feature_graphics_depth_test, bool& b_feature_graphics_msaa, bool& b_feature_graphics_48pbt,
-                    bool& b_feature_graphics_push_constant, bool& b_feature_graphics_blend, bool& b_feature_graphics_rainbow_mipmap,
-                    int& feature_graphics_pipeline_skybox_id);
-    void ReadUniforms(bool& b_uniform_graphics_custom, bool&b_uniform_graphics_mvp, bool&b_uniform_graphics_vp, bool&b_uniform_graphics_lighting,
-                    bool&b_uniform_compute_custom, bool&b_uniform_compute_storage, bool&b_uniform_compute_swapchain_storage, bool&b_uniform_compute_texture_storage);
-    void ReadResources(bool b_feature_graphics_48pbt, bool b_feature_graphics_rainbow_mipmap);
-    void CreateUniformDescriptors(bool b_uniform_graphics, bool b_uniform_compute, 
-                                bool b_uniform_graphics_custom, bool b_uniform_compute_custom,
-                                bool b_uniform_compute_swapchain_storage, bool b_uniform_compute_texture_storage);
+    void ReadFeatures();
+    void ReadUniforms();
+    void ReadResources();
+    void CreateUniformDescriptors(bool b_uniform_graphics, bool b_uniform_compute);
     void CreatePipelines();
     void ReadRegisterObjects();
     void ReadLightings();
@@ -137,7 +132,24 @@ public:
     /*************
      * APP INFO
      *******/
+    struct FeatureInfo{
+        bool b_feature_graphics_depth_test = false;
+        bool b_feature_graphics_msaa = false;
+        bool b_feature_graphics_48pbt = false;
+        bool b_feature_graphics_push_constant = false;
+        bool b_feature_graphics_blend = false;
+        bool b_feature_graphics_rainbow_mipmap = false;
+        int feature_graphics_pipeline_skybox_id = -1;
+    };
     struct UniformInfo{
+        bool b_uniform_graphics_custom = false;
+        bool b_uniform_graphics_mvp = false;
+        bool b_uniform_graphics_vp = false;
+        bool b_uniform_graphics_lighting = false;
+        bool b_uniform_compute_custom = false;
+        bool b_uniform_compute_storage = false;
+        bool b_uniform_compute_swapchain_storage = false;
+        bool b_uniform_compute_texture_storage = false;
         struct GraphicsCustomInfo{
             VkDeviceSize Size = 0;
             VkDescriptorSetLayoutBinding Binding;
@@ -153,6 +165,7 @@ public:
     };
 
     struct AppInfo{
+        FeatureInfo Feature;
         UniformInfo Uniform;
         std::unique_ptr<std::vector<std::string>> VertexShader;
         std::unique_ptr<std::vector<std::string>> FragmentShader;
