@@ -3,9 +3,9 @@
 CRenderProcess::CRenderProcess(){
     //debugger = new CDebugger("../logs/renderProcess.log");
     
-    bUseColorAttachment = false;
-    bUseDepthAttachment = false;
-    bUseColorAttachmentResolve = false;
+    bUseAttachmentColorPresent = false;
+    bUseAttachmentDepth = false;
+    bUseAttachmentColorMultisample = false;
 
 	bUseColorBlendAttachment = false;
 
@@ -16,36 +16,37 @@ CRenderProcess::~CRenderProcess(){
 	//if (!debugger) delete debugger;
 }
 
-
-
-
 void CRenderProcess::createSubpass(){ 
 	uint32_t attachmentCount = 0;
-	if(bUseColorAttachment){
-		//clear values for each attachment. The array is indexed by attachment number
-		//Only elements corresponding to cleared attachments are used. Other elements of pClearValues are ignored.
+
+	//clear values for each attachment. The array is indexed by attachment number
+	//Only elements corresponding to cleared attachments are used. Other elements of pClearValues are ignored.
+	//each attachment has its clearvalues
+
+	//the subpass attachment ref must match the order in attachment description order
+	//note that fragment shader will write color to buffer pointed by pColorAttachments
+	//fragment shader output is not always single samplered, so if msaa is enabled, shader output can't be used to present; in this case, use pResolveAttachment for present
+
+	if(bUseAttachmentColorPresent){
 		clearValues.push_back({0.0f, 0.0f, 0.0f, 1.0f}); //color attachment: the background color is set to black (0,0,0,1)
+		attachment_reference_color_present.attachment = attachmentCount++; 
+		attachment_reference_color_present.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+		if(bUseAttachmentColorMultisample) subpass.pResolveAttachments = &attachment_reference_color_present;
+		else subpass.pColorAttachments = &attachment_reference_color_present; //fragment shader output here
+	}
+	if(bUseAttachmentDepth){//added for model
+		clearValues.push_back({1.0f, 0}); //The range of depths in the depth buffer is 0.0 to 1.0 in Vulkan, where 1.0 lies at the far view plane and 0.0 at the near view plane.
+		attachment_reference_depth.attachment = attachmentCount++; 
+		attachment_reference_depth.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+		subpass.pDepthStencilAttachment = &attachment_reference_depth; 
+	}
+	if(bUseAttachmentColorMultisample){ //added for MSAA
+		clearValues.push_back({0.0f, 0.0f, 0.0f, 1.0f}); 
+		attachment_reference_color_multisample.attachment = attachmentCount++; 
+		attachment_reference_color_multisample.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+		subpass.pColorAttachments = &attachment_reference_color_multisample; //fragment shader output here
+	}
 
-		colorAttachmentRef.attachment = attachmentCount++;
-		colorAttachmentRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-		subpass.pColorAttachments = &colorAttachmentRef;
-	}
-	if(bUseDepthAttachment){
-		//added for model
-
-		//The range of depths in the depth buffer is 0.0 to 1.0 in Vulkan, where 1.0 lies at the far view plane and 0.0 at the near view plane.
-		clearValues.push_back({1.0f, 0}); 
-		
-		depthAttachmentRef.attachment = attachmentCount++;
-		depthAttachmentRef.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-		subpass.pDepthStencilAttachment = &depthAttachmentRef; //added for model
-	}
-	if(bUseColorAttachmentResolve){
-		//added for MSAA
-		colorAttachmentResolveRef.attachment = attachmentCount++;
-		colorAttachmentResolveRef.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-		subpass.pResolveAttachments = &colorAttachmentResolveRef; //added for MSAA
-	}
 	subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
 	subpass.colorAttachmentCount = 1;
 }
@@ -57,24 +58,26 @@ void CRenderProcess::createDependency(VkPipelineStageFlags srcPipelineStageFlag,
 	dependency.srcAccessMask = 0;//VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT
 	dependency.dstStageMask = dstPipelineStageFlag;
 	dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-	if (bUseDepthAttachment) 
+	if (bUseAttachmentDepth) 
 		dependency.dstAccessMask |= VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
 }
 
 void CRenderProcess::createRenderPass(){ 
-	//HERE_I_AM("wxjCreateRenderPass");
-
 	VkResult result = VK_SUCCESS;
 
-	std::vector<VkAttachmentDescription> attachments;
-	if(bUseColorAttachment) attachments.push_back(colorAttachment);
-	if(bUseDepthAttachment) attachments.push_back(depthAttachment);
-	if(bUseColorAttachmentResolve) attachments.push_back(colorAttachmentResolve);
+	//attachment descriptions in renderpass must match the same order as in framebuffer:
+	//#1: a color attachment with sampler number = 1
+	//#2: if depth test is enabled, a depth attachment with sampler number = n
+	//#3: if msaa is enabled, a color attachment with sampler number = n
+	std::vector<VkAttachmentDescription> attachmentDescriptions;
+	if(bUseAttachmentColorPresent) attachmentDescriptions.push_back(attachment_description_color_present); 
+	if(bUseAttachmentDepth) attachmentDescriptions.push_back(attachment_description_depth);
+	if(bUseAttachmentColorMultisample) attachmentDescriptions.push_back(attachment_description_color_multisample);
 
 	VkRenderPassCreateInfo renderPassInfo{};
 	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
-	renderPassInfo.attachmentCount = static_cast<uint32_t>(attachments.size());
-	renderPassInfo.pAttachments = attachments.data(); //1
+	renderPassInfo.attachmentCount = static_cast<uint32_t>(attachmentDescriptions.size());
+	renderPassInfo.pAttachments = attachmentDescriptions.data(); //1
 	renderPassInfo.subpassCount = 1;
 	renderPassInfo.pSubpasses = &subpass;//2
 	renderPassInfo.dependencyCount = 1;
@@ -86,67 +89,72 @@ void CRenderProcess::createRenderPass(){
 		 
 }
 
+void CRenderProcess::enableColorAttachmentDescriptionColorPresent(VkFormat swapChainImageFormat){  
+	bUseAttachmentColorPresent = true;
 
-void CRenderProcess::addColorAttachment(VkFormat swapChainImageFormat, bool bEnableDepthTest, VkFormat depthFormat, VkSampleCountFlagBits msaaSamples, VkImageLayout imageLayout){  
-	m_msaaSamples = msaaSamples;
-    m_swapChainImageFormat = swapChainImageFormat;
-	
-	if(bEnableDepthTest) {
-		addDepthAttachment(depthFormat);
-		//std::cout<<"Depth Attachment added. Depth Test enabled. "<<std::endl;
-	}
+	attachment_description_color_present.format = swapChainImageFormat;
+	attachment_description_color_present.samples = VK_SAMPLE_COUNT_1_BIT;
+	attachment_description_color_present.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+	attachment_description_color_present.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+	attachment_description_color_present.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+	attachment_description_color_present.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+	attachment_description_color_present.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+	attachment_description_color_present.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+}
 
-	if(msaaSamples > 1) {//msaaSamples > 1 means swapchains'MSAA feature is enabled
-		imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-		addColorAttachmentResolve();
-		//std::cout<<"Color Attachment Resolve added. MSAA enabled, msaaSamples = "<<msaaSamples<<std::endl;
-	}
+void CRenderProcess::enableAttachmentDescriptionDepth(VkFormat depthFormat, VkSampleCountFlagBits msaaSamples){  
+	bUseAttachmentDepth = true;
 
-    //Concept of attachment in Vulkan is like render target in OpenGL
+	//added for model
+	attachment_description_depth.format = depthFormat;//findDepthFormat();
+	//std::cout<<"addDepthAttachment::depthAttachment.format = "<<depthAttachment.format<<std::endl;
+	attachment_description_depth.samples = msaaSamples;
+	std::cout<<"attachment_description_depth.samples = "<<attachment_description_depth.samples<<std::endl;
+	attachment_description_depth.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+	attachment_description_depth.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+	attachment_description_depth.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+	attachment_description_depth.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+	attachment_description_depth.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+	attachment_description_depth.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+    
+}
+
+void CRenderProcess::enableAttachmentDescriptionColorMultiSample(VkFormat swapChainImageFormat, bool bEnableDepthTest, bool bEnableMSAA, VkFormat depthFormat, VkSampleCountFlagBits msaaSamples, VkImageLayout imageLayout){  
+	//Concept of attachment in Vulkan is like render target in OpenGL
 	//Subpass is a procedure to write/read attachments (a render process can has many subpasses, aka a render pass)
 	//Subpass is designed for mobile TBDR architecture
 	//At the beginning of subpass, attachment is loaded; at the end of attachment, attachment is stored
-	bUseColorAttachment = true;
+	bUseAttachmentColorMultisample = true;
+	
+	m_msaaSamples = msaaSamples;
+    m_swapChainImageFormat = swapChainImageFormat;
+	
+	// if(bEnableDepthTest) {
+	// 	enableAttachmentDescriptionDepth(depthFormat);
+	// 	//std::cout<<"Depth Attachment added. Depth Test enabled. "<<std::endl;
+	// }
 
-	colorAttachment.format = m_swapChainImageFormat;
+	attachment_description_color_multisample.finalLayout = imageLayout;
+
+	//if(msaaSamples > 1) {//msaaSamples > 1 means swapchains'MSAA feature is enabled
+	// if(bEnableMSAA) {
+	// 	imageLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+	// 	addColorAttachmentResolve();
+	// 	//std::cout<<"Color Attachment Resolve added. MSAA enabled, msaaSamples = "<<msaaSamples<<std::endl;
+	// }
+
+	attachment_description_color_multisample.format = m_swapChainImageFormat;
 	//std::cout<<"addColorAttachment::colorAttachment.format = "<<colorAttachment.format<<std::endl;
-	colorAttachment.samples = m_msaaSamples;
-	colorAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-	colorAttachment.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-	colorAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-	colorAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	colorAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	colorAttachment.finalLayout = imageLayout;
+	attachment_description_color_multisample.samples = m_msaaSamples;
+	std::cout<<"attachment_description_color_multisample.samples = "<<attachment_description_color_multisample.samples<<std::endl;
+	attachment_description_color_multisample.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+	attachment_description_color_multisample.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+	attachment_description_color_multisample.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+	attachment_description_color_multisample.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+	attachment_description_color_multisample.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+	
 
 	//std::cout<<"Color Attachment added. "<<std::endl;
-}
-void CRenderProcess::addDepthAttachment(VkFormat depthFormat){  
-	bUseDepthAttachment = true;
-
-	//added for model
-	depthAttachment.format = depthFormat;//findDepthFormat();
-	//std::cout<<"addDepthAttachment::depthAttachment.format = "<<depthAttachment.format<<std::endl;
-	depthAttachment.samples = m_msaaSamples;
-	depthAttachment.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-	depthAttachment.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	depthAttachment.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-	depthAttachment.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	depthAttachment.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	depthAttachment.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-    
-}
-void CRenderProcess::addColorAttachmentResolve(){  
-	bUseColorAttachmentResolve = true;
-
-	//added for MSAA
-	colorAttachmentResolve.format = m_swapChainImageFormat;
-	colorAttachmentResolve.samples = VK_SAMPLE_COUNT_1_BIT;
-	colorAttachmentResolve.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-	colorAttachmentResolve.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-	colorAttachmentResolve.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-	colorAttachmentResolve.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	colorAttachmentResolve.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	colorAttachmentResolve.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 }
 
 
@@ -174,32 +182,6 @@ void CRenderProcess::addColorBlendAttachment(VkBlendOp colorBlendOp, VkBlendFact
 	colorBlendAttachment.srcAlphaBlendFactor = srcAlphaBlendFactor;
 	colorBlendAttachment.dstAlphaBlendFactor = dstAlphaBlendFactor;
 }
-
-
-
-// VkFormat CRenderProcess::findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) {
-//     for (VkFormat format : candidates) {
-//         VkFormatProperties props;
-//         vkGetPhysicalDeviceFormatProperties(CContext::GetHandle().GetPhysicalDevice(), format, &props);
-
-//         if (tiling == VK_IMAGE_TILING_LINEAR && (props.linearTilingFeatures & features) == features) {
-//             return format;
-//         }
-//         else if (tiling == VK_IMAGE_TILING_OPTIMAL && (props.optimalTilingFeatures & features) == features) {
-//             return format;
-//         }
-//     }
-
-//     throw std::runtime_error("failed to find supported format!");
-// }
-
-// VkFormat CRenderProcess::findDepthFormat() {
-//     return findSupportedFormat(
-//         { VK_FORMAT_D32_SFLOAT, VK_FORMAT_D32_SFLOAT_S8_UINT, VK_FORMAT_D24_UNORM_S8_UINT },
-//         VK_IMAGE_TILING_OPTIMAL,
-//         VK_FORMAT_FEATURE_DEPTH_STENCIL_ATTACHMENT_BIT
-//     );
-// }
 
 void CRenderProcess::createComputePipelineLayout(VkDescriptorSetLayout &descriptorSetLayout){
 	VkPipelineLayoutCreateInfo pipelineLayoutInfo{};

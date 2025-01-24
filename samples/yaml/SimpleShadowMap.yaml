@@ -57,7 +57,7 @@ Uniforms:
       uniform_sampler_miplevel: 9
   
 Features:
-  feature_graphics_depth_test: false
+  feature_graphics_depth_test: true
   feature_graphics_msaa: true
   feature_graphics_48pbt: false
   feature_graphics_push_constant: false

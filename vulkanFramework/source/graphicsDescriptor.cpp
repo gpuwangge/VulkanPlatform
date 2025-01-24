@@ -55,7 +55,6 @@ void CGraphicsDescriptorManager::createDescriptorPool(unsigned int object_count)
 
 	VkResult result = vkCreateDescriptorPool(CContext::GetHandle().GetLogicalDevice(), &poolInfo, nullptr, &graphicsDescriptorPool);
 	if (result != VK_SUCCESS) throw std::runtime_error("failed to create descriptor pool!");
-	//REPORT("vkCreateDescriptorPool");
 }
 
 /************

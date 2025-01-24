@@ -671,12 +671,20 @@ void CApplication::CreatePipelines(){
     ****************************/
     if(appInfo.VertexShader != NULL){
         VkImageLayout imageLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-        renderProcess.addColorAttachment( 
-            swapchain.swapChainImageFormat,  
-            swapchain.bEnableDepthTest,  
-            swapchain.depthFormat,  
-            swapchain.msaaSamples, 
-            imageLayout); //add this function will enable color attachment (bUseColorAttachment = true)
+        renderProcess.enableColorAttachmentDescriptionColorPresent(swapchain.swapChainImageFormat);//assume when vertex is non-null, need a color attachment for presentation(must be single sampled)
+        if(swapchain.bEnableDepthTest) {
+            renderProcess.enableAttachmentDescriptionDepth(swapchain.depthFormat, swapchain.msaaSamples);
+            if(swapchain.bEnableMSAA) { //if enable MSAA, must also enable depthTest
+                renderProcess.enableAttachmentDescriptionColorMultiSample(
+                //renderProcess.addColorAttachment( 
+                    swapchain.swapChainImageFormat,  
+                    swapchain.bEnableDepthTest,  
+                    swapchain.bEnableMSAA,
+                    swapchain.depthFormat,  
+                    swapchain.msaaSamples, 
+                    imageLayout); //add this function will enable color attachment (bUseColorAttachment = true)
+            }
+        }
         renderProcess.createSubpass();
         if(swapchain.bEnableDepthTest){
             VkPipelineStageFlags srcPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;

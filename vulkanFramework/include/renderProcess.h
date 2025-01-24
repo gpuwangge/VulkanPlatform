@@ -13,19 +13,19 @@ public:
 
     void Cleanup();
 
-    bool bUseColorAttachment;
-    bool bUseDepthAttachment;
-    bool bUseColorAttachmentResolve;
+    bool bUseAttachmentColorPresent; //in MSAA testcase, this is often called color resolve(multisample attachment will be eventually resolve to singlesample attachment for presentation)
+    bool bUseAttachmentDepth;
+    bool bUseAttachmentColorMultisample;
 
     bool bUseColorBlendAttachment;
 
-    VkAttachmentDescription colorAttachment{};
-    VkAttachmentDescription depthAttachment{};
-    VkAttachmentDescription colorAttachmentResolve{};
+    VkAttachmentDescription attachment_description_color_present{};//these are descriptions, not attachment buffer, each has many(9) properties
+    VkAttachmentDescription attachment_description_depth{};
+    VkAttachmentDescription attachment_description_color_multisample{};
 
-    VkAttachmentReference colorAttachmentRef{};
-    VkAttachmentReference depthAttachmentRef{};
-    VkAttachmentReference colorAttachmentResolveRef{};
+    VkAttachmentReference attachment_reference_color_present{};//refs are the references of the description, each has only attachment index and layout
+    VkAttachmentReference attachment_reference_depth{};
+    VkAttachmentReference attachment_reference_color_multisample{};
 
     VkPipelineColorBlendAttachmentState colorBlendAttachment{};
 
@@ -41,20 +41,20 @@ public:
         VkPipelineStageFlags dstPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
     void createRenderPass();
 
-    void addColorAttachment(
+    void enableColorAttachmentDescriptionColorPresent(VkFormat swapChainImageFormat);
+    void enableAttachmentDescriptionDepth(VkFormat depthFormat, VkSampleCountFlagBits msaaSamples);
+    void enableAttachmentDescriptionColorMultiSample(
         VkFormat swapChainImageFormat,
         bool bEnableDepthTest = false,
+        bool bEnableMSAA = false,
         VkFormat depthFormat = VK_FORMAT_UNDEFINED,
         VkSampleCountFlagBits msaaSamples = VK_SAMPLE_COUNT_1_BIT, 
         VkImageLayout imageLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
-    void addDepthAttachment(VkFormat depthFormat);
-    void addColorAttachmentResolve();
+   
+    
 
     void addColorBlendAttachment(VkBlendOp colorBlendOp, VkBlendFactor srcColorBlendFactor, VkBlendFactor dstColorBlendFactor, 
 								 VkBlendOp alphaBlendOp, VkBlendFactor srcAlphaBlendFactor, VkBlendFactor dstAlphaBlendFactor);
-
-    // VkFormat findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features);
-    // VkFormat findDepthFormat();
 
     VkSampleCountFlagBits m_msaaSamples;
     VkFormat m_swapChainImageFormat;
@@ -235,7 +235,7 @@ public:
         pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 
         /*********11**********/
-        if (bUseDepthAttachment) {
+        if (bUseAttachmentDepth) {
             bool bSkybox = false;
             if(graphicsPipelines.size() == skyboxID) bSkybox = true;
             //std::cout<<"bSkybox="<<bSkybox<<"(skyboxID="<<skyboxID<<")"<<std::endl;

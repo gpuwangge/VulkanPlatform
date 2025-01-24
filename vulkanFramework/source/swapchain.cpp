@@ -15,9 +15,6 @@ CSwapchain::~CSwapchain(){
     //if (!debugger) delete debugger;
 }
 
-// void CSwapchain::GetPhysicalDevice(CPhysicalDevice *physical_device){
-//     m_physical_device = physical_device;
-// }
 
 // bool CSwapchain::CheckFormatSupport(VkPhysicalDevice gpu, VkFormat format, VkFormatFeatureFlags requestedSupport) {///!!!!
 //     VkFormatProperties vkFormatProperties;
@@ -125,13 +122,13 @@ void CSwapchain::createImages(VkSurfaceKHR surface, int width, int height){
 
     result = vkCreateSwapchainKHR(CContext::GetHandle().GetLogicalDevice(), &createInfo, nullptr, &handle);
     if (result != VK_SUCCESS) throw std::runtime_error("failed to create swap chain!");
-    //REPORT("vkCreateSwapchainKHR");
-    //logManager.print("wxjtest");
+
     result = vkGetSwapchainImagesKHR(CContext::GetHandle().GetLogicalDevice(), handle, &imageSize, nullptr);
-    //REPORT("vkGetSwapchainImagesKHR(Get imageCount)");
     images.resize(imageSize);
     result = vkGetSwapchainImagesKHR(CContext::GetHandle().GetLogicalDevice(), handle, &imageSize, images.data());
-    //REPORT("vkGetSwapchainImagesKHR");
+    //these swapchain images cant not set properties, they always have VK_SAMPLE_COUNT_1_BIT, so it can't be used to present MSAA images
+    //because of physical device(display) doesn't support multi sampling(each pixel only display one color), so the final image must be single-sample
+    //solution is to create another image(resolve) with msaa number > 1 , use msaa to render high-quality image, then display single-sample image at the end
 
     swapChainImageFormat = surfaceFormat.format;
     swapChainExtent = extent;
@@ -286,17 +283,25 @@ void CSwapchain::CreateFramebuffers(VkRenderPass &renderPass){
 	swapChainFramebuffers.resize(views.size());
 
 	for (size_t i = 0; i < imageSize; i++) {
-		std::vector<VkImageView> imageViews_to_attach; 
-		 if (bEnableDepthTest && bEnableMSAA) {//Renderpass attachment(render target) order: Color, Depth, ColorResolve
-		    imageViews_to_attach.push_back(msaaColorImageBuffer.view);
-		    imageViews_to_attach.push_back(depthImageBuffer.view);
-			imageViews_to_attach.push_back(views[i]);
-		 }else if(bEnableDepthTest){//Renderpass attachment(render target) order: Color, Depth
-			imageViews_to_attach.push_back(views[i]);
-			imageViews_to_attach.push_back(depthImageBuffer.view);
-		}else{ //Renderpass attachment(render target) order: Color
-			imageViews_to_attach.push_back(views[i]);
-		}
+        //attachments in framebuffer are set in this order:
+        //#1: a color attachment with sampler number = 1
+        //#2: if depth test is enabled, a depth attachment with sampler number = n
+        //#3: if msaa is enabled, a color attachment with sampler number = n
+        std::vector<VkImageView> imageViews_to_attach; 
+        imageViews_to_attach.push_back(views[i]); //views are created from swapchain, sampler number is always 1
+        if(bEnableDepthTest) imageViews_to_attach.push_back(depthImageBuffer.view);
+        if(bEnableMSAA) imageViews_to_attach.push_back(msaaColorImageBuffer.view);
+		
+		// if (bEnableDepthTest && bEnableMSAA) {
+        //     imageViews_to_attach.push_back(views[i]);
+		//     imageViews_to_attach.push_back(depthImageBuffer.view);
+		// 	imageViews_to_attach.push_back(msaaColorImageBuffer.view);
+		// }else if(bEnableDepthTest){
+		// 	imageViews_to_attach.push_back(views[i]);
+		// 	imageViews_to_attach.push_back(depthImageBuffer.view);
+		// }else{ 
+		// 	imageViews_to_attach.push_back(views[i]);
+		// }
 
 		VkFramebufferCreateInfo framebufferInfo{};
 		framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
