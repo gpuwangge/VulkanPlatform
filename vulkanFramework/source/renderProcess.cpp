@@ -27,32 +27,45 @@ void CRenderProcess::createSubpass(){
 	//note that fragment shader will write color to buffer pointed by pColorAttachments
 	//fragment shader output is not always single samplered, so if msaa is enabled, shader output can't be used to present; in this case, use pResolveAttachment for present
 
-	//SINGLEPASS
-	//VkSubpassDescription subpass;
-	if(bUseAttachmentColorPresent){
-		clearValues.push_back({0.0f, 0.0f, 0.0f, 1.0f}); //color attachment: the background color is set to black (0,0,0,1)
-		attachment_reference_color_present.attachment = attachmentCount++; 
-		attachment_reference_color_present.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-		if(bUseAttachmentColorMultisample) subpass.pResolveAttachments = &attachment_reference_color_present;
-		else subpass.pColorAttachments = &attachment_reference_color_present; //fragment shader output here
-	}
+	//First: create attachment reference according to attachment info
+	
+
 	if(bUseAttachmentDepth){//added for model
 		clearValues.push_back({1.0f, 0}); //The range of depths in the depth buffer is 0.0 to 1.0 in Vulkan, where 1.0 lies at the far view plane and 0.0 at the near view plane.
 		attachment_reference_depth.attachment = attachmentCount++; 
 		attachment_reference_depth.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;//VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;//VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-		subpass.pDepthStencilAttachment = &attachment_reference_depth; 
 	}
 	if(bUseAttachmentColorMultisample){ //added for MSAA
 		clearValues.push_back({0.0f, 0.0f, 0.0f, 1.0f}); 
 		attachment_reference_color_multisample.attachment = attachmentCount++; 
 		attachment_reference_color_multisample.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+	}
+	if(bUseAttachmentColorPresent){
+		clearValues.push_back({0.0f, 0.0f, 0.0f, 1.0f}); //color attachment: the background color is set to black (0,0,0,1)
+		attachment_reference_color_present.attachment = attachmentCount++; 
+		attachment_reference_color_present.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+	}
+
+	//Second: create subpasses
+	VkSubpassDescription subpass{};
+	if(bUseAttachmentColorPresent){
+		if(bUseAttachmentColorMultisample) subpass.pResolveAttachments = &attachment_reference_color_present;
+		else subpass.pColorAttachments = &attachment_reference_color_present; //fragment shader output here
+	}
+	if(bUseAttachmentDepth){
+		subpass.pDepthStencilAttachment = &attachment_reference_depth; 
+	}
+	if(bUseAttachmentColorMultisample){
 		subpass.pColorAttachments = &attachment_reference_color_multisample; //fragment shader output here
 	}
 
 	subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
 	subpass.colorAttachmentCount = 1;
 
-	//subpasses.push_back(subpass);
+	subpasses.push_back(subpass);
+
+
+
 
 	//TEST TWO SUBPASSES
 	// clearValues.push_back({1.0f, 0});
@@ -118,25 +131,21 @@ void CRenderProcess::createRenderPass(){
 	//#2: if depth test is enabled, a depth attachment with sampler number = n
 	//#3: if msaa is enabled, a color attachment with sampler number = n
 	std::vector<VkAttachmentDescription> attachmentDescriptions;
-	if(bUseAttachmentColorPresent) attachmentDescriptions.push_back(attachment_description_color_present); 
 	if(bUseAttachmentDepth) attachmentDescriptions.push_back(attachment_description_depth);
 	if(bUseAttachmentColorMultisample) attachmentDescriptions.push_back(attachment_description_color_multisample);
+	if(bUseAttachmentColorPresent) attachmentDescriptions.push_back(attachment_description_color_present); 
 
 	VkRenderPassCreateInfo renderPassInfo{};
 	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
 	renderPassInfo.attachmentCount = static_cast<uint32_t>(attachmentDescriptions.size());
 	renderPassInfo.pAttachments = attachmentDescriptions.data(); //1
-	//renderPassInfo.subpassCount = subpasses.size();//1;
-	renderPassInfo.subpassCount = 1;
-	//renderPassInfo.pSubpasses = subpasses.data();//&subpass;//2
-	renderPassInfo.pSubpasses = &subpass;//2
+	renderPassInfo.subpassCount = subpasses.size();//1;
+	renderPassInfo.pSubpasses = subpasses.data();//&subpass;//2
 	renderPassInfo.dependencyCount = 1;
 	renderPassInfo.pDependencies = &dependency;//3
 
 	result = vkCreateRenderPass(CContext::GetHandle().GetLogicalDevice(), &renderPassInfo, nullptr, &renderPass);
-	if (result != VK_SUCCESS) throw std::runtime_error("failed to create render pass!");
-	//REPORT("vkCreateRenderPass");
-		 
+	if (result != VK_SUCCESS) throw std::runtime_error("failed to create render pass!");	 
 }
 
 void CRenderProcess::enableColorAttachmentDescriptionColorPresent(VkFormat swapChainImageFormat){  

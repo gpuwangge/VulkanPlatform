@@ -288,9 +288,9 @@ void CSwapchain::CreateFramebuffers(VkRenderPass &renderPass){
         //#2: if depth test is enabled, a depth attachment with sampler number = n
         //#3: if msaa is enabled, a color attachment with sampler number = n
         std::vector<VkImageView> imageViews_to_attach; 
-        imageViews_to_attach.push_back(views[i]); //views are created from swapchain, sampler number is always 1
         if(bEnableDepthTest) imageViews_to_attach.push_back(depthImageBuffer.view);
         if(bEnableMSAA) imageViews_to_attach.push_back(msaaColorImageBuffer.view);
+        imageViews_to_attach.push_back(views[i]); //views are created from swapchain, sampler number is always 1
 
         // imageViews_to_attach.push_back(depthImageBuffer.view);
         // imageViews_to_attach.push_back(views[i]);
