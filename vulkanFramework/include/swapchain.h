@@ -36,8 +36,8 @@ public:
 	//CSwapchainImageManager imageManager;
     void GetMaxUsableSampleCount();
 
-    std::vector<VkImage> images;//08
-    std::vector<VkImageView> views;//08
+    std::vector<VkImage> images;
+    std::vector<VkImageView> views;
     uint32_t imageSize;
 
     bool bComputeSwapChainImage = false; //added VK_IMAGE_USAGE_STORAGE_BIT for image storage

@@ -23,15 +23,15 @@ public:
      ************/
     static std::vector<VkDescriptorSetLayoutBinding> graphicsBindings;
     static VkDescriptorSetLayout descriptorSetLayout_general;
-    static VkDescriptorSetLayout descriptorSetLayout_texture;
+    static VkDescriptorSetLayout descriptorSetLayout_textureImageSampler;
     static void createDescriptorSetLayout_General(VkDescriptorSetLayoutBinding *customBinding = nullptr);
-    static void createDescriptorSetLayout_Texture();
+    static void createDescriptorSetLayout_TextureImageSampler();
 
     /************
      * Set
      ************/
     std::vector<VkDescriptorSet> descriptorSets_general; //one descriptor set for each host resource (MAX_FRAMES_IN_FLIGHT)
-    void createDescriptorSets_General();
+    void createDescriptorSets_General(VkImageView depthImageView);
 
     /************
      * 1 GRAPHCIS_UNIFORMBUFFER_CUSTOM
@@ -74,12 +74,17 @@ public:
     static bool CheckMVP(); //to check if all objects associate this graphcis descriptor use MVP/VP or not. If return true, means it will use dynamic descriptor offset
 
     /************
-     * 5 GRAPHCIS_COMBINEDIMAGE_SAMPLER
+     * 5 GRAPHCIS_COMBINEDIMAGESAMPLER_TEXTUREIMAGE
      ************/
-    static unsigned int samplerSize;
-    static std::vector<VkSampler> textureSamplers;
-    static void addImageSamplerUniformBuffer(std::vector<int> mipLevels);
+    static unsigned int textureImageSamplerSize;
+    static std::vector<VkSampler> textureImageSamplers;
+    static void addTextureImageSamplerUniformBuffer(std::vector<int> mipLevels);
 
+    /************
+     * 6 GRAPHCIS_COMBINEDIMAGESAMPLER_DEPTHIMAGE
+     ************/
+    static VkSampler depthImageSampler;
+    static void addDepthImageSamplerUniformBuffer();
     
     /************
      * Helper Functions

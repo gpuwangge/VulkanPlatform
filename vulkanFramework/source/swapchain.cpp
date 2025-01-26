@@ -260,7 +260,7 @@ VkFormat CSwapchain::findDepthFormat() {
 void CSwapchain::EnableDepthTest(){
     bEnableDepthTest = true;
     depthFormat = findDepthFormat();
-	VkImageUsageFlags usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT;
+	VkImageUsageFlags usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
 	createDepthImages(VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 	createDepthImageViews(depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT);
 }
@@ -291,6 +291,9 @@ void CSwapchain::CreateFramebuffers(VkRenderPass &renderPass){
         imageViews_to_attach.push_back(views[i]); //views are created from swapchain, sampler number is always 1
         if(bEnableDepthTest) imageViews_to_attach.push_back(depthImageBuffer.view);
         if(bEnableMSAA) imageViews_to_attach.push_back(msaaColorImageBuffer.view);
+
+        // imageViews_to_attach.push_back(depthImageBuffer.view);
+        // imageViews_to_attach.push_back(views[i]);
 		
 		// if (bEnableDepthTest && bEnableMSAA) {
         //     imageViews_to_attach.push_back(views[i]);

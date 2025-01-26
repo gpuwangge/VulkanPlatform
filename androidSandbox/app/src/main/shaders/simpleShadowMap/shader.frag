@@ -14,7 +14,9 @@ layout(set = 0, binding = 1) uniform UniformCustomBufferObject {
 	vec4 cameraPos; 
 } customUBO;
 
+layout (set = 0, binding = 3) uniform sampler2D depthSampler;//test
 layout (set = 1, binding = 0) uniform sampler2D texSampler;
+
 
 layout (location = 0) in vec3 inNormal;
 layout (location = 1) in vec3 inColor;//inColor is not used here	
@@ -107,4 +109,7 @@ void main() {
 
 		outColor += vec4(ambient * ambientIntensity + diffuse * diffuseIntensity + specular * specularIntensity, 0.0);
 	}	
+
+	//float depthValue = texture(depthSampler, inTexCoord).r;///test
+	//outColor = vec4(vec3(depthValue), 1.0);///test
 }

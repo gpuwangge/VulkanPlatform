@@ -432,26 +432,26 @@ void CApplication::ReadUniforms(){
                 appInfo.Uniform.b_uniform_graphics_mvp = graphicsUniform["uniform_graphics_mvp"] ? graphicsUniform["uniform_graphics_mvp"].as<bool>() : false;
                 appInfo.Uniform.b_uniform_graphics_vp = graphicsUniform["uniform_graphics_vp"] ? graphicsUniform["uniform_graphics_vp"].as<bool>() : false;
                 appInfo.Uniform.b_uniform_graphics_lighting = graphicsUniform["uniform_graphics_lighting"] ? graphicsUniform["uniform_graphics_lighting"].as<bool>() : false;
-
-                if(appInfo.Uniform.b_uniform_graphics_custom){
-                    CGraphicsDescriptorManager::graphicsUniformTypes |= GRAPHCIS_UNIFORMBUFFER_CUSTOM;
+                appInfo.Uniform.b_uniform_graphics_depth_image_sampler = graphicsUniform["uniform_graphics_depth_image_sampler"] ? graphicsUniform["uniform_graphics_depth_image_sampler"].as<bool>() : false;
+                
+                if(appInfo.Uniform.b_uniform_graphics_custom)
+                    //CGraphicsDescriptorManager::graphicsUniformTypes |= GRAPHCIS_UNIFORMBUFFER_CUSTOM;
                     CGraphicsDescriptorManager::addCustomUniformBuffer(appInfo.Uniform.GraphicsCustom.Size);
-                }
 
-                if(appInfo.Uniform.b_uniform_graphics_lighting){
-                    CGraphicsDescriptorManager::graphicsUniformTypes |= GRAPHCIS_UNIFORMBUFFER_LIGHTING;
+                if(appInfo.Uniform.b_uniform_graphics_lighting)
+                    //CGraphicsDescriptorManager::graphicsUniformTypes |= GRAPHCIS_UNIFORMBUFFER_LIGHTING;
                     CGraphicsDescriptorManager::addLightingUniformBuffer();
-                }
 
-                if(appInfo.Uniform.b_uniform_graphics_mvp){
-                    CGraphicsDescriptorManager::graphicsUniformTypes |= GRAPHCIS_UNIFORMBUFFER_MVP;
+                if(appInfo.Uniform.b_uniform_graphics_mvp)
+                    //CGraphicsDescriptorManager::graphicsUniformTypes |= GRAPHCIS_UNIFORMBUFFER_MVP;
                     CGraphicsDescriptorManager::addMVPUniformBuffer();
-                }
 
-                if(appInfo.Uniform.b_uniform_graphics_vp){
-                    CGraphicsDescriptorManager::graphicsUniformTypes |= GRAPHCIS_UNIFORMBUFFER_VP;
+                if(appInfo.Uniform.b_uniform_graphics_vp)
+                    //CGraphicsDescriptorManager::graphicsUniformTypes |= GRAPHCIS_UNIFORMBUFFER_VP;
                     CGraphicsDescriptorManager::addVPUniformBuffer();
-                }
+
+                if(appInfo.Uniform.b_uniform_graphics_depth_image_sampler)
+                    CGraphicsDescriptorManager::addDepthImageSamplerUniformBuffer();
 
             }
         }
@@ -464,37 +464,33 @@ void CApplication::ReadUniforms(){
                 appInfo.Uniform.b_uniform_compute_swapchain_storage = computeUniform["uniform_compute_swapchain_storage"] ? computeUniform["uniform_compute_swapchain_storage"].as<bool>() : false;
                 appInfo.Uniform.b_uniform_compute_texture_storage = computeUniform["uniform_compute_texture_storage"] ? computeUniform["uniform_compute_texture_storage"].as<bool>() : false;
             
-                if(appInfo.Uniform.b_uniform_compute_custom){
-                    CComputeDescriptorManager::computeUniformTypes |= COMPUTE_UNIFORMBUFFER_CUSTOM;
+                if(appInfo.Uniform.b_uniform_compute_custom)
+                    //CComputeDescriptorManager::computeUniformTypes |= COMPUTE_UNIFORMBUFFER_CUSTOM;
                     CComputeDescriptorManager::addCustomUniformBuffer(appInfo.Uniform.ComputeCustom.Size);
-                }
 
-                if(appInfo.Uniform.b_uniform_compute_storage){
-                    CComputeDescriptorManager::computeUniformTypes |= COMPUTE_STORAGEBUFFER_DOUBLE;
+                if(appInfo.Uniform.b_uniform_compute_storage)
+                    //CComputeDescriptorManager::computeUniformTypes |= COMPUTE_STORAGEBUFFER_DOUBLE;
                     CComputeDescriptorManager::addStorageBuffer(appInfo.Uniform.ComputeStorageBuffer.Size, appInfo.Uniform.ComputeStorageBuffer.Usage);
-                }
 
-                if(appInfo.Uniform.b_uniform_compute_texture_storage){
-                    CComputeDescriptorManager::computeUniformTypes |= COMPUTE_STORAGEIMAGE_TEXTURE;
+                if(appInfo.Uniform.b_uniform_compute_texture_storage)
+                    //CComputeDescriptorManager::computeUniformTypes |= COMPUTE_STORAGEIMAGE_TEXTURE;
                     CComputeDescriptorManager::addStorageImage(COMPUTE_STORAGEIMAGE_TEXTURE);
-                }
 
-                if(appInfo.Uniform.b_uniform_compute_swapchain_storage){
-                    CComputeDescriptorManager::computeUniformTypes |= COMPUTE_STORAGEIMAGE_SWAPCHAIN;
+                if(appInfo.Uniform.b_uniform_compute_swapchain_storage)
+                    //CComputeDescriptorManager::computeUniformTypes |= COMPUTE_STORAGEIMAGE_SWAPCHAIN;
                     CComputeDescriptorManager::addStorageImage(COMPUTE_STORAGEIMAGE_SWAPCHAIN);
-                }      
             }  
         }
 
-        if (uniform["Samplers"]) {
+        if (uniform["GraphicsTextureImageSamplers"]) {
             std::vector<int> miplevels;
-            for (const auto& samplerUniform : uniform["Samplers"]) {
-                std::string name = samplerUniform["uniform_sampler_name"] ? samplerUniform["uniform_sampler_name"].as<std::string>() : "Default";
-                int miplevel = samplerUniform["uniform_sampler_miplevel"] ? samplerUniform["uniform_sampler_miplevel"].as<int>() : 1;
+            for (const auto& samplerUniform : uniform["GraphicsTextureImageSamplers"]) {
+                std::string name = samplerUniform["uniform_graphics_texture_image_sampler_name"] ? samplerUniform["uniform_graphics_texture_image_sampler_name"].as<std::string>() : "Default";
+                int miplevel = samplerUniform["uniform_graphics_texture_image_sampler_miplevel"] ? samplerUniform["uniform_graphics_texture_image_sampler_miplevel"].as<int>() : 1;
                 miplevels.push_back(miplevel);
             }
-            CGraphicsDescriptorManager::graphicsUniformTypes |= GRAPHCIS_COMBINEDIMAGE_SAMPLER;
-            CGraphicsDescriptorManager::addImageSamplerUniformBuffer(miplevels);
+            CGraphicsDescriptorManager::graphicsUniformTypes |= GRAPHCIS_COMBINEDIMAGESAMPLER_TEXTUREIMAGE;
+            CGraphicsDescriptorManager::addTextureImageSamplerUniformBuffer(miplevels);
         }
     }
 }
@@ -610,7 +606,7 @@ void CApplication::CreateUniformDescriptors(bool b_uniform_graphics, bool b_unif
         if(appInfo.Uniform.b_uniform_graphics_custom) 
              CGraphicsDescriptorManager::createDescriptorSetLayout_General(&appInfo.Uniform.GraphicsCustom.Binding); 
         else CGraphicsDescriptorManager::createDescriptorSetLayout_General(); 
-        if(CGraphicsDescriptorManager::textureSamplers.size()>0) CGraphicsDescriptorManager::createDescriptorSetLayout_Texture(); 
+        if(CGraphicsDescriptorManager::textureImageSamplers.size()>0) CGraphicsDescriptorManager::createDescriptorSetLayout_TextureImageSampler(); 
     }
     if(b_uniform_compute){
         if(appInfo.Uniform.b_uniform_compute_custom) CComputeDescriptorManager::createDescriptorSetLayout(&appInfo.Uniform.ComputeCustom.Binding);
@@ -619,7 +615,7 @@ void CApplication::CreateUniformDescriptors(bool b_uniform_graphics, bool b_unif
 
     //UNIFORM STEP 3/3 (Set)
     if(b_uniform_graphics)
-        graphicsDescriptorManager.createDescriptorSets_General(); 
+        graphicsDescriptorManager.createDescriptorSets_General(swapchain.depthImageBuffer.view);//TODO: what if no depthImageBuffer is not enable 
     if(b_uniform_compute){
         if(appInfo.Uniform.b_uniform_compute_swapchain_storage) {
             if(appInfo.Uniform.b_uniform_compute_texture_storage)
@@ -690,9 +686,9 @@ void CApplication::CreatePipelines(){
             dsLayouts.push_back(CGraphicsDescriptorManager::descriptorSetLayout_general); //set = 0
         }
 
-        if(CGraphicsDescriptorManager::graphicsUniformTypes & GRAPHCIS_COMBINEDIMAGE_SAMPLER) {
+        if(CGraphicsDescriptorManager::graphicsUniformTypes & GRAPHCIS_COMBINEDIMAGESAMPLER_TEXTUREIMAGE) {
             if(bVerbose) std::cout<<"CreatePipeline: Add layout set1: sampler(texture) layout"<<std::endl;
-            dsLayouts.push_back(CGraphicsDescriptorManager::descriptorSetLayout_texture); //set = 1
+            dsLayouts.push_back(CGraphicsDescriptorManager::descriptorSetLayout_textureImageSampler); //set = 1
         }
 
   

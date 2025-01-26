@@ -27,6 +27,8 @@ void CRenderProcess::createSubpass(){
 	//note that fragment shader will write color to buffer pointed by pColorAttachments
 	//fragment shader output is not always single samplered, so if msaa is enabled, shader output can't be used to present; in this case, use pResolveAttachment for present
 
+	//SINGLEPASS
+	//VkSubpassDescription subpass;
 	if(bUseAttachmentColorPresent){
 		clearValues.push_back({0.0f, 0.0f, 0.0f, 1.0f}); //color attachment: the background color is set to black (0,0,0,1)
 		attachment_reference_color_present.attachment = attachmentCount++; 
@@ -37,7 +39,7 @@ void CRenderProcess::createSubpass(){
 	if(bUseAttachmentDepth){//added for model
 		clearValues.push_back({1.0f, 0}); //The range of depths in the depth buffer is 0.0 to 1.0 in Vulkan, where 1.0 lies at the far view plane and 0.0 at the near view plane.
 		attachment_reference_depth.attachment = attachmentCount++; 
-		attachment_reference_depth.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+		attachment_reference_depth.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;//VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;//VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 		subpass.pDepthStencilAttachment = &attachment_reference_depth; 
 	}
 	if(bUseAttachmentColorMultisample){ //added for MSAA
@@ -49,9 +51,40 @@ void CRenderProcess::createSubpass(){
 
 	subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
 	subpass.colorAttachmentCount = 1;
+
+	//subpasses.push_back(subpass);
+
+	//TEST TWO SUBPASSES
+	// clearValues.push_back({1.0f, 0});
+	// attachment_reference_depth.attachment = 0;
+	// attachment_reference_depth.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+	// clearValues.push_back({0.0f, 0.0f, 0.0f, 1.0f});
+	// attachment_reference_color_present.attachment = 1;
+	// attachment_reference_color_present.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+
+
+
+	// VkSubpassDescription subpass0;
+	// subpass0.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+	// subpass0.colorAttachmentCount = 1;
+	// subpass0.pDepthStencilAttachment = &attachment_reference_depth;
+	// subpass0.pColorAttachments = &attachment_reference_color_present;
+	
+
+	// VkSubpassDescription subpass1;
+	// subpass1.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+	// subpass1.colorAttachmentCount = 1;
+	// subpass1.pDepthStencilAttachment = &attachment_reference_depth;
+	// subpass1.pColorAttachments = &attachment_reference_color_present;
+
+	// subpasses.push_back(subpass0);
+	// subpasses.push_back(subpass1);
+
 }
 
 void CRenderProcess::createDependency(VkPipelineStageFlags srcPipelineStageFlag, VkPipelineStageFlags dstPipelineStageFlag){  
+	//SINGLE SUBPASS
 	dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
 	dependency.dstSubpass = 0;
 	dependency.srcStageMask = srcPipelineStageFlag;
@@ -60,6 +93,21 @@ void CRenderProcess::createDependency(VkPipelineStageFlags srcPipelineStageFlag,
 	dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
 	if (bUseAttachmentDepth) 
 		dependency.dstAccessMask |= VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+
+	//TEST TWO SUBPASSES
+	//VkPipelineStageFlags srcPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+    //VkPipelineStageFlags dstPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+
+	// dependency.srcSubpass = 0;//subpass0 
+	// dependency.dstSubpass = 1;//subpass1
+	// dependency.srcStageMask = srcPipelineStageFlag;//VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT;
+	// dependency.dstStageMask = dstPipelineStageFlag;//VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+
+	// dependency.srcAccessMask = 0;//VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+	// dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;//VK_ACCESS_SHADER_READ_BIT;
+
+	// dependency.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
+
 }
 
 void CRenderProcess::createRenderPass(){ 
@@ -78,7 +126,9 @@ void CRenderProcess::createRenderPass(){
 	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
 	renderPassInfo.attachmentCount = static_cast<uint32_t>(attachmentDescriptions.size());
 	renderPassInfo.pAttachments = attachmentDescriptions.data(); //1
+	//renderPassInfo.subpassCount = subpasses.size();//1;
 	renderPassInfo.subpassCount = 1;
+	//renderPassInfo.pSubpasses = subpasses.data();//&subpass;//2
 	renderPassInfo.pSubpasses = &subpass;//2
 	renderPassInfo.dependencyCount = 1;
 	renderPassInfo.pDependencies = &dependency;//3
@@ -115,7 +165,7 @@ void CRenderProcess::enableAttachmentDescriptionDepth(VkFormat depthFormat, VkSa
 	attachment_description_depth.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
 	attachment_description_depth.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
 	attachment_description_depth.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	attachment_description_depth.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+	attachment_description_depth.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;//VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;//VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
     
 }
 

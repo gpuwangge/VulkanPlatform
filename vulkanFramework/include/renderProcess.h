@@ -30,6 +30,7 @@ public:
     VkPipelineColorBlendAttachmentState colorBlendAttachment{};
 
     VkSubpassDescription subpass{};
+    //std::vector<VkSubpassDescription> subpasses;
     VkSubpassDependency dependency{};
     VkRenderPass renderPass = VK_NULL_HANDLE; 
 

@@ -74,7 +74,7 @@ void CObject::CleanUp(){
     //textureDescriptor.DestroyAndFree();
 }
 
-void CObject::CreateTextureDescriptorSets(VkDescriptorPool &descriptorPool, VkDescriptorSetLayout &descriptorSetLayout, std::vector<VkSampler> &samplers, std::vector<VkImageView> *swapchainImageViews){
+void CObject::CreateDescriptorSets_TextureImageSampler(VkDescriptorPool &descriptorPool, VkDescriptorSetLayout &descriptorSetLayout, std::vector<VkSampler> &samplers, std::vector<VkImageView> *swapchainImageViews){
     //std::cout<<"TextureDescriptor::createDescriptorSets."<<std::endl;
     if(samplers.size() < 1) return;
     
@@ -91,9 +91,9 @@ void CObject::CreateTextureDescriptorSets(VkDescriptorPool &descriptorPool, VkDe
     allocInfo.descriptorSetCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);///!!!
     allocInfo.pSetLayouts = layouts.data();
 
-    descriptorSets.resize(MAX_FRAMES_IN_FLIGHT);///!!!
+    descriptorSets_graphics_texture_image_sampler.resize(MAX_FRAMES_IN_FLIGHT);///!!!
     //Step 3
-    result = vkAllocateDescriptorSets(CContext::GetHandle().GetLogicalDevice(), &allocInfo, descriptorSets.data());
+    result = vkAllocateDescriptorSets(CContext::GetHandle().GetLogicalDevice(), &allocInfo, descriptorSets_graphics_texture_image_sampler.data());
     if (result != VK_SUCCESS) throw std::runtime_error("failed to allocate descriptor sets!");
 
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
@@ -120,7 +120,7 @@ void CObject::CreateTextureDescriptorSets(VkDescriptorPool &descriptorPool, VkDe
                 imageInfo[j].sampler = samplers[p_textureManager->textureImages[m_texture_ids[0]].m_sampler_id]; 
             }
             descriptorWrites[j].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-            descriptorWrites[j].dstSet = descriptorSets[i];
+            descriptorWrites[j].dstSet = descriptorSets_graphics_texture_image_sampler[i];
             descriptorWrites[j].dstBinding = j;
             descriptorWrites[j].dstArrayElement = 0;
             descriptorWrites[j].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
@@ -162,7 +162,7 @@ void CObject::Register(CApplication *p_app, int object_id, std::vector<int> text
     p_renderer = &(p_app->renderer);
     p_renderProcess = &(p_app->renderProcess);
     p_graphicsPipelineLayout = &(p_app->renderProcess.graphicsPipelineLayouts[m_graphics_pipeline_id]);
-    p_graphicsDescriptorSets = &(p_app->graphicsDescriptorManager.descriptorSets_general);//?
+    p_descriptorSets_graphcis_general = &(p_app->graphicsDescriptorManager.descriptorSets_general);//?
     p_textureManager = &(p_app->textureManager);
 
 
@@ -172,10 +172,10 @@ void CObject::Register(CApplication *p_app, int object_id, std::vector<int> text
 
     //bUseTextureSampler = true; 
     if(m_texture_ids.size() > 0){
-        CreateTextureDescriptorSets(
+        CreateDescriptorSets_TextureImageSampler(
             CGraphicsDescriptorManager::graphicsDescriptorPool,
-            CGraphicsDescriptorManager::descriptorSetLayout_texture,
-            CGraphicsDescriptorManager::textureSamplers
+            CGraphicsDescriptorManager::descriptorSetLayout_textureImageSampler,
+            CGraphicsDescriptorManager::textureImageSamplers
         );
     }
 
@@ -192,8 +192,8 @@ void CObject::Draw(uint32_t n){
 
     std::vector<std::vector<VkDescriptorSet>> dsSets; 
     //set = 0 is for general uniform; set = 1 is for texture sampler uniform
-    if(CGraphicsDescriptorManager::getSetSize_General() > 0) dsSets.push_back(*p_graphicsDescriptorSets); 
-    if(CGraphicsDescriptorManager::textureSamplers.size() > 0) dsSets.push_back(descriptorSets); 
+    if(CGraphicsDescriptorManager::getSetSize_General() > 0) dsSets.push_back(*p_descriptorSets_graphcis_general); 
+    if(CGraphicsDescriptorManager::textureImageSamplers.size() > 0) dsSets.push_back(descriptorSets_graphics_texture_image_sampler); 
     //std::cout<<"test3.dsSets.size()="<<dsSets.size()<<std::endl;
     
     if(dsSets.size() > 0){

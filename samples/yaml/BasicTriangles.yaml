@@ -31,9 +31,10 @@ Uniforms:
       uniform_graphics_lighting: false
       uniform_graphics_mvp: true
       uniform_graphics_vp: false
-  - Samplers: #binding order(set1): sampler
-    - uniform_sampler_name: Sampler
-      uniform_sampler_miplevel: 1
+      uniform_graphics_depth_image_sampler: false
+  - GraphicsTextureImageSamplers: #binding order(set1): sampler
+    - uniform_graphics_texture_image_sampler_name: Sampler
+      uniform_graphics_texture_image_sampler_miplevel: 1
   - Compute: #binding order: custom->storage->texture->swapchain
     - uniform_compute_name: Compute
       uniform_compute_custom: false

@@ -146,6 +146,7 @@ public:
         bool b_uniform_graphics_mvp = false;
         bool b_uniform_graphics_vp = false;
         bool b_uniform_graphics_lighting = false;
+        bool b_uniform_graphics_depth_image_sampler = false;
         bool b_uniform_compute_custom = false;
         bool b_uniform_compute_storage = false;
         bool b_uniform_compute_swapchain_storage = false;

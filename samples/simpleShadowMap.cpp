@@ -63,6 +63,9 @@ public:
 
 	void recordGraphicsCommandBuffer(){
 		for(int i = 0; i < objects.size(); i++) objects[i].Draw();
+		//vkCmdNextSubpass(renderer.commandBuffers[renderer.graphicsCmdId][renderer.currentFrame], VK_SUBPASS_CONTENTS_INLINE);
+		//for(int i = 0; i < objects.size(); i++) objects[i].Draw();
+		//NeedToExit = true;
 	}
 };
 

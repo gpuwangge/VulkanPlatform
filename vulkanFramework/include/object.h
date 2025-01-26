@@ -21,24 +21,16 @@ class CObject : public CEntity {
     bool bUseMVP_VP = false;
 
     //bool bUseTextureSampler;
-    std::vector<VkDescriptorSet> descriptorSets; //This descritpor is for texture sampler. one descriptor set for each host resource (MAX_FRAMES_IN_FLIGHT)
+    std::vector<VkDescriptorSet> descriptorSets_graphics_texture_image_sampler; //This descritpor is for texture sampler. one descriptor set for each host resource (MAX_FRAMES_IN_FLIGHT)
 
     //These will be used when recording draw cmd
     CRenderer *p_renderer;
     CRenderProcess *p_renderProcess;
-    std::vector<VkDescriptorSet> *p_graphicsDescriptorSets;
+    std::vector<VkDescriptorSet> *p_descriptorSets_graphcis_general;
     VkPipelineLayout *p_graphicsPipelineLayout;
     CTextureManager *p_textureManager;
 
-    // void CreateTextureDescriptorSets(
-    //     CTextureImage &textureImage, 
-    //     VkDescriptorPool &descriptorPool, 
-    //     VkDescriptorSetLayout &descriptorSetLayout, 
-    //     VkSampler &sampler, 
-    //     std::vector<VkImageView> *swapchainImageViews = NULL);
-
-    void CreateTextureDescriptorSets(
-        //CTextureImage &textureImage0, CTextureImage &textureImage1, CTextureImage &textureImage2,
+    void CreateDescriptorSets_TextureImageSampler(
         VkDescriptorPool &descriptorPool, 
         VkDescriptorSetLayout &descriptorSetLayout, 
         std::vector<VkSampler> &samplers, 
