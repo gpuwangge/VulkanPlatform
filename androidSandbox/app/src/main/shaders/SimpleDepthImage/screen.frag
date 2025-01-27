@@ -23,13 +23,6 @@ layout (location = 1) in vec3 inColor;//inColor is not used here
 layout (location = 2) in vec2 inTexCoord;
 layout (location = 3) in vec3 inPosWorld;
 
-// layout (location = 0) in vec3 inNormal;
-// layout (location = 1) in vec3 inColor;//inColor is not used here	
-// layout (location = 2) in vec3 inViewVec;
-// layout (location = 3) in vec3 inLightVec;
-// layout (location = 4) in vec2 fragTexCoord;
-// layout (location = 5) in vec4 inShadowCoord;
-
 layout (location = 0) out vec4 outColor;
 
 #define AMBIENT 0.1
@@ -107,7 +100,8 @@ void main() {
 		vec3 diffuse = max(dot(N, L), 0.0) * tex.xyz / distCoff; 
 		vec3 specular = pow(max(dot(R, V), 0.0), 32.0) * vec3(0.35) / distCoff;
 
-		outColor += vec4(ambient * ambientIntensity + diffuse * diffuseIntensity + specular * specularIntensity, 0.0);
+		//outColor += vec4(ambient * ambientIntensity + diffuse * diffuseIntensity + specular * specularIntensity, 0.0);
+		outColor.r=1;
 	}	
 
 	//float depthValue = texture(depthSampler, inTexCoord).r;///test

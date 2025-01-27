@@ -2,6 +2,14 @@
 #define TEST_CLASS_NAME CSimpleDepthImage
 class TEST_CLASS_NAME: public CApplication{
 public:
+	std::vector<Vertex3D> vertices3D = {
+		{ { -0.5f, 0.5f, 0.0f },{ 1.0f, 0.0f, 0.0f },{ 0.0f, 0.0f } ,{ 0.0f, 0.0f, 1.0f }},
+		{ { -0.5f, -0.5f, 0.0f },{ 0.0f, 1.0f, 0.0f },{ 0.0f, 1.0f } ,{ 0.0f, 0.0f, 1.0f }},
+		{ { 0.5f, 0.5f, 0.0f },{ 0.0f, 0.0f, 1.0f },{ 1.0f, 0.0f } ,{ 0.0f, 0.0f, 1.0f }},
+		{ { 0.5f, -0.5f, 0.0f },{ 1.0f, 1.0f, 1.0f },{ 1.0f, 1.0f } ,{ 0.0f, 0.0f, 1.0f }}
+	};
+	std::vector<uint32_t> indices3D = { 0, 1, 2, 2, 1, 3};
+
 	struct CustomUniformBufferObject {
 		glm::vec3 lightPos;
 		glm::mat4 lightSpace;
@@ -19,6 +27,8 @@ public:
 	CustomUniformBufferObject customUBO{};
 
 	void initialize(){
+		modelManager.CreateCustomModel3D(vertices3D, indices3D); //create the 0th custom model 3D (CUSTOM3D0)
+		
 		appInfo.Uniform.GraphicsCustom.Size = sizeof(CustomUniformBufferObject);
 		appInfo.Uniform.GraphicsCustom.Binding = CustomUniformBufferObject::GetBinding();
 		CApplication::initialize();
@@ -62,7 +72,13 @@ public:
 	}
 
 	void recordGraphicsCommandBuffer(){
-		for(int i = 0; i < objects.size(); i++) objects[i].Draw();
+		//draw all items with pipeline 0
+		for(int i = 0; i < objects.size()-1; i++) objects[i].Draw();
+
+		//draw the screen with depthimage as texture with pipeline 1
+		objects[objects.size()-1].Draw();
+
+
 		//vkCmdNextSubpass(renderer.commandBuffers[renderer.graphicsCmdId][renderer.currentFrame], VK_SUBPASS_CONTENTS_INLINE);
 		//for(int i = 0; i < objects.size(); i++) objects[i].Draw();
 		//NeedToExit = true;
