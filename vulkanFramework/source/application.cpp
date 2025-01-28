@@ -171,6 +171,11 @@ void CApplication::initialize(){
     * 3 Read Uniforms
     ****************************/
     ReadUniforms();
+
+    /****************************
+    * 3.5 Read Subpasses
+    ****************************/
+    ReadSubpasses();
     
     /****************************
     * 4 Read Resources
@@ -496,7 +501,7 @@ void CApplication::ReadUniforms(){
 }
 
 void CApplication::ReadResources(){
-for (const auto& resource : config["Resources"]) {
+    for (const auto& resource : config["Resources"]) {
         if (resource["Models"]) {
             for (const auto& model : resource["Models"]) {
                 std::string name = model["resource_model_name"] ? model["resource_model_name"].as<std::string>() : "Default";
@@ -568,22 +573,38 @@ for (const auto& resource : config["Resources"]) {
         }
 
         //shaders id is allocated by engine, not user, in order
+        if (resource["Pipelines"]) {
+            appInfo.VertexShader =  std::make_unique<std::vector<std::string>>(std::vector<std::string>());
+            appInfo.FragmentShader =  std::make_unique<std::vector<std::string>>(std::vector<std::string>());
+            appInfo.Subpass =  std::make_unique<std::vector<int>>(std::vector<int>());
 
-        if (resource["VertexShaders"]) {
-            auto vertexShaderList = std::make_unique<std::vector<std::string>>(std::vector<std::string>());
-            for (const auto& vertexShader : resource["VertexShaders"]) {
-                vertexShaderList->push_back(vertexShader["resource_vertexshader_name"].as<std::string>());
-            }
-            appInfo.VertexShader = std::move(vertexShaderList);
-            //std::cout<<"vertex shader:"<<appInfo.Object.Pipeline.VertexShader->size()<<std::endl;
-        }
+            for (const auto& pipeline : resource["Pipelines"]) {
+                std::string name = pipeline["resource_graphics_pipeline_name"].as<std::string>();
+                std::string vertexShaderName = pipeline["resource_graphics_pipeline_vertexshader_name"].as<std::string>();
+                std::string fragmentShaderName = pipeline["resource_graphics_pipeline_fragmentshader_name"].as<std::string>();
+                int subpassId = pipeline["subpasses_subpass_id"] ? pipeline["subpasses_subpass_id"].as<int>() : 0;
 
-        if (resource["FragmentShaders"]) {
-            auto fragmentShaderList = std::make_unique<std::vector<std::string>>(std::vector<std::string>());
-            for (const auto& fragmentShader : resource["FragmentShaders"]) {
-                fragmentShaderList->push_back(fragmentShader["resource_fragmentshader_name"].as<std::string>());
+                std::cout<<"Pipeline Name: "<<name<<std::endl;
+                appInfo.VertexShader->push_back(vertexShaderName);
+                appInfo.FragmentShader->push_back(fragmentShaderName);
+                appInfo.Subpass->push_back(subpassId);
             }
-            appInfo.FragmentShader = std::move(fragmentShaderList);
+
+            // if (resource["VertexShaders"]) {
+            //     auto vertexShaderList = std::make_unique<std::vector<std::string>>(std::vector<std::string>());
+            //     for (const auto& vertexShader : resource["VertexShaders"]) {
+            //         vertexShaderList->push_back(vertexShader["resource_vertexshader_name"].as<std::string>());
+            //     }
+            //     appInfo.VertexShader = std::move(vertexShaderList);
+            // }
+
+            // if (resource["FragmentShaders"]) {
+            //     auto fragmentShaderList = std::make_unique<std::vector<std::string>>(std::vector<std::string>());
+            //     for (const auto& fragmentShader : resource["FragmentShaders"]) {
+            //         fragmentShaderList->push_back(fragmentShader["resource_fragmentshader_name"].as<std::string>());
+            //     }
+            //     appInfo.FragmentShader = std::move(fragmentShaderList);
+            // }
         }
 
         if (resource["ComputeShaders"]) {
@@ -594,6 +615,37 @@ for (const auto& resource : config["Resources"]) {
             appInfo.ComputeShader = std::move(computeShaderList);
         }
     }
+}
+
+void CApplication::ReadSubpasses(){
+    bool bEnableSubpassDepth;
+    bool bEnableSubpassNormal;
+    //for (const auto& subpass : config["Subpasses"]) {
+    bEnableSubpassDepth = config["Subpasses"]["subpasses_depth"] ? config["Subpasses"]["subpasses_depth"].as<bool>() : false;
+    bEnableSubpassNormal = config["Subpasses"]["subpasses_normal"] ? config["Subpasses"]["subpasses_normal"].as<bool>() : true;
+    //}
+
+    std::cout<<"bEnableSubpassDepth: "<<bEnableSubpassDepth<<std::endl;
+    std::cout<<"bEnableSubpassNormal: "<<bEnableSubpassNormal<<std::endl;
+
+    //create renderpass
+    VkImageLayout imageLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+    renderProcess.enableColorAttachmentDescriptionColorPresent(swapchain.swapChainImageFormat);//assume when vertex is non-null, need a color attachment for presentation(must be single sampled)
+    if(swapchain.bEnableDepthTest) {
+        renderProcess.enableAttachmentDescriptionDepth(swapchain.depthFormat, swapchain.msaaSamples);
+        if(swapchain.bEnableMSAA) //if enable MSAA, must also enable depthTest
+            renderProcess.enableAttachmentDescriptionColorMultiSample(swapchain.swapChainImageFormat, swapchain.msaaSamples, imageLayout); 
+    }
+    renderProcess.createSubpass(bEnableSubpassDepth, bEnableSubpassNormal);
+    if(swapchain.bEnableDepthTest){
+        VkPipelineStageFlags srcPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+        VkPipelineStageFlags dstPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+        renderProcess.createDependency(srcPipelineStageFlag, dstPipelineStageFlag);
+    }else renderProcess.createDependency();
+    renderProcess.createRenderPass();
+
+    //create framebuffer
+    swapchain.CreateFramebuffers(renderProcess.renderPass);
 }
 
 void CApplication::CreateUniformDescriptors(bool b_uniform_graphics, bool b_uniform_compute){
@@ -636,27 +688,27 @@ void CApplication::CreatePipelines(){
     if(bVerbose) std::cout<<"CreatePipeline: Done Command Buffer"<<std::endl;
 
     /****************************
-    * Frame Buffer
+    * Frame Buffer (legacy)
     ****************************/
-    if(appInfo.VertexShader != NULL){
-        VkImageLayout imageLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
-        renderProcess.enableColorAttachmentDescriptionColorPresent(swapchain.swapChainImageFormat);//assume when vertex is non-null, need a color attachment for presentation(must be single sampled)
-        if(swapchain.bEnableDepthTest) {
-            renderProcess.enableAttachmentDescriptionDepth(swapchain.depthFormat, swapchain.msaaSamples);
-            if(swapchain.bEnableMSAA) //if enable MSAA, must also enable depthTest
-                renderProcess.enableAttachmentDescriptionColorMultiSample(swapchain.swapChainImageFormat, swapchain.msaaSamples, imageLayout); 
-        }
-        renderProcess.createSubpass();
-        if(swapchain.bEnableDepthTest){
-            VkPipelineStageFlags srcPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-            VkPipelineStageFlags dstPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-            renderProcess.createDependency(srcPipelineStageFlag, dstPipelineStageFlag);
-        }else renderProcess.createDependency();
-        renderProcess.createRenderPass();
+    //if(appInfo.VertexShader != NULL){
+        // VkImageLayout imageLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+        // renderProcess.enableColorAttachmentDescriptionColorPresent(swapchain.swapChainImageFormat);//assume when vertex is non-null, need a color attachment for presentation(must be single sampled)
+        // if(swapchain.bEnableDepthTest) {
+        //     renderProcess.enableAttachmentDescriptionDepth(swapchain.depthFormat, swapchain.msaaSamples);
+        //     if(swapchain.bEnableMSAA) //if enable MSAA, must also enable depthTest
+        //         renderProcess.enableAttachmentDescriptionColorMultiSample(swapchain.swapChainImageFormat, swapchain.msaaSamples, imageLayout); 
+        // }
+        // //renderProcess.createSubpass();
+        // if(swapchain.bEnableDepthTest){
+        //     VkPipelineStageFlags srcPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+        //     VkPipelineStageFlags dstPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+        //     renderProcess.createDependency(srcPipelineStageFlag, dstPipelineStageFlag);
+        // }else renderProcess.createDependency();
+        // renderProcess.createRenderPass();
 
-        swapchain.CreateFramebuffers(renderProcess.renderPass);
-    }
-    if(bVerbose) std::cout<<"CreatePipeline: Done Frame Buffer"<<std::endl;
+        //swapchain.CreateFramebuffers(renderProcess.renderPass);
+    //}
+    //if(bVerbose) std::cout<<"CreatePipeline: Done Frame Buffer"<<std::endl;
     
     /****************************
     * Create Shaders
@@ -718,25 +770,29 @@ void CApplication::CreatePipelines(){
                     renderProcess.createGraphicsPipeline(
                         VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
                         shaderManager.vertShaderModules[i], 
-                        shaderManager.fragShaderModules[i], i);  
+                        shaderManager.fragShaderModules[i], i,
+                        (*appInfo.Subpass)[i]);  
                 break;
                 case VertexStructureTypes::ThreeDimension:
                     renderProcess.createGraphicsPipeline<Vertex3D>(
                         VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
                         shaderManager.vertShaderModules[i], 
-                        shaderManager.fragShaderModules[i], true, i);  
+                        shaderManager.fragShaderModules[i], true, i,
+                        (*appInfo.Subpass)[i]);  
                 break;
                 case VertexStructureTypes::TwoDimension:
                     renderProcess.createGraphicsPipeline<Vertex2D>(
                         VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
                         shaderManager.vertShaderModules[i], 
-                        shaderManager.fragShaderModules[i], true, i);
+                        shaderManager.fragShaderModules[i], true, i,
+                        (*appInfo.Subpass)[i]);
                 break;
                 case VertexStructureTypes::ParticleType:
                     renderProcess.createGraphicsPipeline<Particle>(
                         VK_PRIMITIVE_TOPOLOGY_POINT_LIST, 
                         shaderManager.vertShaderModules[i], 
-                        shaderManager.fragShaderModules[i], true, i);  
+                        shaderManager.fragShaderModules[i], true, i,
+                        (*appInfo.Subpass)[i]);  
                 break;
                 default:
                 break;

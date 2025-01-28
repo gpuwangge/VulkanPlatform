@@ -16,7 +16,7 @@ CRenderProcess::~CRenderProcess(){
 	//if (!debugger) delete debugger;
 }
 
-void CRenderProcess::createSubpass(){ 
+void CRenderProcess::createSubpass(bool bDepth, bool bNormal){ 
 	uint32_t attachmentCount = 0;
 
 	//clear values for each attachment. The array is indexed by attachment number
@@ -28,8 +28,7 @@ void CRenderProcess::createSubpass(){
 	//fragment shader output is not always single samplered, so if msaa is enabled, shader output can't be used to present; in this case, use pResolveAttachment for present
 
 	//First: create attachment reference according to attachment info
-	
-
+	//attachment# must match framebuffer order
 	if(bUseAttachmentDepth){//added for model
 		clearValues.push_back({1.0f, 0}); //The range of depths in the depth buffer is 0.0 to 1.0 in Vulkan, where 1.0 lies at the far view plane and 0.0 at the near view plane.
 		attachment_reference_depth.attachment = attachmentCount++; 
@@ -47,6 +46,7 @@ void CRenderProcess::createSubpass(){
 	}
 
 	//Second: create subpasses
+	/*
 	VkSubpassDescription subpass{};
 	if(bUseAttachmentColorPresent){
 		if(bUseAttachmentColorMultisample) subpass.pResolveAttachments = &attachment_reference_color_present;
@@ -63,36 +63,50 @@ void CRenderProcess::createSubpass(){
 	subpass.colorAttachmentCount = 1;
 
 	subpasses.push_back(subpass);
+	*/
 
 
-
-
-	//TEST TWO SUBPASSES
-	// clearValues.push_back({1.0f, 0});
-	// attachment_reference_depth.attachment = 0;
-	// attachment_reference_depth.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-
-	// clearValues.push_back({0.0f, 0.0f, 0.0f, 1.0f});
-	// attachment_reference_color_present.attachment = 1;
-	// attachment_reference_color_present.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-
-
-
-	// VkSubpassDescription subpass0;
-	// subpass0.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-	// subpass0.colorAttachmentCount = 1;
-	// subpass0.pDepthStencilAttachment = &attachment_reference_depth;
-	// subpass0.pColorAttachments = &attachment_reference_color_present;
+	//subpass dont need to use all attachments
+	//set subpass# in pipeline(s)
+	VkSubpassDescription subpass0{};
+	subpass0.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+	subpass0.colorAttachmentCount = 1;
+	if(bUseAttachmentColorPresent){
+		if(bUseAttachmentColorMultisample) subpass0.pResolveAttachments = &attachment_reference_color_present;
+		else subpass0.pColorAttachments = &attachment_reference_color_present; //fragment shader output here
+	}
+	if(bUseAttachmentDepth) subpass0.pDepthStencilAttachment = &attachment_reference_depth; 
+	if(bUseAttachmentColorMultisample) subpass0.pColorAttachments = &attachment_reference_color_multisample; //fragment shader output here
 	
 
-	// VkSubpassDescription subpass1;
-	// subpass1.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-	// subpass1.colorAttachmentCount = 1;
-	// subpass1.pDepthStencilAttachment = &attachment_reference_depth;
-	// subpass1.pColorAttachments = &attachment_reference_color_present;
+	VkSubpassDescription subpass1{};
+	subpass1.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+	subpass1.colorAttachmentCount = 1;
+	if(bUseAttachmentColorPresent){
+		if(bUseAttachmentColorMultisample) subpass1.pResolveAttachments = &attachment_reference_color_present;
+		else subpass1.pColorAttachments = &attachment_reference_color_present; //fragment shader output here
+	}
+	if(bUseAttachmentDepth) subpass1.pDepthStencilAttachment = &attachment_reference_depth; 
+	if(bUseAttachmentColorMultisample) subpass1.pColorAttachments = &attachment_reference_color_multisample; //fragment shader output here
 
-	// subpasses.push_back(subpass0);
-	// subpasses.push_back(subpass1);
+	// if(bUseAttachmentColorPresent){
+	// 	if(bUseAttachmentColorMultisample) subpass.pResolveAttachments = &attachment_reference_color_present;
+	// 	else subpass.pColorAttachments = &attachment_reference_color_present; //fragment shader output here
+	// }
+	// if(bUseAttachmentDepth){
+	// 	subpass.pDepthStencilAttachment = &attachment_reference_depth; 
+	// }
+	// if(bUseAttachmentColorMultisample){
+	// 	subpass.pColorAttachments = &attachment_reference_color_multisample; //fragment shader output here
+	// }
+
+	// subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+	// subpass.colorAttachmentCount = 1;
+
+	if(bDepth) subpasses.push_back(subpass0);
+	if(bNormal) subpasses.push_back(subpass1);
+
+
 
 }
 

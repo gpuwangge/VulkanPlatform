@@ -55,12 +55,13 @@ Resources:
       resource_texture_miplevels: 1
       resource_texture_cubmap: false
       uniform_Sampler_id: 0
-  - VertexShaders:
-    - resource_vertexshader_name: multiCubes/shader1.vert.spv
-    - resource_vertexshader_name: multiCubes/shader2.vert.spv
-  - FragmentShaders:
-    - resource_fragmentshader_name: multiCubes/shader1.frag.spv
-    - resource_fragmentshader_name: multiCubes/shader2.frag.spv
+  - Pipelines:
+    - resource_graphics_pipeline_name: pipeline
+      resource_graphics_pipeline_vertexshader_name: multiCubes/shader1.vert.spv
+      resource_graphics_pipeline_fragmentshader_name: multiCubes/shader1.frag.spv
+    - resource_graphics_pipeline_name: pipeline
+      resource_graphics_pipeline_vertexshader_name: multiCubes/shader2.vert.spv
+      resource_graphics_pipeline_fragmentshader_name: multiCubes/shader2.frag.spv
 
 Uniforms:
   - Graphics:

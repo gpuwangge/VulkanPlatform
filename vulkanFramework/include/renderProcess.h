@@ -35,7 +35,7 @@ public:
 
     std::vector<VkClearValue> clearValues;
 
-    void createSubpass();
+    void createSubpass(bool bDepth, bool bNormal);
     void createDependency(
         VkPipelineStageFlags srcPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, 
         VkPipelineStageFlags dstPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
@@ -91,13 +91,13 @@ public:
      * 
      * *****/
     //this function is for samples that are NOT using vertex shader
-    void createGraphicsPipeline(VkPrimitiveTopology topology, VkShaderModule &vertShaderModule, VkShaderModule &fragShaderModule, int graphcisPipeline_id){
-        createGraphicsPipeline<DummyVertex>(topology, vertShaderModule, fragShaderModule, false, graphcisPipeline_id); //DummyVertex doesn't really matter here, because no vertex attributes used
+    void createGraphicsPipeline(VkPrimitiveTopology topology, VkShaderModule &vertShaderModule, VkShaderModule &fragShaderModule, int graphcisPipeline_id, int subpass_id){
+        createGraphicsPipeline<DummyVertex>(topology, vertShaderModule, fragShaderModule, false, graphcisPipeline_id, subpass_id); //DummyVertex doesn't really matter here, because no vertex attributes used
     }
 
     //this function is for samples that are  using vertex shader
     template <typename T>
-    void createGraphicsPipeline(VkPrimitiveTopology topology, VkShaderModule &vertShaderModule, VkShaderModule &fragShaderModule, bool bUseVertexBuffer, int graphcisPipeline_id){
+    void createGraphicsPipeline(VkPrimitiveTopology topology, VkShaderModule &vertShaderModule, VkShaderModule &fragShaderModule, bool bUseVertexBuffer, int graphcisPipeline_id, int subpass_id){
         //HERE_I_AM("CreateGraphicsPipeline");
         bCreateGraphicsPipeline = true;
 
@@ -228,7 +228,7 @@ public:
         /*********10 Renderpass Layout(Vulkan Special Concept)**********/
         //Renderpass is to specify what kind of data goes to graphics pipeline
         pipelineInfo.renderPass = renderPass;	//10 
-        pipelineInfo.subpass = 0;
+        pipelineInfo.subpass = subpass_id; 
         pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 
         /*********11**********/

@@ -72,11 +72,20 @@ public:
 	}
 
 	void recordGraphicsCommandBuffer(){
+		
+
 		//draw all items with pipeline 0
+		//TODO: pipeline 0 should enable depth test
 		for(int i = 0; i < objects.size()-1; i++) objects[i].Draw();
 
-		//draw the screen with depthimage as texture with pipeline 1
+		//TODO: change depth test layout
+		vkCmdNextSubpass(renderer.commandBuffers[renderer.graphicsCmdId][renderer.currentFrame], VK_SUBPASS_CONTENTS_INLINE);
+
+		//draw the screen with depthimage as texture with pipeline 1 disable depth test
 		objects[objects.size()-1].Draw();
+
+
+		//TODO: change depth test layout
 
 
 		//vkCmdNextSubpass(renderer.commandBuffers[renderer.graphicsCmdId][renderer.currentFrame], VK_SUBPASS_CONTENTS_INLINE);

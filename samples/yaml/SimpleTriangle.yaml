@@ -3,10 +3,10 @@ Objects:
     object_id: 0
 
 Resources:
-  - VertexShaders:
-    - resource_vertexshader_name: simpleTriangle/shader.vert.spv
-  - FragmentShaders:
-    - resource_fragmentshader_name: simpleTriangle/shader.frag.spv
+  - Pipelines:
+    - resource_graphics_pipeline_name: pipeline
+      resource_graphics_pipeline_vertexshader_name: simpleTriangle/shader.vert.spv
+      resource_graphics_pipeline_fragmentshader_name: simpleTriangle/shader.frag.spv
 
 Uniforms:
   - Graphics:

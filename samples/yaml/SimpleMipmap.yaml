@@ -19,10 +19,10 @@ Resources:
       resource_texture_miplevels: 11
       resource_texture_cubmap: false
       uniform_Sampler_id: 0
-  - VertexShaders:
-    - resource_vertexshader_name: simpleMipmap/shader.vert.spv
-  - FragmentShaders:
-    - resource_fragmentshader_name: simpleMipmap/shader.frag.spv
+  - Pipelines:
+    - resource_graphics_pipeline_name: pipeline
+      resource_graphics_pipeline_vertexshader_name: simpleMipmap/shader.vert.spv
+      resource_graphics_pipeline_fragmentshader_name: simpleMipmap/shader.frag.spv
 
 Uniforms:
   - Graphics:

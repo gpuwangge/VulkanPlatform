@@ -120,6 +120,7 @@ public:
     ******************/
     void ReadFeatures();
     void ReadUniforms();
+    void ReadSubpasses();
     void ReadResources();
     void CreateUniformDescriptors(bool b_uniform_graphics, bool b_uniform_compute);
     void CreatePipelines();
@@ -170,6 +171,7 @@ public:
         UniformInfo Uniform;
         std::unique_ptr<std::vector<std::string>> VertexShader;
         std::unique_ptr<std::vector<std::string>> FragmentShader;
+        std::unique_ptr<std::vector<int>> Subpass;
         std::unique_ptr<std::vector<std::string>> ComputeShader;
         CRenderer::RenderModes RenderMode = CRenderer::GRAPHICS;
         VertexStructureTypes VertexBufferType = (VertexStructureTypes)NULL;

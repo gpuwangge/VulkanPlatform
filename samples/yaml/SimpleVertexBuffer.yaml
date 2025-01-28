@@ -5,10 +5,10 @@ Objects:
 Resources:
   - Models:
     - resource_model_name: CUSTOM2D0
-  - VertexShaders:
-    - resource_vertexshader_name: simpleVertexBuffer/shader.vert.spv
-  - FragmentShaders:
-    - resource_fragmentshader_name: simpleVertexBuffer/shader.frag.spv
+  - Pipelines:
+    - resource_graphics_pipeline_name: pipeline
+      resource_graphics_pipeline_vertexshader_name: simpleVertexBuffer/shader.vert.spv
+      resource_graphics_pipeline_fragmentshader_name: simpleVertexBuffer/shader.frag.spv
 
 Features:
   feature_graphics_depth_test: false

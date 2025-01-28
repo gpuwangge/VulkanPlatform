@@ -96,12 +96,13 @@ Resources:
       resource_texture_miplevels: 1
       resource_texture_cubmap: true
       uniform_Sampler_id: 0
-  - VertexShaders:
-    - resource_vertexshader_name: simpleEnvironmentmap/environmentmap.vert.spv
-    - resource_vertexshader_name: simpleEnvironmentmap/skybox.vert.spv
-  - FragmentShaders:
-    - resource_fragmentshader_name: simpleEnvironmentmap/environmentmap.frag.spv
-    - resource_fragmentshader_name: simpleEnvironmentmap/skybox.frag.spv
+  - Pipelines:
+    - resource_graphics_pipeline_name: pipeline
+      resource_graphics_pipeline_vertexshader_name: simpleEnvironmentmap/environmentmap.vert.spv
+      resource_graphics_pipeline_fragmentshader_name: simpleEnvironmentmap/environmentmap.frag.spv
+    - resource_graphics_pipeline_name: pipeline
+      resource_graphics_pipeline_vertexshader_name: simpleEnvironmentmap/skybox.vert.spv
+      resource_graphics_pipeline_fragmentshader_name: simpleEnvironmentmap/skybox.frag.spv
 
 Uniforms:
   - Graphics:

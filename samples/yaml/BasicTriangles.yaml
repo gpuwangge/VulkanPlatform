@@ -19,10 +19,11 @@ Resources:
       resource_texture_miplevels: 1
       resource_texture_cubmap: false
       uniform_Sampler_id: 0
-  - VertexShaders:
-    - resource_vertexshader_name: basicTriangles/shader.vert.spv
-  - FragmentShaders:
-    - resource_fragmentshader_name: basicTriangles/shader.frag.spv
+  - Pipelines:
+    - resource_graphics_pipeline_name: pipeline
+      resource_graphics_pipeline_vertexshader_name: basicTriangles/shader.vert.spv
+      resource_graphics_pipeline_fragmentshader_name: basicTriangles/shader.frag.spv
+      resource_graphics_pipeline_subpass: 0
 
 Uniforms:
   - Graphics: #binding order(set0): custom->lighting->mvp->vp; 
@@ -50,7 +51,11 @@ Features:
   feature_graphics_blend: false
   feature_graphics_rainbow_mipmap: false
   feature_graphics_pipeline_skybox_id: -1
-    
+
+Subpasses:
+  subpasses_depth: false
+  subpasses_normal: true
+
 MainCamera: #camera mode: 0-LOCK, 1-FREE, 2-SELECT
   camera_mode: 0
   camera_position: [0,0,-3]

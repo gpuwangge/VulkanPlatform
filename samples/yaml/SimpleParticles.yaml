@@ -3,10 +3,10 @@ Objects:
     object_id: 0
 
 Resources:
-  - VertexShaders:
-    - resource_vertexshader_name: simpleParticles/shader.vert.spv
-  - FragmentShaders:
-    - resource_fragmentshader_name: simpleParticles/shader.frag.spv
+  - Pipelines:
+    - resource_graphics_pipeline_name: pipeline
+      resource_graphics_pipeline_vertexshader_name: simpleParticles/shader.vert.spv
+      resource_graphics_pipeline_fragmentshader_name: simpleParticles/shader.frag.spv
   - ComputeShaders:
     - resource_computeshader_name: simpleParticles/shader.comp.spv
 
