@@ -53,8 +53,10 @@ Features:
   feature_graphics_pipeline_skybox_id: -1
 
 Subpasses:
-  subpasses_depth: false
-  subpasses_normal: true
+  subpasses_shadowmap: false
+  subpasses_draw: true
+  subpasses_observe: false
+
 
 MainCamera: #camera mode: 0-LOCK, 1-FREE, 2-SELECT
   camera_mode: 0

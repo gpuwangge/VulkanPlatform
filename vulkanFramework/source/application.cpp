@@ -414,8 +414,10 @@ void CApplication::ReadFeatures(){
     if(appInfo.Feature.b_feature_graphics_msaa){
         swapchain.EnableMSAA(); //must enable MSAA first, because this function calls GetMaxUsableSampleCount(); depthImage need sampler count
         swapchain.EnableDepthTest();//If enable MSAA, must also enable Depth Test
+        renderProcess.m_renderFeature = CRenderProcess::RenderFeatures::PRESENT_DEPTH_MSAA;
     }else if(appInfo.Feature.b_feature_graphics_depth_test){
         swapchain.EnableDepthTest();
+        renderProcess.m_renderFeature = CRenderProcess::RenderFeatures::PRESENT_DEPTH;
     }
     if(appInfo.Feature.b_feature_graphics_push_constant){
         shaderManager.CreatePushConstantRange<ModelPushConstants>(VK_SHADER_STAGE_VERTEX_BIT, 0);
@@ -618,15 +620,9 @@ void CApplication::ReadResources(){
 }
 
 void CApplication::ReadSubpasses(){
-    bool bEnableSubpassDepth;
-    bool bEnableSubpassNormal;
-    //for (const auto& subpass : config["Subpasses"]) {
-    bEnableSubpassDepth = config["Subpasses"]["subpasses_depth"] ? config["Subpasses"]["subpasses_depth"].as<bool>() : false;
-    bEnableSubpassNormal = config["Subpasses"]["subpasses_normal"] ? config["Subpasses"]["subpasses_normal"].as<bool>() : true;
-    //}
-
-    std::cout<<"bEnableSubpassDepth: "<<bEnableSubpassDepth<<std::endl;
-    std::cout<<"bEnableSubpassNormal: "<<bEnableSubpassNormal<<std::endl;
+    renderProcess.bEnableSubpassShadowmap = config["Subpasses"]["subpasses_shadowmap"] ? config["Subpasses"]["subpasses_shadowmap"].as<bool>() : false;
+    renderProcess.bEnableSubpassDraw = config["Subpasses"]["subpasses_draw"] ? config["Subpasses"]["subpasses_draw"].as<bool>() : true;
+    renderProcess.bEnableSubpassObserve = config["Subpasses"]["subpasses_observe"] ? config["Subpasses"]["subpasses_observe"].as<bool>() : false;
 
     //create renderpass
     VkImageLayout imageLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
@@ -636,12 +632,13 @@ void CApplication::ReadSubpasses(){
         if(swapchain.bEnableMSAA) //if enable MSAA, must also enable depthTest
             renderProcess.enableAttachmentDescriptionColorMultiSample(swapchain.swapChainImageFormat, swapchain.msaaSamples, imageLayout); 
     }
-    renderProcess.createSubpass(bEnableSubpassDepth, bEnableSubpassNormal);
-    if(swapchain.bEnableDepthTest){
-        VkPipelineStageFlags srcPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-        VkPipelineStageFlags dstPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-        renderProcess.createDependency(srcPipelineStageFlag, dstPipelineStageFlag);
-    }else renderProcess.createDependency();
+    renderProcess.createSubpass();
+    // if(swapchain.bEnableDepthTest){
+    //     VkPipelineStageFlags srcPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+    //     VkPipelineStageFlags dstPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+    //     renderProcess.createDependency(srcPipelineStageFlag, dstPipelineStageFlag);
+    // }else 
+    renderProcess.createDependency();
     renderProcess.createRenderPass();
 
     //create framebuffer

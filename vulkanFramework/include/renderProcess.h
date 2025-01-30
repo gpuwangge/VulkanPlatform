@@ -8,70 +8,106 @@
 
 class CRenderProcess final{
 public:
-    CRenderProcess();
-    ~CRenderProcess();
+    CRenderProcess(){};
+    ~CRenderProcess(){};
 
     void Cleanup();
 
-    bool bUseAttachmentColorPresent; //in MSAA testcase, this is often called color resolve(multisample attachment will be eventually resolve to singlesample attachment for presentation)
-    bool bUseAttachmentDepth;
-    bool bUseAttachmentColorMultisample;
+    enum RenderFeatures {
+        PRESENT,
+        PRESENT_DEPTH,
+        PRESENT_DEPTH_MSAA
+    };
+    RenderFeatures m_renderFeature = RenderFeatures::PRESENT;
 
-    bool bUseColorBlendAttachment;
-
-    VkAttachmentDescription attachment_description_color_present{};//these are descriptions, not attachment buffer, each has many(9) properties
-    VkAttachmentDescription attachment_description_depth{};
-    VkAttachmentDescription attachment_description_color_multisample{};
-
-    VkAttachmentReference attachment_reference_color_present{};//refs are the references of the description, each has only attachment index and layout
-    VkAttachmentReference attachment_reference_depth{};
-    VkAttachmentReference attachment_reference_color_multisample{};
-
-    VkPipelineColorBlendAttachmentState colorBlendAttachment{};
-
+    /*********
+    * Subpasses
+    **********/
+    bool bEnableSubpassShadowmap = false;   
+    bool bEnableSubpassDraw = true;
+    bool bEnableSubpassObserve = false;
     std::vector<VkSubpassDescription> subpasses;
+    void createSubpass();
+
+    /*********
+    * Dependency
+    **********/
     VkSubpassDependency dependency{};
-    VkRenderPass renderPass = VK_NULL_HANDLE; 
+    void createDependency();
 
-    std::vector<VkClearValue> clearValues;
-
-    void createSubpass(bool bDepth, bool bNormal);
-    void createDependency(
-        VkPipelineStageFlags srcPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT, 
-        VkPipelineStageFlags dstPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT);
-    void createRenderPass();
-
+    /*********
+    * Attachments Description
+    **********/
+    bool bUseAttachmentColorPresent = false; //in MSAA testcase, this is often called color resolve(multisample attachment will be eventually resolve to singlesample attachment for presentation)
+    bool bUseAttachmentDepth = false;
+    bool bUseAttachmentColorMultisample = false;
     void enableColorAttachmentDescriptionColorPresent(VkFormat swapChainImageFormat);
     void enableAttachmentDescriptionDepth(VkFormat depthFormat, VkSampleCountFlagBits msaaSamples);
     void enableAttachmentDescriptionColorMultiSample(
         VkFormat swapChainImageFormat,
         VkSampleCountFlagBits msaaSamples = VK_SAMPLE_COUNT_1_BIT, 
         VkImageLayout imageLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
-   
     
 
+    VkAttachmentDescription attachment_description_color_present{};//these are descriptions, not attachment buffer, each has many(9) properties
+    VkAttachmentDescription attachment_description_depth{};
+    VkAttachmentDescription attachment_description_color_multisample{};
+
+    /*********
+    * Attachments Reference
+    **********/
+    //number of refs can be different from descriptions
+    //1.for subpass_shadowmap
+    //2.for subpass_draw
+    VkAttachmentReference attachmentRef_color_draw{};
+    VkAttachmentReference attachmentRef_depth_draw{};
+    VkAttachmentReference attachmentRef_color_multisample_draw{};
+    //3.subpass_observe
+    VkAttachmentReference attachmentRef_observe{};
+    VkAttachmentReference attachmentRef_color_observe{};
+    VkAttachmentReference attachmentRef_color_multisample_observe{};
+    
+
+    /*********
+    * Renderpass
+    **********/
+    VkRenderPass renderPass = VK_NULL_HANDLE; 
+    void createRenderPass();
+    
+    /*********
+    * Misc
+    **********/
+    std::vector<VkClearValue> clearValues;
+
+    bool bUseColorBlendAttachment = false;
+    VkPipelineColorBlendAttachmentState colorBlendAttachment{};
     void addColorBlendAttachment(VkBlendOp colorBlendOp, VkBlendFactor srcColorBlendFactor, VkBlendFactor dstColorBlendFactor, 
 								 VkBlendOp alphaBlendOp, VkBlendFactor srcAlphaBlendFactor, VkBlendFactor dstAlphaBlendFactor);
 
-    VkSampleCountFlagBits m_msaaSamples;
+    VkSampleCountFlagBits m_msaaSamples = VK_SAMPLE_COUNT_1_BIT;
     //VkFormat m_swapChainImageFormat;
 
-    bool bCreateGraphicsPipeline = false;
-    //VkPipelineLayout graphicsPipelineLayout;
-	//VkPipeline graphicsPipeline;
-    std::vector<VkPipelineLayout> graphicsPipelineLayouts;
-    std::vector<VkPipeline> graphicsPipelines;  
-    int skyboxID = -1;
+    /*********
+    * Pipeline Layouts
+    **********/
+    void createComputePipelineLayout(VkDescriptorSetLayout &descriptorSetLayout);
 
+    void createGraphicsPipelineLayout(std::vector<VkDescriptorSetLayout> &descriptorSetLayouts, int graphicsPipelineLayout_id);
+    void createGraphicsPipelineLayout(std::vector<VkDescriptorSetLayout> &descriptorSetLayouts, VkPushConstantRange &pushConstantRange, bool bUsePushConstant, int graphicsPipelineLayout_id);
+
+    /*********
+    * Pipelines
+    **********/
     bool bCreateComputePipeline = false;
     VkPipelineLayout computePipelineLayout;
 	VkPipeline computePipeline;
 
-    void createComputePipelineLayout(VkDescriptorSetLayout &descriptorSetLayout);
+    bool bCreateGraphicsPipeline = false;
+    std::vector<VkPipelineLayout> graphicsPipelineLayouts;
+    std::vector<VkPipeline> graphicsPipelines;  
+    int skyboxID = -1;
+    
     void createComputePipeline(VkShaderModule &computeShaderModule);
-
-    void createGraphicsPipelineLayout(std::vector<VkDescriptorSetLayout> &descriptorSetLayouts, int graphicsPipelineLayout_id);
-    void createGraphicsPipelineLayout(std::vector<VkDescriptorSetLayout> &descriptorSetLayouts, VkPushConstantRange &pushConstantRange, bool bUsePushConstant, int graphicsPipelineLayout_id);
 
     struct DummyVertex {
         static VkVertexInputBindingDescription getBindingDescription() {

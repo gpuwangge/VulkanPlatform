@@ -45,7 +45,7 @@ void CGraphicsDescriptorManager::createDescriptorPool(unsigned int object_count)
         }
     }
     if(graphicsUniformTypes & GRAPHCIS_COMBINEDIMAGESAMPLER_DEPTHIMAGE){
-        std::cout<<"createDescriptorPool():GRAPHCIS_COMBINEDIMAGESAMPLER_DEPTHIMAGE"<<std::endl;
+        //std::cout<<"createDescriptorPool():GRAPHCIS_COMBINEDIMAGESAMPLER_DEPTHIMAGE"<<std::endl;
         graphicsDescriptorPoolSizes[counter].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
         graphicsDescriptorPoolSizes[counter].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);//one depth sampler
         counter++;

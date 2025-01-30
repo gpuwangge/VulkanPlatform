@@ -260,7 +260,7 @@ VkFormat CSwapchain::findDepthFormat() {
 void CSwapchain::EnableDepthTest(){
     bEnableDepthTest = true;
     depthFormat = findDepthFormat();
-	VkImageUsageFlags usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+	VkImageUsageFlags usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT;
 	createDepthImages(VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 	createDepthImageViews(depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT);
 }
@@ -277,6 +277,7 @@ void CSwapchain::EnableMSAA(){
 
 void CSwapchain::CreateFramebuffers(VkRenderPass &renderPass){
 	//HERE_I_AM("CreateFramebuffers");
+    std::cout<<"Begin create framebuffer"<<std::endl;
 
 	VkResult result = VK_SUCCESS;
 
@@ -319,6 +320,8 @@ void CSwapchain::CreateFramebuffers(VkRenderPass &renderPass){
 		if (result != VK_SUCCESS) throw std::runtime_error("failed to create framebuffer!");
 		//REPORT("vkCreateFrameBuffer");
 	}	
+
+    std::cout<<"Done create framebuffer"<<std::endl;
 }
 
 void CSwapchain::GetMaxUsableSampleCount(){

@@ -1,23 +1,7 @@
 #include "../include/renderProcess.h"
 
-CRenderProcess::CRenderProcess(){
-    //debugger = new CDebugger("../logs/renderProcess.log");
-    
-    bUseAttachmentColorPresent = false;
-    bUseAttachmentDepth = false;
-    bUseAttachmentColorMultisample = false;
-
-	bUseColorBlendAttachment = false;
-
-    m_msaaSamples = VK_SAMPLE_COUNT_1_BIT;
-    //m_swapChainImageFormat = VK_FORMAT_UNDEFINED;
-}
-CRenderProcess::~CRenderProcess(){
-	//if (!debugger) delete debugger;
-}
-
-void CRenderProcess::createSubpass(bool bDepth, bool bNormal){ 
-	uint32_t attachmentCount = 0;
+void CRenderProcess::createSubpass(){ 
+	//uint32_t attachmentCount = 0;
 
 	//clear values for each attachment. The array is indexed by attachment number
 	//Only elements corresponding to cleared attachments are used. Other elements of pClearValues are ignored.
@@ -29,6 +13,7 @@ void CRenderProcess::createSubpass(bool bDepth, bool bNormal){
 
 	//First: create attachment reference according to attachment info
 	//attachment# must match framebuffer order
+	/*
 	if(bUseAttachmentDepth){//added for model
 		clearValues.push_back({1.0f, 0}); //The range of depths in the depth buffer is 0.0 to 1.0 in Vulkan, where 1.0 lies at the far view plane and 0.0 at the near view plane.
 		attachment_reference_depth.attachment = attachmentCount++; 
@@ -46,26 +31,6 @@ void CRenderProcess::createSubpass(bool bDepth, bool bNormal){
 	}
 
 	//Second: create subpasses
-	/*
-	VkSubpassDescription subpass{};
-	if(bUseAttachmentColorPresent){
-		if(bUseAttachmentColorMultisample) subpass.pResolveAttachments = &attachment_reference_color_present;
-		else subpass.pColorAttachments = &attachment_reference_color_present; //fragment shader output here
-	}
-	if(bUseAttachmentDepth){
-		subpass.pDepthStencilAttachment = &attachment_reference_depth; 
-	}
-	if(bUseAttachmentColorMultisample){
-		subpass.pColorAttachments = &attachment_reference_color_multisample; //fragment shader output here
-	}
-
-	subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-	subpass.colorAttachmentCount = 1;
-
-	subpasses.push_back(subpass);
-	*/
-
-
 	//subpass dont need to use all attachments
 	//set subpass# in pipeline(s)
 	VkSubpassDescription subpass0{};
@@ -78,7 +43,6 @@ void CRenderProcess::createSubpass(bool bDepth, bool bNormal){
 	if(bUseAttachmentDepth) subpass0.pDepthStencilAttachment = &attachment_reference_depth; 
 	if(bUseAttachmentColorMultisample) subpass0.pColorAttachments = &attachment_reference_color_multisample; //fragment shader output here
 	
-
 	VkSubpassDescription subpass1{};
 	subpass1.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
 	subpass1.colorAttachmentCount = 1;
@@ -89,55 +53,209 @@ void CRenderProcess::createSubpass(bool bDepth, bool bNormal){
 	if(bUseAttachmentDepth) subpass1.pDepthStencilAttachment = &attachment_reference_depth; 
 	if(bUseAttachmentColorMultisample) subpass1.pColorAttachments = &attachment_reference_color_multisample; //fragment shader output here
 
-	// if(bUseAttachmentColorPresent){
-	// 	if(bUseAttachmentColorMultisample) subpass.pResolveAttachments = &attachment_reference_color_present;
-	// 	else subpass.pColorAttachments = &attachment_reference_color_present; //fragment shader output here
-	// }
-	// if(bUseAttachmentDepth){
-	// 	subpass.pDepthStencilAttachment = &attachment_reference_depth; 
-	// }
-	// if(bUseAttachmentColorMultisample){
-	// 	subpass.pColorAttachments = &attachment_reference_color_multisample; //fragment shader output here
-	// }
-
-	// subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-	// subpass.colorAttachmentCount = 1;
-
 	if(bDepth) subpasses.push_back(subpass0);
 	if(bNormal) subpasses.push_back(subpass1);
 
+	*/
+	
+	std::cout<<"Begin create subpasses"<<std::endl;
+
+	switch(m_renderFeature){
+		case RenderFeatures::PRESENT:
+			clearValues.push_back({0.0f, 0.0f, 0.0f, 1.0f});
+		break;
+		case RenderFeatures::PRESENT_DEPTH:
+			clearValues.push_back({1.0f, 0}); 
+			clearValues.push_back({0.0f, 0.0f, 0.0f, 1.0f});
+		break;
+		case RenderFeatures::PRESENT_DEPTH_MSAA:
+			clearValues.push_back({1.0f, 0}); 
+			clearValues.push_back({0.0f, 0.0f, 0.0f, 1.0f});
+			clearValues.push_back({0.0f, 0.0f, 0.0f, 1.0f});
+		break;
+	}
+	
+
+	if(bEnableSubpassShadowmap){
+		switch(m_renderFeature){
+			case RenderFeatures::PRESENT:
+			break;
+			case RenderFeatures::PRESENT_DEPTH:
+			break;
+			case RenderFeatures::PRESENT_DEPTH_MSAA:
+			break;
+		}
+
+		VkSubpassDescription subpass{};//shadowmap
+	}
+
+	//attachmentDescriptions(.attachment) order: 
+	//if PRESENT: 0-present_color
+	//if PRESENT_DEPTH: 0-depth; 1-presentcolor
+	//if PRESENT_DEPTH_MSAA: 0-depth; 1-msaacolor; 2-presentcolor
 
 
+	if(bEnableSubpassDraw){
+		VkSubpassDescription subpass{};
+		switch(m_renderFeature){
+			case RenderFeatures::PRESENT: //0-present_color
+				attachmentRef_color_draw.attachment = 0; 
+				attachmentRef_color_draw.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+				subpass.pColorAttachments = &attachmentRef_color_draw;
+			break;
+			case RenderFeatures::PRESENT_DEPTH: //0-depth; 1-presentcolor(fragment output to this)
+				attachmentRef_depth_draw.attachment = 0; 
+				attachmentRef_depth_draw.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL; //normal depth image format
+				subpass.pDepthStencilAttachment = &attachmentRef_depth_draw;
+				
+
+				attachmentRef_color_draw.attachment = 1; 
+				attachmentRef_color_draw.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+				subpass.pColorAttachments = &attachmentRef_color_draw;
+			break;
+			case RenderFeatures::PRESENT_DEPTH_MSAA://0-depth; 1-msaacolor(fragment output to this); 2-presentcolor
+				attachmentRef_depth_draw.attachment = 0; 
+				attachmentRef_depth_draw.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL; //normal depth image format
+				subpass.pDepthStencilAttachment = &attachmentRef_depth_draw;
+				
+				attachmentRef_color_multisample_draw.attachment = 1; 
+				attachmentRef_color_multisample_draw.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+				subpass.pColorAttachments = &attachmentRef_color_multisample_draw;
+
+				attachmentRef_color_draw.attachment = 2; 
+				attachmentRef_color_draw.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+				subpass.pResolveAttachments = &attachmentRef_color_draw;
+			break;
+		}
+		subpass.colorAttachmentCount = 1;
+		subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;			
+		subpasses.push_back(subpass);
+	}
+
+	if(bEnableSubpassObserve){
+		VkSubpassDescription subpass{};
+		switch(m_renderFeature){
+			case RenderFeatures::PRESENT: //0-present_color
+				//cant not run oberserve subpass if it has only color attachment??
+			break;
+			case RenderFeatures::PRESENT_DEPTH://0-depth; 1-presentcolor(fragment output to this)
+				attachmentRef_observe.attachment = 0;
+				attachmentRef_observe.layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL; //VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL; //depth image format for output
+				subpass.pInputAttachments = &attachmentRef_observe;
+				attachmentRef_color_observe.attachment = 1; 
+				attachmentRef_color_observe.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+				subpass.pColorAttachments = &attachmentRef_color_observe;
+				
+			break;
+			case RenderFeatures::PRESENT_DEPTH_MSAA://0-depth; 1-msaacolor(fragment output to this); 2-presentcolor
+				attachmentRef_observe.attachment = 0;
+				attachmentRef_observe.layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL; //VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL; //depth image format for output
+				subpass.pInputAttachments = &attachmentRef_observe;
+				
+				attachmentRef_color_multisample_observe.attachment = 1; 
+				attachmentRef_color_multisample_observe.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+				subpass.pColorAttachments = &attachmentRef_color_multisample_observe;
+
+				attachmentRef_color_observe.attachment = 2; 
+				attachmentRef_color_observe.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+				subpass.pResolveAttachments = &attachmentRef_color_observe;
+			break;
+		}
+		subpass.colorAttachmentCount = 1;
+		subpass.inputAttachmentCount = 1;
+		subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+		subpasses.push_back(subpass);
+	}
+
+	std::cout<<"Done create subpasses"<<std::endl;
 }
 
-void CRenderProcess::createDependency(VkPipelineStageFlags srcPipelineStageFlag, VkPipelineStageFlags dstPipelineStageFlag){  
+void CRenderProcess::createDependency(){  
+	if(!bEnableSubpassShadowmap && bEnableSubpassDraw && !bEnableSubpassObserve){ //single subpass
+		switch(m_renderFeature){
+			case RenderFeatures::PRESENT:
+			break;
+			case RenderFeatures::PRESENT_DEPTH:
+			break;
+			case RenderFeatures::PRESENT_DEPTH_MSAA:
+			break;
+		}
+
+		if (!bUseAttachmentDepth) {
+			VkPipelineStageFlags srcPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+			VkPipelineStageFlags dstPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+			dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+			dependency.dstSubpass = 0;
+			dependency.srcStageMask = srcPipelineStageFlag;
+			dependency.srcAccessMask = 0;//VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT
+			dependency.dstStageMask = dstPipelineStageFlag;
+			dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+		}else{
+			VkPipelineStageFlags srcPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+			VkPipelineStageFlags dstPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
+			dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+			dependency.dstSubpass = 0;
+			dependency.srcStageMask = srcPipelineStageFlag;
+			dependency.srcAccessMask = 0;//VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT
+			dependency.dstStageMask = dstPipelineStageFlag;
+			dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+
+			dependency.dstAccessMask |= VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+		}
+	}
+
+	if(!bEnableSubpassShadowmap && bEnableSubpassDraw && bEnableSubpassObserve){ //two subpasses
+		switch(m_renderFeature){
+			case RenderFeatures::PRESENT:
+			break;
+			case RenderFeatures::PRESENT_DEPTH:
+			break;
+			case RenderFeatures::PRESENT_DEPTH_MSAA:
+			break;
+		}
+
+        dependency.srcSubpass = 0;//subpass0 is the src subpass, write in color image, output depth image
+		dependency.dstSubpass = 1;//subpass1 is the dst subpass, input depth image, output color image(fragment shader convert depth image to color image)
+		
+		dependency.srcStageMask = VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT; //this is to make sure subpass0 finishes depth/color, then begin subpass1
+		dependency.srcAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT; //subpass0 need write depth image, subpass1 cant not access depth image before subpass 0 finish it
+		dependency.dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT; //this is to say subpass1's fragment shader can read depth image that subpass1 wrote(as input attachment)
+		dependency.dstAccessMask = VK_ACCESS_INPUT_ATTACHMENT_READ_BIT; //subpass1 need to read input attachment(that subpass0 generate)
+
+		dependency.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT; //sync region instead of all framebuffer, to improve performance
+	}
+
+
+
 	//SINGLE SUBPASS
-	dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
-	dependency.dstSubpass = 0;
-	dependency.srcStageMask = srcPipelineStageFlag;
-	dependency.srcAccessMask = 0;//VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT
-	dependency.dstStageMask = dstPipelineStageFlag;
-	dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-	if (bUseAttachmentDepth) 
-		dependency.dstAccessMask |= VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+	// dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
+	// dependency.dstSubpass = 0;
+	// dependency.srcStageMask = srcPipelineStageFlag;
+	// dependency.srcAccessMask = 0;//VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT
+	// dependency.dstStageMask = dstPipelineStageFlag;
+	// dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+	// if (bUseAttachmentDepth) 
+	// 	dependency.dstAccessMask |= VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
 
 	//TEST TWO SUBPASSES
+
+	//if enable depthtest
 	//VkPipelineStageFlags srcPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
     //VkPipelineStageFlags dstPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
 
-	// dependency.srcSubpass = 0;//subpass0 
-	// dependency.dstSubpass = 1;//subpass1
-	// dependency.srcStageMask = srcPipelineStageFlag;//VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT;
-	// dependency.dstStageMask = dstPipelineStageFlag;//VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+	
 
-	// dependency.srcAccessMask = 0;//VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
-	// dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;//VK_ACCESS_SHADER_READ_BIT;
+	//  dependency.srcStageMask = srcPipelineStageFlag;//VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT;
+	//  dependency.dstStageMask = dstPipelineStageFlag;//VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+	//  dependency.srcAccessMask = 0;//VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+	//  dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;//VK_ACCESS_SHADER_READ_BIT;
 
-	// dependency.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
+	
 
 }
 
 void CRenderProcess::createRenderPass(){ 
+	//std::cout<<"Begin create renderpass"<<std::endl;
 	VkResult result = VK_SUCCESS;
 
 	//attachment descriptions in renderpass must match the same order as in framebuffer:
@@ -149,6 +267,7 @@ void CRenderProcess::createRenderPass(){
 	if(bUseAttachmentColorMultisample) attachmentDescriptions.push_back(attachment_description_color_multisample);
 	if(bUseAttachmentColorPresent) attachmentDescriptions.push_back(attachment_description_color_present); 
 
+	//std::cout<<"Begin prepare renderpass info"<<std::endl;
 	VkRenderPassCreateInfo renderPassInfo{};
 	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
 	renderPassInfo.attachmentCount = static_cast<uint32_t>(attachmentDescriptions.size());
@@ -157,9 +276,13 @@ void CRenderProcess::createRenderPass(){
 	renderPassInfo.pSubpasses = subpasses.data();//&subpass;//2
 	renderPassInfo.dependencyCount = 1;
 	renderPassInfo.pDependencies = &dependency;//3
+	//std::cout<<"Done prepare renderpass info: "<< subpasses.size()<<", "<<attachmentDescriptions.size()<<std::endl;
 
 	result = vkCreateRenderPass(CContext::GetHandle().GetLogicalDevice(), &renderPassInfo, nullptr, &renderPass);
+	//std::cout<<"Done create renderpass"<<std::endl;
 	if (result != VK_SUCCESS) throw std::runtime_error("failed to create render pass!");	 
+
+
 }
 
 void CRenderProcess::enableColorAttachmentDescriptionColorPresent(VkFormat swapChainImageFormat){  
@@ -182,7 +305,7 @@ void CRenderProcess::enableAttachmentDescriptionDepth(VkFormat depthFormat, VkSa
 	attachment_description_depth.format = depthFormat;//findDepthFormat();
 	//std::cout<<"addDepthAttachment::depthAttachment.format = "<<depthAttachment.format<<std::endl;
 	attachment_description_depth.samples = msaaSamples;
-	std::cout<<"attachment_description_depth.samples = "<<attachment_description_depth.samples<<std::endl;
+	//std::cout<<"attachment_description_depth.samples = "<<attachment_description_depth.samples<<std::endl;
 	attachment_description_depth.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 	attachment_description_depth.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
 	attachment_description_depth.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
@@ -202,7 +325,7 @@ void CRenderProcess::enableAttachmentDescriptionColorMultiSample(VkFormat swapCh
 	attachment_description_color_multisample.format = swapChainImageFormat;
 	//std::cout<<"addColorAttachment::colorAttachment.format = "<<colorAttachment.format<<std::endl;
 	attachment_description_color_multisample.samples = msaaSamples;
-	std::cout<<"attachment_description_color_multisample.samples = "<<attachment_description_color_multisample.samples<<std::endl;
+	//std::cout<<"attachment_description_color_multisample.samples = "<<attachment_description_color_multisample.samples<<std::endl;
 	attachment_description_color_multisample.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 	attachment_description_color_multisample.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
 	attachment_description_color_multisample.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
