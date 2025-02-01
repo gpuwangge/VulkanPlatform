@@ -36,6 +36,7 @@ public:
 		//objectList[0].SetRotation(-135,0,45);
 		//objectList[0].YawLeft(90,200);
 		//objectList[0].RollLeft(90, 200);
+		objects[5].bVisible = false;
 
 		objects[7].bSticker = true;
 		objects[7].SetScaleRectangleXY(0.5, 0.5, 1, 1);
@@ -71,7 +72,8 @@ public:
 			objects[2+i].SetPosition(lights[i].GetLightPosition()); 
 		}
 
-
+		lightCamera.SetPosition(lights[3].GetLightPosition());
+		
 		CApplication::update();
 	}
 

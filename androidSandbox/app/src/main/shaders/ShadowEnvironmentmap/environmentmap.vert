@@ -8,8 +8,9 @@
 
 layout(set = 0, binding = 1) uniform UniformBufferObject {
     mat4 model;
-    mat4 view;
     mat4 proj;
+	mat4 mainCameraView;
+	mat4 lightCameraView;	
 } mvpUBO;
 
 layout(location = 0) in vec3 inPosition;
@@ -67,7 +68,7 @@ void main() {
 	// outLightVec = lPos - outPos.xyz;
 	// outViewVec = -outPos.xyz;		
 
-    gl_Position = mvpUBO.proj * mvpUBO.view * mvpUBO.model * vec4(inPosition, 1.0);;
+    gl_Position = mvpUBO.proj * mvpUBO.mainCameraView * mvpUBO.model * vec4(inPosition, 1.0);;
 
     outNormal = mat3(mvpUBO.model) * inNormal;
 	outColor = inColor;

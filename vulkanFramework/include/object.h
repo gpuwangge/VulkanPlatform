@@ -17,7 +17,6 @@ class CObject : public CEntity {
     std::vector<int> m_texture_ids;
     int m_model_id = 0;
     int m_graphics_pipeline_id = 0;
-
     bool bUseMVP_VP = false;
 
     //bool bUseTextureSampler;
@@ -49,10 +48,12 @@ public:
     int GetModelID(){return m_model_id;}
 
     bool bUpdate = true;
-    void Update(float deltaTime, int currentFrame, Camera &mainCamera);
+    void Update(float deltaTime, int currentFrame, Camera &mainCamera, Camera &lightCamera);
 
     bool bRegistered = false;
     void Register(CApplication *p_app, int object_id, std::vector<int> texture_ids, int model_id, int graphics_pipeline_id); 
+
+    bool bVisible = true;
 
     //draw with renderer's buffer, or no buffer
     void Draw(uint32_t n = 0);

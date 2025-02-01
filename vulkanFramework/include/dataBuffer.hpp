@@ -315,9 +315,10 @@ private:
 
 struct MVPData{
     alignas(16) glm::mat4 model; //16*4=64 bytes
-	alignas(16) glm::mat4 view; //16*4=64 bytes
 	alignas(16) glm::mat4 proj; //16*4=64 bytes
-    alignas(16) glm::mat4 padding; //: MVP size is 192 bytes, but require a multiple of device limit minUniformBufferOffsetAlignment 256.
+    alignas(16) glm::mat4 mainCameraView; //16*4=64 bytes
+    //alignas(16) glm::mat4 padding; //: MVP size is 192 bytes, but require a multiple of device limit minUniformBufferOffsetAlignment 256.
+    alignas(16) glm::mat4 lightCameraView;
     //Each element of pDynamicOffsets which corresponds to a descriptor binding with type VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC must be a multiple of VkPhysicalDeviceLimits::minUniformBufferOffsetAlignment
 };  
 

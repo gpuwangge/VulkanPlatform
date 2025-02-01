@@ -22,6 +22,7 @@ void CEntity::RollRight(float angle, float speed){ TempAngularVelocity[RotationD
 void CEntity::SetPosition(float x, float y, float z){ Position = glm::vec3(x, y, z); }
 void CEntity::SetPosition(glm::vec3 v){ Position = v; }
 void CEntity::SetRotation(float pitch, float yaw, float roll){ Rotation = glm::vec3(pitch, yaw, roll); }
+void CEntity::SetRotation(glm::vec3 v){ Rotation = v; }
 
 void CEntity::MoveToPosition(float x, float y, float z, float t){
     TempMoveVelocity = glm::vec4((x - Position.x)/t, (y - Position.y)/t, (z - Position.z)/t, t);

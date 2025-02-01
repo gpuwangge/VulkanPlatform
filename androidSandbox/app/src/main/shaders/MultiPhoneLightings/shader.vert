@@ -2,8 +2,9 @@
 
 layout(set = 0, binding = 1) uniform UniformBufferObject {
     mat4 model;
-    mat4 view;
     mat4 proj;
+ 	mat4 mainCameraView;
+	mat4 lightCameraView;	
 } mvpUBO;
 
 layout(location = 0) in vec3 inPosition;
@@ -23,7 +24,7 @@ layout (location = 3) out vec3 outPosWorld;
 // layout (location = 3+4*LIGHT_NUM) out float outSpecularIntensity[LIGHT_NUM];
 
 void main() {
-	gl_Position = mvpUBO.proj * mvpUBO.view * mvpUBO.model * vec4(inPosition, 1.0);
+	gl_Position = mvpUBO.proj * mvpUBO.mainCameraView * mvpUBO.model * vec4(inPosition, 1.0);
 
 	outNormal = mat3(mvpUBO.model) * inNormal;
 	outColor = inColor;

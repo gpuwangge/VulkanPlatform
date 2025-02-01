@@ -3,16 +3,13 @@
 
 #include "entity.h"
 
-class Camera : public CEntity
-{
-private:
-	float fov;
-	float znear, zfar;
-
+class Camera : public CEntity{
 public:
 	enum CameraType { LOCK, FREE, SELECT }; //SELECT is not implemented yet
 	CameraType cameraType = CameraType::LOCK;
 
+	float fov;
+	float znear, zfar;
 	// float keyboard_sensitive = 60;
   	// float mouse_sensitive = 3;
 

@@ -7,8 +7,9 @@ layout(set = 0, binding = 0) uniform UniformCustomBufferObject {
 
 layout(set = 0, binding = 2) uniform UniformBufferObject {
     mat4 model;
-    mat4 view;
     mat4 proj;
+	mat4 mainCameraView;
+	mat4 lightCameraView;	
 } mvpUBO;
 
 layout(location = 0) in vec3 inPosition;
@@ -44,7 +45,7 @@ void main()
 
 	// outShadowCoord = (biasMat * customUBO.lightSpace * ubo.model ) * vec4(inPosition, 1.0);
 
-	gl_Position = mvpUBO.proj * mvpUBO.view * mvpUBO.model * vec4(inPosition, 1.0);
+	gl_Position = mvpUBO.proj * mvpUBO.lightCameraView * mvpUBO.model * vec4(inPosition, 1.0);
 
 	outNormal = mat3(mvpUBO.model) * inNormal;
 	outColor = inColor;

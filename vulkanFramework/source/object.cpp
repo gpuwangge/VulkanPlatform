@@ -30,7 +30,7 @@ CObject::CObject(){
     TempMoveAngularVelocity = glm::vec4();
 }
 
- void CObject::Update(float deltaTime, int currentFrame, Camera &mainCamera){
+ void CObject::Update(float deltaTime, int currentFrame, Camera &mainCamera, Camera &lightCamera){
     if(!bRegistered)  return;
     if(!bUpdate) return;
 
@@ -46,12 +46,19 @@ CObject::CObject(){
         //update view and perspective matrices to ubo
         if(!bSticker){
             if(bSkybox) {
-                CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].view = glm::mat4(glm::mat3(mainCamera.matrices.view)); ///remove translate
-            }else CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].view = mainCamera.matrices.view;
+                CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].mainCameraView = glm::mat4(glm::mat3(mainCamera.matrices.view)); //remove translate
+                CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].lightCameraView = glm::mat4(glm::mat3(lightCamera.matrices.view));
+            }else{
+                CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].mainCameraView = mainCamera.matrices.view;
+                CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].lightCameraView = lightCamera.matrices.view;
+            }
+
             CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].proj = mainCamera.matrices.perspective;
+            //CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].proj = lightCamera.matrices.perspective; //redundent?
         }else{
-            CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].view = glm::mat4(1.0f);//mainCamera.matrices.view;
-            CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].proj = glm::mat4(1.0f);//mainCamera.matrices.perspective;
+            CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].mainCameraView = glm::mat4(1.0f);
+            CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].lightCameraView = glm::mat4(1.0f);
+            CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].proj = glm::mat4(1.0f);
         }
         
         //memcpy to GPU memory
@@ -184,7 +191,8 @@ void CObject::Register(CApplication *p_app, int object_id, std::vector<int> text
 
 
 void CObject::Draw(uint32_t n){
-    if(!bRegistered) return;
+    if(!bRegistered || !bVisible) return;
+
     p_renderer->BindPipeline(p_renderProcess->graphicsPipelines[m_graphics_pipeline_id], 
         VK_PIPELINE_BIND_POINT_GRAPHICS, p_renderer->graphicsCmdId);
     //std::cout<<"test2. p_graphicsDescriptorSets->size()="<<p_graphicsDescriptorSets->size()<<std::endl;
@@ -219,6 +227,8 @@ void CObject::Draw(uint32_t n){
 
 
 void CObject::Draw(std::vector<CWxjBuffer> &buffer, uint32_t n){ //const VkBuffer *pBuffers
+    if(!bRegistered || !bVisible) return;
+
     //this function is used in sample:simpleparticle only
     //std::cout<<"testdraw1,"<<m_graphics_pipeline_id<<","<<p_renderer->graphicsCmdId<<std::endl;
     p_renderer->BindPipeline(p_renderProcess->graphicsPipelines[m_graphics_pipeline_id], 

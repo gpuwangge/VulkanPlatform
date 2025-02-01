@@ -89,6 +89,7 @@ public:
 
     //for static class member. But can not define and init them in the header file!
     static Camera mainCamera; 
+    static Camera lightCamera;
     static bool NeedToExit;
     static bool NeedToPause;
 

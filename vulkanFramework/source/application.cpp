@@ -3,6 +3,7 @@
 //static class members must be defined outside. 
 //otherwise invoke 'undefined reference' error when linking
 Camera CApplication::mainCamera;
+Camera CApplication::lightCamera;
 bool CApplication::NeedToExit = false; 
 bool CApplication::NeedToPause = false;
 int CApplication::focusObjectId = 0;
@@ -241,10 +242,13 @@ void CApplication::update(){
     deltaTime = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - lastTime).count();
     lastTime = currentTime;
 
-    if(objects.size() > 0 && focusObjectId < objects.size())
+    if(objects.size() > 0 && focusObjectId < objects.size()){
         mainCamera.SetTargetPosition(objects[focusObjectId].Position);
+        lightCamera.SetTargetPosition(objects[focusObjectId].Position);
+    }
     mainCamera.update(deltaTime);
-    for(int i = 0; i < objects.size(); i++) objects[i].Update(deltaTime, renderer.currentFrame, mainCamera); 
+    lightCamera.update(deltaTime);
+    for(int i = 0; i < objects.size(); i++) objects[i].Update(deltaTime, renderer.currentFrame, mainCamera, lightCamera); 
     for(int i = 0; i < lights.size(); i++) lights[i].Update(deltaTime, renderer.currentFrame, mainCamera); 
     
 }
@@ -902,9 +906,6 @@ void CApplication::ReadMainCamera(){
         config["MainCamera"]["camera_z"][0].as<float>(), 
         config["MainCamera"]["camera_z"][1].as<float>());
 
-    //mainCamera.keyboard_sensitive = config["MainCamera"]["camera_keyboard_sensitive"] ? config["MainCamera"]["camera_keyboard_sensitive"].as<float>() : 0;
-    //mainCamera.mouse_sensitive = config["MainCamera"]["camera_mouse_sensitive"] ? config["MainCamera"]["camera_mouse_sensitive"].as<float>() : 0;
-
 #ifdef SDL
     sdlManager.keyboard_sensitive = config["MainCamera"]["camera_keyboard_sensitive"] ? config["MainCamera"]["camera_keyboard_sensitive"].as<float>() : 3;
     sdlManager.mouse_sensitive = config["MainCamera"]["camera_mouse_sensitive"] ? config["MainCamera"]["camera_mouse_sensitive"].as<float>() : 60;
@@ -913,6 +914,10 @@ void CApplication::ReadMainCamera(){
     glfwManager.mouse_sensitive = config["MainCamera"]["camera_mouse_sensitive"] ? config["MainCamera"]["camera_mouse_sensitive"].as<float>() : 60;
 #endif
  
+    lightCamera.cameraType = mainCamera.cameraType;
+    lightCamera.SetPosition(mainCamera.Position);
+    lightCamera.SetRotation(mainCamera.Rotation);
+    lightCamera.setPerspective(mainCamera.fov,  (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, mainCamera.znear, mainCamera.zfar);
 }
 
 void CApplication::Dispatch(int numWorkGroupsX, int numWorkGroupsY, int numWorkGroupsZ){
