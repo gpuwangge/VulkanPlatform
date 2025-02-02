@@ -61,13 +61,18 @@ Uniforms:
       uniform_compute_swapchain_storage: false
 
 Features:
-  feature_graphics_depth_test: false
-  feature_graphics_msaa: true
   feature_graphics_48pbt: false
   feature_graphics_push_constant: false
   feature_graphics_blend: false
   feature_graphics_rainbow_mipmap: false
   feature_graphics_pipeline_skybox_id: -1
+  feature_graphics_observe_attachment_id: -1
+
+Attachments:
+  depth_light: false
+  depth_camera: true
+  color_resovle: true
+  color_present: true
 
 MainCamera:
   camera_mode: 1

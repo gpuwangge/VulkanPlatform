@@ -101,7 +101,7 @@ public:
 
     std::string m_sampleName;
     YAML::Node config;
-    
+
     /******************
     * Core Functions
     ******************/
@@ -121,6 +121,7 @@ public:
     ******************/
     void ReadFeatures();
     void ReadUniforms();
+    void ReadAttachments();
     void ReadSubpasses();
     void ReadResources();
     void CreateUniformDescriptors(bool b_uniform_graphics, bool b_uniform_compute);
@@ -135,14 +136,21 @@ public:
      * APP INFO
      *******/
     struct FeatureInfo{
-        bool b_feature_graphics_depth_test = false;
-        bool b_feature_graphics_msaa = false;
+        //bool b_feature_graphics_depth_test = false;
+        //bool b_feature_graphics_msaa = false;
         bool b_feature_graphics_48pbt = false;
         bool b_feature_graphics_push_constant = false;
         bool b_feature_graphics_blend = false;
         bool b_feature_graphics_rainbow_mipmap = false;
         int feature_graphics_pipeline_skybox_id = -1;
+        int feature_graphics_observe_attachment_id = -1;
     };
+    // struct AttachmentInfo{
+    //     bool bAttachmentDepthLight;
+    //     bool bAttachmentDepthCamera;
+    //     bool bAttachmentColorResovle;
+    //     bool bAttachmentColorPresent;
+    // };
     struct UniformInfo{
         bool b_uniform_graphics_custom = false;
         bool b_uniform_graphics_mvp = false;
@@ -169,6 +177,7 @@ public:
 
     struct AppInfo{
         FeatureInfo Feature;
+        //AttachmentInfo Attachment;
         UniformInfo Uniform;
         std::unique_ptr<std::vector<std::string>> VertexShader;
         std::unique_ptr<std::vector<std::string>> FragmentShader;

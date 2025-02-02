@@ -42,8 +42,24 @@ public:
 
     bool bComputeSwapChainImage = false; //added VK_IMAGE_USAGE_STORAGE_BIT for image storage
 
+    //Attachments
+    // bool bAttachmentDepthLight = false;
+    // bool bAttachmentDepthCamera = false;
+    // bool bAttachmentColorResovle = false;
+    // bool bAttachmentColorPresent = true;
+    int iAttachmentDepthLight = -1;
+    int iAttachmentDepthCamera = -1;
+    int iAttachmentColorResovle = -1;
+    int iAttachmentColorPresent = -1;
+
+
+    //Resource for light depth(shadowmap)
+    //bool bEnableLightDepth;
+    CWxjImageBuffer lightDepthImageBuffer;
+    void EnableLightDepth();
+
     //Resource for Depth Test
-    bool bEnableDepthTest = false;
+    //bool bEnableDepthTest = false;
     VkFormat depthFormat;
 	CWxjImageBuffer depthImageBuffer;
 	//VkImageView depthImageView;
@@ -52,7 +68,7 @@ public:
     void EnableDepthTest();
 
     //Resource for MSAA
-    bool bEnableMSAA;
+    //bool bEnableMSAA;
     VkSampleCountFlagBits msaaSamples;
     CWxjImageBuffer msaaColorImageBuffer;
 	//VkImageView msaaColorImageView;

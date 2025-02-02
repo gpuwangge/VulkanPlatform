@@ -63,14 +63,18 @@ Resources:
       resource_texture_cubmap: false
       uniform_Sampler_id: 1
   - Pipelines:
-    - resource_graphics_pipeline_name: pipeline0
-      resource_graphics_pipeline_vertexshader_name: simpleDepthImage/regular.vert.spv
-      resource_graphics_pipeline_fragmentshader_name: simpleDepthImage/regular.frag.spv
-      subpasses_subpass_id: 0
-    - resource_graphics_pipeline_name: pipeline1
-      resource_graphics_pipeline_vertexshader_name: simpleDepthImage/screen.vert.spv
-      resource_graphics_pipeline_fragmentshader_name: simpleDepthImage/screen.frag.spv
+    - resource_graphics_pipeline_name: pipeline_draw
+      resource_graphics_pipeline_vertexshader_name: simpleDepthImage/draw.vert.spv
+      resource_graphics_pipeline_fragmentshader_name: simpleDepthImage/draw.frag.spv
       subpasses_subpass_id: 1
+    - resource_graphics_pipeline_name: pipeline_observe
+      resource_graphics_pipeline_vertexshader_name: simpleDepthImage/observe.vert.spv
+      resource_graphics_pipeline_fragmentshader_name: simpleDepthImage/observe.frag.spv
+      subpasses_subpass_id: 2
+    - resource_graphics_pipeline_name: pipeline_lightdepth
+      resource_graphics_pipeline_vertexshader_name: simpleDepthImage/lightdepth.vert.spv
+      resource_graphics_pipeline_fragmentshader_name: simpleDepthImage/lightdepth.frag.spv
+      subpasses_subpass_id: 0
 
 Uniforms:
   - Graphics:
@@ -87,16 +91,21 @@ Uniforms:
       uniform_graphics_texture_image_sampler_miplevel: 9
   
 Features:
-  feature_graphics_depth_test: true
-  feature_graphics_msaa: true
   feature_graphics_48pbt: false
   feature_graphics_push_constant: false
   feature_graphics_blend: false
   feature_graphics_rainbow_mipmap: false
   feature_graphics_pipeline_skybox_id: -1
+  feature_graphics_observe_attachment_id: 0
 
-Subpasses:
-  subpasses_shadowmap: false
+Attachments:
+  depth_light: true
+  depth_camera: true
+  color_resovle: true
+  color_present: true
+
+Subpasses: #the index is 0, 1, 2
+  subpasses_shadowmap: true
   subpasses_draw: true
   subpasses_observe: true
 

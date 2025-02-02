@@ -16,7 +16,7 @@ class CObject : public CEntity {
     int m_object_id = 0;
     std::vector<int> m_texture_ids;
     int m_model_id = 0;
-    int m_graphics_pipeline_id = 0;
+    
     bool bUseMVP_VP = false;
 
     //bool bUseTextureSampler;
@@ -39,6 +39,8 @@ class CObject : public CEntity {
 
 public:
     CObject();
+
+    int m_graphics_pipeline_id = 0;
 
     bool bSticker = false;
     bool bSkybox = false;

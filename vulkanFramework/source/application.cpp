@@ -174,6 +174,11 @@ void CApplication::initialize(){
     ReadUniforms();
 
     /****************************
+    * 3.2 Read Subpasses
+    ****************************/
+    ReadAttachments();
+
+    /****************************
     * 3.5 Read Subpasses
     ****************************/
     ReadSubpasses();
@@ -407,22 +412,15 @@ CApplication::~CApplication(){
  *******/
 
 void CApplication::ReadFeatures(){
-    appInfo.Feature.b_feature_graphics_depth_test = config["Features"]["feature_graphics_depth_test"] ? config["Features"]["feature_graphics_depth_test"].as<bool>() : false;
-    appInfo.Feature.b_feature_graphics_msaa = config["Features"]["feature_graphics_msaa"] ? config["Features"]["feature_graphics_msaa"].as<bool>() : false;
+    //appInfo.Feature.b_feature_graphics_depth_test = config["Features"]["feature_graphics_depth_test"] ? config["Features"]["feature_graphics_depth_test"].as<bool>() : false;
+    //appInfo.Feature.b_feature_graphics_msaa = config["Features"]["feature_graphics_msaa"] ? config["Features"]["feature_graphics_msaa"].as<bool>() : false;
     appInfo.Feature.b_feature_graphics_48pbt = config["Features"]["feature_graphics_48pbt"] ? config["Features"]["feature_graphics_48pbt"].as<bool>() : false;
     appInfo.Feature.b_feature_graphics_push_constant = config["Features"]["feature_graphics_push_constant"] ? config["Features"]["feature_graphics_push_constant"].as<bool>() : false;
     appInfo.Feature.b_feature_graphics_blend = config["Features"]["feature_graphics_blend"] ? config["Features"]["feature_graphics_blend"].as<bool>() : false;
     appInfo.Feature.b_feature_graphics_rainbow_mipmap = config["Features"]["feature_graphics_rainbow_mipmap"] ? config["Features"]["feature_graphics_rainbow_mipmap"].as<bool>() : false;
     appInfo.Feature.feature_graphics_pipeline_skybox_id = config["Features"]["feature_graphics_pipeline_skybox_id"] ? config["Features"]["feature_graphics_pipeline_skybox_id"].as<int>() : -1;
-    
-    if(appInfo.Feature.b_feature_graphics_msaa){
-        swapchain.EnableMSAA(); //must enable MSAA first, because this function calls GetMaxUsableSampleCount(); depthImage need sampler count
-        swapchain.EnableDepthTest();//If enable MSAA, must also enable Depth Test
-        renderProcess.m_renderFeature = CRenderProcess::RenderFeatures::PRESENT_DEPTH_MSAA;
-    }else if(appInfo.Feature.b_feature_graphics_depth_test){
-        swapchain.EnableDepthTest();
-        renderProcess.m_renderFeature = CRenderProcess::RenderFeatures::PRESENT_DEPTH;
-    }
+    appInfo.Feature.feature_graphics_observe_attachment_id = config["Features"]["feature_graphics_observe_attachment_id"] ? config["Features"]["feature_graphics_observe_attachment_id"].as<int>() : -1;
+
     if(appInfo.Feature.b_feature_graphics_push_constant){
         shaderManager.CreatePushConstantRange<ModelPushConstants>(VK_SHADER_STAGE_VERTEX_BIT, 0);
     }
@@ -623,25 +621,55 @@ void CApplication::ReadResources(){
     }
 }
 
+void CApplication::ReadAttachments(){
+    bool bAttachmentDepthLight = config["Attachments"]["depth_light"] ? config["Attachments"]["depth_light"].as<bool>() : false;
+    bool bAttachmentDepthCamera = config["Attachments"]["depth_camera"] ? config["Attachments"]["depth_camera"].as<bool>()  : false;
+    bool bAttachmentColorResovle = config["Attachments"]["color_resovle"] ? config["Attachments"]["color_resovle"].as<bool>()  : false;
+    bool bAttachmentColorPresent = config["Attachments"]["color_present"] ? config["Attachments"]["color_present"].as<bool>()  : false;
+
+    int AttachmentCount = 0;
+    renderProcess.iAttachmentDepthLight = bAttachmentDepthLight ? AttachmentCount++ : -1;
+    renderProcess.iAttachmentDepthCamera = bAttachmentDepthCamera ? AttachmentCount++ : -1;
+    renderProcess.iAttachmentColorResovle = bAttachmentColorResovle ? AttachmentCount++ : -1;
+    renderProcess.iAttachmentColorPresent = bAttachmentColorPresent ? AttachmentCount++ : -1;
+
+    swapchain.iAttachmentDepthLight = renderProcess.iAttachmentDepthLight;
+    swapchain.iAttachmentDepthCamera = renderProcess.iAttachmentDepthCamera;
+    swapchain.iAttachmentColorResovle = renderProcess.iAttachmentColorResovle;
+    swapchain.iAttachmentColorPresent = renderProcess.iAttachmentColorPresent;
+
+    std::cout<<"attachments: "<<swapchain.iAttachmentDepthLight<<","<<swapchain.iAttachmentDepthCamera<<","<<swapchain.iAttachmentColorResovle<<","<<swapchain.iAttachmentColorPresent<<std::endl;
+
+    if(swapchain.iAttachmentColorResovle >= 0){
+        swapchain.EnableMSAA(); //must enable MSAA first, because this function calls GetMaxUsableSampleCount(); depthImage need sampler count
+        swapchain.EnableDepthTest();//If enable MSAA, must also enable Depth Test
+        renderProcess.m_renderFeature = CRenderProcess::RenderFeatures::PRESENT_DEPTH_MSAA;
+    }else if(swapchain.iAttachmentDepthCamera >= 0){
+        swapchain.EnableDepthTest();
+        renderProcess.m_renderFeature = CRenderProcess::RenderFeatures::PRESENT_DEPTH;
+    }
+
+}
+
 void CApplication::ReadSubpasses(){
     renderProcess.bEnableSubpassShadowmap = config["Subpasses"]["subpasses_shadowmap"] ? config["Subpasses"]["subpasses_shadowmap"].as<bool>() : false;
     renderProcess.bEnableSubpassDraw = config["Subpasses"]["subpasses_draw"] ? config["Subpasses"]["subpasses_draw"].as<bool>() : true;
     renderProcess.bEnableSubpassObserve = config["Subpasses"]["subpasses_observe"] ? config["Subpasses"]["subpasses_observe"].as<bool>() : false;
 
-    //create renderpass
-    VkImageLayout imageLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+    //create attachment descriptions
     renderProcess.enableColorAttachmentDescriptionColorPresent(swapchain.swapChainImageFormat);//assume when vertex is non-null, need a color attachment for presentation(must be single sampled)
-    if(swapchain.bEnableDepthTest) {
+    if(swapchain.iAttachmentDepthCamera >= 0) {
         renderProcess.enableAttachmentDescriptionDepth(swapchain.depthFormat, swapchain.msaaSamples);
-        if(swapchain.bEnableMSAA) //if enable MSAA, must also enable depthTest
-            renderProcess.enableAttachmentDescriptionColorMultiSample(swapchain.swapChainImageFormat, swapchain.msaaSamples, imageLayout); 
+        if(swapchain.iAttachmentColorResovle >= 0) //if enable MSAA, must also enable depthTest
+            renderProcess.enableAttachmentDescriptionColorMultiSample(swapchain.swapChainImageFormat, swapchain.msaaSamples, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR); 
     }
-    renderProcess.createSubpass();
-    // if(swapchain.bEnableDepthTest){
-    //     VkPipelineStageFlags srcPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-    //     VkPipelineStageFlags dstPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-    //     renderProcess.createDependency(srcPipelineStageFlag, dstPipelineStageFlag);
-    // }else 
+    if(renderProcess.bEnableSubpassShadowmap){
+        swapchain.EnableLightDepth();
+        renderProcess.enableAttachmentDescriptionLightDepth(swapchain.depthFormat, swapchain.msaaSamples);
+    }
+
+    //create renderpass
+    renderProcess.createSubpass(appInfo.Feature.feature_graphics_observe_attachment_id);
     renderProcess.createDependency();
     renderProcess.createRenderPass();
 
@@ -667,8 +695,12 @@ void CApplication::CreateUniformDescriptors(bool b_uniform_graphics, bool b_unif
     }
 
     //UNIFORM STEP 3/3 (Set)
-    if(b_uniform_graphics)
-        graphicsDescriptorManager.createDescriptorSets_General(swapchain.depthImageBuffer.view);//TODO: what if no depthImageBuffer is not enable 
+    if(b_uniform_graphics){
+        if(appInfo.Feature.feature_graphics_observe_attachment_id == 0) //assume 0 is light Depth Image Buffer
+            graphicsDescriptorManager.createDescriptorSets_General(swapchain.lightDepthImageBuffer.view);
+        else// if(appInfo.Feature.feature_graphics_observe_attachment_id == 1)
+            graphicsDescriptorManager.createDescriptorSets_General(swapchain.depthImageBuffer.view);//TODO: what if no depthImageBuffer is not enable 
+    }
     if(b_uniform_compute){
         if(appInfo.Uniform.b_uniform_compute_swapchain_storage) {
             if(appInfo.Uniform.b_uniform_compute_texture_storage)

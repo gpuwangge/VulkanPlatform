@@ -73,16 +73,23 @@ public:
 		}
 
 		lightCamera.SetPosition(lights[3].GetLightPosition());
-		
+
 		CApplication::update();
 	}
 
 	void recordGraphicsCommandBuffer(){
-		
+		for(int i = 0; i < objects.size()-1; i++) {
+			objects[i].m_graphics_pipeline_id = 2;
+			objects[i].Draw();
+		}
+		vkCmdNextSubpass(renderer.commandBuffers[renderer.graphicsCmdId][renderer.currentFrame], VK_SUBPASS_CONTENTS_INLINE);
 
 		//draw all items with pipeline 0
 		//TODO: pipeline 0 should enable depth test
-		for(int i = 0; i < objects.size()-1; i++) objects[i].Draw();
+		for(int i = 0; i < objects.size()-1; i++) {
+			objects[i].m_graphics_pipeline_id = 0;
+			objects[i].Draw();
+		}
 
 		//TODO: change depth test layout
 		vkCmdNextSubpass(renderer.commandBuffers[renderer.graphicsCmdId][renderer.currentFrame], VK_SUBPASS_CONTENTS_INLINE);

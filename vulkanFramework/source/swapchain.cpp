@@ -4,7 +4,6 @@ CSwapchain::CSwapchain(){
     //debugger = new CDebugger("../logs/swapchain.log");
 
     imageSize = 0; //0 means the size is not set, will query for the value
-    bEnableMSAA = false;
     msaaSamples = VK_SAMPLE_COUNT_1_BIT;
 
 #ifndef ANDROID
@@ -258,15 +257,26 @@ VkFormat CSwapchain::findDepthFormat() {
 }
 
 void CSwapchain::EnableDepthTest(){
-    bEnableDepthTest = true;
+    //bEnableDepthTest = true;
     depthFormat = findDepthFormat();
 	VkImageUsageFlags usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT;
 	createDepthImages(VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
 	createDepthImageViews(depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT);
 }
 
+void CSwapchain::EnableLightDepth(){
+    //bEnableLightDepth = true;
+    depthFormat = findDepthFormat();
+	VkImageUsageFlags usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT;
+	//createDepthImages(VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+    lightDepthImageBuffer.createImage(swapChainExtent.width,swapChainExtent.height, 1, msaaSamples, depthFormat, VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, false);
+	//createDepthImageViews(depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT);
+    lightDepthImageBuffer.createImageView(depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT, 1, false);
+    std::cout<<"Enabled Light Depth Image Buffer"<<std::endl;
+}
+
 void CSwapchain::EnableMSAA(){
-    bEnableMSAA = true;
+    //bEnableMSAA = true;
     GetMaxUsableSampleCount();
 	VkImageUsageFlags usage = VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 	createMSAAImages(VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
@@ -281,7 +291,7 @@ void CSwapchain::CreateFramebuffers(VkRenderPass &renderPass){
 
 	VkResult result = VK_SUCCESS;
 
-	swapChainFramebuffers.resize(views.size());
+	swapChainFramebuffers.resize(views.size());//use imageSize?
 
 	for (size_t i = 0; i < imageSize; i++) {
         //attachments in framebuffer are set in this order:
@@ -289,9 +299,12 @@ void CSwapchain::CreateFramebuffers(VkRenderPass &renderPass){
         //#2: if depth test is enabled, a depth attachment with sampler number = n
         //#3: if msaa is enabled, a color attachment with sampler number = n
         std::vector<VkImageView> imageViews_to_attach; 
-        if(bEnableDepthTest) imageViews_to_attach.push_back(depthImageBuffer.view);
-        if(bEnableMSAA) imageViews_to_attach.push_back(msaaColorImageBuffer.view);
-        imageViews_to_attach.push_back(views[i]); //views are created from swapchain, sampler number is always 1
+        if(iAttachmentDepthLight >= 0) imageViews_to_attach.push_back(lightDepthImageBuffer.view);
+        if(iAttachmentDepthCamera >= 0) imageViews_to_attach.push_back(depthImageBuffer.view);
+        if(iAttachmentColorResovle >= 0) imageViews_to_attach.push_back(msaaColorImageBuffer.view);
+        if(iAttachmentColorPresent >= 0) imageViews_to_attach.push_back(views[i]); //views are created from swapchain, sampler number is always 1
+
+        std::cout<<"SwapImageIndex: "<<i<<"/"<<imageSize<<" imageViews_to_attach size: "<<imageViews_to_attach.size()<<std::endl;
 
         // imageViews_to_attach.push_back(depthImageBuffer.view);
         // imageViews_to_attach.push_back(views[i]);
@@ -341,6 +354,7 @@ void CSwapchain::CleanUp(){
 
     vkDestroySwapchainKHR(CContext::GetHandle().GetLogicalDevice(), handle, nullptr);
 
+    lightDepthImageBuffer.destroy();
     depthImageBuffer.destroy();
     msaaColorImageBuffer.destroy();
 }
