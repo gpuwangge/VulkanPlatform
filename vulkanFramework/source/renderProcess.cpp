@@ -301,7 +301,7 @@ void CRenderProcess::createRenderPass(){
 	std::vector<VkAttachmentDescription> attachmentDescriptions;
 	if(iAttachmentDepthLight >= 0) attachmentDescriptions.push_back(attachment_description_light_depth);
 	if(iAttachmentDepthCamera >= 0) attachmentDescriptions.push_back(attachment_description_depth);
-	if(iAttachmentColorResovle >= 0) attachmentDescriptions.push_back(attachment_description_color_multisample);
+	if(iAttachmentColorResovle >= 0) attachmentDescriptions.push_back(attachment_description_color_resolve);
 	if(iAttachmentColorPresent >= 0) attachmentDescriptions.push_back(attachment_description_color_present); 
 
 	//std::cout<<"Begin prepare renderpass info"<<std::endl;
@@ -322,7 +322,7 @@ void CRenderProcess::createRenderPass(){
 
 }
 
-void CRenderProcess::enableAttachmentDescriptionLightDepth(VkFormat depthFormat, VkSampleCountFlagBits msaaSamples){  
+void CRenderProcess::create_attachment_description_light_depth(VkFormat depthFormat, VkSampleCountFlagBits msaaSamples){  
 	//bUseAttachmentLightDepth = true;
 
 	//added for model
@@ -339,7 +339,7 @@ void CRenderProcess::enableAttachmentDescriptionLightDepth(VkFormat depthFormat,
     
 }
 
-void CRenderProcess::enableColorAttachmentDescriptionColorPresent(VkFormat swapChainImageFormat){  
+void CRenderProcess::create_attachment_description_color_present(VkFormat swapChainImageFormat){  
 	//bUseAttachmentColorPresent = true;
 
 	attachment_description_color_present.format = swapChainImageFormat;
@@ -352,7 +352,7 @@ void CRenderProcess::enableColorAttachmentDescriptionColorPresent(VkFormat swapC
 	attachment_description_color_present.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 }
 
-void CRenderProcess::enableAttachmentDescriptionDepth(VkFormat depthFormat, VkSampleCountFlagBits msaaSamples){  
+void CRenderProcess::create_attachment_description_camera_depth(VkFormat depthFormat, VkSampleCountFlagBits msaaSamples){  
 	//bUseAttachmentDepth = true;
 
 	//added for model
@@ -369,23 +369,23 @@ void CRenderProcess::enableAttachmentDescriptionDepth(VkFormat depthFormat, VkSa
     
 }
 
-void CRenderProcess::enableAttachmentDescriptionColorMultiSample(VkFormat swapChainImageFormat, VkSampleCountFlagBits msaaSamples, VkImageLayout imageLayout){  
+void CRenderProcess::create_attachment_description_color_resolve(VkFormat swapChainImageFormat, VkSampleCountFlagBits msaaSamples, VkImageLayout imageLayout){  
 	//Concept of attachment in Vulkan is like render target in OpenGL
 	//Subpass is a procedure to write/read attachments (a render process can has many subpasses, aka a render pass)
 	//Subpass is designed for mobile TBDR architecture
 	//At the beginning of subpass, attachment is loaded; at the end of attachment, attachment is stored
 	//bUseAttachmentColorMultisample = true;
 
-	attachment_description_color_multisample.format = swapChainImageFormat;
+	attachment_description_color_resolve.format = swapChainImageFormat;
 	//std::cout<<"addColorAttachment::colorAttachment.format = "<<colorAttachment.format<<std::endl;
-	attachment_description_color_multisample.samples = msaaSamples;
+	attachment_description_color_resolve.samples = msaaSamples;
 	//std::cout<<"attachment_description_color_multisample.samples = "<<attachment_description_color_multisample.samples<<std::endl;
-	attachment_description_color_multisample.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-	attachment_description_color_multisample.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-	attachment_description_color_multisample.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-	attachment_description_color_multisample.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	attachment_description_color_multisample.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	attachment_description_color_multisample.finalLayout = imageLayout;
+	attachment_description_color_resolve.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+	attachment_description_color_resolve.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+	attachment_description_color_resolve.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+	attachment_description_color_resolve.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+	attachment_description_color_resolve.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+	attachment_description_color_resolve.finalLayout = imageLayout;
 
 	m_msaaSamples = msaaSamples;
 	//std::cout<<"Color Attachment added. "<<std::endl;

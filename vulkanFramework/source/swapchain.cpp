@@ -219,18 +219,6 @@ VkExtent2D CSwapchain::chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabili
     }
 }
 
-void CSwapchain::createMSAAImages(VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties){
-    msaaColorImageBuffer.createImage(swapChainExtent.width,swapChainExtent.height, 1, msaaSamples, swapChainImageFormat, tiling, usage, properties, false);
-}
-void CSwapchain::createMSAAImageViews(VkImageAspectFlags aspectFlags){
-    msaaColorImageBuffer.createImageView(swapChainImageFormat, aspectFlags, 1, false);
-}
-void CSwapchain::createDepthImages(VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties){
-    depthImageBuffer.createImage(swapChainExtent.width,swapChainExtent.height, 1, msaaSamples, depthFormat, tiling, usage, properties, false);
-}
-void CSwapchain::createDepthImageViews(VkFormat format, VkImageAspectFlags aspectFlags){
-    depthImageBuffer.createImageView(format, aspectFlags, 1, false);
-}
 
 VkFormat CSwapchain::findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) {
     for (VkFormat format : candidates) {
@@ -256,15 +244,17 @@ VkFormat CSwapchain::findDepthFormat() {
     );
 }
 
-void CSwapchain::EnableDepthTest(){
+void CSwapchain::create_attachment_description_camera_depth(){
     //bEnableDepthTest = true;
     depthFormat = findDepthFormat();
 	VkImageUsageFlags usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT;
-	createDepthImages(VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-	createDepthImageViews(depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT);
+	//createDepthImages(VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+    depthImageBuffer.createImage(swapChainExtent.width,swapChainExtent.height, 1, msaaSamples, depthFormat, VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, false);
+	//createDepthImageViews(depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT);
+    depthImageBuffer.createImageView(depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT, 1, false);
 }
 
-void CSwapchain::EnableLightDepth(){
+void CSwapchain::create_attachment_buffer_light_depth(){
     //bEnableLightDepth = true;
     depthFormat = findDepthFormat();
 	VkImageUsageFlags usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT;
@@ -275,12 +265,14 @@ void CSwapchain::EnableLightDepth(){
     std::cout<<"Enabled Light Depth Image Buffer"<<std::endl;
 }
 
-void CSwapchain::EnableMSAA(){
+void CSwapchain::create_attachment_description_color_resolve(){
     //bEnableMSAA = true;
-    GetMaxUsableSampleCount();
+    //GetMaxUsableSampleCount();
 	VkImageUsageFlags usage = VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
-	createMSAAImages(VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-	createMSAAImageViews(VK_IMAGE_ASPECT_COLOR_BIT);
+	//createMSAAImages(VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+    msaaColorImageBuffer.createImage(swapChainExtent.width,swapChainExtent.height, 1, msaaSamples, swapChainImageFormat, VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, false);
+	//createMSAAImageViews(VK_IMAGE_ASPECT_COLOR_BIT);
+    msaaColorImageBuffer.createImageView(swapChainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1, false);
 
     //EnableDepthTest(); //If enable MSAA, must also enable Depth Test
 }
@@ -304,21 +296,7 @@ void CSwapchain::CreateFramebuffers(VkRenderPass &renderPass){
         if(iAttachmentColorResovle >= 0) imageViews_to_attach.push_back(msaaColorImageBuffer.view);
         if(iAttachmentColorPresent >= 0) imageViews_to_attach.push_back(views[i]); //views are created from swapchain, sampler number is always 1
 
-        std::cout<<"SwapImageIndex: "<<i<<"/"<<imageSize<<" imageViews_to_attach size: "<<imageViews_to_attach.size()<<std::endl;
-
-        // imageViews_to_attach.push_back(depthImageBuffer.view);
-        // imageViews_to_attach.push_back(views[i]);
-		
-		// if (bEnableDepthTest && bEnableMSAA) {
-        //     imageViews_to_attach.push_back(views[i]);
-		//     imageViews_to_attach.push_back(depthImageBuffer.view);
-		// 	imageViews_to_attach.push_back(msaaColorImageBuffer.view);
-		// }else if(bEnableDepthTest){
-		// 	imageViews_to_attach.push_back(views[i]);
-		// 	imageViews_to_attach.push_back(depthImageBuffer.view);
-		// }else{ 
-		// 	imageViews_to_attach.push_back(views[i]);
-		// }
+        //std::cout<<"SwapImageIndex: "<<i<<"/"<<imageSize<<" imageViews_to_attach size: "<<imageViews_to_attach.size()<<std::endl;
 
 		VkFramebufferCreateInfo framebufferInfo{};
 		framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;

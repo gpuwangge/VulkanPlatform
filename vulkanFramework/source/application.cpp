@@ -640,33 +640,37 @@ void CApplication::ReadAttachments(){
 
     std::cout<<"attachments: "<<swapchain.iAttachmentDepthLight<<","<<swapchain.iAttachmentDepthCamera<<","<<swapchain.iAttachmentColorResovle<<","<<swapchain.iAttachmentColorPresent<<std::endl;
 
-    if(swapchain.iAttachmentColorResovle >= 0){
-        swapchain.EnableMSAA(); //must enable MSAA first, because this function calls GetMaxUsableSampleCount(); depthImage need sampler count
-        swapchain.EnableDepthTest();//If enable MSAA, must also enable Depth Test
-        renderProcess.m_renderFeature = CRenderProcess::RenderFeatures::PRESENT_DEPTH_MSAA;
-    }else if(swapchain.iAttachmentDepthCamera >= 0){
-        swapchain.EnableDepthTest();
+    //when creating attachment resource, need 1.create attachment description in renderProcess; 2.create attachment buffer in swapchain
+    if(swapchain.iAttachmentColorResovle >= 0) swapchain.GetMaxUsableSampleCount(); //calcuate max sampler count first
+
+    //If enable MSAA, must also enable Depth Test
+    if(swapchain.iAttachmentDepthCamera >= 0){
+        swapchain.create_attachment_description_camera_depth();
+        renderProcess.create_attachment_description_camera_depth(swapchain.depthFormat, swapchain.msaaSamples);
+        
         renderProcess.m_renderFeature = CRenderProcess::RenderFeatures::PRESENT_DEPTH;
     }
 
+    if(swapchain.iAttachmentColorResovle >= 0){
+        swapchain.create_attachment_description_color_resolve(); 
+        renderProcess.create_attachment_description_color_resolve(swapchain.swapChainImageFormat, swapchain.msaaSamples, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR); 
+        
+        renderProcess.m_renderFeature = CRenderProcess::RenderFeatures::PRESENT_DEPTH_MSAA;
+    }
+
+    if(swapchain.iAttachmentDepthLight >= 0){
+        swapchain.create_attachment_buffer_light_depth();
+        renderProcess.create_attachment_description_light_depth(swapchain.depthFormat, swapchain.msaaSamples);
+    }
+
+    if(swapchain.iAttachmentColorPresent >= 0) //dont need create buffer here
+        renderProcess.create_attachment_description_color_present(swapchain.swapChainImageFormat);
 }
 
 void CApplication::ReadSubpasses(){
     renderProcess.bEnableSubpassShadowmap = config["Subpasses"]["subpasses_shadowmap"] ? config["Subpasses"]["subpasses_shadowmap"].as<bool>() : false;
     renderProcess.bEnableSubpassDraw = config["Subpasses"]["subpasses_draw"] ? config["Subpasses"]["subpasses_draw"].as<bool>() : true;
     renderProcess.bEnableSubpassObserve = config["Subpasses"]["subpasses_observe"] ? config["Subpasses"]["subpasses_observe"].as<bool>() : false;
-
-    //create attachment descriptions
-    renderProcess.enableColorAttachmentDescriptionColorPresent(swapchain.swapChainImageFormat);//assume when vertex is non-null, need a color attachment for presentation(must be single sampled)
-    if(swapchain.iAttachmentDepthCamera >= 0) {
-        renderProcess.enableAttachmentDescriptionDepth(swapchain.depthFormat, swapchain.msaaSamples);
-        if(swapchain.iAttachmentColorResovle >= 0) //if enable MSAA, must also enable depthTest
-            renderProcess.enableAttachmentDescriptionColorMultiSample(swapchain.swapChainImageFormat, swapchain.msaaSamples, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR); 
-    }
-    if(renderProcess.bEnableSubpassShadowmap){
-        swapchain.EnableLightDepth();
-        renderProcess.enableAttachmentDescriptionLightDepth(swapchain.depthFormat, swapchain.msaaSamples);
-    }
 
     //create renderpass
     renderProcess.createSubpass(appInfo.Feature.feature_graphics_observe_attachment_id);

@@ -38,31 +38,20 @@ public:
     /*********
     * Attachments Description
     **********/
-    // bool bAttachmentDepthLight = false;
-    // bool bAttachmentDepthCamera = false;
-    // bool bAttachmentColorResovle = false;
-    // bool bAttachmentColorPresent = true;
     int iAttachmentDepthLight = -1;
     int iAttachmentDepthCamera = -1;
     int iAttachmentColorResovle = -1;
     int iAttachmentColorPresent = -1;
 
-    // bool bUseAttachmentLightDepth = false;
-    // bool bUseAttachmentColorPresent = false; //in MSAA testcase, this is often called color resolve(multisample attachment will be eventually resolve to singlesample attachment for presentation)
-    // bool bUseAttachmentDepth = false;
-    // bool bUseAttachmentColorMultisample = false;
-    void enableAttachmentDescriptionLightDepth(VkFormat depthFormat, VkSampleCountFlagBits msaaSamples);
-    void enableColorAttachmentDescriptionColorPresent(VkFormat swapChainImageFormat);
-    void enableAttachmentDescriptionDepth(VkFormat depthFormat, VkSampleCountFlagBits msaaSamples);
-    void enableAttachmentDescriptionColorMultiSample(
-        VkFormat swapChainImageFormat,
-        VkSampleCountFlagBits msaaSamples = VK_SAMPLE_COUNT_1_BIT, 
-        VkImageLayout imageLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
-    
+    void create_attachment_description_light_depth(VkFormat depthFormat, VkSampleCountFlagBits msaaSamples);
+    void create_attachment_description_camera_depth(VkFormat depthFormat, VkSampleCountFlagBits msaaSamples);
+    void create_attachment_description_color_resolve(VkFormat swapChainImageFormat,VkSampleCountFlagBits msaaSamples = VK_SAMPLE_COUNT_1_BIT, VkImageLayout imageLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
+    void create_attachment_description_color_present(VkFormat swapChainImageFormat);
+
     VkAttachmentDescription attachment_description_light_depth{};
-    VkAttachmentDescription attachment_description_color_present{};//these are descriptions, not attachment buffer, each has many(9) properties
     VkAttachmentDescription attachment_description_depth{};
-    VkAttachmentDescription attachment_description_color_multisample{};
+    VkAttachmentDescription attachment_description_color_resolve{};
+    VkAttachmentDescription attachment_description_color_present{};//these are descriptions, not attachment buffer, each has many(9) properties
 
     /*********
     * Attachments Reference
@@ -74,7 +63,7 @@ public:
     VkAttachmentReference attachmentRef_color_draw{};
     VkAttachmentReference attachmentRef_depth_draw{};
     VkAttachmentReference attachmentRef_color_multisample_draw{};
-    //3.subpass_observe
+    //3.subpass_observe (will use the 4th attachment-lightDepth or cameraDepth as input attachment)
     VkAttachmentReference attachmentRef_observe{};
     VkAttachmentReference attachmentRef_color_observe{};
     VkAttachmentReference attachmentRef_color_multisample_observe{};

@@ -5,7 +5,6 @@
 #include "physicalDevice.h"
 #include "context.h"
 #include "imageBuffer.h"
-//#include "application.h"
 #include "logManager.h"
 
 class CSwapchain final{
@@ -17,23 +16,7 @@ public:
     void CleanUp();
 
     VkSwapchainKHR getHandle() const{ return handle;}
-    //SwapchainInfo info;
-    //CPhysicalDevice *m_physical_device;
-    //void GetPhysicalDevice(CPhysicalDevice *physical_device);
 
-    //VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
-    VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
-    VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities, int width, int height);
-    void createImages(VkSurfaceKHR surface, int width, int height);
-    void createImageViews(VkImageAspectFlags aspectFlags);
-
-    void createMSAAImages(VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties);
-    void createMSAAImageViews(VkImageAspectFlags aspectFlags);
-    void createDepthImages(VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties);
-    void createDepthImageViews(VkFormat format, VkImageAspectFlags aspectFlags);
-
-
-	//CSwapchainImageManager imageManager;
     void GetMaxUsableSampleCount();
 
     std::vector<VkImage> images;
@@ -42,37 +25,33 @@ public:
 
     bool bComputeSwapChainImage = false; //added VK_IMAGE_USAGE_STORAGE_BIT for image storage
 
-    //Attachments
-    // bool bAttachmentDepthLight = false;
-    // bool bAttachmentDepthCamera = false;
-    // bool bAttachmentColorResovle = false;
-    // bool bAttachmentColorPresent = true;
+    //Attachments (Resources)
     int iAttachmentDepthLight = -1;
     int iAttachmentDepthCamera = -1;
     int iAttachmentColorResovle = -1;
     int iAttachmentColorPresent = -1;
 
+    //1.Resource for swapchain image
+    VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
+    VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities, int width, int height);
+    void createImages(VkSurfaceKHR surface, int width, int height);
+    void createImageViews(VkImageAspectFlags aspectFlags);
 
-    //Resource for light depth(shadowmap)
-    //bool bEnableLightDepth;
+    //2.Resource for light depth(shadowmap)
     CWxjImageBuffer lightDepthImageBuffer;
-    void EnableLightDepth();
+    void create_attachment_buffer_light_depth();
 
-    //Resource for Depth Test
-    //bool bEnableDepthTest = false;
+    //3.Resource for Depth Test
     VkFormat depthFormat;
 	CWxjImageBuffer depthImageBuffer;
-	//VkImageView depthImageView;
     VkFormat findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) ;
     VkFormat findDepthFormat();
-    void EnableDepthTest();
+    void create_attachment_description_camera_depth();
 
-    //Resource for MSAA
-    //bool bEnableMSAA;
+    //4.Resource for MSAA Resolve Color
     VkSampleCountFlagBits msaaSamples;
     CWxjImageBuffer msaaColorImageBuffer;
-	//VkImageView msaaColorImageView;
-    void EnableMSAA();
+    void create_attachment_description_color_resolve();
 
 	VkFormat swapChainImageFormat;//08
 	VkExtent2D swapChainExtent;//08
