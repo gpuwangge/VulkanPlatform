@@ -1,201 +1,83 @@
 #include "../include/renderProcess.h"
 
 void CRenderProcess::createSubpass(int attachment_id_to_observe){ 
-	//uint32_t attachmentCount = 0;
+	if(iAttachmentDepthLight >= 0) clearValues.push_back({1.0f, 0}); 
+	if(iAttachmentDepthCamera >= 0) clearValues.push_back({1.0f, 0}); 
+	if(iAttachmentColorResovle >= 0) clearValues.push_back({0.0f, 0.0f, 0.0f, 1.0f});
+	if(iAttachmentColorPresent >= 0) clearValues.push_back({0.0f, 0.0f, 0.0f, 1.0f});
 
-	//clear values for each attachment. The array is indexed by attachment number
-	//Only elements corresponding to cleared attachments are used. Other elements of pClearValues are ignored.
-	//each attachment has its clearvalues
-
-	//the subpass attachment ref must match the order in attachment description order
-	//note that fragment shader will write color to buffer pointed by pColorAttachments
-	//fragment shader output is not always single samplered, so if msaa is enabled, shader output can't be used to present; in this case, use pResolveAttachment for present
-
-	//First: create attachment reference according to attachment info
-	//attachment# must match framebuffer order
-	/*
-	if(bUseAttachmentDepth){//added for model
-		clearValues.push_back({1.0f, 0}); //The range of depths in the depth buffer is 0.0 to 1.0 in Vulkan, where 1.0 lies at the far view plane and 0.0 at the near view plane.
-		attachment_reference_depth.attachment = attachmentCount++; 
-		attachment_reference_depth.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;//VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;//VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-	}
-	if(bUseAttachmentColorMultisample){ //added for MSAA
-		clearValues.push_back({0.0f, 0.0f, 0.0f, 1.0f}); 
-		attachment_reference_color_multisample.attachment = attachmentCount++; 
-		attachment_reference_color_multisample.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-	}
-	if(bUseAttachmentColorPresent){
-		clearValues.push_back({0.0f, 0.0f, 0.0f, 1.0f}); //color attachment: the background color is set to black (0,0,0,1)
-		attachment_reference_color_present.attachment = attachmentCount++; 
-		attachment_reference_color_present.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-	}
-
-	//Second: create subpasses
-	//subpass dont need to use all attachments
-	//set subpass# in pipeline(s)
-	VkSubpassDescription subpass0{};
-	subpass0.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-	subpass0.colorAttachmentCount = 1;
-	if(bUseAttachmentColorPresent){
-		if(bUseAttachmentColorMultisample) subpass0.pResolveAttachments = &attachment_reference_color_present;
-		else subpass0.pColorAttachments = &attachment_reference_color_present; //fragment shader output here
-	}
-	if(bUseAttachmentDepth) subpass0.pDepthStencilAttachment = &attachment_reference_depth; 
-	if(bUseAttachmentColorMultisample) subpass0.pColorAttachments = &attachment_reference_color_multisample; //fragment shader output here
-	
-	VkSubpassDescription subpass1{};
-	subpass1.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-	subpass1.colorAttachmentCount = 1;
-	if(bUseAttachmentColorPresent){
-		if(bUseAttachmentColorMultisample) subpass1.pResolveAttachments = &attachment_reference_color_present;
-		else subpass1.pColorAttachments = &attachment_reference_color_present; //fragment shader output here
-	}
-	if(bUseAttachmentDepth) subpass1.pDepthStencilAttachment = &attachment_reference_depth; 
-	if(bUseAttachmentColorMultisample) subpass1.pColorAttachments = &attachment_reference_color_multisample; //fragment shader output here
-
-	if(bDepth) subpasses.push_back(subpass0);
-	if(bNormal) subpasses.push_back(subpass1);
-
-	*/
-	
-	std::cout<<"Begin create subpasses"<<std::endl;
-
-	switch(m_renderFeature){
-		case RenderFeatures::PRESENT:
-			clearValues.push_back({0.0f, 0.0f, 0.0f, 1.0f});
-		break;
-		case RenderFeatures::PRESENT_DEPTH: 
-			clearValues.push_back({1.0f, 0}); 
-			clearValues.push_back({0.0f, 0.0f, 0.0f, 1.0f});
-		break;
-		case RenderFeatures::PRESENT_DEPTH_MSAA:
-		if(!bEnableSubpassShadowmap){
-			clearValues.push_back({1.0f, 0}); 
-			clearValues.push_back({0.0f, 0.0f, 0.0f, 1.0f});
-			clearValues.push_back({0.0f, 0.0f, 0.0f, 1.0f});
-		}else{
-			clearValues.push_back({1.0f, 0}); 
-			clearValues.push_back({1.0f, 0}); 
-			clearValues.push_back({0.0f, 0.0f, 0.0f, 1.0f});
-			clearValues.push_back({0.0f, 0.0f, 0.0f, 1.0f});
-		}	
-		break;
-	}
-	
-
-	//attachmentDescriptions(.attachment) order: 
-	//if PRESENT: 0-present_color
-	//if PRESENT_DEPTH: 0-depth; 1-presentcolor
-	//if PRESENT_DEPTH_MSAA: 0-depth; 1-msaacolor; 2-presentcolor
-	//if ?: 0-lightdepth; 1-depth; 2-msaacolor; 3-presentcolor
-
-	if(bEnableSubpassShadowmap){
-		VkSubpassDescription subpass{};//to generate light depth for shadowmap
-		switch(m_renderFeature){
-			case RenderFeatures::PRESENT:
-			break;
-			case RenderFeatures::PRESENT_DEPTH:
-			break;
-			case RenderFeatures::PRESENT_DEPTH_MSAA:
-				attachmentRef_light_depth_shadowmap.attachment = iAttachmentDepthLight; 
-				attachmentRef_light_depth_shadowmap.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;//VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL; //normal depth image format
-				subpass.pDepthStencilAttachment = &attachmentRef_light_depth_shadowmap;
-				//subpass.pDepthStencilAttachment = &attachmentRef_depth_draw;
-			break;
-		}
-		subpass.colorAttachmentCount = 0;
-		subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;			
-		subpasses.push_back(subpass);
-	}
-
-
-
-
-	if(bEnableSubpassDraw){
-		VkSubpassDescription subpass{};
-		switch(m_renderFeature){
-			case RenderFeatures::PRESENT: 
-				attachmentRef_color_draw.attachment = iAttachmentColorPresent; 
-				attachmentRef_color_draw.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-				subpass.pColorAttachments = &attachmentRef_color_draw;
-			break;
-			case RenderFeatures::PRESENT_DEPTH: //0-depth; 1-presentcolor(fragment output to this)
-				attachmentRef_depth_draw.attachment = iAttachmentDepthCamera; 
-				attachmentRef_depth_draw.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL; //normal depth image format
-				subpass.pDepthStencilAttachment = &attachmentRef_depth_draw;
-				
-				attachmentRef_color_draw.attachment = iAttachmentColorPresent; 
-				attachmentRef_color_draw.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-				subpass.pColorAttachments = &attachmentRef_color_draw;
-			break;
-			case RenderFeatures::PRESENT_DEPTH_MSAA://0-depth; 1-msaacolor(fragment output to this); 2-presentcolor
-				attachmentRef_depth_draw.attachment = iAttachmentDepthCamera; 
-				attachmentRef_depth_draw.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL; //normal depth image format
-				subpass.pDepthStencilAttachment = &attachmentRef_depth_draw;
-				
-				attachmentRef_color_multisample_draw.attachment = iAttachmentColorResovle; 
-				attachmentRef_color_multisample_draw.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-				subpass.pColorAttachments = &attachmentRef_color_multisample_draw;
-
-				attachmentRef_color_draw.attachment = iAttachmentColorPresent; 
-				attachmentRef_color_draw.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-				subpass.pResolveAttachments = &attachmentRef_color_draw;
-			break;
-		}
-		subpass.colorAttachmentCount = 1;
-		subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;			
-		subpasses.push_back(subpass);
-	}
-
-	if(bEnableSubpassObserve){
-		VkSubpassDescription subpass{};
-		switch(m_renderFeature){
-			case RenderFeatures::PRESENT: //0-present_color
-				//cant not run oberserve subpass if it has only color attachment??
-			break;
-			case RenderFeatures::PRESENT_DEPTH://0-depth; 1-presentcolor(fragment output to this)
-				attachmentRef_observe.attachment = iAttachmentDepthCamera;
-				attachmentRef_observe.layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL; //VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL; //depth image format for output
-				subpass.pInputAttachments = &attachmentRef_observe;
-				
-				attachmentRef_color_observe.attachment = iAttachmentColorPresent; 
-				attachmentRef_color_observe.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-				subpass.pColorAttachments = &attachmentRef_color_observe;
-			break;
-			case RenderFeatures::PRESENT_DEPTH_MSAA://0-depth; 1-msaacolor(fragment output to this); 2-presentcolor
-				attachmentRef_observe.attachment = attachment_id_to_observe; //iAttachmentDepthCamera or iAttachmentDepthLight
-				attachmentRef_observe.layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL; //VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL; //depth image format for output
-				subpass.pInputAttachments = &attachmentRef_observe;
-				
-				attachmentRef_color_multisample_observe.attachment = iAttachmentColorResovle; 
-				attachmentRef_color_multisample_observe.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-				subpass.pColorAttachments = &attachmentRef_color_multisample_observe;
-
-				attachmentRef_color_observe.attachment = iAttachmentColorPresent; 
-				attachmentRef_color_observe.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
-				subpass.pResolveAttachments = &attachmentRef_color_observe;
-			break;
-		}
-		subpass.colorAttachmentCount = 1;
-		subpass.inputAttachmentCount = 1;
-		subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-		subpasses.push_back(subpass);
-	}
-
-	std::cout<<"Done create subpasses"<<std::endl;
+	if(bEnableSubpassShadowmap) createSubpass_shadowmap();	
+	if(bEnableSubpassDraw) createSubpass_draw();	
+	if(bEnableSubpassObserve) createSubpass_observe(attachment_id_to_observe);	
 }
+
+void CRenderProcess::createSubpass_shadowmap(){ //assume depth and MSAA are enabled
+	VkSubpassDescription subpass{};//to generate light depth for shadowmap
+	
+	if(iAttachmentDepthLight >= 0){
+		attachmentRef_light_depth_shadowmap.attachment = iAttachmentDepthLight; 
+		attachmentRef_light_depth_shadowmap.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;//VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL; //normal depth image format
+		subpass.pDepthStencilAttachment = &attachmentRef_light_depth_shadowmap;
+	}
+
+	subpass.colorAttachmentCount = 0;
+	subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;			
+	subpasses.push_back(subpass);
+}
+
+void CRenderProcess::createSubpass_draw(){ 
+	VkSubpassDescription subpass{};
+
+	if(iAttachmentDepthCamera >= 0){
+		attachmentRef_depth_draw.attachment = iAttachmentDepthCamera; 
+		attachmentRef_depth_draw.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL; //normal depth image format
+		subpass.pDepthStencilAttachment = &attachmentRef_depth_draw;
+	}
+	if(iAttachmentColorPresent >= 0){
+		attachmentRef_color_draw.attachment = iAttachmentColorPresent; 
+		attachmentRef_color_draw.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+		subpass.pColorAttachments = &attachmentRef_color_draw;
+	}
+	if(iAttachmentColorResovle >= 0){
+		attachmentRef_color_multisample_draw.attachment = iAttachmentColorResovle; 
+		attachmentRef_color_multisample_draw.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+		subpass.pColorAttachments = &attachmentRef_color_multisample_draw; //use multi sampler color attachment to override pColorAttachments
+		subpass.pResolveAttachments = &attachmentRef_color_draw;
+	}
+
+	subpass.colorAttachmentCount = 1;
+	subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;			
+	subpasses.push_back(subpass);
+}
+
+void CRenderProcess::createSubpass_observe(int attachment_id_to_observe){ 
+	VkSubpassDescription subpass{};
+
+	attachmentRef_observe.attachment = attachment_id_to_observe; //iAttachmentDepthCamera or iAttachmentDepthLight
+	attachmentRef_observe.layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL; //VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL; //depth image format for output
+	subpass.pInputAttachments = &attachmentRef_observe;
+
+	if(iAttachmentColorPresent >= 0){
+		attachmentRef_color_observe.attachment = iAttachmentColorPresent; 
+		attachmentRef_color_observe.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+		subpass.pColorAttachments = &attachmentRef_color_observe;
+	}
+	if(iAttachmentColorResovle >= 0){
+		attachmentRef_color_multisample_observe.attachment = iAttachmentColorResovle; 
+		attachmentRef_color_multisample_observe.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+		subpass.pColorAttachments = &attachmentRef_color_multisample_observe;
+		subpass.pResolveAttachments = &attachmentRef_color_observe;
+	}
+
+	subpass.colorAttachmentCount = 1;
+	subpass.inputAttachmentCount = 1;
+	subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
+	subpasses.push_back(subpass);
+}
+
 
 void CRenderProcess::createDependency(){  
 	if(!bEnableSubpassShadowmap && bEnableSubpassDraw && !bEnableSubpassObserve){ //single subpass
-		switch(m_renderFeature){
-			case RenderFeatures::PRESENT:
-			break;
-			case RenderFeatures::PRESENT_DEPTH:
-			break;
-			case RenderFeatures::PRESENT_DEPTH_MSAA:
-			break;
-		}
-
 		if (iAttachmentDepthCamera < 0) {
 			VkPipelineStageFlags srcPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 			VkPipelineStageFlags dstPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
@@ -220,14 +102,6 @@ void CRenderProcess::createDependency(){
 	}
 
 	if(!bEnableSubpassShadowmap && bEnableSubpassDraw && bEnableSubpassObserve){ //two subpasses
-		switch(m_renderFeature){
-			case RenderFeatures::PRESENT:
-			break;
-			case RenderFeatures::PRESENT_DEPTH:
-			break;
-			case RenderFeatures::PRESENT_DEPTH_MSAA:
-			break;
-		}
 
         dependency.srcSubpass = 0;//subpass0 is the src subpass, write in color image, output depth image
 		dependency.dstSubpass = 1;//subpass1 is the dst subpass, input depth image, output color image(fragment shader convert depth image to color image)
@@ -241,15 +115,6 @@ void CRenderProcess::createDependency(){
 	}
 
 	if(bEnableSubpassShadowmap && bEnableSubpassDraw && bEnableSubpassObserve){
-		switch(m_renderFeature){
-			case RenderFeatures::PRESENT:
-			break;
-			case RenderFeatures::PRESENT_DEPTH:
-			break;
-			case RenderFeatures::PRESENT_DEPTH_MSAA:
-			break;
-		}
-
         dependency.srcSubpass = 0;//subpass0 is the src subpass, write in color image, output depth image
 		dependency.dstSubpass = 1;//subpass1 is the dst subpass, input depth image, output color image(fragment shader convert depth image to color image)
 		
@@ -261,8 +126,6 @@ void CRenderProcess::createDependency(){
 		dependency.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT; //sync region instead of all framebuffer, to improve performance		
 	}
 
-
-
 	//SINGLE SUBPASS
 	// dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
 	// dependency.dstSubpass = 0;
@@ -272,22 +135,7 @@ void CRenderProcess::createDependency(){
 	// dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
 	// if (bUseAttachmentDepth) 
 	// 	dependency.dstAccessMask |= VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
-
-	//TEST TWO SUBPASSES
-
-	//if enable depthtest
-	//VkPipelineStageFlags srcPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-    //VkPipelineStageFlags dstPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-
 	
-
-	//  dependency.srcStageMask = srcPipelineStageFlag;//VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT;
-	//  dependency.dstStageMask = dstPipelineStageFlag;//VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-	//  dependency.srcAccessMask = 0;//VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
-	//  dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;//VK_ACCESS_SHADER_READ_BIT;
-
-	
-
 }
 
 void CRenderProcess::createRenderPass(){ 

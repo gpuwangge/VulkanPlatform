@@ -278,8 +278,7 @@ void CSwapchain::create_attachment_description_color_resolve(){
 }
 
 void CSwapchain::CreateFramebuffers(VkRenderPass &renderPass){
-	//HERE_I_AM("CreateFramebuffers");
-    std::cout<<"Begin create framebuffer"<<std::endl;
+    //std::cout<<"Begin create framebuffer"<<std::endl;
 
 	VkResult result = VK_SUCCESS;
 
@@ -309,10 +308,9 @@ void CSwapchain::CreateFramebuffers(VkRenderPass &renderPass){
 
 		result = vkCreateFramebuffer(CContext::GetHandle().GetLogicalDevice(), &framebufferInfo, nullptr, &swapChainFramebuffers[i]);
 		if (result != VK_SUCCESS) throw std::runtime_error("failed to create framebuffer!");
-		//REPORT("vkCreateFrameBuffer");
 	}	
 
-    std::cout<<"Done create framebuffer"<<std::endl;
+    //std::cout<<"Done create framebuffer"<<std::endl;
 }
 
 void CSwapchain::GetMaxUsableSampleCount(){
@@ -322,14 +320,12 @@ void CSwapchain::GetMaxUsableSampleCount(){
 }
 
 void CSwapchain::CleanUp(){
-    for (auto framebuffer : swapChainFramebuffers) {
+    for (auto framebuffer : swapChainFramebuffers) 
         vkDestroyFramebuffer(CContext::GetHandle().GetLogicalDevice(), framebuffer, nullptr);
-    }
-
-    for (auto imageView : views) {
+    
+    for (auto imageView : views) 
         vkDestroyImageView(CContext::GetHandle().GetLogicalDevice(), imageView, nullptr);
-    }
-
+    
     vkDestroySwapchainKHR(CContext::GetHandle().GetLogicalDevice(), handle, nullptr);
 
     lightDepthImageBuffer.destroy();

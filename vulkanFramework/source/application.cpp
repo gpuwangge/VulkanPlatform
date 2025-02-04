@@ -625,7 +625,7 @@ void CApplication::ReadAttachments(){
     bool bAttachmentDepthLight = config["Attachments"]["depth_light"] ? config["Attachments"]["depth_light"].as<bool>() : false;
     bool bAttachmentDepthCamera = config["Attachments"]["depth_camera"] ? config["Attachments"]["depth_camera"].as<bool>()  : false;
     bool bAttachmentColorResovle = config["Attachments"]["color_resovle"] ? config["Attachments"]["color_resovle"].as<bool>()  : false;
-    bool bAttachmentColorPresent = config["Attachments"]["color_present"] ? config["Attachments"]["color_present"].as<bool>()  : false;
+    bool bAttachmentColorPresent = config["Attachments"]["color_present"] ? config["Attachments"]["color_present"].as<bool>()  : true; //need al least one subpass with at least one color attachment
 
     int AttachmentCount = 0;
     renderProcess.iAttachmentDepthLight = bAttachmentDepthLight ? AttachmentCount++ : -1;
@@ -647,15 +647,11 @@ void CApplication::ReadAttachments(){
     if(swapchain.iAttachmentDepthCamera >= 0){
         swapchain.create_attachment_description_camera_depth();
         renderProcess.create_attachment_description_camera_depth(swapchain.depthFormat, swapchain.msaaSamples);
-        
-        renderProcess.m_renderFeature = CRenderProcess::RenderFeatures::PRESENT_DEPTH;
     }
 
     if(swapchain.iAttachmentColorResovle >= 0){
         swapchain.create_attachment_description_color_resolve(); 
         renderProcess.create_attachment_description_color_resolve(swapchain.swapChainImageFormat, swapchain.msaaSamples, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR); 
-        
-        renderProcess.m_renderFeature = CRenderProcess::RenderFeatures::PRESENT_DEPTH_MSAA;
     }
 
     if(swapchain.iAttachmentDepthLight >= 0){
@@ -669,7 +665,7 @@ void CApplication::ReadAttachments(){
 
 void CApplication::ReadSubpasses(){
     renderProcess.bEnableSubpassShadowmap = config["Subpasses"]["subpasses_shadowmap"] ? config["Subpasses"]["subpasses_shadowmap"].as<bool>() : false;
-    renderProcess.bEnableSubpassDraw = config["Subpasses"]["subpasses_draw"] ? config["Subpasses"]["subpasses_draw"].as<bool>() : true;
+    renderProcess.bEnableSubpassDraw = config["Subpasses"]["subpasses_draw"] ? config["Subpasses"]["subpasses_draw"].as<bool>() : true; //need at least one subpass, even for compute sample
     renderProcess.bEnableSubpassObserve = config["Subpasses"]["subpasses_observe"] ? config["Subpasses"]["subpasses_observe"].as<bool>() : false;
 
     //create renderpass

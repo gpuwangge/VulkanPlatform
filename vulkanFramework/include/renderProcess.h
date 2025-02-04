@@ -13,12 +13,20 @@ public:
 
     void Cleanup();
 
-    enum RenderFeatures {
-        PRESENT,
-        PRESENT_DEPTH,
-        PRESENT_DEPTH_MSAA
-    };
-    RenderFeatures m_renderFeature = RenderFeatures::PRESENT;
+    // enum RenderFeatures {
+    //     PRESENT,
+    //     PRESENT_DEPTH,
+    //     PRESENT_DEPTH_MSAA
+    // };
+    // RenderFeatures m_renderFeature = RenderFeatures::PRESENT;
+
+    // enum SubpassPatterns {
+    //     DRAW,
+    //     DRAW_OBSERVE,
+    //     LDEPTH_DRAW,
+    //     LDEPTH_DRAW_OBSERVE
+    // };
+    // SubpassPatterns m_subpassPattern = SubpassPatterns::DRAW;
 
     /*********
     * Subpasses
@@ -28,7 +36,10 @@ public:
     bool bEnableSubpassObserve = false;
     std::vector<VkSubpassDescription> subpasses;
     void createSubpass(int attachment_id_to_observe);
-
+    void createSubpass_shadowmap();
+    void createSubpass_draw();
+    void createSubpass_observe(int attachment_id_to_observe);
+    
     /*********
     * Dependency
     **********/
