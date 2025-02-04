@@ -38,7 +38,8 @@ public:
 		//objectList[0].RollLeft(90, 200);
 
 		objects[7].bSticker = true;
-		objects[7].SetScaleRectangleXY(0.5, 0.5, 1, 1);
+		//objects[7].SetScaleRectangleXY(0.5, 0.5, 1, 1);
+		objects[7].SetScaleRectangleXY(0, -1, 1, 1);
 		//objects[7].SetRotation(0,0,180);
 	} 
 
