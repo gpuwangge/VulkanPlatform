@@ -36,7 +36,6 @@ public:
 		//objectList[0].SetRotation(-135,0,45);
 		//objectList[0].YawLeft(90,200);
 		//objectList[0].RollLeft(90, 200);
-		objects[5].bVisible = false;
 
 		objects[7].bSticker = true;
 		objects[7].SetScaleRectangleXY(0.5, 0.5, 1, 1);
@@ -79,31 +78,21 @@ public:
 
 	void recordGraphicsCommandBuffer(){
 		for(int i = 0; i < objects.size()-1; i++) {
+			if(i == 5) continue; //dont draw the light ball in shadowmap
 			objects[i].m_graphics_pipeline_id = 2;
 			objects[i].Draw();
 		}
+
 		vkCmdNextSubpass(renderer.commandBuffers[renderer.graphicsCmdId][renderer.currentFrame], VK_SUBPASS_CONTENTS_INLINE);
 
-		//draw all items with pipeline 0
-		//TODO: pipeline 0 should enable depth test
 		for(int i = 0; i < objects.size()-1; i++) {
 			objects[i].m_graphics_pipeline_id = 0;
 			objects[i].Draw();
 		}
 
-		//TODO: change depth test layout
 		vkCmdNextSubpass(renderer.commandBuffers[renderer.graphicsCmdId][renderer.currentFrame], VK_SUBPASS_CONTENTS_INLINE);
 
-		//draw the screen with depthimage as texture with pipeline 1 disable depth test
 		objects[objects.size()-1].Draw();
-
-
-		//TODO: change depth test layout
-
-
-		//vkCmdNextSubpass(renderer.commandBuffers[renderer.graphicsCmdId][renderer.currentFrame], VK_SUBPASS_CONTENTS_INLINE);
-		//for(int i = 0; i < objects.size(); i++) objects[i].Draw();
-		//NeedToExit = true;
 	}
 };
 

@@ -262,7 +262,7 @@ void CSwapchain::create_attachment_buffer_light_depth(){
     lightDepthImageBuffer.createImage(swapChainExtent.width,swapChainExtent.height, 1, msaaSamples, depthFormat, VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, false);
 	//createDepthImageViews(depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT);
     lightDepthImageBuffer.createImageView(depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT, 1, false);
-    std::cout<<"Enabled Light Depth Image Buffer"<<std::endl;
+    //std::cout<<"Enabled Light Depth Image Buffer"<<std::endl;
 }
 
 void CSwapchain::create_attachment_description_color_resolve(){

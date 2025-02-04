@@ -9,20 +9,13 @@ layout(set = 0, binding = 2) uniform UniformBufferObject {
     mat4 model;
     mat4 proj;
 	mat4 mainCameraView;
-	mat4 lightCameraView;
+	mat4 lightCameraView;	
 } mvpUBO;
 
 layout(location = 0) in vec3 inPosition;
 layout(location = 1) in vec3 inColor;
 layout(location = 2) in vec2 inTexCoord;
 layout(location = 3) in vec3 inNormal;
-
-// layout (location = 0) out vec3 outNormal;
-// layout (location = 1) out vec3 outColor;
-// layout (location = 2) out vec3 outViewVec;
-// layout (location = 3) out vec3 outLightVec;
-// layout (location = 4) out vec2 fragTexCoord;
-// layout (location = 5) out vec4 outShadowCoord;
 
 layout (location = 0) out vec3 outNormal;
 layout (location = 1) out vec3 outColor;

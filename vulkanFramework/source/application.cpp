@@ -588,7 +588,7 @@ void CApplication::ReadResources(){
                 std::string fragmentShaderName = pipeline["resource_graphics_pipeline_fragmentshader_name"].as<std::string>();
                 int subpassId = pipeline["subpasses_subpass_id"] ? pipeline["subpasses_subpass_id"].as<int>() : 0;
 
-                std::cout<<"Pipeline Name: "<<name<<std::endl;
+                //std::cout<<"Pipeline Name: "<<name<<std::endl;
                 appInfo.VertexShader->push_back(vertexShaderName);
                 appInfo.FragmentShader->push_back(fragmentShaderName);
                 appInfo.Subpass->push_back(subpassId);

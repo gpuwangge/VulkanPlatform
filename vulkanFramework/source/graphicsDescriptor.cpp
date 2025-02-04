@@ -113,7 +113,7 @@ void CGraphicsDescriptorManager::createDescriptorSetLayout_General(VkDescriptorS
 		bindingCounter++;
     }
     if(graphicsUniformTypes & GRAPHCIS_COMBINEDIMAGESAMPLER_DEPTHIMAGE){
-        std::cout<<"createDescriptorSetLayout_General():GRAPHCIS_COMBINEDIMAGESAMPLER_DEPTHIMAGE"<<std::endl;
+        //std::cout<<"createDescriptorSetLayout_General():GRAPHCIS_COMBINEDIMAGESAMPLER_DEPTHIMAGE"<<std::endl;
         VkDescriptorSetLayoutBinding binding = VPUniformBufferObject::GetBinding();
         graphicsBindings[bindingCounter].binding = bindingCounter;
 		graphicsBindings[bindingCounter].descriptorCount = 1;
@@ -254,7 +254,7 @@ void CGraphicsDescriptorManager::createDescriptorSets_General(VkImageView depthI
         }
         VkDescriptorImageInfo imageInfo{}; //for depth sampler
         if(graphicsUniformTypes & GRAPHCIS_COMBINEDIMAGESAMPLER_DEPTHIMAGE){
-            std::cout<<"createDescriptorSets_General():GRAPHCIS_COMBINEDIMAGESAMPLER_DEPTHIMAGE"<<std::endl;
+            //std::cout<<"createDescriptorSets_General():GRAPHCIS_COMBINEDIMAGESAMPLER_DEPTHIMAGE"<<std::endl;
 
             imageInfo.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;//VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;//VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;//VK_IMAGE_LAYOUT_GENERAL; 
             imageInfo.imageView = depthImageView; //depth image from swapchain
@@ -282,7 +282,7 @@ void CGraphicsDescriptorManager::createDescriptorSets_General(VkImageView depthI
 
     }
 
-    std::cout<<"createDescriptorSets_General():done"<<std::endl;
+    //std::cout<<"createDescriptorSets_General():done"<<std::endl;
 }
 
 
@@ -426,7 +426,7 @@ void CGraphicsDescriptorManager::addTextureImageSamplerUniformBuffer(std::vector
 VkSampler CGraphicsDescriptorManager::depthImageSampler;
 void CGraphicsDescriptorManager::addDepthImageSamplerUniformBuffer(){
     CGraphicsDescriptorManager::graphicsUniformTypes |= GRAPHCIS_COMBINEDIMAGESAMPLER_DEPTHIMAGE;
-    std::cout<<"depthImageSampler()" << std::endl;
+    //std::cout<<"depthImageSampler()" << std::endl;
 
     VkPhysicalDeviceProperties properties{};
     vkGetPhysicalDeviceProperties(CContext::GetHandle().GetPhysicalDevice(), &properties);
