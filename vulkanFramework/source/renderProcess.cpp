@@ -28,6 +28,13 @@ void CRenderProcess::createSubpass_shadowmap(){ //assume depth and MSAA are enab
 void CRenderProcess::createSubpass_draw(){ 
 	VkSubpassDescription subpass{};
 
+	if(iAttachmentDepthLight >= 0){
+		attachmentRef_input_draw.attachment = iAttachmentDepthLight; 
+		attachmentRef_input_draw.layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL; //VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL; //depth image format for output
+		subpass.pInputAttachments = &attachmentRef_input_draw;
+		subpass.inputAttachmentCount = 1;
+	}
+
 	if(iAttachmentDepthCamera >= 0){
 		attachmentRef_depth_draw.attachment = iAttachmentDepthCamera; 
 		attachmentRef_depth_draw.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL; //normal depth image format
@@ -37,6 +44,7 @@ void CRenderProcess::createSubpass_draw(){
 		attachmentRef_color_draw.attachment = iAttachmentColorPresent; 
 		attachmentRef_color_draw.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 		subpass.pColorAttachments = &attachmentRef_color_draw;
+		subpass.colorAttachmentCount = 1;
 	}
 	if(iAttachmentColorResovle >= 0){
 		attachmentRef_color_multisample_draw.attachment = iAttachmentColorResovle; 
@@ -45,7 +53,6 @@ void CRenderProcess::createSubpass_draw(){
 		subpass.pResolveAttachments = &attachmentRef_color_draw;
 	}
 
-	subpass.colorAttachmentCount = 1;
 	subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;			
 	subpasses.push_back(subpass);
 }
@@ -56,11 +63,13 @@ void CRenderProcess::createSubpass_observe(int attachment_id_to_observe){
 	attachmentRef_observe.attachment = attachment_id_to_observe; //iAttachmentDepthCamera or iAttachmentDepthLight
 	attachmentRef_observe.layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL; //VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL; //depth image format for output
 	subpass.pInputAttachments = &attachmentRef_observe;
+	subpass.inputAttachmentCount = 1;
 
 	if(iAttachmentColorPresent >= 0){
 		attachmentRef_color_observe.attachment = iAttachmentColorPresent; 
 		attachmentRef_color_observe.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 		subpass.pColorAttachments = &attachmentRef_color_observe;
+		subpass.colorAttachmentCount = 1;
 	}
 	if(iAttachmentColorResovle >= 0){
 		attachmentRef_color_multisample_observe.attachment = iAttachmentColorResovle; 
@@ -69,8 +78,6 @@ void CRenderProcess::createSubpass_observe(int attachment_id_to_observe){
 		subpass.pResolveAttachments = &attachmentRef_color_observe;
 	}
 
-	subpass.colorAttachmentCount = 1;
-	subpass.inputAttachmentCount = 1;
 	subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
 	subpasses.push_back(subpass);
 }

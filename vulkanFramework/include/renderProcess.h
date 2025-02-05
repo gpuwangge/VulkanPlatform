@@ -71,11 +71,12 @@ public:
     //1.for subpass_shadowmap
     VkAttachmentReference attachmentRef_light_depth_shadowmap{};
     //2.for subpass_draw
+    VkAttachmentReference attachmentRef_input_draw{};
     VkAttachmentReference attachmentRef_color_draw{};
     VkAttachmentReference attachmentRef_depth_draw{};
     VkAttachmentReference attachmentRef_color_multisample_draw{};
-    //3.subpass_observe (will use the 4th attachment-lightDepth or cameraDepth as input attachment)
-    VkAttachmentReference attachmentRef_observe{};
+    //3.subpass_observe
+    VkAttachmentReference attachmentRef_observe{}; //target: attachment-lightDepth or cameraDepth as input attachment
     VkAttachmentReference attachmentRef_color_observe{};
     VkAttachmentReference attachmentRef_color_multisample_observe{};
     

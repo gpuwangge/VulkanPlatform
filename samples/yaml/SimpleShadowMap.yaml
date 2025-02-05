@@ -52,16 +52,16 @@ Resources:
       uniform_Sampler_id: 1
   - Pipelines:
     - resource_graphics_pipeline_name: pipeline_draw
-      resource_graphics_pipeline_vertexshader_name: simpleDepthImage/draw.vert.spv
-      resource_graphics_pipeline_fragmentshader_name: simpleDepthImage/draw.frag.spv
+      resource_graphics_pipeline_vertexshader_name: simpleShadowMap/draw.vert.spv
+      resource_graphics_pipeline_fragmentshader_name: simpleShadowMap/draw.frag.spv
       subpasses_subpass_id: 1
     - resource_graphics_pipeline_name: pipeline_observe
-      resource_graphics_pipeline_vertexshader_name: simpleDepthImage/observe.vert.spv
-      resource_graphics_pipeline_fragmentshader_name: simpleDepthImage/observe.frag.spv
+      resource_graphics_pipeline_vertexshader_name: simpleShadowMap/observe.vert.spv
+      resource_graphics_pipeline_fragmentshader_name: simpleShadowMap/observe.frag.spv
       subpasses_subpass_id: 2
     - resource_graphics_pipeline_name: pipeline_lightdepth
-      resource_graphics_pipeline_vertexshader_name: simpleDepthImage/lightdepth.vert.spv
-      resource_graphics_pipeline_fragmentshader_name: simpleDepthImage/lightdepth.frag.spv
+      resource_graphics_pipeline_vertexshader_name: simpleShadowMap/lightdepth.vert.spv
+      resource_graphics_pipeline_fragmentshader_name: simpleShadowMap/lightdepth.frag.spv
       subpasses_subpass_id: 0
 
 Uniforms:
