@@ -31,7 +31,7 @@ public:
      * Set
      ************/
     std::vector<VkDescriptorSet> descriptorSets_general; //one descriptor set for each host resource (MAX_FRAMES_IN_FLIGHT)
-    void createDescriptorSets_General(VkImageView depthImageView);
+    void createDescriptorSets_General(VkImageView depthImageView, VkImageView lightDepthImageView);
 
     /************
      * 1 GRAPHCIS_UNIFORMBUFFER_CUSTOM
@@ -86,6 +86,12 @@ public:
     static VkSampler depthImageSampler;
     static void addDepthImageSamplerUniformBuffer();
     
+    /************
+     * 7 GRAPHCIS_COMBINEDIMAGESAMPLER_LIGHTDEPTHIMAGE
+     ************/
+    static VkSampler lightDepthImageSampler;
+    static void addLightDepthImageSamplerUniformBuffer();
+
     /************
      * Helper Functions
      ************/

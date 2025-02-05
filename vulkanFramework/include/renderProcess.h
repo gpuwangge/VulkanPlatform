@@ -71,7 +71,12 @@ public:
     //1.for subpass_shadowmap
     VkAttachmentReference attachmentRef_light_depth_shadowmap{};
     //2.for subpass_draw
-    VkAttachmentReference attachmentRef_input_draw{};
+    std::vector<VkAttachmentReference> attachmentRef_input_draw = {
+        {0, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL},
+        {1, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL},
+    };
+    //VkAttachmentReference attachmentRef_input_draw{}; //to input light depth(of the previous subpass)
+    //VkAttachmentReference attachmentRef_input_depth_draw{}; //to input camera depth(of this same subpass)
     VkAttachmentReference attachmentRef_color_draw{};
     VkAttachmentReference attachmentRef_depth_draw{};
     VkAttachmentReference attachmentRef_color_multisample_draw{};

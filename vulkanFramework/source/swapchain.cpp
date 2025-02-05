@@ -249,7 +249,8 @@ void CSwapchain::create_attachment_description_camera_depth(){
     depthFormat = findDepthFormat();
 	VkImageUsageFlags usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT;
 	//createDepthImages(VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-    depthImageBuffer.createImage(swapChainExtent.width,swapChainExtent.height, 1, msaaSamples, depthFormat, VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, false);
+    depthImageBuffer.createImage(swapChainExtent.width,swapChainExtent.height, 1, msaaSamples, depthFormat, VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, false,
+        VK_IMAGE_LAYOUT_UNDEFINED);
 	//createDepthImageViews(depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT);
     depthImageBuffer.createImageView(depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT, 1, false);
 }
@@ -259,7 +260,8 @@ void CSwapchain::create_attachment_buffer_light_depth(){
     depthFormat = findDepthFormat();
 	VkImageUsageFlags usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT;
 	//createDepthImages(VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-    lightDepthImageBuffer.createImage(swapChainExtent.width,swapChainExtent.height, 1, msaaSamples, depthFormat, VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, false);
+    lightDepthImageBuffer.createImage(swapChainExtent.width,swapChainExtent.height, 1, msaaSamples, depthFormat, VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, false,
+        VK_IMAGE_LAYOUT_UNDEFINED);
 	//createDepthImageViews(depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT);
     lightDepthImageBuffer.createImageView(depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT, 1, false);
     //std::cout<<"Enabled Light Depth Image Buffer"<<std::endl;
@@ -270,7 +272,8 @@ void CSwapchain::create_attachment_description_color_resolve(){
     //GetMaxUsableSampleCount();
 	VkImageUsageFlags usage = VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 	//createMSAAImages(VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-    msaaColorImageBuffer.createImage(swapChainExtent.width,swapChainExtent.height, 1, msaaSamples, swapChainImageFormat, VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, false);
+    msaaColorImageBuffer.createImage(swapChainExtent.width,swapChainExtent.height, 1, msaaSamples, swapChainImageFormat, VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, false,
+        VK_IMAGE_LAYOUT_UNDEFINED);
 	//createMSAAImageViews(VK_IMAGE_ASPECT_COLOR_BIT);
     msaaColorImageBuffer.createImageView(swapChainImageFormat, VK_IMAGE_ASPECT_COLOR_BIT, 1, false);
 

@@ -22,7 +22,9 @@ public:
     void destroy();
 
     uint32_t findMemoryType(uint32_t typeFilter, VkMemoryPropertyFlags properties) ;
-    void createImage(uint32_t width, uint32_t height, uint32_t mipLevels, VkSampleCountFlagBits numSamples, VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, bool bCubeMap);
+    void createImage(uint32_t width, uint32_t height, uint32_t mipLevels, VkSampleCountFlagBits numSamples, 
+        VkFormat format, VkImageTiling tiling, VkImageUsageFlags usage, VkMemoryPropertyFlags properties, bool bCubeMap,
+        VkImageLayout layout);
     
     //Create 2 versions of this function. The void version is for texture, msaaImage, depthImage. VkImageView version is for swapchain imageview
     void createImageView(VkFormat format, VkImageAspectFlags aspectFlags, uint32_t mipLevels, bool bCubeMap);

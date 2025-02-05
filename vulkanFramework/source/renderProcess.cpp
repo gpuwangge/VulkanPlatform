@@ -28,16 +28,24 @@ void CRenderProcess::createSubpass_shadowmap(){ //assume depth and MSAA are enab
 void CRenderProcess::createSubpass_draw(){ 
 	VkSubpassDescription subpass{};
 
+	// if(iAttachmentDepthLight >= 0 && iAttachmentDepthCamera >= 0){
+	// 	attachmentRef_input_draw[0].attachment = iAttachmentDepthCamera;
+	// 	attachmentRef_input_draw[0].layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL;
+	// 	attachmentRef_input_draw[1].attachment = iAttachmentDepthLight;
+	// 	subpass.pInputAttachments = attachmentRef_input_draw.data();
+	// 	subpass.inputAttachmentCount = 2;
+	// }
+
 	if(iAttachmentDepthLight >= 0){
-		attachmentRef_input_draw.attachment = iAttachmentDepthLight; 
-		attachmentRef_input_draw.layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL; //VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL; //depth image format for output
-		subpass.pInputAttachments = &attachmentRef_input_draw;
+		attachmentRef_input_draw[0].attachment = iAttachmentDepthLight;
+		attachmentRef_input_draw[0].layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL;
+		subpass.pInputAttachments = &attachmentRef_input_draw[0];
 		subpass.inputAttachmentCount = 1;
 	}
 
 	if(iAttachmentDepthCamera >= 0){
 		attachmentRef_depth_draw.attachment = iAttachmentDepthCamera; 
-		attachmentRef_depth_draw.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL; //normal depth image format
+		attachmentRef_depth_draw.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL; //normal depth image format: for shadowmapping, this is input and output
 		subpass.pDepthStencilAttachment = &attachmentRef_depth_draw;
 	}
 	if(iAttachmentColorPresent >= 0){
@@ -215,11 +223,11 @@ void CRenderProcess::create_attachment_description_camera_depth(VkFormat depthFo
 	//std::cout<<"addDepthAttachment::depthAttachment.format = "<<depthAttachment.format<<std::endl;
 	attachment_description_depth.samples = msaaSamples;
 	//std::cout<<"attachment_description_depth.samples = "<<attachment_description_depth.samples<<std::endl;
-	attachment_description_depth.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+	attachment_description_depth.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;//VK_ATTACHMENT_LOAD_OP_LOAD;//VK_ATTACHMENT_LOAD_OP_CLEAR;
 	attachment_description_depth.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
 	attachment_description_depth.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
 	attachment_description_depth.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	attachment_description_depth.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+	attachment_description_depth.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;//VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;//VK_IMAGE_LAYOUT_UNDEFINED;
 	attachment_description_depth.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;//VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;//VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
     
 }

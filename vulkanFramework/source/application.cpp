@@ -442,6 +442,7 @@ void CApplication::ReadUniforms(){
                 appInfo.Uniform.b_uniform_graphics_vp = graphicsUniform["uniform_graphics_vp"] ? graphicsUniform["uniform_graphics_vp"].as<bool>() : false;
                 appInfo.Uniform.b_uniform_graphics_lighting = graphicsUniform["uniform_graphics_lighting"] ? graphicsUniform["uniform_graphics_lighting"].as<bool>() : false;
                 appInfo.Uniform.b_uniform_graphics_depth_image_sampler = graphicsUniform["uniform_graphics_depth_image_sampler"] ? graphicsUniform["uniform_graphics_depth_image_sampler"].as<bool>() : false;
+                appInfo.Uniform.b_uniform_graphics_lightdepth_image_sampler = graphicsUniform["uniform_graphics_lightdepth_image_sampler"] ? graphicsUniform["uniform_graphics_lightdepth_image_sampler"].as<bool>() : false;
                 
                 if(appInfo.Uniform.b_uniform_graphics_custom)
                     //CGraphicsDescriptorManager::graphicsUniformTypes |= GRAPHCIS_UNIFORMBUFFER_CUSTOM;
@@ -461,6 +462,9 @@ void CApplication::ReadUniforms(){
 
                 if(appInfo.Uniform.b_uniform_graphics_depth_image_sampler)
                     CGraphicsDescriptorManager::addDepthImageSamplerUniformBuffer();
+
+                if(appInfo.Uniform.b_uniform_graphics_lightdepth_image_sampler)
+                    CGraphicsDescriptorManager::addLightDepthImageSamplerUniformBuffer();
 
             }
         }
@@ -696,10 +700,10 @@ void CApplication::CreateUniformDescriptors(bool b_uniform_graphics, bool b_unif
 
     //UNIFORM STEP 3/3 (Set)
     if(b_uniform_graphics){
-        if(appInfo.Feature.feature_graphics_observe_attachment_id == 0) //assume 0 is light Depth Image Buffer
-            graphicsDescriptorManager.createDescriptorSets_General(swapchain.lightDepthImageBuffer.view);
-        else// if(appInfo.Feature.feature_graphics_observe_attachment_id == 1)
-            graphicsDescriptorManager.createDescriptorSets_General(swapchain.depthImageBuffer.view);//TODO: what if no depthImageBuffer is not enable 
+        //if(appInfo.Feature.feature_graphics_observe_attachment_id == 0) //assume 0 is light Depth Image Buffer
+            graphicsDescriptorManager.createDescriptorSets_General(swapchain.depthImageBuffer.view, swapchain.lightDepthImageBuffer.view);
+        //else// if(appInfo.Feature.feature_graphics_observe_attachment_id == 1)
+            //graphicsDescriptorManager.createDescriptorSets_General(swapchain.depthImageBuffer.view);//TODO: what if no depthImageBuffer is not enable 
     }
     if(b_uniform_compute){
         if(appInfo.Uniform.b_uniform_compute_swapchain_storage) {
