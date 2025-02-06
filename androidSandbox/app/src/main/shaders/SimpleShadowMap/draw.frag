@@ -98,8 +98,9 @@ void main() {
 	vec2 screenSize = vec2(800,800); //assume the window is 800x800. if render to a smaller quad that doesnt take up all the window, still works but show part of the depth image
 	vec2 texCoords = gl_FragCoord.xy / screenSize; //gl_FragCoord.xy is screen pixel coords
 	//vec4 lightdepth = texelFetch(depthSampler, ivec2(texCoords * textureSize(depthSampler)), 7);  //change this to camera depth sampler
-	//vec4 lightdepth = texelFetch(lightDepthSampler, ivec2(texCoords * textureSize(lightDepthSampler)), 7);  //change this to camera depth sampler
-	float depthValue = 0.5f;//lightdepth.r;
+	//float depthValue = 0.5f;//lightdepth.r;
+	vec4 lightdepth = texelFetch(lightDepthSampler, ivec2(texCoords * textureSize(lightDepthSampler)), 7);  //change this to camera depth sampler
+	float depthValue = lightdepth.r;
 
 	//2 calculate ndc(value reset to -1~1)
 	vec4 ndc = vec4(
@@ -152,7 +153,7 @@ void main() {
 	//float depthValue = texture(depthSampler, inTexCoord).r;///test
 
 	
-	//depthValue = pow(depthValue, 50.0);
-	//outColor = vec4(vec3(depthValue), 1.0);///test
+	depthValue = pow(depthValue, 50.0);
+	outColor = vec4(vec3(depthValue), 1.0);///test
 
 }

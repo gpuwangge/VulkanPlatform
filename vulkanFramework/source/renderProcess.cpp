@@ -38,7 +38,7 @@ void CRenderProcess::createSubpass_draw(){
 
 	if(iAttachmentDepthLight >= 0){
 		attachmentRef_input_draw[0].attachment = iAttachmentDepthLight;
-		attachmentRef_input_draw[0].layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL;
+		attachmentRef_input_draw[0].layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;//VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL;
 		subpass.pInputAttachments = &attachmentRef_input_draw[0];
 		subpass.inputAttachmentCount = 1;
 	}
