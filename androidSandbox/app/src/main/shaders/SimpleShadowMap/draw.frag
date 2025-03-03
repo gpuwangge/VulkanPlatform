@@ -97,8 +97,8 @@ void main() {
 	//1 calculate light depth value (0~1)
 	vec2 screenSize = vec2(800,800); //assume the window is 800x800. if render to a smaller quad that doesnt take up all the window, still works but show part of the depth image
 	vec2 texCoords = gl_FragCoord.xy / screenSize; //gl_FragCoord.xy is screen pixel coords
-	//vec4 lightdepth = texelFetch(depthSampler, ivec2(texCoords * textureSize(depthSampler)), 7);  //change this to camera depth sampler
-	//float depthValue = 0.5f;//lightdepth.r;
+	// vec4 lightdepth = texelFetch(depthSampler, ivec2(texCoords * textureSize(depthSampler)), 7);  //change this to camera depth sampler
+	// float depthValue = 0.5f;//lightdepth.r;
 	vec4 lightdepth = texelFetch(lightDepthSampler, ivec2(texCoords * textureSize(lightDepthSampler)), 7);  //change this to camera depth sampler
 	float depthValue = lightdepth.r;
 

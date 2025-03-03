@@ -16,6 +16,7 @@ void main() {
 	
 
 	vec4 color = texelFetch(depthSampler, ivec2(inTexCoord * textureSize(depthSampler)), 7); //msaa
+	//vec4 color = texelFetch(lightDepthSampler, ivec2(inTexCoord * textureSize(lightDepthSampler)), 7); //msaa
 	float depthValue = color.r;
 
 	depthValue = pow(depthValue, 50.0);

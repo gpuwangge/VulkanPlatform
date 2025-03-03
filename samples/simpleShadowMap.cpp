@@ -78,20 +78,20 @@ public:
 	void recordGraphicsCommandBuffer(){
 		for(int i = 0; i < objects.size()-1; i++) {
 			if(i == 2) continue; //dont draw the light ball in shadowmap
-			objects[i].m_graphics_pipeline_id = 2;
+			objects[i].m_graphics_pipeline_id = 2; 
 			objects[i].Draw();
 		}
 
 		vkCmdNextSubpass(renderer.commandBuffers[renderer.graphicsCmdId][renderer.currentFrame], VK_SUBPASS_CONTENTS_INLINE);
 
 		for(int i = 0; i < objects.size()-1; i++) {
-			objects[i].m_graphics_pipeline_id = 0;
+			objects[i].m_graphics_pipeline_id = 0; //same object, first subpass use gid=2, second subpass use gid=0
 			objects[i].Draw();
 		}
 
 		vkCmdNextSubpass(renderer.commandBuffers[renderer.graphicsCmdId][renderer.currentFrame], VK_SUBPASS_CONTENTS_INLINE);
 
-		objects[objects.size()-1].Draw();
+		objects[objects.size()-1].Draw(); //always draw with gid=1
 	}
 };
 
