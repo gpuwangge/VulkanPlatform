@@ -1,33 +1,48 @@
 #!/usr/bin/bash
 
-# Compile all .vert files within the shaders/ folder into .spv files
-# Compile all .frag files within the shaders/ folder into .spv files
-# Compile all .comp files within the shaders/ folder into .spv files
+if [ -z "$1" ]; then
+    search_dir="*"
+else
+    search_dir="$1"
+fi
+
 
 
 count=0
-search_dir=SimpleTriangle
-for entry in */*.vert
+
+for entry in ${search_dir}/*.vert
 do
-    count=$((count+1))
-    echo Compile ${entry}
-    glslc.exe ${entry} -o ${entry}.spv
+    if [ -e "$entry" ]; then
+        count=$((count+1))
+        echo Compile ${entry}
+        glslc.exe ${entry} -o ${entry}.spv
+    fi
 done
-for entry in */*.frag
+for entry in ${search_dir}/*.frag
 do
-    count=$((count+1))
-    echo Compile ${entry}
-    glslc.exe ${entry} -o ${entry}.spv
+    if [ -e "$entry" ]; then
+        count=$((count+1))
+        echo Compile ${entry}
+        glslc.exe ${entry} -o ${entry}.spv
+    fi
 done
-for entry in */*.comp
+for entry in ${search_dir}/*.comp
 do
-    count=$((count+1))
-    echo Compile ${entry}
-    glslc.exe ${entry} -o ${entry}.spv
+    if [ -e "$entry" ]; then
+        count=$((count+1))
+        echo Compile ${entry}
+        glslc.exe ${entry} -o ${entry}.spv
+    fi
 done
-echo Total compiled: ${count}
+
+echo Compiling finishes. Total compiled: ${count}
 
 read
+
+# *** What does this script do ***
+# Compile all .vert files within the shaders/ folder into .spv files
+# Compile all .frag files within the shaders/ folder into .spv files
+# Compile all .comp files within the shaders/ folder into .spv files
 
 # *** Below are .bat script ***
 # @echo off

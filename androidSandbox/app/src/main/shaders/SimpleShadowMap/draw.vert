@@ -22,6 +22,8 @@ layout (location = 1) out vec3 outColor;
 layout (location = 2) out vec2 outTexCoord;
 layout (location = 3) out vec3 outPosWorld;
 
+layout (location = 4) out vec4 outFragPosLightSpace;
+
 //biasMat is to prevent shadwo acne
 const mat4 biasMat = mat4( 
 	0.5, 0.0, 0.0, 0.0,
@@ -52,4 +54,5 @@ void main()
 	outTexCoord = inTexCoord;
 	outPosWorld = vec3(mvpUBO.model * vec4(inPosition, 1.0));
 
+	outFragPosLightSpace = mvpUBO.proj * mvpUBO.lightCameraView * mvpUBO.model * vec4(inPosition, 1.0); 
 }

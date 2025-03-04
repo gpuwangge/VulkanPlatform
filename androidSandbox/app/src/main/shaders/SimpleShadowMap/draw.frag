@@ -32,6 +32,8 @@ layout (location = 1) in vec3 inColor;//inColor is not used here
 layout (location = 2) in vec2 inTexCoord;
 layout (location = 3) in vec3 inPosWorld;
 
+layout (location = 4) in vec4 inFragPosLightSpace;
+
 layout (location = 0) out vec4 outColor;
 
 #define AMBIENT 0.1
@@ -90,6 +92,39 @@ void main() {
 	// outFragColor = vec4(diffuse * shadow, 1.0);
 
 
+	///////////////////////////
+	vec3 projCoords = inFragPosLightSpace.xyz/inFragPosLightSpace.w;
+	//vec3 projCoords = inFragPosLightSpace.xyz;//test
+	projCoords = projCoords * 0.5 + 0.5;
+	float closestDepth = texelFetch(lightDepthSampler, ivec2(projCoords.xy * textureSize(lightDepthSampler)), 0).r; //r==g==b, value is z
+	if(projCoords.x < 0) closestDepth = 1.0;
+	if(projCoords.x > 1) closestDepth = 1.0;
+	if(projCoords.y < 0) closestDepth = 1.0;
+	if(projCoords.y > 1) closestDepth = 1.0;
+	float currentDepth = projCoords.z;
+	//float shadow = currentDepth > closestDepth ? 1.0 : 0.0;
+
+	//currentDepth = pow(currentDepth, 50);
+	//outColor = vec4(currentDepth, currentDepth, currentDepth, 1.0); //problem here: there is a black line
+
+	//closestDepth = pow(closestDepth, 50);
+	//outColor = vec4(closestDepth, closestDepth, closestDepth, 1.0);
+
+	//shadow = (currentDepth > closestDepth) ? 1.0 : 0.0;
+
+	//Explain: if currentDepth == closestDepth, means this place has no shadow
+	//Explain: if currentDepth > closestDepth, means this place is in shadow
+	float threshold = 0.05f;
+	float shadow = (currentDepth-closestDepth) > threshold ? 1.0 : 0.0; //currentDepth >= closestDepth
+	//outColor = vec4(1.0-shadow, 1.0-shadow, 1.0-shadow, 1.0);
+
+	// vec2 screenSize0 = vec2(800,800); 
+	// vec2 texCoords0 = gl_FragCoord.xy / screenSize0;
+	// vec4 lightdepth0 = texelFetch(lightDepthSampler, ivec2(texCoords0 * textureSize(lightDepthSampler)), 7);  //change this to camera depth sampler
+	// float depthValue0 = lightdepth0.r;
+	// depthValue0 = pow(depthValue0, 50.0);
+	// outColor = vec4(vec3(depthValue0), 1.0);///test
+	/////////////////////
 
 
 
@@ -147,13 +182,15 @@ void main() {
 		vec3 diffuse = max(dot(N, L), 0.0) * tex.xyz / distCoff; 
 		vec3 specular = pow(max(dot(R, V), 0.0), 32.0) * vec3(0.35) / distCoff;
 
-		outColor += vec4(ambient * ambientIntensity + diffuse * diffuseIntensity + specular * specularIntensity, 0.0);
+		if(shadow < 1.0) outColor += vec4(ambient * ambientIntensity + diffuse * diffuseIntensity + specular * specularIntensity, 0.0);//original color
 	}	
 
 	//float depthValue = texture(depthSampler, inTexCoord).r;///test
 
 	
-	depthValue = pow(depthValue, 50.0);
-	outColor = vec4(vec3(depthValue), 1.0);///test
+	//depthValue = pow(depthValue, 50.0);
+	//outColor = vec4(vec3(depthValue), 1.0);///test
 
+
+	
 }
