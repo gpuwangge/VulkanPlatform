@@ -22,7 +22,7 @@ layout(set = 0, binding = 2) uniform UniformBufferObject {
 } mvpUBO;
 
 //layout (set = 0, binding = 3) uniform sampler2D depthSampler;//single sampled
-layout (set = 0, binding = 3) uniform sampler2DMS depthSampler; //msaa
+layout (set = 0, binding = 3) uniform sampler2DMS depthSampler; //msaa, there is no use to this uniform in this shader
 layout (set = 0, binding = 4) uniform sampler2DMS lightDepthSampler; //msaa
 layout (set = 1, binding = 0) uniform sampler2D texSampler;
 
@@ -76,92 +76,28 @@ float filterPCF(vec4 sc)
 }
 
 void main() {
-	// vec4 tex = texture(texSampler, fragTexCoord);
-	// vec3 color = tex.xyz;
+	//1.Code to generate shadow
+	float shadow = 0.0f;
+	vec3 lightSpaceCoords = inFragPosLightSpace.xyz/inFragPosLightSpace.w;
+	//vec3 lightSpaceCoords = inFragPosLightSpace.xyz;
+	if(lightSpaceCoords.x >= -1.0 && lightSpaceCoords.x <= 1.0 && //make sure after convert to light space, the point is in view frustum; outside of view frustum has no shadow calculation
+	   lightSpaceCoords.y >= -1.0 && lightSpaceCoords.y <= 1.0 &&
+	   lightSpaceCoords.z >= 0.0 && lightSpaceCoords.z <= 1.0){
+		lightSpaceCoords = lightSpaceCoords * 0.5 + 0.5;
 
-	// //float shadow = (enablePCF == 1) ? filterPCF(inShadowCoord / inShadowCoord.w) : textureProj(inShadowCoord / inShadowCoord.w, vec2(0.0));
-	// //float shadow = filterPCF(inShadowCoord / inShadowCoord.w);
-	// float shadow = textureProj(inShadowCoord / inShadowCoord.w, vec2(0.0));
+		float depth_lightDepthImage = texelFetch(lightDepthSampler, ivec2(lightSpaceCoords.xy * textureSize(lightDepthSampler)), 0).r; //r==g==b, value is z
+		float depth_lightSpace = lightSpaceCoords.z; //if depth_lightSpace is greater than depth_lightDepthImage, means this fragment is in shadow
 
-	// vec3 N = normalize(inNormal);
-	// vec3 L = normalize(inLightVec);
-	// vec3 V = normalize(inViewVec);
-	// vec3 R = normalize(-reflect(L, N));
-	// vec3 diffuse = max(dot(N, L), AMBIENT) * color;
+		float threshold = 0.05f; //TODO: how to find this value?
+		shadow = (depth_lightSpace-depth_lightDepthImage) > threshold ? 0.9 : 0.0; //currentDepth >= closestDepth
 
-	// outFragColor = vec4(diffuse * shadow, 1.0);
-
-
-	///////////////////////////
-	vec3 projCoords = inFragPosLightSpace.xyz/inFragPosLightSpace.w;
-	//vec3 projCoords = inFragPosLightSpace.xyz;//test
-	projCoords = projCoords * 0.5 + 0.5;
-	float closestDepth = texelFetch(lightDepthSampler, ivec2(projCoords.xy * textureSize(lightDepthSampler)), 0).r; //r==g==b, value is z
-	if(projCoords.x < 0) closestDepth = 1.0;
-	if(projCoords.x > 1) closestDepth = 1.0;
-	if(projCoords.y < 0) closestDepth = 1.0;
-	if(projCoords.y > 1) closestDepth = 1.0;
-	float currentDepth = projCoords.z;
-	//float shadow = currentDepth > closestDepth ? 1.0 : 0.0;
-
-	//currentDepth = pow(currentDepth, 50);
-	//outColor = vec4(currentDepth, currentDepth, currentDepth, 1.0); //problem here: there is a black line
-
-	//closestDepth = pow(closestDepth, 50);
-	//outColor = vec4(closestDepth, closestDepth, closestDepth, 1.0);
-
-	//shadow = (currentDepth > closestDepth) ? 1.0 : 0.0;
-
-	//Explain: if currentDepth == closestDepth, means this place has no shadow
-	//Explain: if currentDepth > closestDepth, means this place is in shadow
-	float threshold = 0.05f;
-	float shadow = (currentDepth-closestDepth) > threshold ? 1.0 : 0.0; //currentDepth >= closestDepth
+		//outColor = vec4(lightSpaceCoords.xy, 0.0, 1.0);
+		//outColor = vec4(lightSpaceCoords.z, 0.0, 0.0, 1.0);
+		//outColor = vec4(abs(inFragPosLightSpace.z/inFragPosLightSpace.w), 0.0, 0.0, 1.0);
+	}
 	//outColor = vec4(1.0-shadow, 1.0-shadow, 1.0-shadow, 1.0);
 
-	// vec2 screenSize0 = vec2(800,800); 
-	// vec2 texCoords0 = gl_FragCoord.xy / screenSize0;
-	// vec4 lightdepth0 = texelFetch(lightDepthSampler, ivec2(texCoords0 * textureSize(lightDepthSampler)), 7);  //change this to camera depth sampler
-	// float depthValue0 = lightdepth0.r;
-	// depthValue0 = pow(depthValue0, 50.0);
-	// outColor = vec4(vec3(depthValue0), 1.0);///test
-	/////////////////////
-
-
-
-
-	//1 calculate light depth value (0~1)
-	vec2 screenSize = vec2(800,800); //assume the window is 800x800. if render to a smaller quad that doesnt take up all the window, still works but show part of the depth image
-	vec2 texCoords = gl_FragCoord.xy / screenSize; //gl_FragCoord.xy is screen pixel coords
-	// vec4 lightdepth = texelFetch(depthSampler, ivec2(texCoords * textureSize(depthSampler)), 7);  //change this to camera depth sampler
-	// float depthValue = 0.5f;//lightdepth.r;
-	vec4 lightdepth = texelFetch(lightDepthSampler, ivec2(texCoords * textureSize(lightDepthSampler)), 7);  //change this to camera depth sampler
-	float depthValue = lightdepth.r;
-
-	//2 calculate ndc(value reset to -1~1)
-	vec4 ndc = vec4(
-        (2.0 * gl_FragCoord.x / screenSize.x) - 1.0,
-        (2.0 * gl_FragCoord.y / screenSize.y) - 1.0,
-        2.0 * depthValue - 1.0,
-        1.0
-    );
-
-	//3 calculate workd coords
-	mat4 invViewProj = inverse(mvpUBO.proj*mvpUBO.mainCameraView);
-	vec4 worldPos = invViewProj * ndc;
-    worldPos /= worldPos.w;
-
-	//4 
-	vec4 lightClipPos = mvpUBO.proj*mvpUBO.lightCameraView * worldPos;
-    vec3 lightNDC = lightClipPos.xyz / lightClipPos.w;
-
-	//5
-	vec2 shadowUV = lightNDC.xy * 0.5 + 0.5;
-
-	//6
-	//float shadowDepth = texture(shadowMap, shadowUV).r; //not finished, need a second depth sampler
-
-
-	//bellow codes for light shading
+	//2.Code to generate light shading
 	vec4 tex = texture(texSampler, inTexCoord);
 	//color = vec3(mix(tex.xyz, vec3(dot(vec3(0.2126,0.7152,0.0722), tex.xyz)), 0.65));	//Desaturate tex color
 	vec3 N = normalize(inNormal);
@@ -182,15 +118,22 @@ void main() {
 		vec3 diffuse = max(dot(N, L), 0.0) * tex.xyz / distCoff; 
 		vec3 specular = pow(max(dot(R, V), 0.0), 32.0) * vec3(0.35) / distCoff;
 
-		if(shadow < 1.0) outColor += vec4(ambient * ambientIntensity + diffuse * diffuseIntensity + specular * specularIntensity, 0.0);//original color
+		outColor += vec4(ambient * ambientIntensity + diffuse * diffuseIntensity + specular * specularIntensity, 0.0) * (1.0 - shadow);
 	}	
-
-	//float depthValue = texture(depthSampler, inTexCoord).r;///test
-
 	
-	//depthValue = pow(depthValue, 50.0);
-	//outColor = vec4(vec3(depthValue), 1.0);///test
+	//legacy code
+	// vec4 tex = texture(texSampler, fragTexCoord);
+	// vec3 color = tex.xyz;
 
+	// //float shadow = (enablePCF == 1) ? filterPCF(inShadowCoord / inShadowCoord.w) : textureProj(inShadowCoord / inShadowCoord.w, vec2(0.0));
+	// //float shadow = filterPCF(inShadowCoord / inShadowCoord.w);
+	// float shadow = textureProj(inShadowCoord / inShadowCoord.w, vec2(0.0));
 
-	
+	// vec3 N = normalize(inNormal);
+	// vec3 L = normalize(inLightVec);
+	// vec3 V = normalize(inViewVec);
+	// vec3 R = normalize(-reflect(L, N));
+	// vec3 diffuse = max(dot(N, L), AMBIENT) * color;
+
+	// outFragColor = vec4(diffuse * shadow, 1.0);
 }

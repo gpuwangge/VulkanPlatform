@@ -24,7 +24,7 @@ layout (location = 3) out vec3 outPosWorld;
 
 layout (location = 4) out vec4 outFragPosLightSpace;
 
-//biasMat is to prevent shadwo acne
+//biasMat is to prevent shadow acne
 const mat4 biasMat = mat4( 
 	0.5, 0.0, 0.0, 0.0,
 	0.0, 0.5, 0.0, 0.0,
