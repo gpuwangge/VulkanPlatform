@@ -43,7 +43,8 @@ public:
     /*********
     * Dependency
     **********/
-    VkSubpassDependency dependency{};
+    std::vector<VkSubpassDependency> dependencies;
+    //VkSubpassDependency dependency{};
     void createDependency();
 
     /*********

@@ -93,64 +93,83 @@ void CRenderProcess::createSubpass_observe(int attachment_id_to_observe){
 
 void CRenderProcess::createDependency(){  
 	if(!bEnableSubpassShadowmap && bEnableSubpassDraw && !bEnableSubpassObserve){ //single subpass
+		dependencies.resize(1);
+
+		//external->0
 		if (iAttachmentDepthCamera < 0) {
 			VkPipelineStageFlags srcPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 			VkPipelineStageFlags dstPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-			dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
-			dependency.dstSubpass = 0;
-			dependency.srcStageMask = srcPipelineStageFlag;
-			dependency.srcAccessMask = 0;//VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT
-			dependency.dstStageMask = dstPipelineStageFlag;
-			dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+			dependencies[0].srcSubpass = VK_SUBPASS_EXTERNAL;
+			dependencies[0].dstSubpass = 0;
+			dependencies[0].srcStageMask = srcPipelineStageFlag;
+			dependencies[0].srcAccessMask = 0;//VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT
+			dependencies[0].dstStageMask = dstPipelineStageFlag;
+			dependencies[0].dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
 		}else{
 			VkPipelineStageFlags srcPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
 			VkPipelineStageFlags dstPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-			dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
-			dependency.dstSubpass = 0;
-			dependency.srcStageMask = srcPipelineStageFlag;
-			dependency.srcAccessMask = 0;//VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT
-			dependency.dstStageMask = dstPipelineStageFlag;
-			dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+			dependencies[0].srcSubpass = VK_SUBPASS_EXTERNAL;
+			dependencies[0].dstSubpass = 0;
+			dependencies[0].srcStageMask = srcPipelineStageFlag;
+			dependencies[0].srcAccessMask = 0;//VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT
+			dependencies[0].dstStageMask = dstPipelineStageFlag;
+			dependencies[0].dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
 
-			dependency.dstAccessMask |= VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+			dependencies[0].dstAccessMask |= VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
 		}
 	}
 
 	if(!bEnableSubpassShadowmap && bEnableSubpassDraw && bEnableSubpassObserve){ //two subpasses
+		dependencies.resize(2);
 
-        dependency.srcSubpass = 0;//subpass0 is the src subpass, write in color image, output depth image
-		dependency.dstSubpass = 1;//subpass1 is the dst subpass, input depth image, output color image(fragment shader convert depth image to color image)
+		//0->1
+        dependencies[0].srcSubpass = 0;//subpass0 is the src subpass, write in color image, output depth image
+		dependencies[0].dstSubpass = 1;//subpass1 is the dst subpass, input depth image, output color image(fragment shader convert depth image to color image)
 		
-		dependency.srcStageMask = VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT; //this is to make sure subpass0 finishes depth/color, then begin subpass1
-		dependency.srcAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT; //subpass0 need write depth image, subpass1 cant not access depth image before subpass 0 finish it
-		dependency.dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT; //this is to say subpass1's fragment shader can read depth image that subpass1 wrote(as input attachment)
-		dependency.dstAccessMask = VK_ACCESS_INPUT_ATTACHMENT_READ_BIT; //subpass1 need to read input attachment(that subpass0 generate)
+		dependencies[0].srcStageMask = VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT; //this is to make sure subpass0 finishes depth/color, then begin subpass1
+		dependencies[0].srcAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT; //subpass0 need write depth image, subpass1 cant not access depth image before subpass 0 finish it
+		dependencies[0].dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT; //this is to say subpass1's fragment shader can read depth image that subpass1 wrote(as input attachment)
+		dependencies[0].dstAccessMask = VK_ACCESS_INPUT_ATTACHMENT_READ_BIT; //subpass1 need to read input attachment(that subpass0 generate)
 
-		dependency.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT; //sync region instead of all framebuffer, to improve performance
+		dependencies[0].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT; //sync region instead of all framebuffer, to improve performance
 	}
 
 	if(bEnableSubpassShadowmap && bEnableSubpassDraw && bEnableSubpassObserve){
-        dependency.srcSubpass = 0;//subpass0 is the src subpass, write in color image, output depth image
-		dependency.dstSubpass = 1;//subpass1 is the dst subpass, input depth image, output color image(fragment shader convert depth image to color image)
+		dependencies.resize(3);
+
+		//0->1
+        dependencies[0].srcSubpass = 0;//subpass0 is the src subpass, write in color image, output depth image
+		dependencies[0].dstSubpass = 1;//subpass1 is the dst subpass, input depth image, output color image(fragment shader convert depth image to color image)
 		
-		dependency.srcStageMask = VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT; //this is to make sure subpass0 finishes depth/color, then begin subpass1
-		dependency.srcAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT; //subpass0 need write depth image, subpass1 cant not access depth image before subpass 0 finish it
-		dependency.dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT; //this is to say subpass1's fragment shader can read depth image that subpass1 wrote(as input attachment)
-		dependency.dstAccessMask = VK_ACCESS_INPUT_ATTACHMENT_READ_BIT; //subpass1 need to read input attachment(that subpass0 generate)
+		dependencies[0].srcStageMask = VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT; //this is to make sure subpass0 finishes depth/color, then begin subpass1
+		dependencies[0].srcAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT; //subpass0 need write depth image, subpass1 cant not access depth image before subpass 0 finish it
+		dependencies[0].dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT; //this is to say subpass1's fragment shader can read depth image that subpass1 wrote(as input attachment)
+		dependencies[0].dstAccessMask = VK_ACCESS_INPUT_ATTACHMENT_READ_BIT; //subpass1 need to read input attachment(that subpass0 generate)
 
-		dependency.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT; //sync region instead of all framebuffer, to improve performance		
+		dependencies[0].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT; //sync region instead of all framebuffer, to improve performance		
+
+		//1->2
+		dependencies[1].srcSubpass = 1;
+		dependencies[1].dstSubpass = 2;
+		
+		dependencies[1].srcStageMask = VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT; 
+		dependencies[1].srcAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT; 
+		dependencies[1].dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT; 
+		dependencies[1].dstAccessMask = VK_ACCESS_INPUT_ATTACHMENT_READ_BIT; 
+
+		dependencies[1].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT; 
+
+		//0->2
+		dependencies[2].srcSubpass = 0;
+		dependencies[2].dstSubpass = 2;
+		
+		dependencies[2].srcStageMask = VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT; 
+		dependencies[2].srcAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+		dependencies[2].dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT; 
+		dependencies[2].dstAccessMask = VK_ACCESS_INPUT_ATTACHMENT_READ_BIT; 
+
+		dependencies[2].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT; 	
 	}
-
-	//SINGLE SUBPASS
-	// dependency.srcSubpass = VK_SUBPASS_EXTERNAL;
-	// dependency.dstSubpass = 0;
-	// dependency.srcStageMask = srcPipelineStageFlag;
-	// dependency.srcAccessMask = 0;//VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT
-	// dependency.dstStageMask = dstPipelineStageFlag;
-	// dependency.dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-	// if (bUseAttachmentDepth) 
-	// 	dependency.dstAccessMask |= VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
-	
 }
 
 void CRenderProcess::createRenderPass(){ 
@@ -174,8 +193,8 @@ void CRenderProcess::createRenderPass(){
 	renderPassInfo.pAttachments = attachmentDescriptions.data(); //1
 	renderPassInfo.subpassCount = subpasses.size();//1;
 	renderPassInfo.pSubpasses = subpasses.data();//&subpass;//2
-	renderPassInfo.dependencyCount = 1;
-	renderPassInfo.pDependencies = &dependency;//3
+	renderPassInfo.dependencyCount = dependencies.size();
+	renderPassInfo.pDependencies = dependencies.data(); //&dependency;//3
 	//std::cout<<"Done prepare renderpass info: "<< subpasses.size()<<", "<<attachmentDescriptions.size()<<std::endl;
 
 	result = vkCreateRenderPass(CContext::GetHandle().GetLogicalDevice(), &renderPassInfo, nullptr, &renderPass);
@@ -207,7 +226,7 @@ void CRenderProcess::create_attachment_description_color_present(VkFormat swapCh
 
 	attachment_description_color_present.format = swapChainImageFormat;
 	attachment_description_color_present.samples = VK_SAMPLE_COUNT_1_BIT;
-	attachment_description_color_present.loadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+	attachment_description_color_present.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 	attachment_description_color_present.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
 	attachment_description_color_present.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
 	attachment_description_color_present.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
