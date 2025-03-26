@@ -100,7 +100,7 @@ Subpasses: #the index is 0, 1, 2
 
 MainCamera:
   camera_mode: 0
-  camera_position: [0,6,-10]
+  camera_position: [0,1,-2]
   camera_rotation: [0,0,0]
   object_id_target: 1
   camera_fov: 90

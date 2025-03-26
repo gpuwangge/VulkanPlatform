@@ -36,43 +36,32 @@ layout (location = 4) in vec4 inFragPosLightSpace;
 
 layout (location = 0) out vec4 outColor;
 
-#define AMBIENT 0.1
+bool enablePCF = true;
 
-float textureProj(vec4 shadowCoord, vec2 off)
-{
-	float shadow = 1.0;
-	if ( shadowCoord.z > -1.0 && shadowCoord.z < 1.0 ) 
-	{
-		float dist = texture( texSampler, shadowCoord.st + off ).r;
-		if ( shadowCoord.w > 0.0 && dist < shadowCoord.z ) 
-		{
-			shadow = AMBIENT;
-		}
-	}
-	return shadow;
-}
-
-float filterPCF(vec4 sc)
-{
-	ivec2 texDim = textureSize(texSampler, 0);
+float PCF(vec2 shadowCoords){ //Percentage Closer Filtering
+	ivec2 texDim = textureSize(lightDepthSampler);
 	float scale = 1.5;
 	float dx = scale * 1.0 / float(texDim.x);
 	float dy = scale * 1.0 / float(texDim.y);
 
-	float shadowFactor = 0.0;
+	float depth = 0.0;
 	int count = 0;
-	int range = 1;
-	
+	int range = 7;
 	for (int x = -range; x <= range; x++)
-	{
-		for (int y = -range; y <= range; y++)
-		{
-			shadowFactor += textureProj(sc, vec2(dx*x, dy*y));
-			count++;
+		for (int y = -range; y <= range; y++){
+			vec2 offset =  vec2(dx*x, dy*y);
+			vec2 shadowCoords_offset = shadowCoords+offset;
+			//if(shadowCoords_offset.x >= -1.0 && shadowCoords_offset.x <= 1.0 &&
+			//	shadowCoords_offset.y >= -1.0 && shadowCoords_offset.y <= 1.0){
+				depth += texelFetch(lightDepthSampler, ivec2(shadowCoords_offset * textureSize(lightDepthSampler)), 0).r; ////r==g==b, value is z
+				count++;
+			//}
 		}
+
+	//depth = texelFetch(lightDepthSampler, ivec2(shadowCoords * textureSize(lightDepthSampler)), 0).r;
+	//count = 1;
 	
-	}
-	return shadowFactor / count;
+	return depth / count;
 }
 
 void main() {
@@ -85,10 +74,13 @@ void main() {
 	   lightSpaceCoords.z >= 0.0 && lightSpaceCoords.z <= 1.0){
 		lightSpaceCoords = lightSpaceCoords * 0.5 + 0.5;
 
-		float depth_lightDepthImage = texelFetch(lightDepthSampler, ivec2(lightSpaceCoords.xy * textureSize(lightDepthSampler)), 0).r; //r==g==b, value is z
+		float depth_lightDepthImage = 0.0;
+		if(enablePCF) depth_lightDepthImage = PCF(lightSpaceCoords.xy);
+		else depth_lightDepthImage = texelFetch(lightDepthSampler, ivec2(lightSpaceCoords.xy * textureSize(lightDepthSampler)), 0).r; //r==g==b, value is z
+
 		float depth_lightSpace = lightSpaceCoords.z; //if depth_lightSpace is greater than depth_lightDepthImage, means this fragment is in shadow
 
-		float threshold = 0.05f; //TODO: how to find this value?
+		float threshold = 0.08f; //TODO: how to find this value?
 		shadow = (depth_lightSpace-depth_lightDepthImage) > threshold ? 0.9 : 0.0; //currentDepth >= closestDepth
 
 		//outColor = vec4(lightSpaceCoords.xy, 0.0, 1.0);
@@ -121,19 +113,4 @@ void main() {
 		outColor += vec4(ambient * ambientIntensity + diffuse * diffuseIntensity + specular * specularIntensity, 0.0) * (1.0 - shadow);
 	}	
 	
-	//legacy code
-	// vec4 tex = texture(texSampler, fragTexCoord);
-	// vec3 color = tex.xyz;
-
-	// //float shadow = (enablePCF == 1) ? filterPCF(inShadowCoord / inShadowCoord.w) : textureProj(inShadowCoord / inShadowCoord.w, vec2(0.0));
-	// //float shadow = filterPCF(inShadowCoord / inShadowCoord.w);
-	// float shadow = textureProj(inShadowCoord / inShadowCoord.w, vec2(0.0));
-
-	// vec3 N = normalize(inNormal);
-	// vec3 L = normalize(inLightVec);
-	// vec3 V = normalize(inViewVec);
-	// vec3 R = normalize(-reflect(L, N));
-	// vec3 diffuse = max(dot(N, L), AMBIENT) * color;
-
-	// outFragColor = vec4(diffuse * shadow, 1.0);
 }
