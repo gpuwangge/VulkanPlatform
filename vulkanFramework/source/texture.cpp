@@ -130,10 +130,11 @@ void CTextureImage::GetTexels(const std::string texturePath) {
 *	Texture Image: Create
 ********************/
 static unsigned short frac_float16(unsigned short fp16){
-	return fp16;
-	/* to be tested
+	//return fp16;
+	// PRINT("Call frac_float16()");
+
 	const int unorm_correction = -16;
- 	int lz = int std::log2(fp16);
+ 	int lz = (int) std::log2(fp16);
 
  	char exp = lz + 15 + unorm_correction;
   	int mantissa = ((fp16 << (16 - lz)) - 65536 + 32) >> 6;
@@ -141,12 +142,12 @@ static unsigned short frac_float16(unsigned short fp16){
 	if (exp < 1){ //flush denormal
  		exp = 0;
    		mantissa = 0;
-     	}
+    }
 
-      	short value;
-        value = (exp << 10) + mantissa;
+	short value;
+	value = (exp << 10) + mantissa;
 	return value;
- 	*/
+ 	
 }
 
 void CTextureImage::CreateTextureImage() {
