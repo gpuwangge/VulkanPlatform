@@ -39,6 +39,7 @@ layout (location = 0) out vec4 outColor;
 bool enablePCF = true;
 
 float PCF(vec2 shadowCoords){ //Percentage Closer Filtering
+	//shadowCoords are within 0~1
 	ivec2 texDim = textureSize(lightDepthSampler);
 	float scale = 1.5;
 	float dx = scale * 1.0 / float(texDim.x);
@@ -46,16 +47,31 @@ float PCF(vec2 shadowCoords){ //Percentage Closer Filtering
 
 	float depth = 0.0;
 	int count = 0;
-	int range = 7;
+	int range = 7; 
 	for (int x = -range; x <= range; x++)
 		for (int y = -range; y <= range; y++){
-			vec2 offset =  vec2(dx*x, dy*y);
+			vec2 offset = vec2(dx * x, dy * y);
 			vec2 shadowCoords_offset = shadowCoords+offset;
-			//if(shadowCoords_offset.x >= -1.0 && shadowCoords_offset.x <= 1.0 &&
-			//	shadowCoords_offset.y >= -1.0 && shadowCoords_offset.y <= 1.0){
+			if(shadowCoords_offset.x >= 0.0 && shadowCoords_offset.x <= 1.0 &&
+				shadowCoords_offset.y >= 0.0 && shadowCoords_offset.y <= 1.0){//make sure shadowCoords_offset are still within 0~1, otherwise there is black box
 				depth += texelFetch(lightDepthSampler, ivec2(shadowCoords_offset * textureSize(lightDepthSampler)), 0).r; ////r==g==b, value is z
 				count++;
-			//}
+			}
+
+			//texelFetch() Explain: same function as texture , but no interpolate or filter
+			//	sampler
+			//	ivec2/ivec3: texture coordinates
+			//	lod: Level of Details
+			//	return: vec4, ivec4 or uvec4, depending on sampler type
+
+			//texture() Explain: get texel from texture
+			//	texture coordinate use unified values
+
+			//textureSize() Explain: get texture size
+			//	sampler
+			//	lod
+			//	return: texture's resolution, int, ivec2 or ivec3
+			
 		}
 
 	//depth = texelFetch(lightDepthSampler, ivec2(shadowCoords * textureSize(lightDepthSampler)), 0).r;
@@ -80,7 +96,7 @@ void main() {
 
 		float depth_lightSpace = lightSpaceCoords.z; //if depth_lightSpace is greater than depth_lightDepthImage, means this fragment is in shadow
 
-		float threshold = 0.08f; //TODO: how to find this value?
+		float threshold = 0.08f; //How to find this value? search for "Depth Bias". This value should be related to slope, use slope-scale depth bias instead
 		shadow = (depth_lightSpace-depth_lightDepthImage) > threshold ? 0.9 : 0.0; //currentDepth >= closestDepth
 
 		//outColor = vec4(lightSpaceCoords.xy, 0.0, 1.0);
