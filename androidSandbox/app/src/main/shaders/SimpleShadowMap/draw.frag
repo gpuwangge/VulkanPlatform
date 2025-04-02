@@ -36,74 +36,59 @@ layout (location = 4) in vec4 inFragPosLightSpace;
 
 layout (location = 0) out vec4 outColor;
 
+//Normal Shadow: hard shadows
+//PCF: fixed fiter size, soft shadow, slow
+//PCSS: adaptive filter size(depends on object distance), better soft shadow, slow
 bool enablePCF = true;
 
-float PCF(vec2 shadowCoords){ //Percentage Closer Filtering
-	//shadowCoords are within 0~1
+float HardShadow(vec3 shadowCoords){
+	float depthBias = 0.08f;
+	float depth_lightDepthImage = texelFetch(lightDepthSampler, ivec2(shadowCoords.xy * textureSize(lightDepthSampler)), 0).r; //r==g==b, value is z
+	return  (shadowCoords.z-depth_lightDepthImage) > depthBias ? 0.9 : 0.0;
+}
+
+float PCFShadow(vec3 shadowCoords){ //Percentage Closer Filtering
+	//shadowCoords are within 0~1, shadowCoords.xy is light space coords, shadowCoords.z is light space depth
+
+	float shadow = 0.0f;
+	float depthBias = 0.08f; //How to find this value? search for "Depth Bias". This value should be related to slope, use slope-scale depth bias instead
+	
 	ivec2 texDim = textureSize(lightDepthSampler);
 	float scale = 1.5;
 	float dx = scale * 1.0 / float(texDim.x);
 	float dy = scale * 1.0 / float(texDim.y);
 
-	float depth = 0.0;
+	float depth_lightDepthImage = 0.0;
 	int count = 0;
-	int range = 7; 
+	int range = 20; 
+	float shadow_contribution = 0.23 / (range * range);
 	for (int x = -range; x <= range; x++)
 		for (int y = -range; y <= range; y++){
 			vec2 offset = vec2(dx * x, dy * y);
-			vec2 shadowCoords_offset = shadowCoords+offset;
+			vec2 shadowCoords_offset = shadowCoords.xy+offset;
 			if(shadowCoords_offset.x >= 0.0 && shadowCoords_offset.x <= 1.0 &&
 				shadowCoords_offset.y >= 0.0 && shadowCoords_offset.y <= 1.0){//make sure shadowCoords_offset are still within 0~1, otherwise there is black box
-				depth += texelFetch(lightDepthSampler, ivec2(shadowCoords_offset * textureSize(lightDepthSampler)), 0).r; ////r==g==b, value is z
+				depth_lightDepthImage = texelFetch(lightDepthSampler, ivec2(shadowCoords_offset * textureSize(lightDepthSampler)), 0).r; ////r==g==b, value is z
+				float shadow_delta = (shadowCoords.z-depth_lightDepthImage) > depthBias ? shadow_contribution : 0.0;
+				shadow += shadow_delta;
 				count++;
 			}
-
-			//texelFetch() Explain: same function as texture , but no interpolate or filter
-			//	sampler
-			//	ivec2/ivec3: texture coordinates
-			//	lod: Level of Details
-			//	return: vec4, ivec4 or uvec4, depending on sampler type
-
-			//texture() Explain: get texel from texture
-			//	texture coordinate use unified values
-
-			//textureSize() Explain: get texture size
-			//	sampler
-			//	lod
-			//	return: texture's resolution, int, ivec2 or ivec3
-			
 		}
-
-	//depth = texelFetch(lightDepthSampler, ivec2(shadowCoords * textureSize(lightDepthSampler)), 0).r;
-	//count = 1;
-	
-	return depth / count;
+	return shadow;
 }
 
 void main() {
 	//1.Code to generate shadow
 	float shadow = 0.0f;
 	vec3 lightSpaceCoords = inFragPosLightSpace.xyz/inFragPosLightSpace.w;
-	//vec3 lightSpaceCoords = inFragPosLightSpace.xyz;
 	if(lightSpaceCoords.x >= -1.0 && lightSpaceCoords.x <= 1.0 && //make sure after convert to light space, the point is in view frustum; outside of view frustum has no shadow calculation
 	   lightSpaceCoords.y >= -1.0 && lightSpaceCoords.y <= 1.0 &&
 	   lightSpaceCoords.z >= 0.0 && lightSpaceCoords.z <= 1.0){
 		lightSpaceCoords = lightSpaceCoords * 0.5 + 0.5;
 
-		float depth_lightDepthImage = 0.0;
-		if(enablePCF) depth_lightDepthImage = PCF(lightSpaceCoords.xy);
-		else depth_lightDepthImage = texelFetch(lightDepthSampler, ivec2(lightSpaceCoords.xy * textureSize(lightDepthSampler)), 0).r; //r==g==b, value is z
-
-		float depth_lightSpace = lightSpaceCoords.z; //if depth_lightSpace is greater than depth_lightDepthImage, means this fragment is in shadow
-
-		float threshold = 0.08f; //How to find this value? search for "Depth Bias". This value should be related to slope, use slope-scale depth bias instead
-		shadow = (depth_lightSpace-depth_lightDepthImage) > threshold ? 0.9 : 0.0; //currentDepth >= closestDepth
-
-		//outColor = vec4(lightSpaceCoords.xy, 0.0, 1.0);
-		//outColor = vec4(lightSpaceCoords.z, 0.0, 0.0, 1.0);
-		//outColor = vec4(abs(inFragPosLightSpace.z/inFragPosLightSpace.w), 0.0, 0.0, 1.0);
+		if(enablePCF) shadow = PCFShadow(lightSpaceCoords);
+		else 		  shadow = HardShadow(lightSpaceCoords);
 	}
-	//outColor = vec4(1.0-shadow, 1.0-shadow, 1.0-shadow, 1.0);
 
 	//2.Code to generate light shading
 	vec4 tex = texture(texSampler, inTexCoord);
@@ -130,3 +115,18 @@ void main() {
 	}	
 	
 }
+
+//Notes:
+//texelFetch() Explain: same function as texture , but no interpolate or filter
+//	sampler
+//	ivec2/ivec3: texture coordinates
+//	lod: Level of Details
+//	return: vec4, ivec4 or uvec4, depending on sampler type
+
+//texture() Explain: get texel from texture
+//	texture coordinate use unified values
+
+//textureSize() Explain: get texture size
+//	sampler
+//	lod
+//	return: texture's resolution, int, ivec2 or ivec3
