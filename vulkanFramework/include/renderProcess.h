@@ -231,6 +231,10 @@ public:
         rasterizer.cullMode = VK_CULL_MODE_NONE;
         rasterizer.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
         rasterizer.depthBiasEnable = VK_FALSE;
+        //rasterizer.depthBiasEnable = VK_TRUE;
+        //rasterizer.depthBiasConstantFactor = 1.25f;   // for hardware shadowmap
+        //rasterizer.depthBiasClamp = 0.0f;
+        //rasterizer.depthBiasSlopeFactor = 1.75f;      // for hardware shadowmap
         pipelineInfo.pRasterizationState = &rasterizer;	
         
 
@@ -266,6 +270,7 @@ public:
         std::vector<VkDynamicState> dynamicStates = {
             VK_DYNAMIC_STATE_VIEWPORT,
             VK_DYNAMIC_STATE_SCISSOR
+            //VK_DYNAMIC_STATE_DEPTH_BIAS //for hardware shadowmap
         };
         VkPipelineDynamicStateCreateInfo dynamicState{};
         dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;

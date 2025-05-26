@@ -520,8 +520,10 @@ void CGraphicsDescriptorManager::addLightDepthImageSamplerUniformBuffer(){
     samplerInfo.maxAnisotropy = properties.limits.maxSamplerAnisotropy;
     samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
     samplerInfo.unnormalizedCoordinates = VK_FALSE;
-    samplerInfo.compareEnable = VK_FALSE;
+    samplerInfo.compareEnable = VK_FALSE; //for PCF software shadowmap
     samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
+    //samplerInfo.compareEnable = VK_TRUE; //for hardware shadowmap
+   // samplerInfo.compareOp = VK_COMPARE_OP_LESS_OR_EQUAL;
 
     VkResult result = vkCreateSampler(CContext::GetHandle().GetLogicalDevice(), &samplerInfo, nullptr, &lightDepthImageSampler);
 }

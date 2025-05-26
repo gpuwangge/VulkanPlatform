@@ -210,7 +210,7 @@ void CRenderProcess::create_attachment_description_light_depth(VkFormat depthFor
 	//added for model
 	attachment_description_light_depth.format = depthFormat;//findDepthFormat();
 	//std::cout<<"addDepthAttachment::depthAttachment.format = "<<depthAttachment.format<<std::endl;
-	attachment_description_light_depth.samples = msaaSamples;
+	attachment_description_light_depth.samples = msaaSamples; //VK_SAMPLE_COUNT_1_BIT
 	//std::cout<<"attachment_description_depth.samples = "<<attachment_description_depth.samples<<std::endl;
 	attachment_description_light_depth.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 	attachment_description_light_depth.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;

@@ -260,6 +260,7 @@ void CSwapchain::create_attachment_buffer_light_depth(){
     depthFormat = findDepthFormat();
 	VkImageUsageFlags usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT;
 	//createDepthImages(VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+    //VK_SAMPLE_COUNT_1_BIT
     lightDepthImageBuffer.createImage(swapChainExtent.width,swapChainExtent.height, 1, msaaSamples, depthFormat, VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, false,
         VK_IMAGE_LAYOUT_UNDEFINED);
 	//createDepthImageViews(depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT);
