@@ -52,16 +52,16 @@ Resources:
       uniform_Sampler_id: 1
   - Pipelines:
     - resource_graphics_pipeline_name: pipeline_draw
-      resource_graphics_pipeline_vertexshader_name: simpleShadowMap/draw.vert.spv
-      resource_graphics_pipeline_fragmentshader_name: simpleShadowMap/draw.frag.spv
+      resource_graphics_pipeline_vertexshader_name: HardwareDepthBias/draw.vert.spv
+      resource_graphics_pipeline_fragmentshader_name: HardwareDepthBias/draw.frag.spv
       subpasses_subpass_id: 1
     - resource_graphics_pipeline_name: pipeline_observe
-      resource_graphics_pipeline_vertexshader_name: simpleShadowMap/observe.vert.spv
-      resource_graphics_pipeline_fragmentshader_name: simpleShadowMap/observe.frag.spv
+      resource_graphics_pipeline_vertexshader_name: HardwareDepthBias/observe.vert.spv
+      resource_graphics_pipeline_fragmentshader_name: HardwareDepthBias/observe.frag.spv
       subpasses_subpass_id: 2
     - resource_graphics_pipeline_name: pipeline_lightdepth
-      resource_graphics_pipeline_vertexshader_name: simpleShadowMap/lightdepth.vert.spv
-      resource_graphics_pipeline_fragmentshader_name: simpleShadowMap/lightdepth.frag.spv
+      resource_graphics_pipeline_vertexshader_name: HardwareDepthBias/lightdepth.vert.spv
+      resource_graphics_pipeline_fragmentshader_name: HardwareDepthBias/lightdepth.frag.spv
       subpasses_subpass_id: 0
 
 Uniforms:
@@ -100,7 +100,7 @@ Subpasses: #the index is 0, 1, 2
 
 MainCamera:
   camera_mode: 0
-  camera_position: [0,3,-4]
+  camera_position: [0,1,-4] #[0,3,-4]
   camera_rotation: [0,0,0]
   object_id_target: 1
   camera_fov: 90
