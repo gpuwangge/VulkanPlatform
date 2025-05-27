@@ -24,17 +24,7 @@ Objects:
   - object_name: LightSphere
     object_id: 2
     object_scale: 0.01
-  - object_name: Screen
-    object_id: 3
-    object_scale: 10
-    object_position: [0,3,5]
-    object_rotation: [0,0,0]
-    object_velocity: [0,0,0]
-    object_angular_velocity: [0,0,0]
-    object_skybox: false
-    resource_model_id: 2
-    resource_texture_id_list: [0]
-    resource_graphics_pipeline_id: 1
+
 
 Resources:
   - Models:
@@ -51,18 +41,14 @@ Resources:
       resource_texture_cubmap: false
       uniform_Sampler_id: 1
   - Pipelines:
+    - resource_graphics_pipeline_name: pipeline_lightdepth
+      resource_graphics_pipeline_vertexshader_name: HardwareDepthBias/lightdepth.vert.spv
+      resource_graphics_pipeline_fragmentshader_name: HardwareDepthBias/lightdepth.frag.spv
+      subpasses_subpass_id: 0  
     - resource_graphics_pipeline_name: pipeline_draw
       resource_graphics_pipeline_vertexshader_name: HardwareDepthBias/draw.vert.spv
       resource_graphics_pipeline_fragmentshader_name: HardwareDepthBias/draw.frag.spv
       subpasses_subpass_id: 1
-    - resource_graphics_pipeline_name: pipeline_observe
-      resource_graphics_pipeline_vertexshader_name: HardwareDepthBias/observe.vert.spv
-      resource_graphics_pipeline_fragmentshader_name: HardwareDepthBias/observe.frag.spv
-      subpasses_subpass_id: 2
-    - resource_graphics_pipeline_name: pipeline_lightdepth
-      resource_graphics_pipeline_vertexshader_name: HardwareDepthBias/lightdepth.vert.spv
-      resource_graphics_pipeline_fragmentshader_name: HardwareDepthBias/lightdepth.frag.spv
-      subpasses_subpass_id: 0
 
 Uniforms:
   - Graphics:
@@ -96,7 +82,7 @@ Attachments:
 Subpasses: #the index is 0, 1, 2
   subpasses_shadowmap: true
   subpasses_draw: true
-  subpasses_observe: true
+  subpasses_observe: false
 
 MainCamera:
   camera_mode: 0
