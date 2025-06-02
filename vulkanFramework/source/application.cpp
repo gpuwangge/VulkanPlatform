@@ -443,7 +443,8 @@ void CApplication::ReadUniforms(){
                 appInfo.Uniform.b_uniform_graphics_lighting = graphicsUniform["uniform_graphics_lighting"] ? graphicsUniform["uniform_graphics_lighting"].as<bool>() : false;
                 appInfo.Uniform.b_uniform_graphics_depth_image_sampler = graphicsUniform["uniform_graphics_depth_image_sampler"] ? graphicsUniform["uniform_graphics_depth_image_sampler"].as<bool>() : false;
                 appInfo.Uniform.b_uniform_graphics_lightdepth_image_sampler = graphicsUniform["uniform_graphics_lightdepth_image_sampler"] ? graphicsUniform["uniform_graphics_lightdepth_image_sampler"].as<bool>() : false;
-                
+                appInfo.Uniform.b_uniform_graphics_lightdepth_image_sampler_hardware = graphicsUniform["uniform_graphics_lightdepth_image_sampler_hardware"] ? graphicsUniform["uniform_graphics_lightdepth_image_sampler_hardware"].as<bool>() : false;
+  
                 if(appInfo.Uniform.b_uniform_graphics_custom)
                     //CGraphicsDescriptorManager::graphicsUniformTypes |= GRAPHCIS_UNIFORMBUFFER_CUSTOM;
                     CGraphicsDescriptorManager::addCustomUniformBuffer(appInfo.Uniform.GraphicsCustom.Size);
@@ -465,6 +466,9 @@ void CApplication::ReadUniforms(){
 
                 if(appInfo.Uniform.b_uniform_graphics_lightdepth_image_sampler)
                     CGraphicsDescriptorManager::addLightDepthImageSamplerUniformBuffer();
+
+                if(appInfo.Uniform.b_uniform_graphics_lightdepth_image_sampler_hardware)
+                    CGraphicsDescriptorManager::addLightDepthImageSamplerUniformBuffer_hardware();
 
             }
         }

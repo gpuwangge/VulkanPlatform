@@ -56,6 +56,12 @@ void CGraphicsDescriptorManager::createDescriptorPool(unsigned int object_count)
         graphicsDescriptorPoolSizes[counter].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);//one depth sampler
         counter++; 
     }
+    if(graphicsUniformTypes & GRAPHCIS_COMBINEDIMAGESAMPLER_LIGHTDEPTHIMAGE_HARDWARE){
+        //std::cout<<"createDescriptorPool():GRAPHCIS_COMBINEDIMAGESAMPLER_LIGHTDEPTHIMAGE_HARDWARE"<<std::endl;
+        graphicsDescriptorPoolSizes[counter].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+        graphicsDescriptorPoolSizes[counter].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);//one depth sampler
+        counter++; 
+    }
     
 
 	VkDescriptorPoolCreateInfo poolInfo{};
@@ -128,6 +134,16 @@ void CGraphicsDescriptorManager::createDescriptorSetLayout_General(VkDescriptorS
 		bindingCounter++;
     }
     if(graphicsUniformTypes & GRAPHCIS_COMBINEDIMAGESAMPLER_LIGHTDEPTHIMAGE){
+        //std::cout<<"createDescriptorSetLayout_General():GRAPHCIS_COMBINEDIMAGESAMPLER_DEPTHIMAGE"<<std::endl;
+        VkDescriptorSetLayoutBinding binding = VPUniformBufferObject::GetBinding();
+        graphicsBindings[bindingCounter].binding = bindingCounter;
+		graphicsBindings[bindingCounter].descriptorCount = 1;
+		graphicsBindings[bindingCounter].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+		graphicsBindings[bindingCounter].pImmutableSamplers = nullptr;
+		graphicsBindings[bindingCounter].stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
+		bindingCounter++;
+    }
+    if(graphicsUniformTypes & GRAPHCIS_COMBINEDIMAGESAMPLER_LIGHTDEPTHIMAGE_HARDWARE){
         //std::cout<<"createDescriptorSetLayout_General():GRAPHCIS_COMBINEDIMAGESAMPLER_DEPTHIMAGE"<<std::endl;
         VkDescriptorSetLayoutBinding binding = VPUniformBufferObject::GetBinding();
         graphicsBindings[bindingCounter].binding = bindingCounter;
@@ -313,6 +329,30 @@ void CGraphicsDescriptorManager::createDescriptorSets_General(VkImageView depthI
             descriptorWrites[counter].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
             descriptorWrites[counter].descriptorCount = 1;
             descriptorWrites[counter].pImageInfo = &lightDepthImageInfo;
+            counter++;
+        }
+        VkDescriptorImageInfo lightDepthImage_hardware_Info{}; //for lightdepth sampler(HARDWARE)
+        if(graphicsUniformTypes & GRAPHCIS_COMBINEDIMAGESAMPLER_LIGHTDEPTHIMAGE_HARDWARE){
+            //std::cout<<"createDescriptorSets_General():GRAPHCIS_COMBINEDIMAGESAMPLER_DEPTHIMAGE"<<std::endl;
+
+            lightDepthImage_hardware_Info.imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;//VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;//VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;//VK_IMAGE_LAYOUT_GENERAL; 
+            lightDepthImage_hardware_Info.imageView = lightDepthImageView; //depth image from swapchain TODO: change this
+            lightDepthImage_hardware_Info.sampler = lightDepthImageSampler_hardware; 
+
+            // if(j < m_texture_ids.size()){
+            //     imageInfo[j].imageView = p_textureManager->textureImages[m_texture_ids[j]].m_textureImageBuffer.view;
+            //     imageInfo[j].sampler = samplers[p_textureManager->textureImages[m_texture_ids[j]].m_sampler_id]; 
+            // }else{ //There are more samplers than textures for this object, so use the first texture to fill other samplers
+            //     imageInfo[j].imageView = p_textureManager->textureImages[m_texture_ids[0]].m_textureImageBuffer.view;
+            //     imageInfo[j].sampler = samplers[p_textureManager->textureImages[m_texture_ids[0]].m_sampler_id]; 
+            // }
+            descriptorWrites[counter].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+            descriptorWrites[counter].dstSet = descriptorSets_general[i];
+            descriptorWrites[counter].dstBinding = counter;
+            descriptorWrites[counter].dstArrayElement = 0;
+            descriptorWrites[counter].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+            descriptorWrites[counter].descriptorCount = 1;
+            descriptorWrites[counter].pImageInfo = &lightDepthImage_hardware_Info;
             counter++;
         }
 
@@ -528,6 +568,35 @@ void CGraphicsDescriptorManager::addLightDepthImageSamplerUniformBuffer(){
     VkResult result = vkCreateSampler(CContext::GetHandle().GetLogicalDevice(), &samplerInfo, nullptr, &lightDepthImageSampler);
 }
 
+/************
+ * 8 GRAPHCIS_COMBINEDIMAGESAMPLER_LIGHTDEPTHIMAGE_HARDWARE
+ ************/
+VkSampler CGraphicsDescriptorManager::lightDepthImageSampler_hardware;
+void CGraphicsDescriptorManager::addLightDepthImageSamplerUniformBuffer_hardware(){
+    CGraphicsDescriptorManager::graphicsUniformTypes |= GRAPHCIS_COMBINEDIMAGESAMPLER_LIGHTDEPTHIMAGE_HARDWARE;
+    //std::cout<<"depthImageSampler()" << std::endl;
+
+    VkPhysicalDeviceProperties properties{};
+    vkGetPhysicalDeviceProperties(CContext::GetHandle().GetPhysicalDevice(), &properties);
+
+    VkSamplerCreateInfo samplerInfo{};
+    samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
+    samplerInfo.magFilter = VK_FILTER_LINEAR;
+    samplerInfo.minFilter = VK_FILTER_LINEAR;
+    samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+    samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+    samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+    samplerInfo.anisotropyEnable = VK_TRUE;
+    samplerInfo.maxAnisotropy = properties.limits.maxSamplerAnisotropy;
+    samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;
+    samplerInfo.unnormalizedCoordinates = VK_FALSE;
+    samplerInfo.compareEnable = VK_FALSE; //for PCF software shadowmap
+    samplerInfo.compareOp = VK_COMPARE_OP_ALWAYS;
+    //samplerInfo.compareEnable = VK_TRUE; //for hardware shadowmap
+   // samplerInfo.compareOp = VK_COMPARE_OP_LESS_OR_EQUAL;
+
+    VkResult result = vkCreateSampler(CContext::GetHandle().GetLogicalDevice(), &samplerInfo, nullptr, &lightDepthImageSampler_hardware);
+}
 
 /************
 * Helper Functions
@@ -540,6 +609,7 @@ int CGraphicsDescriptorManager::getPoolSize(){
 	descriptorPoolSize += graphicsUniformTypes & GRAPHCIS_COMBINEDIMAGESAMPLER_TEXTUREIMAGE ? textureImageSamplerSize:0;
     descriptorPoolSize += graphicsUniformTypes & GRAPHCIS_COMBINEDIMAGESAMPLER_DEPTHIMAGE ? 1:0;
     descriptorPoolSize += graphicsUniformTypes & GRAPHCIS_COMBINEDIMAGESAMPLER_LIGHTDEPTHIMAGE ? 1:0;
+    descriptorPoolSize += graphicsUniformTypes & GRAPHCIS_COMBINEDIMAGESAMPLER_LIGHTDEPTHIMAGE_HARDWARE ? 1:0;
 
 	return descriptorPoolSize;
 }
@@ -550,6 +620,7 @@ int CGraphicsDescriptorManager::getLayoutSize_General(){
 	descriptorPoolSize += (graphicsUniformTypes & GRAPHCIS_UNIFORMBUFFER_MVP || graphicsUniformTypes & GRAPHCIS_UNIFORMBUFFER_VP) ? 1:0;
     descriptorPoolSize += (graphicsUniformTypes & GRAPHCIS_COMBINEDIMAGESAMPLER_DEPTHIMAGE) ? 1:0;
     descriptorPoolSize += (graphicsUniformTypes & GRAPHCIS_COMBINEDIMAGESAMPLER_LIGHTDEPTHIMAGE) ? 1:0;
+    descriptorPoolSize += (graphicsUniformTypes & GRAPHCIS_COMBINEDIMAGESAMPLER_LIGHTDEPTHIMAGE_HARDWARE) ? 1:0;
 
 	return descriptorPoolSize;
 }

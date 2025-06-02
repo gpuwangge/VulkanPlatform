@@ -93,6 +93,12 @@ public:
     static void addLightDepthImageSamplerUniformBuffer();
 
     /************
+     * 8 GRAPHCIS_COMBINEDIMAGESAMPLER_LIGHTDEPTHIMAGE_HARDWARE
+     ************/
+    static VkSampler lightDepthImageSampler_hardware;
+    static void addLightDepthImageSamplerUniformBuffer_hardware();
+
+    /************
      * Helper Functions
      ************/
     static int getPoolSize();
