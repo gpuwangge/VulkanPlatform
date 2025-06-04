@@ -103,7 +103,7 @@ public:
     void addColorBlendAttachment(VkBlendOp colorBlendOp, VkBlendFactor srcColorBlendFactor, VkBlendFactor dstColorBlendFactor, 
 								 VkBlendOp alphaBlendOp, VkBlendFactor srcAlphaBlendFactor, VkBlendFactor dstAlphaBlendFactor);
 
-    VkSampleCountFlagBits m_msaaSamples = VK_SAMPLE_COUNT_1_BIT;
+    VkSampleCountFlagBits m_msaaSamples_renderProcess = VK_SAMPLE_COUNT_1_BIT;
     //VkFormat m_swapChainImageFormat;
 
     /*********
@@ -146,13 +146,13 @@ public:
      * 
      * *****/
     //this function is for samples that are NOT using vertex shader
-    void createGraphicsPipeline(VkPrimitiveTopology topology, VkShaderModule &vertShaderModule, VkShaderModule &fragShaderModule, int graphcisPipeline_id, int subpass_id){
-        createGraphicsPipeline<DummyVertex>(topology, vertShaderModule, fragShaderModule, false, graphcisPipeline_id, subpass_id); //DummyVertex doesn't really matter here, because no vertex attributes used
+    void createGraphicsPipeline(VkPrimitiveTopology topology, VkShaderModule &vertShaderModule, VkShaderModule &fragShaderModule, int graphcisPipeline_id, int subpass_id, bool bEnableSamplerCountOne, bool bEnableDepthBias){
+        createGraphicsPipeline<DummyVertex>(topology, vertShaderModule, fragShaderModule, false, graphcisPipeline_id, subpass_id, bEnableSamplerCountOne, bEnableDepthBias); //DummyVertex doesn't really matter here, because no vertex attributes used
     }
 
     //this function is for samples that are  using vertex shader
     template <typename T>
-    void createGraphicsPipeline(VkPrimitiveTopology topology, VkShaderModule &vertShaderModule, VkShaderModule &fragShaderModule, bool bUseVertexBuffer, int graphcisPipeline_id, int subpass_id){
+    void createGraphicsPipeline(VkPrimitiveTopology topology, VkShaderModule &vertShaderModule, VkShaderModule &fragShaderModule, bool bUseVertexBuffer, int graphcisPipeline_id, int subpass_id, bool bEnableSamplerCountOne, bool bEnableDepthBias){
         //HERE_I_AM("CreateGraphicsPipeline");
         bCreateGraphicsPipeline = true;
 
@@ -230,19 +230,26 @@ public:
         rasterizer.lineWidth = 1.0f;
         rasterizer.cullMode = VK_CULL_MODE_NONE;
         rasterizer.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
-        rasterizer.depthBiasEnable = VK_FALSE;
-        //rasterizer.depthBiasEnable = VK_TRUE;
-        //rasterizer.depthBiasConstantFactor = 1.25f;   // for hardware shadowmap
-        //rasterizer.depthBiasClamp = 0.0f;
-        //rasterizer.depthBiasSlopeFactor = 1.75f;      // for hardware shadowmap
-        pipelineInfo.pRasterizationState = &rasterizer;	
+        if(bEnableDepthBias){
+            rasterizer.depthBiasEnable = VK_TRUE; // for hardware depthibias shadowmap
+            rasterizer.depthBiasConstantFactor = 1.25f;   // for hardware depthibias shadowmap
+            rasterizer.depthBiasClamp = 0.0f; // for hardware depthibias shadowmap
+            rasterizer.depthBiasSlopeFactor = 1.75f;      // for hardware depthibias shadowmap
+        }else{
+            rasterizer.depthBiasEnable = VK_FALSE;
+        }
+        pipelineInfo.pRasterizationState = &rasterizer;
+        
         
 
         /*********6 Multisample**********/
         VkPipelineMultisampleStateCreateInfo multisampling{};
         multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
         multisampling.sampleShadingEnable = VK_FALSE;
-        multisampling.rasterizationSamples = m_msaaSamples;
+        if(bEnableSamplerCountOne)
+            multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT; //for hardware depthbias shadowmap, we use 1 sample
+        else
+            multisampling.rasterizationSamples = m_msaaSamples_renderProcess;
         pipelineInfo.pMultisampleState = &multisampling; 
 
         /*********7 Color Blend**********/
@@ -270,8 +277,10 @@ public:
         std::vector<VkDynamicState> dynamicStates = {
             VK_DYNAMIC_STATE_VIEWPORT,
             VK_DYNAMIC_STATE_SCISSOR
-            //VK_DYNAMIC_STATE_DEPTH_BIAS //for hardware shadowmap
         };
+        if(bEnableDepthBias){
+            dynamicStates.push_back(VK_DYNAMIC_STATE_DEPTH_BIAS);
+        }
         VkPipelineDynamicStateCreateInfo dynamicState{};
         dynamicState.sType = VK_STRUCTURE_TYPE_PIPELINE_DYNAMIC_STATE_CREATE_INFO;
         dynamicState.dynamicStateCount = static_cast<uint32_t>(dynamicStates.size());
@@ -300,7 +309,10 @@ public:
             depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
             depthStencil.depthTestEnable = VK_TRUE;
             depthStencil.depthWriteEnable = VK_TRUE;
-            depthStencil.depthCompareOp = bSkybox ? VK_COMPARE_OP_LESS_OR_EQUAL : VK_COMPARE_OP_LESS;
+            if(bEnableDepthBias)
+                depthStencil.depthCompareOp = VK_COMPARE_OP_LESS; //for hardware depthbias shadowmap
+            else
+                depthStencil.depthCompareOp = bSkybox ? VK_COMPARE_OP_LESS_OR_EQUAL : VK_COMPARE_OP_LESS;
             depthStencil.depthBoundsTestEnable = VK_FALSE;
             depthStencil.stencilTestEnable = VK_FALSE;
             pipelineInfo.pDepthStencilState = &depthStencil;

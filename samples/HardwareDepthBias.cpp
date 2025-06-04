@@ -83,7 +83,8 @@ public:
 			objects[i].m_graphics_pipeline_id = 0; 
 
 			//depthBiasConstantFactor, depthBiasClamp, depthBiasSlopeFactor
-			//vkCmdSetDepthBias(renderer.commandBuffers[renderer.graphicsCmdId][renderer.currentFrame], 10.0f, 0.0f, 10.0f);
+			//vkCmdSetDepthBias(renderer.commandBuffers[renderer.graphicsCmdId][renderer.currentFrame], 1.25f, 0.0f, 1.75f);
+			vkCmdSetDepthBias(renderer.commandBuffers[renderer.graphicsCmdId][renderer.currentFrame], 40, 0.0f, 60);
 
 			objects[i].Draw(); //draw shadowmap
 		}

@@ -70,10 +70,10 @@ Features:
   feature_graphics_observe_attachment_id: -1
 
 Attachments:
-  depth_light: false
-  depth_camera: true
-  color_resovle: true
-  color_present: true
+  attachment_depth_light: false
+  attachment_depth_camera: true
+  attachment_color_resovle: true
+  attachment_color_present: true
 
 MainCamera:
   camera_mode: 1

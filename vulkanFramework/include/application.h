@@ -183,6 +183,8 @@ public:
         UniformInfo Uniform;
         std::unique_ptr<std::vector<std::string>> VertexShader;
         std::unique_ptr<std::vector<std::string>> FragmentShader;
+        std::unique_ptr<std::vector<bool>> EnableSamplerCountOne; 
+        std::unique_ptr<std::vector<bool>> EnableDepthBias;
         std::unique_ptr<std::vector<int>> Subpass;
         std::unique_ptr<std::vector<std::string>> ComputeShader;
         CRenderer::RenderModes RenderMode = CRenderer::GRAPHICS;

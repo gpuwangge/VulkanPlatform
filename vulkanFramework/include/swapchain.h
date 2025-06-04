@@ -39,7 +39,7 @@ public:
 
     //2.Resource for light depth(shadowmap)
     CWxjImageBuffer lightDepthImageBuffer;
-    void create_attachment_buffer_light_depth();
+    void create_attachment_buffer_light_depth(bool bEnableSamplerCountOn);
 
     //3.Resource for Depth Test
     VkFormat depthFormat;

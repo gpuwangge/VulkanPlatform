@@ -377,19 +377,22 @@ void CApplication::DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUti
 #endif
 
 void CApplication::CleanUp(){
+    //std::cout<<"Application: swapchain.CleanUp()"<<std::endl;
     swapchain.CleanUp();
+    //std::cout<<"Application: renderProcess.CleanUp()"<<std::endl;
     renderProcess.Cleanup();
-   //for(int i = 0; i < descriptors.size(); i++)
-    //    descriptors[i].DestroyAndFree();
+
+    //std::cout<<"Application: graphicsDescriptorManager.Destroy()"<<std::endl;
     graphicsDescriptorManager.DestroyAndFree();
+    //std::cout<<"Application: computeDescriptorManager.DestroyAndFree()"<<std::endl;
     computeDescriptorManager.DestroyAndFree();
-    //textureDescriptor.DestroyAndFree();
-    //for(int i = 0; i < textureImages.size(); i++) textureImages[i].Destroy();
-    //for(int i = 0; i < textureImages1.size(); i++) textureImages1[i].Destroy();
-    //for(int i = 0; i < textureImages2.size(); i++) textureImages2[i].Destroy();
+
+    //std::cout<<"Application: textureManager.Destroy()"<<std::endl;
     textureManager.Destroy();
+    //std::cout<<"Application: renderer.Destroy()"<<std::endl;
     renderer.Destroy();
 
+    //std::cout<<"Application: vkDestroyDevice()"<<std::endl;
     vkDestroyDevice(CContext::GetHandle().GetLogicalDevice(), nullptr);
 
 #ifndef ANDROID
@@ -591,17 +594,23 @@ void CApplication::ReadResources(){
         if (resource["Pipelines"]) {
             appInfo.VertexShader =  std::make_unique<std::vector<std::string>>(std::vector<std::string>());
             appInfo.FragmentShader =  std::make_unique<std::vector<std::string>>(std::vector<std::string>());
+            appInfo.EnableSamplerCountOne =  std::make_unique<std::vector<bool>>(std::vector<bool>());
+            appInfo.EnableDepthBias =  std::make_unique<std::vector<bool>>(std::vector<bool>());
             appInfo.Subpass =  std::make_unique<std::vector<int>>(std::vector<int>());
 
             for (const auto& pipeline : resource["Pipelines"]) {
                 std::string name = pipeline["resource_graphics_pipeline_name"].as<std::string>();
                 std::string vertexShaderName = pipeline["resource_graphics_pipeline_vertexshader_name"].as<std::string>();
                 std::string fragmentShaderName = pipeline["resource_graphics_pipeline_fragmentshader_name"].as<std::string>();
+                bool bEnableSamplerCountOne = pipeline["resource_graphics_pipeline_enable_sampler_count_one"] ? pipeline["resource_graphics_pipeline_enable_sampler_count_one"].as<bool>() : false;
+                bool bEnableDepthBias = pipeline["resource_graphics_pipeline_enable_depth_bias"] ? pipeline["resource_graphics_pipeline_enable_depth_bias"].as<bool>() : false;
                 int subpassId = pipeline["subpasses_subpass_id"] ? pipeline["subpasses_subpass_id"].as<int>() : 0;
 
                 //std::cout<<"Pipeline Name: "<<name<<std::endl;
                 appInfo.VertexShader->push_back(vertexShaderName);
                 appInfo.FragmentShader->push_back(fragmentShaderName);
+                appInfo.EnableSamplerCountOne->push_back(bEnableSamplerCountOne);
+                appInfo.EnableDepthBias->push_back(bEnableDepthBias);
                 appInfo.Subpass->push_back(subpassId);
             }
 
@@ -633,10 +642,11 @@ void CApplication::ReadResources(){
 }
 
 void CApplication::ReadAttachments(){
-    bool bAttachmentDepthLight = config["Attachments"]["depth_light"] ? config["Attachments"]["depth_light"].as<bool>() : false;
-    bool bAttachmentDepthCamera = config["Attachments"]["depth_camera"] ? config["Attachments"]["depth_camera"].as<bool>()  : false;
-    bool bAttachmentColorResovle = config["Attachments"]["color_resovle"] ? config["Attachments"]["color_resovle"].as<bool>()  : false;
-    bool bAttachmentColorPresent = config["Attachments"]["color_present"] ? config["Attachments"]["color_present"].as<bool>()  : true; //need al least one subpass with at least one color attachment
+    bool bAttachmentDepthLight = config["Attachments"]["attachment_depth_light"] ? config["Attachments"]["attachment_depth_light"].as<bool>() : false;
+    bool bAttachmentDepthCamera = config["Attachments"]["attachment_depth_camera"] ? config["Attachments"]["attachment_depth_camera"].as<bool>()  : false;
+    bool bAttachmentColorResovle = config["Attachments"]["attachment_color_resovle"] ? config["Attachments"]["attachment_color_resovle"].as<bool>()  : false;
+    bool bAttachmentColorPresent = config["Attachments"]["attachment_color_present"] ? config["Attachments"]["attachment_color_present"].as<bool>()  : true; //need al least one subpass with at least one color attachment
+    bool bEnableSamplerCountOne = config["Attachments"]["attachment_depth_light_enable_sampler_count_one"] ? config["Attachments"]["attachment_depth_light_enable_sampler_count_one"].as<bool>() : false;
 
     int AttachmentCount = 0;
     renderProcess.iAttachmentDepthLight = bAttachmentDepthLight ? AttachmentCount++ : -1;
@@ -666,8 +676,12 @@ void CApplication::ReadAttachments(){
     }
 
     if(swapchain.iAttachmentDepthLight >= 0){
-        swapchain.create_attachment_buffer_light_depth();
-        renderProcess.create_attachment_description_light_depth(swapchain.depthFormat, swapchain.msaaSamples);
+        swapchain.create_attachment_buffer_light_depth(bEnableSamplerCountOne);
+        if(bEnableSamplerCountOne){
+            renderProcess.create_attachment_description_light_depth(swapchain.depthFormat, VK_SAMPLE_COUNT_1_BIT);
+        }else{
+            renderProcess.create_attachment_description_light_depth(swapchain.depthFormat, swapchain.msaaSamples);
+        }
     }
 
     if(swapchain.iAttachmentColorPresent >= 0) //dont need create buffer here
@@ -709,6 +723,7 @@ void CApplication::CreateUniformDescriptors(bool b_uniform_graphics, bool b_unif
     if(b_uniform_graphics){
         //if(appInfo.Feature.feature_graphics_observe_attachment_id == 0) //assume 0 is light Depth Image Buffer
             graphicsDescriptorManager.createDescriptorSets_General(swapchain.depthImageBuffer.view, swapchain.lightDepthImageBuffer.view);
+           // graphicsDescriptorManager.createDescriptorSets_General(swapchain.depthImageBuffer.view, swapchain.lightDepthImageBuffer.view); //TODO
         //else// if(appInfo.Feature.feature_graphics_observe_attachment_id == 1)
             //graphicsDescriptorManager.createDescriptorSets_General(swapchain.depthImageBuffer.view);//TODO: what if no depthImageBuffer is not enable 
     }
@@ -815,28 +830,28 @@ void CApplication::CreatePipelines(){
                         VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
                         shaderManager.vertShaderModules[i], 
                         shaderManager.fragShaderModules[i], i,
-                        (*appInfo.Subpass)[i]);  
+                        (*appInfo.Subpass)[i], (*appInfo.EnableSamplerCountOne)[i], (*appInfo.EnableDepthBias)[i]);  
                 break;
                 case VertexStructureTypes::ThreeDimension:
                     renderProcess.createGraphicsPipeline<Vertex3D>(
                         VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
                         shaderManager.vertShaderModules[i], 
                         shaderManager.fragShaderModules[i], true, i,
-                        (*appInfo.Subpass)[i]);  
+                        (*appInfo.Subpass)[i], (*appInfo.EnableSamplerCountOne)[i], (*appInfo.EnableDepthBias)[i]);  
                 break;
                 case VertexStructureTypes::TwoDimension:
                     renderProcess.createGraphicsPipeline<Vertex2D>(
                         VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
                         shaderManager.vertShaderModules[i], 
                         shaderManager.fragShaderModules[i], true, i,
-                        (*appInfo.Subpass)[i]);
+                        (*appInfo.Subpass)[i], (*appInfo.EnableSamplerCountOne)[i], (*appInfo.EnableDepthBias)[i]);
                 break;
                 case VertexStructureTypes::ParticleType:
                     renderProcess.createGraphicsPipeline<Particle>(
                         VK_PRIMITIVE_TOPOLOGY_POINT_LIST, 
                         shaderManager.vertShaderModules[i], 
                         shaderManager.fragShaderModules[i], true, i,
-                        (*appInfo.Subpass)[i]);  
+                        (*appInfo.Subpass)[i], (*appInfo.EnableSamplerCountOne)[i], (*appInfo.EnableDepthBias)[i]);
                 break;
                 default:
                 break;

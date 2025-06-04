@@ -211,6 +211,7 @@ void CRenderProcess::create_attachment_description_light_depth(VkFormat depthFor
 	attachment_description_light_depth.format = depthFormat;//findDepthFormat();
 	//std::cout<<"addDepthAttachment::depthAttachment.format = "<<depthAttachment.format<<std::endl;
 	attachment_description_light_depth.samples = msaaSamples; //VK_SAMPLE_COUNT_1_BIT
+	//attachment_description_light_depth.samples = VK_SAMPLE_COUNT_1_BIT; //hardware depthbias for shadowmap
 	//std::cout<<"attachment_description_depth.samples = "<<attachment_description_depth.samples<<std::endl;
 	attachment_description_light_depth.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
 	attachment_description_light_depth.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
@@ -269,7 +270,7 @@ void CRenderProcess::create_attachment_description_color_resolve(VkFormat swapCh
 	attachment_description_color_resolve.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
 	attachment_description_color_resolve.finalLayout = imageLayout;
 
-	m_msaaSamples = msaaSamples;
+	m_msaaSamples_renderProcess = msaaSamples;
 	//std::cout<<"Color Attachment added. "<<std::endl;
 }
 

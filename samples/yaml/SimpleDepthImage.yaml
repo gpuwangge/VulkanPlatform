@@ -100,10 +100,10 @@ Features:
   feature_graphics_observe_attachment_id: 1
 
 Attachments:
-  depth_light: true
-  depth_camera: true
-  color_resovle: true
-  color_present: true
+  attachment_depth_light: true
+  attachment_depth_camera: true
+  attachment_color_resovle: true
+  attachment_color_present: true
 
 Subpasses: #the index is 0, 1, 2
   subpasses_shadowmap: true

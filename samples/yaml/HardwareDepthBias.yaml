@@ -44,10 +44,14 @@ Resources:
     - resource_graphics_pipeline_name: pipeline_lightdepth
       resource_graphics_pipeline_vertexshader_name: HardwareDepthBias/lightdepth.vert.spv
       resource_graphics_pipeline_fragmentshader_name: HardwareDepthBias/lightdepth.frag.spv
-      subpasses_subpass_id: 0  
+      resource_graphics_pipeline_enable_sampler_count_one: true
+      resource_graphics_pipeline_enable_depth_bias: true
+      subpasses_subpass_id: 0
     - resource_graphics_pipeline_name: pipeline_draw
       resource_graphics_pipeline_vertexshader_name: HardwareDepthBias/draw.vert.spv
       resource_graphics_pipeline_fragmentshader_name: HardwareDepthBias/draw.frag.spv
+      resource_graphics_pipeline_enable_sampler_count_one: false
+      resource_graphics_pipeline_enable_depth_bias: true
       subpasses_subpass_id: 1
 
 Uniforms:
@@ -75,11 +79,12 @@ Features:
   feature_graphics_observe_attachment_id: 0
 
 Attachments:
-  depth_light: true
-  depth_camera: true
-  color_resovle: true
-  color_present: true
-
+  attachment_depth_light: true
+  attachment_depth_light_enable_sampler_count_one: true
+  attachment_depth_camera: true
+  attachment_color_resovle: true
+  attachment_color_present: true
+  
 Subpasses: #the index is 0, 1, 2
   subpasses_shadowmap: true
   subpasses_draw: true

@@ -255,14 +255,19 @@ void CSwapchain::create_attachment_description_camera_depth(){
     depthImageBuffer.createImageView(depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT, 1, false);
 }
 
-void CSwapchain::create_attachment_buffer_light_depth(){
+void CSwapchain::create_attachment_buffer_light_depth(bool bEnableSamplerCountOne){
     //bEnableLightDepth = true;
     depthFormat = findDepthFormat();
 	VkImageUsageFlags usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT;
 	//createDepthImages(VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
     //VK_SAMPLE_COUNT_1_BIT
-    lightDepthImageBuffer.createImage(swapChainExtent.width,swapChainExtent.height, 1, msaaSamples, depthFormat, VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, false,
-        VK_IMAGE_LAYOUT_UNDEFINED);
+    if(bEnableSamplerCountOne){
+        lightDepthImageBuffer.createImage(swapChainExtent.width,swapChainExtent.height, 1, VK_SAMPLE_COUNT_1_BIT, depthFormat, VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, false,
+            VK_IMAGE_LAYOUT_UNDEFINED); //for hardware depth bias
+    }else{
+        lightDepthImageBuffer.createImage(swapChainExtent.width,swapChainExtent.height, 1, msaaSamples, depthFormat, VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, false,
+            VK_IMAGE_LAYOUT_UNDEFINED);
+    }
 	//createDepthImageViews(depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT);
     lightDepthImageBuffer.createImageView(depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT, 1, false);
     //std::cout<<"Enabled Light Depth Image Buffer"<<std::endl;
