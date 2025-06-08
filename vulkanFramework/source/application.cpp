@@ -667,25 +667,25 @@ void CApplication::ReadAttachments(){
     //If enable MSAA, must also enable Depth Test
     if(swapchain.iAttachmentDepthCamera >= 0){
         swapchain.create_attachment_resource_depth_camera();
-        renderProcess.create_attachment_description_camera_depth(swapchain.depthFormat, swapchain.msaaSamples);
+        renderProcess.create_attachment_description_camera_depth_mainscene(swapchain.depthFormat, swapchain.msaaSamples);
     }
 
     if(swapchain.iAttachmentColorResovle >= 0){
         swapchain.create_attachment_resource_color_resolve(); 
-        renderProcess.create_attachment_description_color_resolve(swapchain.swapChainImageFormat, swapchain.msaaSamples, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR); 
+        renderProcess.create_attachment_description_color_resolve_mainscene(swapchain.swapChainImageFormat, swapchain.msaaSamples, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR); 
     }
 
     if(swapchain.iAttachmentDepthLight >= 0){
         swapchain.create_attachment_resource_depth_light(bEnableSamplerCountOne);
         if(bEnableSamplerCountOne){
-            renderProcess.create_attachment_description_light_depth(swapchain.depthFormat, VK_SAMPLE_COUNT_1_BIT);
+            renderProcess.create_attachment_description_light_depth_mainscene(swapchain.depthFormat, VK_SAMPLE_COUNT_1_BIT);
         }else{
-            renderProcess.create_attachment_description_light_depth(swapchain.depthFormat, swapchain.msaaSamples);
+            renderProcess.create_attachment_description_light_depth_mainscene(swapchain.depthFormat, swapchain.msaaSamples);
         }
     }
 
     if(swapchain.iAttachmentColorPresent >= 0) //dont need create swapchain attachment resource here
-        renderProcess.create_attachment_description_color_present(swapchain.swapChainImageFormat);
+        renderProcess.create_attachment_description_color_present_mainscene(swapchain.swapChainImageFormat);
 }
 
 void CApplication::ReadSubpasses(){

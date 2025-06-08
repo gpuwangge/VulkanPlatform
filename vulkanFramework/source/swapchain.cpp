@@ -252,10 +252,10 @@ void CSwapchain::create_attachment_resource_depth_light(bool bEnableSamplerCount
     //VK_SAMPLE_COUNT_1_BIT
     if(bEnableSamplerCountOne){
         lightDepthImageBuffer.createImage(swapChainExtent.width,swapChainExtent.height, 1, VK_SAMPLE_COUNT_1_BIT, depthFormat, VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, false,
-            VK_IMAGE_LAYOUT_UNDEFINED); //for hardware depth bias
+            VK_IMAGE_LAYOUT_UNDEFINED); //for hardware depth bias VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL?
     }else{
         lightDepthImageBuffer.createImage(swapChainExtent.width,swapChainExtent.height, 1, msaaSamples, depthFormat, VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, false,
-            VK_IMAGE_LAYOUT_UNDEFINED);
+            VK_IMAGE_LAYOUT_UNDEFINED); //?VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL
     }
 	//createDepthImageViews(depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT);
     lightDepthImageBuffer.createImageView(depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT, 1, false);

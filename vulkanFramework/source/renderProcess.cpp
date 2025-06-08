@@ -181,10 +181,10 @@ void CRenderProcess::createRenderPass_mainscene(){
 	//#2: if depth test is enabled, a depth attachment with sampler number = n
 	//#3: if msaa is enabled, a color attachment with sampler number = n
 	std::vector<VkAttachmentDescription> attachmentDescriptions;
-	if(iAttachmentDepthLight >= 0) attachmentDescriptions.push_back(attachment_description_light_depth);
-	if(iAttachmentDepthCamera >= 0) attachmentDescriptions.push_back(attachment_description_depth);
-	if(iAttachmentColorResovle >= 0) attachmentDescriptions.push_back(attachment_description_color_resolve);
-	if(iAttachmentColorPresent >= 0) attachmentDescriptions.push_back(attachment_description_color_present); 
+	if(iAttachmentDepthLight >= 0) attachmentDescriptions.push_back(attachment_description_light_depth_mainscene);
+	if(iAttachmentDepthCamera >= 0) attachmentDescriptions.push_back(attachment_description_depth_mainscene);
+	if(iAttachmentColorResovle >= 0) attachmentDescriptions.push_back(attachment_description_color_resolve_mainscene);
+	if(iAttachmentColorPresent >= 0) attachmentDescriptions.push_back(attachment_description_color_present_mainscene);
 
 	//std::cout<<"Begin prepare renderpass info"<<std::endl;
 	VkRenderPassCreateInfo renderPassInfo{};
@@ -204,71 +204,89 @@ void CRenderProcess::createRenderPass_mainscene(){
 
 }
 
-void CRenderProcess::create_attachment_description_light_depth(VkFormat depthFormat, VkSampleCountFlagBits msaaSamples){  
+void CRenderProcess::create_attachment_description_light_depth_mainscene(VkFormat depthFormat, VkSampleCountFlagBits msaaSamples){  
 	//bUseAttachmentLightDepth = true;
 
 	//added for model
-	attachment_description_light_depth.format = depthFormat;//findDepthFormat();
+	attachment_description_light_depth_mainscene.format = depthFormat;//findDepthFormat();
 	//std::cout<<"addDepthAttachment::depthAttachment.format = "<<depthAttachment.format<<std::endl;
-	attachment_description_light_depth.samples = msaaSamples; //VK_SAMPLE_COUNT_1_BIT
+	attachment_description_light_depth_mainscene.samples = msaaSamples; //VK_SAMPLE_COUNT_1_BIT
 	//attachment_description_light_depth.samples = VK_SAMPLE_COUNT_1_BIT; //hardware depthbias for shadowmap
 	//std::cout<<"attachment_description_depth.samples = "<<attachment_description_depth.samples<<std::endl;
-	attachment_description_light_depth.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-	attachment_description_light_depth.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	attachment_description_light_depth.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-	attachment_description_light_depth.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	attachment_description_light_depth.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	attachment_description_light_depth.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;//VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;//VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-    
+	attachment_description_light_depth_mainscene.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+	attachment_description_light_depth_mainscene.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+	attachment_description_light_depth_mainscene.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+	attachment_description_light_depth_mainscene.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+	attachment_description_light_depth_mainscene.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;//VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+	attachment_description_light_depth_mainscene.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL; //will automatically change at the end of renderpass
+
 }
 
-void CRenderProcess::create_attachment_description_color_present(VkFormat swapChainImageFormat){  
+void CRenderProcess::create_attachment_description_light_depth_shadowmap(VkFormat depthFormat, VkSampleCountFlagBits msaaSamples){  
+	//bUseAttachmentLightDepth = true;
+
+	//added for model
+	attachment_description_light_depth_shadowmap.format = depthFormat;//findDepthFormat();
+	//std::cout<<"addDepthAttachment::depthAttachment.format = "<<depthAttachment.format<<std::endl;
+	attachment_description_light_depth_shadowmap.samples = msaaSamples; //VK_SAMPLE_COUNT_1_BIT
+	//attachment_description_light_depth.samples = VK_SAMPLE_COUNT_1_BIT; //hardware depthbias for shadowmap
+	//std::cout<<"attachment_description_depth.samples = "<<attachment_description_depth.samples<<std::endl;
+	attachment_description_light_depth_shadowmap.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+	attachment_description_light_depth_shadowmap.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+	attachment_description_light_depth_shadowmap.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+	attachment_description_light_depth_shadowmap.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+	attachment_description_light_depth_shadowmap.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;//VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+	attachment_description_light_depth_shadowmap.finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL; //will automatically change at the end of renderpass
+
+}
+
+void CRenderProcess::create_attachment_description_color_present_mainscene(VkFormat swapChainImageFormat){  
 	//bUseAttachmentColorPresent = true;
 
-	attachment_description_color_present.format = swapChainImageFormat;
-	attachment_description_color_present.samples = VK_SAMPLE_COUNT_1_BIT;
-	attachment_description_color_present.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-	attachment_description_color_present.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-	attachment_description_color_present.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-	attachment_description_color_present.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	attachment_description_color_present.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	attachment_description_color_present.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+	attachment_description_color_present_mainscene.format = swapChainImageFormat;
+	attachment_description_color_present_mainscene.samples = VK_SAMPLE_COUNT_1_BIT;
+	attachment_description_color_present_mainscene.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+	attachment_description_color_present_mainscene.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+	attachment_description_color_present_mainscene.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+	attachment_description_color_present_mainscene.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+	attachment_description_color_present_mainscene.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+	attachment_description_color_present_mainscene.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 }
 
-void CRenderProcess::create_attachment_description_camera_depth(VkFormat depthFormat, VkSampleCountFlagBits msaaSamples){  
+void CRenderProcess::create_attachment_description_camera_depth_mainscene(VkFormat depthFormat, VkSampleCountFlagBits msaaSamples){  
 	//bUseAttachmentDepth = true;
 
 	//added for model
-	attachment_description_depth.format = depthFormat;//findDepthFormat();
+	attachment_description_depth_mainscene.format = depthFormat;//findDepthFormat();
 	//std::cout<<"addDepthAttachment::depthAttachment.format = "<<depthAttachment.format<<std::endl;
-	attachment_description_depth.samples = msaaSamples;
+	attachment_description_depth_mainscene.samples = msaaSamples;
 	//std::cout<<"attachment_description_depth.samples = "<<attachment_description_depth.samples<<std::endl;
-	attachment_description_depth.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;//VK_ATTACHMENT_LOAD_OP_LOAD;//VK_ATTACHMENT_LOAD_OP_CLEAR;
-	attachment_description_depth.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	attachment_description_depth.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-	attachment_description_depth.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	attachment_description_depth.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;//VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;//VK_IMAGE_LAYOUT_UNDEFINED;
-	attachment_description_depth.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;//VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;//VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
-    
+	attachment_description_depth_mainscene.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;//VK_ATTACHMENT_LOAD_OP_LOAD;//VK_ATTACHMENT_LOAD_OP_CLEAR;
+	attachment_description_depth_mainscene.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+	attachment_description_depth_mainscene.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+	attachment_description_depth_mainscene.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+	attachment_description_depth_mainscene.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;//VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;//VK_IMAGE_LAYOUT_UNDEFINED;
+	attachment_description_depth_mainscene.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;//VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;//VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
 }
 
-void CRenderProcess::create_attachment_description_color_resolve(VkFormat swapChainImageFormat, VkSampleCountFlagBits msaaSamples, VkImageLayout imageLayout){  
+void CRenderProcess::create_attachment_description_color_resolve_mainscene(VkFormat swapChainImageFormat, VkSampleCountFlagBits msaaSamples, VkImageLayout imageLayout){  
 	//Concept of attachment in Vulkan is like render target in OpenGL
 	//Subpass is a procedure to write/read attachments (a render process can has many subpasses, aka a render pass)
 	//Subpass is designed for mobile TBDR architecture
 	//At the beginning of subpass, attachment is loaded; at the end of attachment, attachment is stored
 	//bUseAttachmentColorMultisample = true;
 
-	attachment_description_color_resolve.format = swapChainImageFormat;
+	attachment_description_color_resolve_mainscene.format = swapChainImageFormat;
 	//std::cout<<"addColorAttachment::colorAttachment.format = "<<colorAttachment.format<<std::endl;
-	attachment_description_color_resolve.samples = msaaSamples;
+	attachment_description_color_resolve_mainscene.samples = msaaSamples;
 	//std::cout<<"attachment_description_color_multisample.samples = "<<attachment_description_color_multisample.samples<<std::endl;
-	attachment_description_color_resolve.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-	attachment_description_color_resolve.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
-	attachment_description_color_resolve.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
-	attachment_description_color_resolve.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-	attachment_description_color_resolve.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
-	attachment_description_color_resolve.finalLayout = imageLayout;
+	attachment_description_color_resolve_mainscene.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
+	attachment_description_color_resolve_mainscene.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
+	attachment_description_color_resolve_mainscene.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
+	attachment_description_color_resolve_mainscene.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+	attachment_description_color_resolve_mainscene.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
+	attachment_description_color_resolve_mainscene.finalLayout = imageLayout;
 
 	m_msaaSamples_renderProcess = msaaSamples;
 	//std::cout<<"Color Attachment added. "<<std::endl;

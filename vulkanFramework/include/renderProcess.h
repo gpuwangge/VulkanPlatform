@@ -56,15 +56,17 @@ public:
     int iAttachmentColorResovle = -1;
     int iAttachmentColorPresent = -1;
 
-    void create_attachment_description_light_depth(VkFormat depthFormat, VkSampleCountFlagBits msaaSamples);
-    void create_attachment_description_camera_depth(VkFormat depthFormat, VkSampleCountFlagBits msaaSamples);
-    void create_attachment_description_color_resolve(VkFormat swapChainImageFormat,VkSampleCountFlagBits msaaSamples = VK_SAMPLE_COUNT_1_BIT, VkImageLayout imageLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
-    void create_attachment_description_color_present(VkFormat swapChainImageFormat);
+    void create_attachment_description_light_depth_mainscene(VkFormat depthFormat, VkSampleCountFlagBits msaaSamples);
+    void create_attachment_description_light_depth_shadowmap(VkFormat depthFormat, VkSampleCountFlagBits msaaSamples);
+    void create_attachment_description_camera_depth_mainscene(VkFormat depthFormat, VkSampleCountFlagBits msaaSamples);
+    void create_attachment_description_color_resolve_mainscene(VkFormat swapChainImageFormat,VkSampleCountFlagBits msaaSamples = VK_SAMPLE_COUNT_1_BIT, VkImageLayout imageLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
+    void create_attachment_description_color_present_mainscene(VkFormat swapChainImageFormat);
 
-    VkAttachmentDescription attachment_description_light_depth{};
-    VkAttachmentDescription attachment_description_depth{};
-    VkAttachmentDescription attachment_description_color_resolve{};
-    VkAttachmentDescription attachment_description_color_present{};//these are descriptions, not attachment buffer, each has many(9) properties
+    VkAttachmentDescription attachment_description_light_depth_mainscene{};
+    VkAttachmentDescription attachment_description_light_depth_shadowmap{};
+    VkAttachmentDescription attachment_description_depth_mainscene{};
+    VkAttachmentDescription attachment_description_color_resolve_mainscene{};
+    VkAttachmentDescription attachment_description_color_present_mainscene{};//these are descriptions, not attachment buffer, each has many(9) properties
 
     /*********
     * Attachments Reference (for mainscene)
