@@ -7,6 +7,9 @@
 #include "imageBuffer.h"
 #include "logManager.h"
 
+//Swapchain has all attachment resources(images, imageViews) for rendering
+//frambuffer wraps the swapchain imageViews, so that it can be used in renderPass
+
 class CSwapchain final{
     VkSwapchainKHR handle{VK_NULL_HANDLE};
 public:
@@ -25,7 +28,7 @@ public:
 
     bool bComputeSwapChainImage = false; //added VK_IMAGE_USAGE_STORAGE_BIT for image storage
 
-    //Attachments (Resources)
+    //Attachments(Resources)
     int iAttachmentDepthLight = -1;
     int iAttachmentDepthCamera = -1;
     int iAttachmentColorResovle = -1;
@@ -34,24 +37,25 @@ public:
     //1.Resource for swapchain image
     VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);
     VkExtent2D chooseSwapExtent(const VkSurfaceCapabilitiesKHR& capabilities, int width, int height);
+    //create_attachment_resource_color_present
     void createImages(VkSurfaceKHR surface, int width, int height);
     void createImageViews(VkImageAspectFlags aspectFlags);
 
     //2.Resource for light depth(shadowmap)
     CWxjImageBuffer lightDepthImageBuffer;
-    void create_attachment_buffer_light_depth(bool bEnableSamplerCountOn);
+    void create_attachment_resource_depth_light(bool bEnableSamplerCountOn);
 
     //3.Resource for Depth Test
     VkFormat depthFormat;
 	CWxjImageBuffer depthImageBuffer;
     VkFormat findSupportedFormat(const std::vector<VkFormat>& candidates, VkImageTiling tiling, VkFormatFeatureFlags features) ;
     VkFormat findDepthFormat();
-    void create_attachment_description_camera_depth();
+    void create_attachment_resource_depth_camera();
 
     //4.Resource for MSAA Resolve Color
     VkSampleCountFlagBits msaaSamples;
     CWxjImageBuffer msaaColorImageBuffer;
-    void create_attachment_description_color_resolve();
+    void create_attachment_resource_color_resolve();
 
 	VkFormat swapChainImageFormat;//08
 	VkExtent2D swapChainExtent;//08

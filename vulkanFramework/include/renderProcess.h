@@ -5,6 +5,8 @@
 #include "context.h"
 #include "dataBuffer.hpp"
 
+//renderProcess constains all attachment descriptions
+//when creating renderPass, it will use these attachment descriptions (as well as subpasses and dependencies) 
 
 class CRenderProcess final{
 public:
@@ -48,7 +50,7 @@ public:
     void createDependency();
 
     /*********
-    * Attachments Description
+    * Attachments(Description)
     **********/
     int iAttachmentDepthLight = -1;
     int iAttachmentDepthCamera = -1;

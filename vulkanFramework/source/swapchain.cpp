@@ -244,18 +244,7 @@ VkFormat CSwapchain::findDepthFormat() {
     );
 }
 
-void CSwapchain::create_attachment_description_camera_depth(){
-    //bEnableDepthTest = true;
-    depthFormat = findDepthFormat();
-	VkImageUsageFlags usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT;
-	//createDepthImages(VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
-    depthImageBuffer.createImage(swapChainExtent.width,swapChainExtent.height, 1, msaaSamples, depthFormat, VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, false,
-        VK_IMAGE_LAYOUT_UNDEFINED);
-	//createDepthImageViews(depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT);
-    depthImageBuffer.createImageView(depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT, 1, false);
-}
-
-void CSwapchain::create_attachment_buffer_light_depth(bool bEnableSamplerCountOne){
+void CSwapchain::create_attachment_resource_depth_light(bool bEnableSamplerCountOne){//2
     //bEnableLightDepth = true;
     depthFormat = findDepthFormat();
 	VkImageUsageFlags usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT;
@@ -273,7 +262,19 @@ void CSwapchain::create_attachment_buffer_light_depth(bool bEnableSamplerCountOn
     //std::cout<<"Enabled Light Depth Image Buffer"<<std::endl;
 }
 
-void CSwapchain::create_attachment_description_color_resolve(){
+
+void CSwapchain::create_attachment_resource_depth_camera(){//3
+    //bEnableDepthTest = true;
+    depthFormat = findDepthFormat();
+	VkImageUsageFlags usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT;
+	//createDepthImages(VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+    depthImageBuffer.createImage(swapChainExtent.width,swapChainExtent.height, 1, msaaSamples, depthFormat, VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, false,
+        VK_IMAGE_LAYOUT_UNDEFINED);
+	//createDepthImageViews(depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT);
+    depthImageBuffer.createImageView(depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT, 1, false);
+}
+
+void CSwapchain::create_attachment_resource_color_resolve(){//4
     //bEnableMSAA = true;
     //GetMaxUsableSampleCount();
 	VkImageUsageFlags usage = VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
