@@ -31,26 +31,25 @@ public:
     // SubpassPatterns m_subpassPattern = SubpassPatterns::DRAW;
 
     /*********
-    * Subpasses
+    * Subpasses (for mainscene)
     **********/
     bool bEnableSubpassShadowmap = false;   
     bool bEnableSubpassDraw = true;
     bool bEnableSubpassObserve = false;
-    std::vector<VkSubpassDescription> subpasses;
-    void createSubpass(int attachment_id_to_observe);
-    void createSubpass_shadowmap();
-    void createSubpass_draw();
-    void createSubpass_observe(int attachment_id_to_observe);
+    std::vector<VkSubpassDescription> subpasses_mainscene;
+    void createSubpass_mainscene(int attachment_id_to_observe); //this function will call shadowmap/draw/observe
+    void createSubpass_mainscene_shadowmap();
+    void createSubpass_mainscene_draw();
+    void createSubpass_mainscene_observe(int attachment_id_to_observe);
     
     /*********
-    * Dependency
+    * Dependency (for mainscene)
     **********/
-    std::vector<VkSubpassDependency> dependencies;
-    //VkSubpassDependency dependency{};
-    void createDependency();
+    std::vector<VkSubpassDependency> dependencies_mainscene;
+    void createDependency_mainscene();
 
     /*********
-    * Attachments(Description)
+    * Attachments(Description) (for mainscene)
     **********/
     int iAttachmentDepthLight = -1;
     int iAttachmentDepthCamera = -1;
@@ -68,7 +67,7 @@ public:
     VkAttachmentDescription attachment_description_color_present{};//these are descriptions, not attachment buffer, each has many(9) properties
 
     /*********
-    * Attachments Reference
+    * Attachments Reference (for mainscene)
     **********/
     //number of refs can be different from descriptions
     //1.for subpass_shadowmap
@@ -92,8 +91,9 @@ public:
     /*********
     * Renderpass
     **********/
-    VkRenderPass renderPass = VK_NULL_HANDLE; 
-    void createRenderPass();
+    VkRenderPass renderPass_shadowmap = VK_NULL_HANDLE;
+    VkRenderPass renderPass_mainscene = VK_NULL_HANDLE; 
+    void createRenderPass_mainscene();
     
     /*********
     * Misc
@@ -148,13 +148,15 @@ public:
      * 
      * *****/
     //this function is for samples that are NOT using vertex shader
-    void createGraphicsPipeline(VkPrimitiveTopology topology, VkShaderModule &vertShaderModule, VkShaderModule &fragShaderModule, int graphcisPipeline_id, int subpass_id, bool bEnableSamplerCountOne, bool bEnableDepthBias){
-        createGraphicsPipeline<DummyVertex>(topology, vertShaderModule, fragShaderModule, false, graphcisPipeline_id, subpass_id, bEnableSamplerCountOne, bEnableDepthBias); //DummyVertex doesn't really matter here, because no vertex attributes used
+    void createGraphicsPipeline(VkPrimitiveTopology topology, VkShaderModule &vertShaderModule, VkShaderModule &fragShaderModule, int graphcisPipeline_id, 
+        int subpass_id, bool bEnableSamplerCountOne, bool bEnableDepthBias, VkRenderPass renderPass){
+        createGraphicsPipeline<DummyVertex>(topology, vertShaderModule, fragShaderModule, false, graphcisPipeline_id, subpass_id, bEnableSamplerCountOne, bEnableDepthBias, renderPass); //DummyVertex doesn't really matter here, because no vertex attributes used
     }
 
     //this function is for samples that are  using vertex shader
     template <typename T>
-    void createGraphicsPipeline(VkPrimitiveTopology topology, VkShaderModule &vertShaderModule, VkShaderModule &fragShaderModule, bool bUseVertexBuffer, int graphcisPipeline_id, int subpass_id, bool bEnableSamplerCountOne, bool bEnableDepthBias){
+    void createGraphicsPipeline(VkPrimitiveTopology topology, VkShaderModule &vertShaderModule, VkShaderModule &fragShaderModule, bool bUseVertexBuffer, 
+        int graphcisPipeline_id, int subpass_id, bool bEnableSamplerCountOne, bool bEnableDepthBias, VkRenderPass renderPass){
         //HERE_I_AM("CreateGraphicsPipeline");
         bCreateGraphicsPipeline = true;
 

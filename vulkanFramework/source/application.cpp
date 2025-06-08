@@ -283,7 +283,7 @@ void CApplication::UpdateRecordRender(){
             vkResetCommandBuffer(renderer.commandBuffers[renderer.graphicsCmdId][renderer.currentFrame], /*VkCommandBufferResetFlagBits*/ 0);
 
             renderer.StartRecordGraphicsCommandBuffer(
-                renderProcess.renderPass, 
+                renderProcess.renderPass_mainscene, 
                 swapchain.swapChainFramebuffers,swapchain.swapChainExtent, 
                 renderProcess.clearValues);
             recordGraphicsCommandBuffer();
@@ -346,7 +346,7 @@ void CApplication::UpdateRecordRender(){
             renderer.EndRecordComputeCommandBuffer();
 
             renderer.StartRecordGraphicsCommandBuffer(
-                renderProcess.renderPass, 
+                renderProcess.renderPass_mainscene, 
                 swapchain.swapChainFramebuffers,swapchain.swapChainExtent, 
                 renderProcess.clearValues);
             recordGraphicsCommandBuffer();
@@ -694,12 +694,12 @@ void CApplication::ReadSubpasses(){
     renderProcess.bEnableSubpassObserve = config["Subpasses"]["subpasses_observe"] ? config["Subpasses"]["subpasses_observe"].as<bool>() : false;
 
     //create renderpass
-    renderProcess.createSubpass(appInfo.Feature.feature_graphics_observe_attachment_id);
-    renderProcess.createDependency();
-    renderProcess.createRenderPass();
+    renderProcess.createSubpass_mainscene(appInfo.Feature.feature_graphics_observe_attachment_id);
+    renderProcess.createDependency_mainscene();
+    renderProcess.createRenderPass_mainscene();
 
     //create framebuffer
-    swapchain.CreateFramebuffers(renderProcess.renderPass);
+    swapchain.CreateFramebuffers(renderProcess.renderPass_mainscene);
 }
 
 void CApplication::CreateUniformDescriptors(bool b_uniform_graphics, bool b_uniform_compute){
@@ -830,28 +830,28 @@ void CApplication::CreatePipelines(){
                         VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
                         shaderManager.vertShaderModules[i], 
                         shaderManager.fragShaderModules[i], i,
-                        (*appInfo.Subpass)[i], (*appInfo.EnableSamplerCountOne)[i], (*appInfo.EnableDepthBias)[i]);  
+                        (*appInfo.Subpass)[i], (*appInfo.EnableSamplerCountOne)[i], (*appInfo.EnableDepthBias)[i], renderProcess.renderPass_mainscene);  
                 break;
                 case VertexStructureTypes::ThreeDimension:
                     renderProcess.createGraphicsPipeline<Vertex3D>(
                         VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
                         shaderManager.vertShaderModules[i], 
                         shaderManager.fragShaderModules[i], true, i,
-                        (*appInfo.Subpass)[i], (*appInfo.EnableSamplerCountOne)[i], (*appInfo.EnableDepthBias)[i]);  
+                        (*appInfo.Subpass)[i], (*appInfo.EnableSamplerCountOne)[i], (*appInfo.EnableDepthBias)[i], renderProcess.renderPass_mainscene);  
                 break;
                 case VertexStructureTypes::TwoDimension:
                     renderProcess.createGraphicsPipeline<Vertex2D>(
                         VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
                         shaderManager.vertShaderModules[i], 
                         shaderManager.fragShaderModules[i], true, i,
-                        (*appInfo.Subpass)[i], (*appInfo.EnableSamplerCountOne)[i], (*appInfo.EnableDepthBias)[i]);
+                        (*appInfo.Subpass)[i], (*appInfo.EnableSamplerCountOne)[i], (*appInfo.EnableDepthBias)[i], renderProcess.renderPass_mainscene);
                 break;
                 case VertexStructureTypes::ParticleType:
                     renderProcess.createGraphicsPipeline<Particle>(
                         VK_PRIMITIVE_TOPOLOGY_POINT_LIST, 
                         shaderManager.vertShaderModules[i], 
                         shaderManager.fragShaderModules[i], true, i,
-                        (*appInfo.Subpass)[i], (*appInfo.EnableSamplerCountOne)[i], (*appInfo.EnableDepthBias)[i]);
+                        (*appInfo.Subpass)[i], (*appInfo.EnableSamplerCountOne)[i], (*appInfo.EnableDepthBias)[i], renderProcess.renderPass_mainscene);
                 break;
                 default:
                 break;
