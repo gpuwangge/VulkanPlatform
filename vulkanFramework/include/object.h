@@ -26,7 +26,7 @@ class CObject : public CEntity {
     CRenderer *p_renderer;
     CRenderProcess *p_renderProcess;
     std::vector<VkDescriptorSet> *p_descriptorSets_graphcis_general;
-    VkPipelineLayout *p_graphicsPipelineLayout;
+    //VkPipelineLayout *p_graphicsPipelineLayout;
     CTextureManager *p_textureManager;
 
     void CreateDescriptorSets_TextureImageSampler(
@@ -40,7 +40,9 @@ class CObject : public CEntity {
 public:
     CObject();
 
-    int m_graphics_pipeline_id = 0;
+    int m_graphics_pipeline_id_mainscene = 0;
+    int m_graphics_pipeline_id_mainscene2 = 0;
+    int m_graphics_pipeline_id_shadowmap = 0;
 
     bool bSticker = false;
     bool bSkybox = false;
@@ -53,14 +55,14 @@ public:
     void Update(float deltaTime, int currentFrame, Camera &mainCamera, Camera &lightCamera);
 
     bool bRegistered = false;
-    void Register(CApplication *p_app, int object_id, std::vector<int> texture_ids, int model_id, int graphics_pipeline_id); 
+    void Register(CApplication *p_app, int object_id, std::vector<int> texture_ids, int model_id, int graphics_pipeline_id_mainscene, int graphics_pipeline_id_mainscene2, int graphics_pipeline_id_shadowmap);
 
     bool bVisible = true;
 
     //draw with renderer's buffer, or no buffer
-    void Draw(uint32_t n = 0);
+    void Draw(RenderPassTypes renderPassType = RenderPassTypes::MAINSCENE, uint32_t n = 0);
     //draw with external buffers
-    void Draw(std::vector<CWxjBuffer> &buffer, uint32_t n = 0); //const VkBuffer *pBuffers
+    void Draw(std::vector<CWxjBuffer> &buffer, RenderPassTypes renderPassType = RenderPassTypes::MAINSCENE, uint32_t n = 0); //const VkBuffer *pBuffers
 };
 
 #endif

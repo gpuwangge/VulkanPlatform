@@ -9,7 +9,8 @@ Objects:
     object_skybox: false
     resource_model_id: 1
     resource_texture_id_list: [1]
-    resource_graphics_pipeline_id: 0
+    resource_graphics_pipeline_id_mainscene: 1
+    resource_graphics_pipeline_id_shadowmap: 0
   - object_name: Sphere
     object_id: 1
     object_scale: 0.04
@@ -19,12 +20,13 @@ Objects:
     object_angular_velocity: [0,0,0]
     object_skybox: false
     resource_model_id: 0
-    resource_texture_id_list: [0]
-    resource_graphics_pipeline_id: 0
+    resource_graphics_pipeline_id_mainscene: 1
+    resource_graphics_pipeline_id_shadowmap: 0
   - object_name: LightSphere
     object_id: 2
     object_scale: 0.01
-
+    resource_graphics_pipeline_id_mainscene: 1
+    resource_graphics_pipeline_id_shadowmap: 0
 
 Resources:
   - Models:
@@ -47,7 +49,7 @@ Resources:
       resource_graphics_pipeline_enable_sampler_count_one: true
       resource_graphics_pipeline_enable_depth_bias: true
       subpasses_subpass_id: 0
-    - resource_graphics_pipeline_name: pipeline_draw
+    - resource_graphics_pipeline_name: pipeline_mainscene
       resource_graphics_pipeline_vertexshader_name: HardwareDepthBias/draw.vert.spv
       resource_graphics_pipeline_fragmentshader_name: HardwareDepthBias/draw.frag.spv
       resource_graphics_pipeline_enable_sampler_count_one: false

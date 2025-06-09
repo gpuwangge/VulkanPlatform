@@ -880,9 +880,11 @@ void CApplication::ReadRegisterObjects(){
             //std::cout<<"before register Object id("<<object_id<<")!"<<std::endl;
             int resource_model_id = obj["resource_model_id"] ? obj["resource_model_id"].as<int>() : 0;
             auto resource_texture_id_list = obj["resource_texture_id_list"] ? obj["resource_texture_id_list"].as<std::vector<int>>() : std::vector<int>(1, 0);
-            int resource_graphics_pipeline_id = obj["resource_graphics_pipeline_id"] ? obj["resource_graphics_pipeline_id"].as<int>() : 0;
+            int resource_graphics_pipeline_id_mainscene = obj["resource_graphics_pipeline_id_mainscene"] ? obj["resource_graphics_pipeline_id_mainscene"].as<int>() : 0;
+            int resource_graphics_pipeline_id_mainscene2 = obj["resource_graphics_pipeline_id_mainscene2"] ? obj["resource_graphics_pipeline_id_mainscene2"].as<int>() : 0;
+            int resource_graphics_pipeline_id_shadowmap = obj["resource_graphics_pipeline_id_shadowmap"] ? obj["resource_graphics_pipeline_id_shadowmap"].as<int>() : 0;
             //must load resources before object register
-            objects[object_id].Register((CApplication*)this, object_id, resource_texture_id_list, resource_model_id, resource_graphics_pipeline_id);
+            objects[object_id].Register((CApplication*)this, object_id, resource_texture_id_list, resource_model_id, resource_graphics_pipeline_id_mainscene, resource_graphics_pipeline_id_mainscene2,resource_graphics_pipeline_id_shadowmap);
             //std::cout<<"after register Object id("<<object_id<<")!"<<std::endl;
 
             std::string name = obj["object_name"] ? obj["object_name"].as<std::string>() : "Default";

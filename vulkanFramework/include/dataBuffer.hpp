@@ -21,6 +21,12 @@ enum UniformTypes {
     COMPUTE_STORAGEIMAGE_SWAPCHAIN = 0x00000800
 };
 
+enum RenderPassTypes {
+    MAINSCENE = 0,
+    MAINSCENE2,
+    SHADOWMAP
+};
+
 //each line must be aligned to 16 bytes. In shader use vec4 instead of vec3
 struct LightAttribute{
     glm::vec4 lightPos;

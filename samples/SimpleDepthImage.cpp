@@ -80,14 +80,14 @@ public:
 	void recordGraphicsCommandBuffer(){
 		for(int i = 0; i < objects.size()-1; i++) {
 			if(i == 5) continue; //dont draw the light ball in shadowmap
-			objects[i].m_graphics_pipeline_id = 2;
-			objects[i].Draw();
+			//objects[i].m_graphics_pipeline_id = 2;
+			objects[i].Draw(RenderPassTypes::MAINSCENE2);
 		}
 
 		vkCmdNextSubpass(renderer.commandBuffers[renderer.graphicsCmdId][renderer.currentFrame], VK_SUBPASS_CONTENTS_INLINE);
 
 		for(int i = 0; i < objects.size()-1; i++) {
-			objects[i].m_graphics_pipeline_id = 0;
+			//objects[i].m_graphics_pipeline_id = 0;
 			objects[i].Draw();
 		}
 

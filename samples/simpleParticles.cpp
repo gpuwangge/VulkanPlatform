@@ -110,7 +110,7 @@ public:
 	void recordGraphicsCommandBuffer(){
 		//this sample doesn't need BindDescriptorSets
 		//std::cout<<"renderer.graphicsCmdId="<<renderer.graphicsCmdId<<std::endl;
-		objects[0].Draw(computeDescriptorManager.storageBuffers, PARTICLE_COUNT);
+		objects[0].Draw(computeDescriptorManager.storageBuffers, RenderPassTypes::MAINSCENE, PARTICLE_COUNT);
 	}
 
 	void recordComputeCommandBuffer(){

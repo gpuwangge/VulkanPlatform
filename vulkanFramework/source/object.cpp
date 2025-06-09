@@ -144,11 +144,13 @@ void CObject::CreateDescriptorSets_TextureImageSampler(VkDescriptorPool &descrip
     //std::cout<<"Done set descriptor. "<<std::endl;
 }
 
-void CObject::Register(CApplication *p_app, int object_id, std::vector<int> texture_ids, int model_id, int graphics_pipeline_id){
+void CObject::Register(CApplication *p_app, int object_id, std::vector<int> texture_ids, int model_id, int graphics_pipeline_id_mainscene, int graphics_pipeline_id_mainscene2, int graphics_pipeline_id_shadowmap){
     m_object_id = object_id; 
     m_texture_ids = texture_ids; 
     m_model_id = model_id; 
-    m_graphics_pipeline_id = graphics_pipeline_id; 
+    m_graphics_pipeline_id_mainscene = graphics_pipeline_id_mainscene; 
+    m_graphics_pipeline_id_mainscene2 = graphics_pipeline_id_mainscene2; 
+    m_graphics_pipeline_id_shadowmap = graphics_pipeline_id_shadowmap; 
     bUseMVP_VP = CGraphicsDescriptorManager::CheckMVP();
 
     if(p_app->appInfo.VertexBufferType == VertexStructureTypes::TwoDimension || p_app->appInfo.VertexBufferType == VertexStructureTypes::ThreeDimension){
@@ -168,7 +170,7 @@ void CObject::Register(CApplication *p_app, int object_id, std::vector<int> text
     //Prepare pointers for drawcall
     p_renderer = &(p_app->renderer);
     p_renderProcess = &(p_app->renderProcess);
-    p_graphicsPipelineLayout = &(p_app->renderProcess.graphicsPipelineLayouts[m_graphics_pipeline_id]);
+    //p_graphicsPipelineLayout = &(p_app->renderProcess.graphicsPipelineLayouts[m_graphics_pipeline_id]);
     p_descriptorSets_graphcis_general = &(p_app->graphicsDescriptorManager.descriptorSets_general);//?
     p_textureManager = &(p_app->textureManager);
 
@@ -190,10 +192,26 @@ void CObject::Register(CApplication *p_app, int object_id, std::vector<int> text
 }
 
 
-void CObject::Draw(uint32_t n){
+void CObject::Draw(RenderPassTypes renderPassType, uint32_t n){
     if(!bRegistered || !bVisible) return;
 
-    p_renderer->BindPipeline(p_renderProcess->graphicsPipelines[m_graphics_pipeline_id], 
+    int graphicsPipelineId = m_graphics_pipeline_id_mainscene;
+    switch(renderPassType){
+        case RenderPassTypes::MAINSCENE:
+            graphicsPipelineId = m_graphics_pipeline_id_mainscene;
+            break;
+        case RenderPassTypes::MAINSCENE2:
+            graphicsPipelineId = m_graphics_pipeline_id_mainscene2;
+            break;
+        case RenderPassTypes::SHADOWMAP:
+            graphicsPipelineId = m_graphics_pipeline_id_shadowmap;
+            break;
+        default:
+            graphicsPipelineId = m_graphics_pipeline_id_mainscene; //default to mainscene
+    }
+    VkPipelineLayout *p_graphicsPipelineLayout = &(p_renderProcess->graphicsPipelineLayouts[graphicsPipelineId]);
+
+    p_renderer->BindPipeline(p_renderProcess->graphicsPipelines[graphicsPipelineId], 
         VK_PIPELINE_BIND_POINT_GRAPHICS, p_renderer->graphicsCmdId);
     //std::cout<<"test2. p_graphicsDescriptorSets->size()="<<p_graphicsDescriptorSets->size()<<std::endl;
     //std::cout<<"test2. m_texture_ids.size()="<<m_texture_ids.size()<<std::endl;
@@ -226,12 +244,27 @@ void CObject::Draw(uint32_t n){
 }
 
 
-void CObject::Draw(std::vector<CWxjBuffer> &buffer, uint32_t n){ //const VkBuffer *pBuffers
+void CObject::Draw(std::vector<CWxjBuffer> &buffer, RenderPassTypes renderPassType, uint32_t n){ //const VkBuffer *pBuffers
     if(!bRegistered || !bVisible) return;
 
+    int graphicsPipelineId = m_graphics_pipeline_id_mainscene;
+        switch(renderPassType){
+        case RenderPassTypes::MAINSCENE:
+            graphicsPipelineId = m_graphics_pipeline_id_mainscene;
+            break;
+        case RenderPassTypes::MAINSCENE2:
+            graphicsPipelineId = m_graphics_pipeline_id_mainscene2;
+            break;
+        case RenderPassTypes::SHADOWMAP:
+            graphicsPipelineId = m_graphics_pipeline_id_shadowmap;
+            break;
+        default:
+            graphicsPipelineId = m_graphics_pipeline_id_mainscene; //default to mainscene
+    }
+    
     //this function is used in sample:simpleparticle only
     //std::cout<<"testdraw1,"<<m_graphics_pipeline_id<<","<<p_renderer->graphicsCmdId<<std::endl;
-    p_renderer->BindPipeline(p_renderProcess->graphicsPipelines[m_graphics_pipeline_id], 
+    p_renderer->BindPipeline(p_renderProcess->graphicsPipelines[graphicsPipelineId], 
     //p_renderer->BindPipeline(p_renderProcess->graphicsPipeline, 
         VK_PIPELINE_BIND_POINT_GRAPHICS, p_renderer->graphicsCmdId);
 

@@ -12,7 +12,7 @@ public:
 	}
 
 	void recordGraphicsCommandBuffer(){
-		objects[0].Draw(3);
+		objects[0].Draw(RenderPassTypes::MAINSCENE, 3); //draw 3 vertices;
 	}
 };
 

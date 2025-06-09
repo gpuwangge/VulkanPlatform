@@ -80,18 +80,18 @@ public:
 	void recordGraphicsCommandBuffer(){
 		for(int i = 0; i < objects.size()-1; i++) {
 			if(i == 2) continue; //dont draw the light ball in shadowmap
-			objects[i].m_graphics_pipeline_id = 2; 
+			//objects[i].m_graphics_pipeline_id = 2; 
 
 			//depthBiasConstantFactor, depthBiasClamp, depthBiasSlopeFactor
 			//vkCmdSetDepthBias(renderer.commandBuffers[renderer.graphicsCmdId][renderer.currentFrame], 10.0f, 0.0f, 10.0f);
 
-			objects[i].Draw(); //draw shadowmap
+			objects[i].Draw(RenderPassTypes::SHADOWMAP); //draw shadowmap
 		}
 
 		vkCmdNextSubpass(renderer.commandBuffers[renderer.graphicsCmdId][renderer.currentFrame], VK_SUBPASS_CONTENTS_INLINE);
 
 		for(int i = 0; i < objects.size()-1; i++) {
-			objects[i].m_graphics_pipeline_id = 0; //same object, first subpass use gid=2, second subpass use gid=0
+			//objects[i].m_graphics_pipeline_id = 0; //same object, first subpass use gid=2, second subpass use gid=0
 			objects[i].Draw();//draw objects
 		}
 

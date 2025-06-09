@@ -9,7 +9,7 @@ Objects:
     object_skybox: false
     resource_model_id: 0
     resource_texture_id_list: [0]
-    resource_graphics_pipeline_id: 0
+    resource_graphics_pipeline_id_mainscene: 0
 
 Resources:
   - Models:
