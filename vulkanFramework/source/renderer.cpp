@@ -137,6 +137,8 @@ void CRenderer::SubmitCompute(){
         case GRAPHICS:
             //Pure graphics application doesn't use compute pipeline
         break;
+        case GRAPHICS_SHADOWMAP:
+        break;
         case COMPUTE:
             //Pure compute application doesn't need swap image or present
         break;
@@ -200,6 +202,16 @@ void CRenderer::SubmitGraphics(){
             submitInfo.pWaitDstStageMask = waitStages;
         }
         break;
+        case GRAPHICS_SHADOWMAP:
+        {
+            //shadowmap pass, need wait for shadowmap to be ready
+            VkSemaphore waitSemaphores[] = {imageAvailableSemaphores[currentFrame] };
+            VkPipelineStageFlags waitStages[] = { VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT };
+            submitInfo.waitSemaphoreCount = 1;
+            submitInfo.pWaitSemaphores = waitSemaphores;
+            submitInfo.pWaitDstStageMask = waitStages;
+        }
+        break;
         case COMPUTE:
             //pure compute application doen't need graphics pipeline
         break;
@@ -253,6 +265,9 @@ void CRenderer::PresentSwapchainImage(CSwapchain &swapchain){
         case GRAPHICS:
             //present only if render is finished
             signalSemaphores[0] = renderFinishedSemaphores[currentFrame]; 
+        break;
+        case GRAPHICS_SHADOWMAP:
+            signalSemaphores[0] = renderFinishedSemaphores[currentFrame];
         break;
         case COMPUTE:
             //no need to present image for pure compute application

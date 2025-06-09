@@ -27,6 +27,8 @@ public:
 	CustomUniformBufferObject customUBO{};
 
 	void initialize(){
+		appInfo.RenderMode = renderer.GRAPHICS_SHADOWMAP; //two renderpasses: shadowmap and main scene
+
 		modelManager.CreateCustomModel3D(vertices3D, indices3D); //create the 0th custom model 3D (CUSTOM3D0)
 
 		appInfo.Uniform.GraphicsCustom.Size = sizeof(CustomUniformBufferObject);
@@ -77,7 +79,11 @@ public:
 		CApplication::update();
 	}
 
-	void recordGraphicsCommandBuffer(){
+	void recordGraphicsCommandBuffer_renderpassShadowmap(){
+		//std::cout<< "recordGraphicsCommandBuffer_renderpassShadowmap" << std::endl;
+	}
+
+	void recordGraphicsCommandBuffer_renderpassMainscene(){
 		for(int i = 0; i < objects.size()-1; i++) {
 			if(i == 2) continue; //dont draw the light ball in shadowmap
 			//objects[i].m_graphics_pipeline_id = 0; 

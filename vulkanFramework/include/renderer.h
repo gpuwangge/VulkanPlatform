@@ -18,9 +18,10 @@ public:
      * ***********************/
     typedef enum RenderModes {
         GRAPHICS = 0,
-        COMPUTE = 1,
-        COMPUTE_SWAPCHAIN = 2,
-        COMPUTE_GRAPHICS = 3,
+        COMPUTE,
+        COMPUTE_SWAPCHAIN,
+        COMPUTE_GRAPHICS,
+        GRAPHICS_SHADOWMAP
     } RenderModes;
 
     RenderModes m_renderMode = GRAPHICS;

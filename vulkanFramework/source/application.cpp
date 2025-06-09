@@ -258,7 +258,8 @@ void CApplication::update(){
     
 }
 
-void CApplication::recordGraphicsCommandBuffer(){}
+void CApplication::recordGraphicsCommandBuffer_renderpassMainscene(){}
+void CApplication::recordGraphicsCommandBuffer_renderpassShadowmap(){}
 void CApplication::recordComputeCommandBuffer(){}
 void CApplication::postUpdate(){}
 
@@ -286,12 +287,46 @@ void CApplication::UpdateRecordRender(){
                 renderProcess.renderPass_mainscene, 
                 swapchain.swapChainFramebuffers,swapchain.swapChainExtent, 
                 renderProcess.clearValues);
-            recordGraphicsCommandBuffer();
+            recordGraphicsCommandBuffer_renderpassMainscene();
             renderer.EndRecordGraphicsCommandBuffer();
 
             renderer.SubmitGraphics();
 
-            renderer.PresentSwapchainImage(swapchain); 
+            renderer.PresentSwapchainImage(swapchain);
+        break;
+        case CRenderer::GRAPHICS_SHADOWMAP:
+            //must wait for fence before record command buffer
+            renderer.WaitForGraphicsFence();
+            //must aquire swap image before record command buffer
+            renderer.AquireSwapchainImage(swapchain); 
+
+            vkResetCommandBuffer(renderer.commandBuffers[renderer.graphicsCmdId][renderer.currentFrame], /*VkCommandBufferResetFlagBits*/ 0);
+
+            renderer.BeginCommandBuffer(renderer.graphicsCmdId);
+
+
+
+            renderer.BeginRenderPass(renderProcess.renderPass_mainscene, swapchain.swapChainFramebuffers, swapchain.swapChainExtent, renderProcess.clearValues);
+            renderer.SetViewport(swapchain.swapChainExtent);
+            renderer.SetScissor(swapchain.swapChainExtent);
+            recordGraphicsCommandBuffer_renderpassMainscene();
+            renderer.EndRenderPass();
+
+
+            //TODO: renderProcess.renderPass_shadowmap is note created yet
+            //renderer.BeginRenderPass(renderProcess.renderPass_shadowmap, swapchain.swapChainFramebuffers, swapchain.swapChainExtent, renderProcess.clearValues);
+            //renderer.SetViewport(swapchain.swapChainExtent);
+            //renderer.SetScissor(swapchain.swapChainExtent);
+            recordGraphicsCommandBuffer_renderpassShadowmap();
+            //renderer.EndRenderPass();
+
+	        renderer.EndCommandBuffer(renderer.graphicsCmdId);
+
+            renderer.SubmitGraphics();
+
+            renderer.PresentSwapchainImage(swapchain);
+
+
         break;
         case CRenderer::COMPUTE:
         //case renderer.RENDER_COMPUTE_Mode:
@@ -346,10 +381,10 @@ void CApplication::UpdateRecordRender(){
             renderer.EndRecordComputeCommandBuffer();
 
             renderer.StartRecordGraphicsCommandBuffer(
-                renderProcess.renderPass_mainscene, 
-                swapchain.swapChainFramebuffers,swapchain.swapChainExtent, 
+                renderProcess.renderPass_mainscene,
+                swapchain.swapChainFramebuffers, swapchain.swapChainExtent,
                 renderProcess.clearValues);
-            recordGraphicsCommandBuffer();
+            recordGraphicsCommandBuffer_renderpassMainscene();
             renderer.EndRecordGraphicsCommandBuffer();
             
             renderer.SubmitCompute(); 

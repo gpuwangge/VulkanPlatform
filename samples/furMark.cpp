@@ -42,7 +42,7 @@ public:
 		CApplication::update();
 	}
 
-	void recordGraphicsCommandBuffer(){
+	void recordGraphicsCommandBuffer_renderpassMainscene(){
 		objects[0].Draw(); 
 	}
 };

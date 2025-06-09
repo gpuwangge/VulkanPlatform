@@ -77,7 +77,7 @@ public:
 		CApplication::update();
 	}
 
-	void recordGraphicsCommandBuffer(){
+	void recordGraphicsCommandBuffer_renderpassMainscene(){
 		for(int i = 0; i < objects.size()-1; i++) {
 			if(i == 2) continue; //dont draw the light ball in shadowmap
 			//objects[i].m_graphics_pipeline_id = 2; 

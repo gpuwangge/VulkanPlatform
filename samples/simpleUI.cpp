@@ -48,7 +48,7 @@ public:
 		CApplication::update();
 	}
 
-	void recordGraphicsCommandBuffer(){
+	void recordGraphicsCommandBuffer_renderpassMainscene(){
 		//objectList[0].Draw();
 		//objectList[1].Draw();
 		//objectList[3].Draw();

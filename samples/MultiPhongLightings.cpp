@@ -18,7 +18,7 @@ public:
 		CApplication::update();
 	}
 
-	void recordGraphicsCommandBuffer(){
+	void recordGraphicsCommandBuffer_renderpassMainscene(){
 		for(int i = 0; i < objects.size(); i++) objects[i].Draw();
 	}		
 };

@@ -20,7 +20,7 @@ public:
 		CApplication::update();
 	}
 
-	void recordGraphicsCommandBuffer(){
+	void recordGraphicsCommandBuffer_renderpassMainscene(){
 		ModelPushConstants pushConstants;
 		// pushConstants.model = glm::mat4(1, 0, 0, 0,
 		// 							    0, 1, 0, 0,
