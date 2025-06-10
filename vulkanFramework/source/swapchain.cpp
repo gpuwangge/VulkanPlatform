@@ -300,10 +300,10 @@ void CSwapchain::CreateFramebuffer_mainscene(VkRenderPass &renderPass){
         //#2: if depth test is enabled, a depth attachment with sampler number = n
         //#3: if msaa is enabled, a color attachment with sampler number = n
         std::vector<VkImageView> imageViews_to_attach; 
-        if(iAttachmentDepthLight >= 0) imageViews_to_attach.push_back(lightDepthImageBuffer.view);
-        if(iAttachmentDepthCamera >= 0) imageViews_to_attach.push_back(depthImageBuffer.view);
-        if(iAttachmentColorResovle >= 0) imageViews_to_attach.push_back(msaaColorImageBuffer.view);
-        if(iAttachmentColorPresent >= 0) imageViews_to_attach.push_back(views[i]); //views are created from swapchain, sampler number is always 1
+        if(iMainSceneAttachmentDepthLight >= 0) imageViews_to_attach.push_back(lightDepthImageBuffer.view);
+        if(iMainSceneAttachmentDepthCamera >= 0) imageViews_to_attach.push_back(depthImageBuffer.view);
+        if(iMainSceneAttachmentColorResovle >= 0) imageViews_to_attach.push_back(msaaColorImageBuffer.view);
+        if(iMainSceneAttachmentColorPresent >= 0) imageViews_to_attach.push_back(views[i]); //views are created from swapchain, sampler number is always 1
 
         //std::cout<<"SwapImageIndex: "<<i<<"/"<<imageSize<<" imageViews_to_attach size: "<<imageViews_to_attach.size()<<std::endl;
 
@@ -335,11 +335,11 @@ void CSwapchain::CreateFramebuffer_shadowmap(VkRenderPass &renderPass){
         //#1: a color attachment with sampler number = 1
         //#2: if depth test is enabled, a depth attachment with sampler number = n
         //#3: if msaa is enabled, a color attachment with sampler number = n
-        std::vector<VkImageView> imageViews_to_attach; 
-        if(iAttachmentDepthLight >= 0) imageViews_to_attach.push_back(lightDepthImageBuffer.view);
-        if(iAttachmentDepthCamera >= 0) imageViews_to_attach.push_back(depthImageBuffer.view);
-        if(iAttachmentColorResovle >= 0) imageViews_to_attach.push_back(msaaColorImageBuffer.view);
-        if(iAttachmentColorPresent >= 0) imageViews_to_attach.push_back(views[i]); //views are created from swapchain, sampler number is always 1
+        std::vector<VkImageView> imageViews_to_attach; //TODO
+        if(iMainSceneAttachmentDepthLight >= 0) imageViews_to_attach.push_back(lightDepthImageBuffer.view);
+        if(iMainSceneAttachmentDepthCamera >= 0) imageViews_to_attach.push_back(depthImageBuffer.view);
+        if(iMainSceneAttachmentColorResovle >= 0) imageViews_to_attach.push_back(msaaColorImageBuffer.view);
+        if(iMainSceneAttachmentColorPresent >= 0) imageViews_to_attach.push_back(views[i]); //views are created from swapchain, sampler number is always 1
 
         //std::cout<<"SwapImageIndex: "<<i<<"/"<<imageSize<<" imageViews_to_attach size: "<<imageViews_to_attach.size()<<std::endl;
 

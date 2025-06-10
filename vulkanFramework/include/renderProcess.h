@@ -41,20 +41,25 @@ public:
     void createSubpass_mainscene_shadowmap();
     void createSubpass_mainscene_draw();
     void createSubpass_mainscene_observe(int attachment_id_to_observe);
-    
+
+    void createSubpass_shadowmap(); //for shadowmap, this is the only subpass
+
     /*********
-    * Dependency (for mainscene)
+    * Dependency
     **********/
     std::vector<VkSubpassDependency> dependencies_mainscene;
     void createDependency_mainscene();
+    std::vector<VkSubpassDependency> dependencies_shadowmap;
+    void createDependency_shadowmap();
+
 
     /*********
-    * Attachments(Description) (for mainscene)
+    * Attachments(Description) 
     **********/
-    int iAttachmentDepthLight = -1;
-    int iAttachmentDepthCamera = -1;
-    int iAttachmentColorResovle = -1;
-    int iAttachmentColorPresent = -1;
+    int iMainSceneAttachmentDepthLight = -1;
+    int iMainSceneAttachmentDepthCamera = -1;
+    int iMainSceneAttachmentColorResovle = -1;
+    int iMainSceneAttachmentColorPresent = -1;
 
     void create_attachment_description_light_depth_mainscene(VkFormat depthFormat, VkSampleCountFlagBits msaaSamples);
     void create_attachment_description_light_depth_shadowmap(VkFormat depthFormat, VkSampleCountFlagBits msaaSamples);
@@ -69,7 +74,7 @@ public:
     VkAttachmentDescription attachment_description_color_present_mainscene{};//these are descriptions, not attachment buffer, each has many(9) properties
 
     /*********
-    * Attachments Reference (for mainscene)
+    * Attachments Reference
     **********/
     //number of refs can be different from descriptions
     //1.for subpass_shadowmap
@@ -96,7 +101,8 @@ public:
     VkRenderPass renderPass_shadowmap = VK_NULL_HANDLE;
     VkRenderPass renderPass_mainscene = VK_NULL_HANDLE; 
     void createRenderPass_mainscene();
-    
+    void createRenderPass_shadowmap();
+
     /*********
     * Misc
     **********/
@@ -307,7 +313,7 @@ public:
         pipelineInfo.basePipelineHandle = VK_NULL_HANDLE;
 
         /*********11**********/
-        if (iAttachmentDepthCamera >= 0) {
+        if (iMainSceneAttachmentDepthCamera >= 0) {
             bool bSkybox = false;
             if(graphicsPipelines.size() == skyboxID) bSkybox = true;
             //std::cout<<"bSkybox="<<bSkybox<<"(skyboxID="<<skyboxID<<")"<<std::endl;

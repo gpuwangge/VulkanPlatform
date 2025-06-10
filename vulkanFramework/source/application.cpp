@@ -684,33 +684,33 @@ void CApplication::ReadAttachments(){
     bool bEnableSamplerCountOne = config["MainSceneAttachments"]["mainscene_attachment_depth_light_enable_sampler_count_one"] ? config["MainSceneAttachments"]["mainscene_attachment_depth_light_enable_sampler_count_one"].as<bool>() : false;
 
     int AttachmentCount = 0;
-    renderProcess.iAttachmentDepthLight = bAttachmentDepthLight ? AttachmentCount++ : -1;
-    renderProcess.iAttachmentDepthCamera = bAttachmentDepthCamera ? AttachmentCount++ : -1;
-    renderProcess.iAttachmentColorResovle = bAttachmentColorResovle ? AttachmentCount++ : -1;
-    renderProcess.iAttachmentColorPresent = bAttachmentColorPresent ? AttachmentCount++ : -1;
+    renderProcess.iMainSceneAttachmentDepthLight = bAttachmentDepthLight ? AttachmentCount++ : -1;
+    renderProcess.iMainSceneAttachmentDepthCamera = bAttachmentDepthCamera ? AttachmentCount++ : -1;
+    renderProcess.iMainSceneAttachmentColorResovle = bAttachmentColorResovle ? AttachmentCount++ : -1;
+    renderProcess.iMainSceneAttachmentColorPresent = bAttachmentColorPresent ? AttachmentCount++ : -1;
 
-    swapchain.iAttachmentDepthLight = renderProcess.iAttachmentDepthLight;
-    swapchain.iAttachmentDepthCamera = renderProcess.iAttachmentDepthCamera;
-    swapchain.iAttachmentColorResovle = renderProcess.iAttachmentColorResovle;
-    swapchain.iAttachmentColorPresent = renderProcess.iAttachmentColorPresent;
+    swapchain.iMainSceneAttachmentDepthLight = renderProcess.iMainSceneAttachmentDepthLight;
+    swapchain.iMainSceneAttachmentDepthCamera = renderProcess.iMainSceneAttachmentDepthCamera;
+    swapchain.iMainSceneAttachmentColorResovle = renderProcess.iMainSceneAttachmentColorResovle;
+    swapchain.iMainSceneAttachmentColorPresent = renderProcess.iMainSceneAttachmentColorPresent;
 
-    std::cout<<"attachments: "<<swapchain.iAttachmentDepthLight<<","<<swapchain.iAttachmentDepthCamera<<","<<swapchain.iAttachmentColorResovle<<","<<swapchain.iAttachmentColorPresent<<std::endl;
+    std::cout<<"attachments: "<<swapchain.iMainSceneAttachmentDepthLight<<","<<swapchain.iMainSceneAttachmentDepthCamera<<","<<swapchain.iMainSceneAttachmentColorResovle<<","<<swapchain.iMainSceneAttachmentColorPresent<<std::endl;
 
     //when creating attachment resource, need 1.create attachment description in renderProcess; 2.create attachment buffer in swapchain
-    if(swapchain.iAttachmentColorResovle >= 0) swapchain.GetMaxUsableSampleCount(); //calcuate max sampler count first
+    if(swapchain.iMainSceneAttachmentColorResovle >= 0) swapchain.GetMaxUsableSampleCount(); //calcuate max sampler count first
 
     //If enable MSAA, must also enable Depth Test
-    if(swapchain.iAttachmentDepthCamera >= 0){
+    if(swapchain.iMainSceneAttachmentDepthCamera >= 0){
         swapchain.create_attachment_resource_depth_camera();
         renderProcess.create_attachment_description_camera_depth_mainscene(swapchain.depthFormat, swapchain.msaaSamples);
     }
 
-    if(swapchain.iAttachmentColorResovle >= 0){
-        swapchain.create_attachment_resource_color_resolve(); 
-        renderProcess.create_attachment_description_color_resolve_mainscene(swapchain.swapChainImageFormat, swapchain.msaaSamples, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR); 
+    if(swapchain.iMainSceneAttachmentColorResovle >= 0){
+        swapchain.create_attachment_resource_color_resolve();
+        renderProcess.create_attachment_description_color_resolve_mainscene(swapchain.swapChainImageFormat, swapchain.msaaSamples, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
     }
 
-    if(swapchain.iAttachmentDepthLight >= 0){
+    if(swapchain.iMainSceneAttachmentDepthLight >= 0){
         swapchain.create_attachment_resource_depth_light(bEnableSamplerCountOne);
         if(bEnableSamplerCountOne){
             renderProcess.create_attachment_description_light_depth_mainscene(swapchain.depthFormat, VK_SAMPLE_COUNT_1_BIT);
@@ -719,7 +719,7 @@ void CApplication::ReadAttachments(){
         }
     }
 
-    if(swapchain.iAttachmentColorPresent >= 0) //dont need create swapchain attachment resource here
+    if(swapchain.iMainSceneAttachmentColorPresent >= 0) //dont need create swapchain attachment resource here
         renderProcess.create_attachment_description_color_present_mainscene(swapchain.swapChainImageFormat);
 }
 

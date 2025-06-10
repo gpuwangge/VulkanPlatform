@@ -29,10 +29,10 @@ public:
     bool bComputeSwapChainImage = false; //added VK_IMAGE_USAGE_STORAGE_BIT for image storage
 
     //Attachments(Resources)
-    int iAttachmentDepthLight = -1;
-    int iAttachmentDepthCamera = -1;
-    int iAttachmentColorResovle = -1;
-    int iAttachmentColorPresent = -1;
+    int iMainSceneAttachmentDepthLight = -1;
+    int iMainSceneAttachmentDepthCamera = -1;
+    int iMainSceneAttachmentColorResovle = -1;
+    int iMainSceneAttachmentColorPresent = -1;
 
     //1.Resource for swapchain image
     VkPresentModeKHR chooseSwapPresentMode(const std::vector<VkPresentModeKHR>& availablePresentModes);

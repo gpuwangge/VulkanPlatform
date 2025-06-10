@@ -1,10 +1,10 @@
 #include "../include/renderProcess.h"
 
 void CRenderProcess::createSubpass_mainscene(int attachment_id_to_observe){ 
-	if(iAttachmentDepthLight >= 0) clearValues.push_back({1.0f, 0}); 
-	if(iAttachmentDepthCamera >= 0) clearValues.push_back({1.0f, 0}); 
-	if(iAttachmentColorResovle >= 0) clearValues.push_back({0.0f, 0.0f, 0.0f, 1.0f});
-	if(iAttachmentColorPresent >= 0) clearValues.push_back({0.0f, 0.0f, 0.0f, 1.0f});
+	if(iMainSceneAttachmentDepthLight >= 0) clearValues.push_back({1.0f, 0}); 
+	if(iMainSceneAttachmentDepthCamera >= 0) clearValues.push_back({1.0f, 0}); 
+	if(iMainSceneAttachmentColorResovle >= 0) clearValues.push_back({0.0f, 0.0f, 0.0f, 1.0f});
+	if(iMainSceneAttachmentColorPresent >= 0) clearValues.push_back({0.0f, 0.0f, 0.0f, 1.0f});
 
 	if(bEnableSubpassShadowmap) createSubpass_mainscene_shadowmap();	
 	if(bEnableSubpassDraw) createSubpass_mainscene_draw();	
@@ -13,9 +13,9 @@ void CRenderProcess::createSubpass_mainscene(int attachment_id_to_observe){
 
 void CRenderProcess::createSubpass_mainscene_shadowmap(){ //assume depth and MSAA are enabled
 	VkSubpassDescription subpass{};//to generate light depth for shadowmap
-	
-	if(iAttachmentDepthLight >= 0){
-		attachmentRef_light_depth_shadowmap.attachment = iAttachmentDepthLight; 
+
+	if(iMainSceneAttachmentDepthLight >= 0){
+		attachmentRef_light_depth_shadowmap.attachment = iMainSceneAttachmentDepthLight; 
 		attachmentRef_light_depth_shadowmap.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;//VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL; //normal depth image format
 		subpass.pDepthStencilAttachment = &attachmentRef_light_depth_shadowmap;
 	}
@@ -36,26 +36,26 @@ void CRenderProcess::createSubpass_mainscene_draw(){
 	// 	subpass.inputAttachmentCount = 2;
 	// }
 
-	if(iAttachmentDepthLight >= 0){
-		attachmentRef_input_draw[0].attachment = iAttachmentDepthLight;
+	if(iMainSceneAttachmentDepthLight >= 0){
+		attachmentRef_input_draw[0].attachment = iMainSceneAttachmentDepthLight;
 		attachmentRef_input_draw[0].layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;//VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL;
 		subpass.pInputAttachments = &attachmentRef_input_draw[0];
 		subpass.inputAttachmentCount = 1;
 	}
 
-	if(iAttachmentDepthCamera >= 0){
-		attachmentRef_depth_draw.attachment = iAttachmentDepthCamera; 
+	if(iMainSceneAttachmentDepthCamera >= 0){
+		attachmentRef_depth_draw.attachment = iMainSceneAttachmentDepthCamera; 
 		attachmentRef_depth_draw.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL; //normal depth image format: for shadowmapping, this is input and output
 		subpass.pDepthStencilAttachment = &attachmentRef_depth_draw;
 	}
-	if(iAttachmentColorPresent >= 0){
-		attachmentRef_color_draw.attachment = iAttachmentColorPresent; 
+	if(iMainSceneAttachmentColorPresent >= 0){
+		attachmentRef_color_draw.attachment = iMainSceneAttachmentColorPresent; 
 		attachmentRef_color_draw.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 		subpass.pColorAttachments = &attachmentRef_color_draw;
 		subpass.colorAttachmentCount = 1;
 	}
-	if(iAttachmentColorResovle >= 0){
-		attachmentRef_color_multisample_draw.attachment = iAttachmentColorResovle; 
+	if(iMainSceneAttachmentColorResovle >= 0){
+		attachmentRef_color_multisample_draw.attachment = iMainSceneAttachmentColorResovle; 
 		attachmentRef_color_multisample_draw.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 		subpass.pColorAttachments = &attachmentRef_color_multisample_draw; //use multi sampler color attachment to override pColorAttachments
 		subpass.pResolveAttachments = &attachmentRef_color_draw;
@@ -68,19 +68,19 @@ void CRenderProcess::createSubpass_mainscene_draw(){
 void CRenderProcess::createSubpass_mainscene_observe(int attachment_id_to_observe){ 
 	VkSubpassDescription subpass{};
 
-	attachmentRef_observe.attachment = attachment_id_to_observe; //iAttachmentDepthCamera or iAttachmentDepthLight
+	attachmentRef_observe.attachment = attachment_id_to_observe; //iMainSceneAttachmentDepthCamera or iMainSceneAttachmentDepthLight
 	attachmentRef_observe.layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL; //VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL; //depth image format for output
 	subpass.pInputAttachments = &attachmentRef_observe;
 	subpass.inputAttachmentCount = 1;
 
-	if(iAttachmentColorPresent >= 0){
-		attachmentRef_color_observe.attachment = iAttachmentColorPresent; 
+	if(iMainSceneAttachmentColorPresent >= 0){
+		attachmentRef_color_observe.attachment = iMainSceneAttachmentColorPresent; 
 		attachmentRef_color_observe.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 		subpass.pColorAttachments = &attachmentRef_color_observe;
 		subpass.colorAttachmentCount = 1;
 	}
-	if(iAttachmentColorResovle >= 0){
-		attachmentRef_color_multisample_observe.attachment = iAttachmentColorResovle; 
+	if(iMainSceneAttachmentColorResovle >= 0){
+		attachmentRef_color_multisample_observe.attachment = iMainSceneAttachmentColorResovle; 
 		attachmentRef_color_multisample_observe.layout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 		subpass.pColorAttachments = &attachmentRef_color_multisample_observe;
 		subpass.pResolveAttachments = &attachmentRef_color_observe;
@@ -90,13 +90,17 @@ void CRenderProcess::createSubpass_mainscene_observe(int attachment_id_to_observ
 	subpasses_mainscene.push_back(subpass);
 }
 
+void CRenderProcess::createSubpass_shadowmap(){
+//TODO
+}
+
 
 void CRenderProcess::createDependency_mainscene(){  
 	if(!bEnableSubpassShadowmap && bEnableSubpassDraw && !bEnableSubpassObserve){ //single subpass
 		dependencies_mainscene.resize(1);
 
 		//external->0
-		if (iAttachmentDepthCamera < 0) {
+		if (iMainSceneAttachmentDepthCamera < 0) {
 			VkPipelineStageFlags srcPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 			VkPipelineStageFlags dstPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 			dependencies_mainscene[0].srcSubpass = VK_SUBPASS_EXTERNAL;
@@ -172,6 +176,10 @@ void CRenderProcess::createDependency_mainscene(){
 	}
 }
 
+void CRenderProcess::createDependency_shadowmap(){
+	//TODO
+}
+
 void CRenderProcess::createRenderPass_mainscene(){ 
 	//std::cout<<"Begin create renderpass"<<std::endl;
 	VkResult result = VK_SUCCESS;
@@ -181,10 +189,10 @@ void CRenderProcess::createRenderPass_mainscene(){
 	//#2: if depth test is enabled, a depth attachment with sampler number = n
 	//#3: if msaa is enabled, a color attachment with sampler number = n
 	std::vector<VkAttachmentDescription> attachmentDescriptions;
-	if(iAttachmentDepthLight >= 0) attachmentDescriptions.push_back(attachment_description_light_depth_mainscene);
-	if(iAttachmentDepthCamera >= 0) attachmentDescriptions.push_back(attachment_description_depth_mainscene);
-	if(iAttachmentColorResovle >= 0) attachmentDescriptions.push_back(attachment_description_color_resolve_mainscene);
-	if(iAttachmentColorPresent >= 0) attachmentDescriptions.push_back(attachment_description_color_present_mainscene);
+	if(iMainSceneAttachmentDepthLight >= 0) attachmentDescriptions.push_back(attachment_description_light_depth_mainscene);
+	if(iMainSceneAttachmentDepthCamera >= 0) attachmentDescriptions.push_back(attachment_description_depth_mainscene);
+	if(iMainSceneAttachmentColorResovle >= 0) attachmentDescriptions.push_back(attachment_description_color_resolve_mainscene);
+	if(iMainSceneAttachmentColorPresent >= 0) attachmentDescriptions.push_back(attachment_description_color_present_mainscene);
 
 	//std::cout<<"Begin prepare renderpass info"<<std::endl;
 	VkRenderPassCreateInfo renderPassInfo{};
@@ -202,6 +210,10 @@ void CRenderProcess::createRenderPass_mainscene(){
 	if (result != VK_SUCCESS) throw std::runtime_error("failed to create render pass!");	 
 
 
+}
+
+void CRenderProcess::createRenderPass_shadowmap(){
+	//TODO
 }
 
 void CRenderProcess::create_attachment_description_light_depth_mainscene(VkFormat depthFormat, VkSampleCountFlagBits msaaSamples){  
