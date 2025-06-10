@@ -69,11 +69,11 @@ Features:
   feature_graphics_pipeline_skybox_id: -1
   feature_graphics_observe_attachment_id: -1
 
-Attachments:
-  attachment_depth_light: false
-  attachment_depth_camera: true
-  attachment_color_resovle: true
-  attachment_color_present: true
+MainSceneAttachments:
+  mainscene_attachment_depth_light: false
+  mainscene_attachment_depth_camera: true
+  mainscene_attachment_color_resovle: true
+  mainscene_attachment_color_present: true
 
 MainCamera:
   camera_mode: 1

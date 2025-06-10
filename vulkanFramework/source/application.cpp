@@ -677,11 +677,11 @@ void CApplication::ReadResources(){
 }
 
 void CApplication::ReadAttachments(){
-    bool bAttachmentDepthLight = config["Attachments"]["attachment_depth_light"] ? config["Attachments"]["attachment_depth_light"].as<bool>() : false;
-    bool bAttachmentDepthCamera = config["Attachments"]["attachment_depth_camera"] ? config["Attachments"]["attachment_depth_camera"].as<bool>()  : false;
-    bool bAttachmentColorResovle = config["Attachments"]["attachment_color_resovle"] ? config["Attachments"]["attachment_color_resovle"].as<bool>()  : false;
-    bool bAttachmentColorPresent = config["Attachments"]["attachment_color_present"] ? config["Attachments"]["attachment_color_present"].as<bool>()  : true; //need al least one subpass with at least one color attachment
-    bool bEnableSamplerCountOne = config["Attachments"]["attachment_depth_light_enable_sampler_count_one"] ? config["Attachments"]["attachment_depth_light_enable_sampler_count_one"].as<bool>() : false;
+    bool bAttachmentDepthLight = config["MainSceneAttachments"]["mainscene_attachment_depth_light"] ? config["MainSceneAttachments"]["mainscene_attachment_depth_light"].as<bool>() : false;
+    bool bAttachmentDepthCamera = config["MainSceneAttachments"]["mainscene_attachment_depth_camera"] ? config["MainSceneAttachments"]["mainscene_attachment_depth_camera"].as<bool>()  : false;
+    bool bAttachmentColorResovle = config["MainSceneAttachments"]["mainscene_attachment_color_resovle"] ? config["MainSceneAttachments"]["mainscene_attachment_color_resovle"].as<bool>()  : false;
+    bool bAttachmentColorPresent = config["MainSceneAttachments"]["mainscene_attachment_color_present"] ? config["MainSceneAttachments"]["mainscene_attachment_color_present"].as<bool>()  : true; //need al least one subpass with at least one color attachment
+    bool bEnableSamplerCountOne = config["MainSceneAttachments"]["mainscene_attachment_depth_light_enable_sampler_count_one"] ? config["MainSceneAttachments"]["mainscene_attachment_depth_light_enable_sampler_count_one"].as<bool>() : false;
 
     int AttachmentCount = 0;
     renderProcess.iAttachmentDepthLight = bAttachmentDepthLight ? AttachmentCount++ : -1;
@@ -724,9 +724,9 @@ void CApplication::ReadAttachments(){
 }
 
 void CApplication::ReadSubpasses(){
-    renderProcess.bEnableSubpassShadowmap = config["Subpasses"]["subpasses_shadowmap"] ? config["Subpasses"]["subpasses_shadowmap"].as<bool>() : false;
-    renderProcess.bEnableSubpassDraw = config["Subpasses"]["subpasses_draw"] ? config["Subpasses"]["subpasses_draw"].as<bool>() : true; //need at least one subpass, even for compute sample
-    renderProcess.bEnableSubpassObserve = config["Subpasses"]["subpasses_observe"] ? config["Subpasses"]["subpasses_observe"].as<bool>() : false;
+    renderProcess.bEnableSubpassShadowmap = config["MainSceneSubpasses"]["mainscene_subpasses_shadowmap"] ? config["MainSceneSubpasses"]["mainscene_subpasses_shadowmap"].as<bool>() : false;
+    renderProcess.bEnableSubpassDraw = config["MainSceneSubpasses"]["mainscene_subpasses_draw"] ? config["MainSceneSubpasses"]["mainscene_subpasses_draw"].as<bool>() : true; //need at least one subpass, even for compute sample
+    renderProcess.bEnableSubpassObserve = config["MainSceneSubpasses"]["mainscene_subpasses_observe"] ? config["MainSceneSubpasses"]["mainscene_subpasses_observe"].as<bool>() : false;
 
     //create renderpass
     renderProcess.createSubpass_mainscene(appInfo.Feature.feature_graphics_observe_attachment_id);

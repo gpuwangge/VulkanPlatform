@@ -52,16 +52,16 @@ Features:
   feature_graphics_pipeline_skybox_id: -1
   feature_graphics_observe_attachment_id: -1
 
-Attachments:
-  attachment_depth_light: false
-  attachment_depth_camera: false
-  attachment_color_resovle: false
-  attachment_color_present: true
+MainSceneAttachments:
+  mainscene_attachment_depth_light: false
+  mainscene_attachment_depth_camera: false
+  mainscene_attachment_color_resovle: false
+  mainscene_attachment_color_present: true
 
-Subpasses:
-  subpasses_shadowmap: false
-  subpasses_draw: true
-  subpasses_observe: false
+MainSceneSubpasses:
+  mainscene_subpasses_shadowmap: false
+  mainscene_subpasses_draw: true
+  mainscene_subpasses_observe: false
 
 
 MainCamera: #camera mode: 0-LOCK, 1-FREE, 2-SELECT
