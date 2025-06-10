@@ -62,8 +62,10 @@ public:
 	
     CLogManager logManager;
 
-    std::vector<VkFramebuffer> swapChainFramebuffers;
-    void CreateFramebuffers(VkRenderPass &renderPass);
+    std::vector<VkFramebuffer> framebuffers_mainscene;
+    std::vector<VkFramebuffer> framebuffers_shadowmap;
+    void CreateFramebuffer_mainscene(VkRenderPass &renderPass);
+    void CreateFramebuffer_shadowmap(VkRenderPass &renderPass);
 
     void displaySwapchainInfo(SwapChainSupportDetails swapChainSupport);
     //CDebugger * debugger;

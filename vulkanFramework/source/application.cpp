@@ -285,7 +285,7 @@ void CApplication::UpdateRecordRender(){
 
             renderer.StartRecordGraphicsCommandBuffer(
                 renderProcess.renderPass_mainscene, 
-                swapchain.swapChainFramebuffers,swapchain.swapChainExtent, 
+                swapchain.framebuffers_mainscene,swapchain.swapChainExtent, 
                 renderProcess.clearValues);
             recordGraphicsCommandBuffer_renderpassMainscene();
             renderer.EndRecordGraphicsCommandBuffer();
@@ -306,7 +306,7 @@ void CApplication::UpdateRecordRender(){
 
 
 
-            renderer.BeginRenderPass(renderProcess.renderPass_mainscene, swapchain.swapChainFramebuffers, swapchain.swapChainExtent, renderProcess.clearValues);
+            renderer.BeginRenderPass(renderProcess.renderPass_mainscene, swapchain.framebuffers_mainscene, swapchain.swapChainExtent, renderProcess.clearValues);
             renderer.SetViewport(swapchain.swapChainExtent);
             renderer.SetScissor(swapchain.swapChainExtent);
             recordGraphicsCommandBuffer_renderpassMainscene();
@@ -314,7 +314,7 @@ void CApplication::UpdateRecordRender(){
 
 
             //TODO: renderProcess.renderPass_shadowmap is note created yet
-            //renderer.BeginRenderPass(renderProcess.renderPass_shadowmap, swapchain.swapChainFramebuffers, swapchain.swapChainExtent, renderProcess.clearValues);
+            //renderer.BeginRenderPass(renderProcess.renderPass_shadowmap, swapchain.framebuffers_shadowmap, swapchain.swapChainExtent, renderProcess.clearValues);
             //renderer.SetViewport(swapchain.swapChainExtent);
             //renderer.SetScissor(swapchain.swapChainExtent);
             recordGraphicsCommandBuffer_renderpassShadowmap();
@@ -382,7 +382,7 @@ void CApplication::UpdateRecordRender(){
 
             renderer.StartRecordGraphicsCommandBuffer(
                 renderProcess.renderPass_mainscene,
-                swapchain.swapChainFramebuffers, swapchain.swapChainExtent,
+                swapchain.framebuffers_mainscene, swapchain.swapChainExtent,
                 renderProcess.clearValues);
             recordGraphicsCommandBuffer_renderpassMainscene();
             renderer.EndRecordGraphicsCommandBuffer();
@@ -734,7 +734,7 @@ void CApplication::ReadSubpasses(){
     renderProcess.createRenderPass_mainscene();
 
     //create framebuffer
-    swapchain.CreateFramebuffers(renderProcess.renderPass_mainscene);
+    swapchain.CreateFramebuffer_mainscene(renderProcess.renderPass_mainscene);
 }
 
 void CApplication::CreateUniformDescriptors(bool b_uniform_graphics, bool b_uniform_compute){

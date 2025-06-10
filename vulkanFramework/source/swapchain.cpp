@@ -287,12 +287,12 @@ void CSwapchain::create_attachment_resource_color_resolve(){//4
     //EnableDepthTest(); //If enable MSAA, must also enable Depth Test
 }
 
-void CSwapchain::CreateFramebuffers(VkRenderPass &renderPass){
+void CSwapchain::CreateFramebuffer_mainscene(VkRenderPass &renderPass){
     //std::cout<<"Begin create framebuffer"<<std::endl;
 
 	VkResult result = VK_SUCCESS;
 
-	swapChainFramebuffers.resize(views.size());//use imageSize?
+	framebuffers_mainscene.resize(views.size());//use imageSize?
 
 	for (size_t i = 0; i < imageSize; i++) {
         //attachments in framebuffer are set in this order:
@@ -316,7 +316,43 @@ void CSwapchain::CreateFramebuffers(VkRenderPass &renderPass){
 		framebufferInfo.height = swapChainExtent.height;
 		framebufferInfo.layers = 1;
 
-		result = vkCreateFramebuffer(CContext::GetHandle().GetLogicalDevice(), &framebufferInfo, nullptr, &swapChainFramebuffers[i]);
+		result = vkCreateFramebuffer(CContext::GetHandle().GetLogicalDevice(), &framebufferInfo, nullptr, &framebuffers_mainscene[i]);
+		if (result != VK_SUCCESS) throw std::runtime_error("failed to create framebuffer!");
+	}	
+
+    //std::cout<<"Done create framebuffer"<<std::endl;
+}
+
+void CSwapchain::CreateFramebuffer_shadowmap(VkRenderPass &renderPass){
+    //std::cout<<"Begin create framebuffer"<<std::endl;
+
+	VkResult result = VK_SUCCESS;
+
+	framebuffers_shadowmap.resize(views.size());//use imageSize?
+
+	for (size_t i = 0; i < imageSize; i++) {
+        //attachments in framebuffer are set in this order:
+        //#1: a color attachment with sampler number = 1
+        //#2: if depth test is enabled, a depth attachment with sampler number = n
+        //#3: if msaa is enabled, a color attachment with sampler number = n
+        std::vector<VkImageView> imageViews_to_attach; 
+        if(iAttachmentDepthLight >= 0) imageViews_to_attach.push_back(lightDepthImageBuffer.view);
+        if(iAttachmentDepthCamera >= 0) imageViews_to_attach.push_back(depthImageBuffer.view);
+        if(iAttachmentColorResovle >= 0) imageViews_to_attach.push_back(msaaColorImageBuffer.view);
+        if(iAttachmentColorPresent >= 0) imageViews_to_attach.push_back(views[i]); //views are created from swapchain, sampler number is always 1
+
+        //std::cout<<"SwapImageIndex: "<<i<<"/"<<imageSize<<" imageViews_to_attach size: "<<imageViews_to_attach.size()<<std::endl;
+
+		VkFramebufferCreateInfo framebufferInfo{};
+		framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+		framebufferInfo.renderPass = renderPass;
+		framebufferInfo.attachmentCount = static_cast<uint32_t>(imageViews_to_attach.size());
+		framebufferInfo.pAttachments = imageViews_to_attach.data();
+		framebufferInfo.width = swapChainExtent.width;
+		framebufferInfo.height = swapChainExtent.height;
+		framebufferInfo.layers = 1;
+
+		result = vkCreateFramebuffer(CContext::GetHandle().GetLogicalDevice(), &framebufferInfo, nullptr, &framebuffers_shadowmap[i]);
 		if (result != VK_SUCCESS) throw std::runtime_error("failed to create framebuffer!");
 	}	
 
@@ -330,9 +366,11 @@ void CSwapchain::GetMaxUsableSampleCount(){
 }
 
 void CSwapchain::CleanUp(){
-    for (auto framebuffer : swapChainFramebuffers) 
+    for (auto framebuffer : framebuffers_mainscene) 
         vkDestroyFramebuffer(CContext::GetHandle().GetLogicalDevice(), framebuffer, nullptr);
-    
+    for (auto framebuffer : framebuffers_shadowmap) 
+        vkDestroyFramebuffer(CContext::GetHandle().GetLogicalDevice(), framebuffer, nullptr);
+
     for (auto imageView : views) 
         vkDestroyImageView(CContext::GetHandle().GetLogicalDevice(), imageView, nullptr);
     
