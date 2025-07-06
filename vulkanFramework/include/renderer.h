@@ -53,7 +53,7 @@ public:
 
     //Start(...)
     void BeginCommandBuffer(int commandBufferIndex);
-    void BeginRenderPass(VkRenderPass &renderPass, std::vector<VkFramebuffer> &swapChainFramebuffers, VkExtent2D &extent, std::vector<VkClearValue> &clearValues);
+    void BeginRenderPass(VkRenderPass &renderPass, std::vector<VkFramebuffer> &swapChainFramebuffers, VkExtent2D &extent, std::vector<VkClearValue> &clearValues, bool useSingleFramebuffer);
     void BindPipeline(VkPipeline &pipeline, VkPipelineBindPoint pipelineBindPoint, int commandBufferIndex);
     void SetViewport(VkExtent2D &extent);
     void SetScissor(VkExtent2D &extent);

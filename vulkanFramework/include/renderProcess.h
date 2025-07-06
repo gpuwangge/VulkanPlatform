@@ -31,7 +31,7 @@ public:
     // SubpassPatterns m_subpassPattern = SubpassPatterns::DRAW;
 
     /*********
-    * Subpasses (for mainscene)
+    * Subpasses
     **********/
     bool bEnableSubpassShadowmap = false;   
     bool bEnableSubpassDraw = true;
@@ -42,6 +42,7 @@ public:
     void createSubpass_mainscene_draw();
     void createSubpass_mainscene_observe(int attachment_id_to_observe);
 
+    std::vector<VkSubpassDescription> subpasses_shadowmap;
     void createSubpass_shadowmap(); //for shadowmap, this is the only subpass
 
     /*********
@@ -95,6 +96,9 @@ public:
     VkAttachmentReference attachmentRef_color_multisample_observe{};
     
 
+    //for shadowmap renderpass
+    VkAttachmentReference attachmentRef_light_depth_shadowmap_{};
+
     /*********
     * Renderpass
     **********/
@@ -107,6 +111,7 @@ public:
     * Misc
     **********/
     std::vector<VkClearValue> clearValues;
+    std::vector<VkClearValue> clearValues_shadowmap;
 
     bool bUseColorBlendAttachment = false;
     VkPipelineColorBlendAttachmentState colorBlendAttachment{};
@@ -243,11 +248,13 @@ public:
         rasterizer.cullMode = VK_CULL_MODE_NONE;
         rasterizer.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
         if(bEnableDepthBias){
+            std::cout<< "Enable depthBiasEnable" << std::endl;
             rasterizer.depthBiasEnable = VK_TRUE; // for hardware depthibias shadowmap
             rasterizer.depthBiasConstantFactor = 1.25f;   // for hardware depthibias shadowmap
             rasterizer.depthBiasClamp = 0.0f; // for hardware depthibias shadowmap
             rasterizer.depthBiasSlopeFactor = 1.75f;      // for hardware depthibias shadowmap
         }else{
+            std::cout<< "Disable depthBiasEnable" << std::endl;
             rasterizer.depthBiasEnable = VK_FALSE;
         }
         pipelineInfo.pRasterizationState = &rasterizer;

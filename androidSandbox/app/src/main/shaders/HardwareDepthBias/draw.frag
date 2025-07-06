@@ -15,16 +15,21 @@ layout(set = 0, binding = 1) uniform UniformCustomBufferObject {
 } customUBO;
 
 layout(set = 0, binding = 2) uniform UniformBufferObject {
-    mat4 model;
-    mat4 proj;
+	mat4 model;
+	mat4 mainCameraProj;
+	mat4 lightCameraProj;
 	mat4 mainCameraView;
-	mat4 lightCameraView;	
+	mat4 lightCameraView;
+	mat4 padding0;
+	mat4 padding1;
+	mat4 padding2; 
 } mvpUBO;
 
 //layout (set = 0, binding = 3) uniform sampler2D depthSampler;//single sampled
 layout (set = 0, binding = 3) uniform sampler2DMS depthSampler; //msaa, there is no use to this uniform in this shader
 //layout (set = 0, binding = 4) uniform sampler2DMS lightDepthSampler; //msaa
-layout (set = 0, binding = 4) uniform sampler2DShadow lightDepthSampler; //depthbias hardware compare
+layout (set = 0, binding = 4) uniform sampler2DShadow lightDepthSampler; //depthbias hardware compare: has bug
+
 layout (set = 1, binding = 0) uniform sampler2D texSampler;
 
 layout (location = 0) in vec3 inNormal;
@@ -72,13 +77,38 @@ void main() {
 	    	lightSpaceCoords.z >= 0.0 && lightSpaceCoords.z <= 1.0){
 			lightSpaceCoords = lightSpaceCoords * 0.5 + 0.5;
 
-			shadow = texture(lightDepthSampler, lightSpaceCoords);
-		}
+			float bias = 0.35;
+			shadow = texture(lightDepthSampler, vec3(lightSpaceCoords.xy, lightSpaceCoords.z - bias)); //条纹状bug
+				
+				// float z = lightSpaceCoords.z;
+				// if (z < 0.1) outColor = vec4(0.0, 0.0, 1.0, 1.0); // blue
+				// else if (z < 0.3) outColor = vec4(0.0, 1.0, 1.0, 1.0); // cyan
+				// else if (z < 0.5) outColor = vec4(0.0, 1.0, 0.0, 1.0); // green
+				// else if (z < 0.7) outColor = vec4(1.0, 1.0, 0.0, 1.0); // yellow
+				// else if (z < 0.9) outColor = vec4(1.0, 0.5, 0.0, 1.0); // orange
+				// else outColor = vec4(1.0, 0.0, 0.0, 1.0); // red
 
-		outColor += vec4(ambient * ambientIntensity + diffuse * diffuseIntensity + specular * specularIntensity, 0.0) * (1.0 - shadow);
-		//outColor += vec4(ambient * ambientIntensity + diffuse * diffuseIntensity + specular * specularIntensity, 0.0) * shadow;
-		//outColor = vec4(vec3(shadow), 1.0);
-	}	
+			outColor += vec4(ambient * ambientIntensity + diffuse * diffuseIntensity + specular * specularIntensity, 0.0) * shadow;
+		}else
+			outColor += vec4(ambient * ambientIntensity + diffuse * diffuseIntensity + specular * specularIntensity, 0.0);
+			//outColor = vec4(0.0, 0.0, 0.0, 1.0); // black
+		//outColor = vec4(lightSpaceCoords.z, 0, 0, 1.0); // test: all red
+		//outColor = vec4(lightSpaceCoords.xyz, 1.0); // test
+
+		//vec3 lightDir = normalize((mvpUBO.lightCameraView * vec4(0, 0, -1, 0)).xyz);
+		//vec3 lightDir = normalize((inverse(mvpUBO.lightCameraView) * vec4(0, 0, -1, 0)).xyz);
+		//outColor = vec4(abs(lightDir), 1.0);
+
+		//vec3 lightToObj = normalize(inPosWorld - customUBO.lights[0].lightPos.xyz);
+		//outColor = vec4(abs(lightToObj), 1.0);
+
+
+		//outColor = vec4(vec3(mvpUBO.mainCameraProj[0].x, mvpUBO.mainCameraProj[1].y, mvpUBO.mainCameraProj[2].z), 1.0);
+		//outColor = vec4(vec3(mvpUBO.lightCameraProj[0].x, mvpUBO.lightCameraProj[1].y, mvpUBO.lightCameraProj[2].z), 1.0);
+		//outColor = vec4(vec3(mvpUBO.mainCameraView[0].x, mvpUBO.mainCameraView[1].y, mvpUBO.mainCameraView[2].z), 1.0);
+		//outColor = vec4(vec3(mvpUBO.lightCameraView[0].x, mvpUBO.lightCameraView[1].y, mvpUBO.lightCameraView[2].z), 1.0);
+
+	}
 	
 }
 

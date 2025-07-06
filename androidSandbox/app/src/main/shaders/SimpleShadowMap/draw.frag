@@ -15,10 +15,14 @@ layout(set = 0, binding = 1) uniform UniformCustomBufferObject {
 } customUBO;
 
 layout(set = 0, binding = 2) uniform UniformBufferObject {
-    mat4 model;
-    mat4 proj;
+	mat4 model;
+	mat4 mainCameraProj;
+	mat4 lightCameraProj;
 	mat4 mainCameraView;
-	mat4 lightCameraView;	
+	mat4 lightCameraView;
+	mat4 padding0;
+	mat4 padding1;
+	mat4 padding2; 
 } mvpUBO;
 
 //layout (set = 0, binding = 3) uniform sampler2D depthSampler;//single sampled

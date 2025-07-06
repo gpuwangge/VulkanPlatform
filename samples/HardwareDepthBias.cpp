@@ -66,7 +66,7 @@ public:
 
 		for(int i = 0; i < lights.size(); i++) {
 			lights[i].SetLightPosition(
-				glm::vec3(0, lights[i].GetLightPosition().y,0)
+				glm::vec3(lights[i].GetLightPosition().x, lights[i].GetLightPosition().y,lights[i].GetLightPosition().z)
 				//glm::vec3(0, 2.5, 0)
 				//glm::vec3(2.5 *cos(durationTime * (i+1)), 0, 2.5 *sin(durationTime * (i+1)))
 				//glm::vec3(0, 3+0.6*sin(durationTime * (i+1)/2), 0)
@@ -81,9 +81,20 @@ public:
 
 	void recordGraphicsCommandBuffer_renderpassShadowmap(){
 		//std::cout<< "recordGraphicsCommandBuffer_renderpassShadowmap" << std::endl;
+		//std::cout<< "call vkCmdSetDepthBias" << std::endl;
+		//std::cout<<renderer.currentFrame<<"th frame, recording shadowmap command buffer."<<std::endl;
+		//vkCmdSetDepthBias(renderer.commandBuffers[renderer.graphicsCmdId][renderer.currentFrame], 1.25f, 0.0f, 1.75f);
+		vkCmdSetDepthBias(renderer.commandBuffers[renderer.graphicsCmdId][renderer.currentFrame], 1.25f, 0.0f, 1.75f);//test
+
+		for(int i = 0; i < objects.size()-1; i++) {
+			if(i == 2) continue; //dont draw the light ball in shadowmap
+			//objects[i].m_graphics_pipeline_id = 1; //same object, first subpass use gid=2, second subpass use gid=0
+			objects[i].Draw(RenderPassTypes::SHADOWMAP);//draw objects
+		}
 	}
 
 	void recordGraphicsCommandBuffer_renderpassMainscene(){
+		/*
 		for(int i = 0; i < objects.size()-1; i++) {
 			if(i == 2) continue; //dont draw the light ball in shadowmap
 			//objects[i].m_graphics_pipeline_id = 0; 
@@ -96,8 +107,10 @@ public:
 		}
 
 		vkCmdNextSubpass(renderer.commandBuffers[renderer.graphicsCmdId][renderer.currentFrame], VK_SUBPASS_CONTENTS_INLINE);
+		*/
 
-		for(int i = 0; i < objects.size()-1; i++) {
+
+		for(int i = 0; i < objects.size(); i++) {
 			//objects[i].m_graphics_pipeline_id = 1; //same object, first subpass use gid=2, second subpass use gid=0
 			objects[i].Draw();//draw objects
 		}

@@ -187,6 +187,7 @@ void CTextureImage::CreateTextureImage() {
 	stbi_image_free(m_pTexels);
 
 	//Step 2: create(allocate) image buffer
+	//std::cout<<"Creating texture image..."<<std::endl;
 	m_textureImageBuffer.createImage(m_texWidth, m_texHeight, m_mipLevels, VK_SAMPLE_COUNT_1_BIT, m_imageFormat, VK_IMAGE_TILING_OPTIMAL, m_usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, false,
 		VK_IMAGE_LAYOUT_UNDEFINED);
 
@@ -330,6 +331,7 @@ void CTextureImage::CreateTextureImage_cubemap() {
 	stbi_image_free(m_pTexels);
 
 	//Step 2: create(allocate) image buffer
+	//std::cout<<"Creating texture image(cubemap)..."<<std::endl;
 	m_textureImageBuffer.createImage(m_texWidth, m_texHeight, m_mipLevels, VK_SAMPLE_COUNT_1_BIT, m_imageFormat, VK_IMAGE_TILING_OPTIMAL, m_usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, true,
 		VK_IMAGE_LAYOUT_UNDEFINED);
 
@@ -639,6 +641,7 @@ void CTextureImage::CreateTextureImage_rainbow_mipmap(void* texels, VkImageUsage
 
 	stbi_image_free(texels);
 
+	//std::cout<<"Creating texture image(rainbow mipmap)..."<<std::endl;
 	imageBuffer.createImage(m_texWidth, m_texHeight, m_mipLevels, VK_SAMPLE_COUNT_1_BIT, m_imageFormat, VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, false,
 		VK_IMAGE_LAYOUT_UNDEFINED);
 

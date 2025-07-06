@@ -52,6 +52,10 @@ public:
 		//if (flipY) matrices.perspective[1][1] *= -1.0f;
 	};
 
+	void setOrthographic(float left, float right, float bottom, float top, float znear, float zfar){
+		matrices.perspective = glm::ortho(left, right, bottom, top, znear, zfar);
+	}
+
 	//this function is provided to user (no use case yet)
 	void updateAspectRatio(float aspect){
 		matrices.perspective = glm::perspective(glm::radians(fov), aspect, znear, zfar);

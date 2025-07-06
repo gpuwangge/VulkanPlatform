@@ -1,10 +1,14 @@
 #version 450
 
 layout(set = 0, binding = 1) uniform UniformBufferObject {
-    mat4 model;
-    mat4 proj;
+	mat4 model;
+	mat4 mainCameraProj;
+	mat4 lightCameraProj;
 	mat4 mainCameraView;
 	mat4 lightCameraView;
+	mat4 padding0;
+	mat4 padding1;
+	mat4 padding2; 
 } mvpUBO;
 
 layout(location = 0) in vec3 inPosition;
@@ -18,7 +22,7 @@ layout (location = 2) out vec2 outTexCoord;
 layout (location = 3) out vec3 outPosWorld;
 
 void main(){
-	gl_Position = mvpUBO.proj * mvpUBO.mainCameraView * mvpUBO.model * vec4(inPosition, 1.0);;
+	gl_Position = mvpUBO.mainCameraProj * mvpUBO.mainCameraView * mvpUBO.model * vec4(inPosition, 1.0);
 
 	outNormal = mat3(mvpUBO.model) * inNormal;
 	outColor = inColor;

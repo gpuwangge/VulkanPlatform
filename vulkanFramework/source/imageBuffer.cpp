@@ -41,6 +41,7 @@ void CWxjImageBuffer::createImage(uint32_t width, uint32_t height, uint32_t mipL
     if (vkCreateImage(CContext::GetHandle().GetLogicalDevice(), &imageInfo, nullptr, &image) != VK_SUCCESS) {
         throw std::runtime_error("failed to create image!");
     }
+    //printf("Created VkImage: %p\n", image);
 
     VkMemoryRequirements memRequirements;
     vkGetImageMemoryRequirements(CContext::GetHandle().GetLogicalDevice(), image, &memRequirements);//this is different from buffer allocation

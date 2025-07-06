@@ -1,11 +1,15 @@
 #version 450
 
 layout(set = 0, binding = 1) uniform UniformBufferObject {
-    mat4 model;
-    mat4 proj;
-    mat4 mainCameraView;
+	mat4 model;
+	mat4 mainCameraProj;
+	mat4 lightCameraProj;
+	mat4 mainCameraView;
 	mat4 lightCameraView;
-} ubo;
+	mat4 padding0;
+	mat4 padding1;
+	mat4 padding2; 
+} mvpUBO;
 
 layout(location = 0) in vec3 inPosition;
 layout(location = 1) in vec3 inColor;   //no use
@@ -18,9 +22,9 @@ layout(location = 0) out vec3 pos;
 layout(location = 1) out vec3 normal;
 
 void main() {
-    gl_Position = ubo.proj * ubo.mainCameraView * ubo.model * vec4(inPosition, 1.0);
+    gl_Position = mvpUBO.mainCameraProj * mvpUBO.mainCameraView * mvpUBO.model * vec4(inPosition, 1.0);
     //fragColor = inColor;
     //fragTexCoord = inTexCoord;
-    pos = vec3(ubo.model * vec4(inPosition, 1.0f));
-    normal = mat3(transpose(inverse(ubo.model))) * inNormal;
+    pos = vec3(mvpUBO.model * vec4(inPosition, 1.0f));
+    normal = mat3(transpose(inverse(mvpUBO.model))) * inNormal;
 }

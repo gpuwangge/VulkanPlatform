@@ -305,20 +305,19 @@ void CApplication::UpdateRecordRender(){
             renderer.BeginCommandBuffer(renderer.graphicsCmdId);
 
 
+            //std::cout<<"Application: Begin Shadowmap Render Pass."<<std::endl;
+            renderer.BeginRenderPass(renderProcess.renderPass_shadowmap, swapchain.framebuffers_shadowmap, swapchain.swapChainExtent, renderProcess.clearValues_shadowmap, true);
+            renderer.SetViewport(swapchain.swapChainExtent);
+            renderer.SetScissor(swapchain.swapChainExtent);
+            recordGraphicsCommandBuffer_renderpassShadowmap();
+            renderer.EndRenderPass();
 
-            renderer.BeginRenderPass(renderProcess.renderPass_mainscene, swapchain.framebuffers_mainscene, swapchain.swapChainExtent, renderProcess.clearValues);
+            //std::cout<<"Application: Begin Mainscene Render Pass."<<std::endl;
+            renderer.BeginRenderPass(renderProcess.renderPass_mainscene, swapchain.framebuffers_mainscene, swapchain.swapChainExtent, renderProcess.clearValues, false);
             renderer.SetViewport(swapchain.swapChainExtent);
             renderer.SetScissor(swapchain.swapChainExtent);
             recordGraphicsCommandBuffer_renderpassMainscene();
             renderer.EndRenderPass();
-
-
-            //TODO: renderProcess.renderPass_shadowmap is note created yet
-            //renderer.BeginRenderPass(renderProcess.renderPass_shadowmap, swapchain.framebuffers_shadowmap, swapchain.swapChainExtent, renderProcess.clearValues);
-            //renderer.SetViewport(swapchain.swapChainExtent);
-            //renderer.SetScissor(swapchain.swapChainExtent);
-            recordGraphicsCommandBuffer_renderpassShadowmap();
-            //renderer.EndRenderPass();
 
 	        renderer.EndCommandBuffer(renderer.graphicsCmdId);
 
@@ -506,7 +505,7 @@ void CApplication::ReadUniforms(){
                     CGraphicsDescriptorManager::addLightDepthImageSamplerUniformBuffer();
 
                 if(appInfo.Uniform.b_uniform_graphics_lightdepth_image_sampler_hardware)
-                    CGraphicsDescriptorManager::addLightDepthImageSamplerUniformBuffer_hardware();
+                    CGraphicsDescriptorManager::addLightDepthImageSamplerUniformBuffer_hardwareDepthBias();
 
             }
         }
@@ -710,6 +709,9 @@ void CApplication::ReadAttachments(){
         renderProcess.create_attachment_description_color_resolve_mainscene(swapchain.swapChainImageFormat, swapchain.msaaSamples, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
     }
 
+   
+    //swapchain.create_attachment_resource_depth_light(bEnableSamplerCountOne); //hardware bias todo
+    //renderProcess.create_attachment_description_light_depth_mainscene(swapchain.depthFormat, VK_SAMPLE_COUNT_1_BIT); //hardware bias todo
     if(swapchain.iMainSceneAttachmentDepthLight >= 0){
         swapchain.create_attachment_resource_depth_light(bEnableSamplerCountOne);
         if(bEnableSamplerCountOne){
@@ -719,8 +721,15 @@ void CApplication::ReadAttachments(){
         }
     }
 
+    //TODO: temp for shadowmap pass
+    // swapchain.create_attachment_resource_depth_light(true);
+    // renderProcess.create_attachment_description_light_depth_mainscene(swapchain.depthFormat, VK_SAMPLE_COUNT_1_BIT);
+
     if(swapchain.iMainSceneAttachmentColorPresent >= 0) //dont need create swapchain attachment resource here
         renderProcess.create_attachment_description_color_present_mainscene(swapchain.swapChainImageFormat);
+
+    //TODO: for shadowmap pass
+    renderProcess.create_attachment_description_light_depth_shadowmap(swapchain.depthFormat, swapchain.msaaSamples); //hardware bias todo//should remove the second parameter
 }
 
 void CApplication::ReadSubpasses(){
@@ -729,12 +738,26 @@ void CApplication::ReadSubpasses(){
     renderProcess.bEnableSubpassObserve = config["MainSceneSubpasses"]["mainscene_subpasses_observe"] ? config["MainSceneSubpasses"]["mainscene_subpasses_observe"].as<bool>() : false;
 
     //create renderpass
+    std::cout<<"Application: Create MainScene Render Pass."<<std::endl;
     renderProcess.createSubpass_mainscene(appInfo.Feature.feature_graphics_observe_attachment_id);
     renderProcess.createDependency_mainscene();
     renderProcess.createRenderPass_mainscene();
 
     //create framebuffer
+    std::cout<<"Application: Create MainScene Framebuffer."<<std::endl;
     swapchain.CreateFramebuffer_mainscene(renderProcess.renderPass_mainscene);
+
+
+    //TODO: for shadowmap pass
+    // std::cout<<"Application: Create Shadowmap Render Pass."<<std::endl;
+    // renderProcess.createSubpass_shadowmap();
+    // renderProcess.createDependency_shadowmap();
+    // renderProcess.createRenderPass_shadowmap();
+
+    // std::cout<<"Application: Create Shadowmap Framebuffer."<<std::endl;
+    // swapchain.CreateFramebuffer_shadowmap(renderProcess.renderPass_shadowmap);
+
+
 }
 
 void CApplication::CreateUniformDescriptors(bool b_uniform_graphics, bool b_uniform_compute){
@@ -757,7 +780,7 @@ void CApplication::CreateUniformDescriptors(bool b_uniform_graphics, bool b_unif
     //UNIFORM STEP 3/3 (Set)
     if(b_uniform_graphics){
         //if(appInfo.Feature.feature_graphics_observe_attachment_id == 0) //assume 0 is light Depth Image Buffer
-            graphicsDescriptorManager.createDescriptorSets_General(swapchain.depthImageBuffer.view, swapchain.lightDepthImageBuffer.view);
+            graphicsDescriptorManager.createDescriptorSets_General(swapchain.depthImageBuffer.view, swapchain.lightDepthImageBuffer.view, swapchain.lightDepthImageBuffer.view); //TODO
            // graphicsDescriptorManager.createDescriptorSets_General(swapchain.depthImageBuffer.view, swapchain.lightDepthImageBuffer.view); //TODO
         //else// if(appInfo.Feature.feature_graphics_observe_attachment_id == 1)
             //graphicsDescriptorManager.createDescriptorSets_General(swapchain.depthImageBuffer.view);//TODO: what if no depthImageBuffer is not enable 
@@ -772,7 +795,7 @@ void CApplication::CreateUniformDescriptors(bool b_uniform_graphics, bool b_unif
 }
 
 void CApplication::CreatePipelines(){
-    bool bVerbose = false;
+    bool bVerbose = true;
 
     /****************************
     * Command Buffer
@@ -868,6 +891,14 @@ void CApplication::CreatePipelines(){
                         (*appInfo.Subpass)[i], (*appInfo.EnableSamplerCountOne)[i], (*appInfo.EnableDepthBias)[i], renderProcess.renderPass_mainscene);  
                 break;
                 case VertexStructureTypes::ThreeDimension:
+                    //TODO: for 2-renderpass case, each pipeline for different renderpass
+                    // if(i == 0)
+                    // renderProcess.createGraphicsPipeline<Vertex3D>(
+                    //     VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
+                    //     shaderManager.vertShaderModules[i], 
+                    //     shaderManager.fragShaderModules[i], true, i,
+                    //     (*appInfo.Subpass)[i], (*appInfo.EnableSamplerCountOne)[i], (*appInfo.EnableDepthBias)[i], renderProcess.renderPass_shadowmap);  
+                    // else
                     renderProcess.createGraphicsPipeline<Vertex3D>(
                         VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
                         shaderManager.vertShaderModules[i], 
@@ -1013,6 +1044,15 @@ void CApplication::ReadMainCamera(){
     lightCamera.SetPosition(mainCamera.Position);
     lightCamera.SetRotation(mainCamera.Rotation);
     lightCamera.setPerspective(mainCamera.fov,  (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, mainCamera.znear, mainCamera.zfar);
+    //lightCamera.setPerspective(90, 1.0f, 0.1f, 6);
+   //lightCamera.setPerspective(90, 1.0f, 0.1f, 5);
+    //lightCamera.setPerspective(60, 1.0f, 0.5f, 10.0f);
+
+    // lightCamera.setOrthographic(
+    //     -10, 10, 
+    //     -10, 10, 
+    //     0.1, 100);
+    //lightCamera.matrices.perspective[1][1] *= -1;
 }
 
 void CApplication::Dispatch(int numWorkGroupsX, int numWorkGroupsY, int numWorkGroupsZ){

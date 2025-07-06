@@ -91,7 +91,22 @@ void CRenderProcess::createSubpass_mainscene_observe(int attachment_id_to_observ
 }
 
 void CRenderProcess::createSubpass_shadowmap(){
-//TODO
+	clearValues_shadowmap.push_back({1.0f, 0});
+	// VkClearValue clearValue = {};
+	// clearValue.depthStencil.depth = 1.0f;
+	// clearValues_shadowmap.push_back(clearValue);
+
+	VkSubpassDescription subpass{};
+
+	attachmentRef_light_depth_shadowmap_.attachment = 0;//iMainSceneAttachmentDepthLight; 
+	attachmentRef_light_depth_shadowmap_.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+
+	subpass.colorAttachmentCount = 0;
+	subpass.pColorAttachments = nullptr;
+	subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;	
+	subpass.pDepthStencilAttachment = &attachmentRef_light_depth_shadowmap_;
+
+	subpasses_shadowmap.push_back(subpass);
 }
 
 
@@ -213,7 +228,32 @@ void CRenderProcess::createRenderPass_mainscene(){
 }
 
 void CRenderProcess::createRenderPass_shadowmap(){
-	//TODO
+	//std::cout<<"Begin create renderpass"<<std::endl;
+	VkResult result = VK_SUCCESS;
+
+	//attachment descriptions in renderpass must match the same order as in framebuffer:
+	//#1: a color attachment with sampler number = 1
+	//#2: if depth test is enabled, a depth attachment with sampler number = n
+	//#3: if msaa is enabled, a color attachment with sampler number = n
+	std::vector<VkAttachmentDescription> attachmentDescriptions;
+	//if(iMainSceneAttachmentDepthLight >= 0) 
+	attachmentDescriptions.push_back(attachment_description_light_depth_shadowmap);
+
+	//std::cout<<"Begin prepare renderpass info"<<std::endl;
+	VkRenderPassCreateInfo renderPassInfo{};
+	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
+	renderPassInfo.attachmentCount = static_cast<uint32_t>(attachmentDescriptions.size());
+	renderPassInfo.pAttachments = attachmentDescriptions.data(); //1
+	renderPassInfo.subpassCount = subpasses_shadowmap.size();//1;
+	renderPassInfo.pSubpasses = subpasses_shadowmap.data();//&subpass;//2
+	renderPassInfo.dependencyCount = 0;
+	renderPassInfo.pDependencies = nullptr; //&dependency;//3
+	//std::cout<<"Done prepare renderpass info: "<< subpasses.size()<<", "<<attachmentDescriptions.size()<<std::endl;
+
+	result = vkCreateRenderPass(CContext::GetHandle().GetLogicalDevice(), &renderPassInfo, nullptr, &renderPass_shadowmap);
+	//std::cout<<"Done create renderpass"<<std::endl;
+	if (result != VK_SUCCESS) throw std::runtime_error("failed to create render pass!");	 
+
 }
 
 void CRenderProcess::create_attachment_description_light_depth_mainscene(VkFormat depthFormat, VkSampleCountFlagBits msaaSamples){  
@@ -240,16 +280,16 @@ void CRenderProcess::create_attachment_description_light_depth_shadowmap(VkForma
 	//added for model
 	attachment_description_light_depth_shadowmap.format = depthFormat;//findDepthFormat();
 	//std::cout<<"addDepthAttachment::depthAttachment.format = "<<depthAttachment.format<<std::endl;
-	attachment_description_light_depth_shadowmap.samples = msaaSamples; //VK_SAMPLE_COUNT_1_BIT
-	//attachment_description_light_depth.samples = VK_SAMPLE_COUNT_1_BIT; //hardware depthbias for shadowmap
+	//attachment_description_light_depth_shadowmap.samples = msaaSamples; //VK_SAMPLE_COUNT_1_BIT
+	attachment_description_light_depth_shadowmap.samples = VK_SAMPLE_COUNT_1_BIT; //hardware depthbias for shadowmap
 	//std::cout<<"attachment_description_depth.samples = "<<attachment_description_depth.samples<<std::endl;
 	attachment_description_light_depth_shadowmap.loadOp = VK_ATTACHMENT_LOAD_OP_CLEAR;
-	attachment_description_light_depth_shadowmap.storeOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
+	attachment_description_light_depth_shadowmap.storeOp = VK_ATTACHMENT_STORE_OP_STORE;//VK_ATTACHMENT_STORE_OP_DONT_CARE;
 	attachment_description_light_depth_shadowmap.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
 	attachment_description_light_depth_shadowmap.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
 	attachment_description_light_depth_shadowmap.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;//VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 	attachment_description_light_depth_shadowmap.finalLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL; //will automatically change at the end of renderpass
-
+	//attachment_description_light_depth_shadowmap.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 }
 
 void CRenderProcess::create_attachment_description_color_present_mainscene(VkFormat swapChainImageFormat){  

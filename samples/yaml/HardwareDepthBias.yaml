@@ -53,8 +53,8 @@ Resources:
       resource_graphics_pipeline_vertexshader_name: HardwareDepthBias/draw.vert.spv
       resource_graphics_pipeline_fragmentshader_name: HardwareDepthBias/draw.frag.spv
       resource_graphics_pipeline_enable_sampler_count_one: false
-      resource_graphics_pipeline_enable_depth_bias: true
-      subpasses_subpass_id: 1
+      resource_graphics_pipeline_enable_depth_bias: false
+      subpasses_subpass_id: 0
 
 Uniforms:
   - Graphics:
@@ -81,14 +81,14 @@ Features:
   feature_graphics_observe_attachment_id: 0
 
 MainSceneAttachments:
-  mainscene_attachment_depth_light: true
+  mainscene_attachment_depth_light: false
   mainscene_attachment_depth_light_enable_sampler_count_one: true
   mainscene_attachment_depth_camera: true
-  mainscene_attachment_color_resovle: true
+  mainscene_attachment_color_resovle: false
   mainscene_attachment_color_present: true
 
 MainSceneSubpasses: #the index is 0, 1, 2
-  mainscene_subpasses_shadowmap: true
+  mainscene_subpasses_shadowmap: false
   mainscene_subpasses_draw: true
   mainscene_subpasses_observe: false
 
@@ -97,15 +97,15 @@ MainCamera:
   camera_position: [0,1,-4] #[0,3,-4]
   camera_rotation: [0,0,0]
   object_id_target: 1
-  camera_fov: 90
-  camera_z: [0.1, 256]
+  camera_fov: 60
+  camera_z: [0.1, 30]
   camera_keyboard_sensitive: 3
   camera_mouse_sensitive: 60
 
 Lights:
   - light_name: Light
     light_id: 0
-    light_position: [0,3,0]
+    light_position: [2.5,1.5,0]
     light_intensity: [0.5,2,4,1]
 
 

@@ -43,8 +43,27 @@ CObject::CObject(){
         //update model matrix to ubo
         CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].model = TranslateMatrix * RotationMatrix * ScaleMatrix;
 
+        //Hack TODO: remove this hack
+        // lightCamera.Position = glm::vec3(0.0f, 2.5f, 0.0f);
+        // glm::vec3 target = glm::vec3(0.0f, 0.5f, 0.0f);
+        // glm::vec3 up     = glm::vec3(0.0f, 0.0f, 1.0f); // 或者 0,1,0，取决于你的 coordinate system
+        // lightCamera.matrices.view = glm::lookAt(lightCamera.Position, target, up);
+        //lightCamera.matrices.view = glm::mat4(1.0f); //correct
+
+        // std::cout<<"Print debug info:"<<std::endl;
+        // std::cout<<"mainCamera.matrices.perspective diagonal:"<<std::endl;
+        // std::cout<<mainCamera.matrices.perspective[0][0]<<","<<mainCamera.matrices.perspective[1][1]<<","<<mainCamera.matrices.perspective[2][2]<<std::endl;
+        // std::cout<<"lightCamera.matrices.perspective diagonal:"<<std::endl;
+        // std::cout<<lightCamera.matrices.perspective[0][0]<<","<<lightCamera.matrices.perspective[1][1]<<","<<lightCamera.matrices.perspective[2][2]<<std::endl;
+        // std::cout<<"mainCamera.matrices.view diagonal:"<<std::endl;
+        // std::cout<<mainCamera.matrices.view[0][0]<<","<<mainCamera.matrices.view[1][1]<<","<<mainCamera.matrices.view[2][2]<<std::endl;
+        // std::cout<<"lightCamera.matrices.view diagonal:"<<std::endl;
+        // std::cout<<lightCamera.matrices.view[0][0]<<","<<lightCamera.matrices.view[1][1]<<","<<lightCamera.matrices.view[2][2]<<std::endl;
+
         //update view and perspective matrices to ubo
         if(!bSticker){
+            CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].mainCameraProj = mainCamera.matrices.perspective;
+            CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].lightCameraProj = lightCamera.matrices.perspective; 
             if(bSkybox) {
                 CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].mainCameraView = glm::mat4(glm::mat3(mainCamera.matrices.view)); //remove translate
                 CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].lightCameraView = glm::mat4(glm::mat3(lightCamera.matrices.view));
@@ -52,15 +71,13 @@ CObject::CObject(){
                 CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].mainCameraView = mainCamera.matrices.view;
                 CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].lightCameraView = lightCamera.matrices.view;
             }
-
-            CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].proj = mainCamera.matrices.perspective;
-            //CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].proj = lightCamera.matrices.perspective; //redundent?
         }else{
+            CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].mainCameraProj = glm::mat4(1.0f);
+            CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].lightCameraProj = glm::mat4(1.0f);
             CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].mainCameraView = glm::mat4(1.0f);
             CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].lightCameraView = glm::mat4(1.0f);
-            CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].proj = glm::mat4(1.0f);
         }
-        
+
         //memcpy to GPU memory
         memcpy(CGraphicsDescriptorManager::mvpUniformBuffersMapped[currentFrame], &CGraphicsDescriptorManager::mvpUBO, sizeof(CGraphicsDescriptorManager::mvpUBO));
     }
@@ -194,6 +211,8 @@ void CObject::Register(CApplication *p_app, int object_id, std::vector<int> text
 
 void CObject::Draw(RenderPassTypes renderPassType, uint32_t n){
     if(!bRegistered || !bVisible) return;
+
+    //std::cout<<"CObject::Draw, renderPassType="<<renderPassType<<", n="<<n<<std::endl;
 
     int graphicsPipelineId = m_graphics_pipeline_id_mainscene;
     switch(renderPassType){

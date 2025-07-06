@@ -247,9 +247,11 @@ VkFormat CSwapchain::findDepthFormat() {
 void CSwapchain::create_attachment_resource_depth_light(bool bEnableSamplerCountOne){//2
     //bEnableLightDepth = true;
     depthFormat = findDepthFormat();
+    std::cout<<"Depth Format: "<<depthFormat<<std::endl;
 	VkImageUsageFlags usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT;
 	//createDepthImages(VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
     //VK_SAMPLE_COUNT_1_BIT
+    //std::cout<<"Creating depth light image..."<<std::endl;
     if(bEnableSamplerCountOne){
         lightDepthImageBuffer.createImage(swapChainExtent.width,swapChainExtent.height, 1, VK_SAMPLE_COUNT_1_BIT, depthFormat, VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, false,
             VK_IMAGE_LAYOUT_UNDEFINED); //for hardware depth bias VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL?
@@ -268,6 +270,7 @@ void CSwapchain::create_attachment_resource_depth_camera(){//3
     depthFormat = findDepthFormat();
 	VkImageUsageFlags usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT;
 	//createDepthImages(VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+    //std::cout<<"Creating depth camera image..."<<std::endl;
     depthImageBuffer.createImage(swapChainExtent.width,swapChainExtent.height, 1, msaaSamples, depthFormat, VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, false,
         VK_IMAGE_LAYOUT_UNDEFINED);
 	//createDepthImageViews(depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT);
@@ -279,6 +282,7 @@ void CSwapchain::create_attachment_resource_color_resolve(){//4
     //GetMaxUsableSampleCount();
 	VkImageUsageFlags usage = VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT | VK_IMAGE_USAGE_COLOR_ATTACHMENT_BIT;
 	//createMSAAImages(VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
+    //std::cout<<"Creating MSAA color image..."<<std::endl;
     msaaColorImageBuffer.createImage(swapChainExtent.width,swapChainExtent.height, 1, msaaSamples, swapChainImageFormat, VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, false,
         VK_IMAGE_LAYOUT_UNDEFINED);
 	//createMSAAImageViews(VK_IMAGE_ASPECT_COLOR_BIT);
@@ -328,18 +332,20 @@ void CSwapchain::CreateFramebuffer_shadowmap(VkRenderPass &renderPass){
 
 	VkResult result = VK_SUCCESS;
 
-	framebuffers_shadowmap.resize(views.size());//use imageSize?
+	//framebuffers_shadowmap.resize(views.size());//use imageSize?
+    framebuffers_shadowmap.resize(1);//use imageSize?
 
-	for (size_t i = 0; i < imageSize; i++) {
+	for (size_t i = 0; i < 1; i++) {
         //attachments in framebuffer are set in this order:
         //#1: a color attachment with sampler number = 1
         //#2: if depth test is enabled, a depth attachment with sampler number = n
         //#3: if msaa is enabled, a color attachment with sampler number = n
         std::vector<VkImageView> imageViews_to_attach; //TODO
-        if(iMainSceneAttachmentDepthLight >= 0) imageViews_to_attach.push_back(lightDepthImageBuffer.view);
-        if(iMainSceneAttachmentDepthCamera >= 0) imageViews_to_attach.push_back(depthImageBuffer.view);
-        if(iMainSceneAttachmentColorResovle >= 0) imageViews_to_attach.push_back(msaaColorImageBuffer.view);
-        if(iMainSceneAttachmentColorPresent >= 0) imageViews_to_attach.push_back(views[i]); //views are created from swapchain, sampler number is always 1
+        //if(iMainSceneAttachmentDepthLight >= 0) 
+        imageViews_to_attach.push_back(lightDepthImageBuffer.view);
+        //if(iMainSceneAttachmentDepthCamera >= 0) imageViews_to_attach.push_back(depthImageBuffer.view);
+        //if(iMainSceneAttachmentColorResovle >= 0) imageViews_to_attach.push_back(msaaColorImageBuffer.view);
+        //if(iMainSceneAttachmentColorPresent >= 0) imageViews_to_attach.push_back(views[i]); //views are created from swapchain, sampler number is always 1
 
         //std::cout<<"SwapImageIndex: "<<i<<"/"<<imageSize<<" imageViews_to_attach size: "<<imageViews_to_attach.size()<<std::endl;
 

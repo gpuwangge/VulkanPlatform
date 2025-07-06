@@ -13,7 +13,7 @@ enum UniformTypes {
     GRAPHCIS_COMBINEDIMAGESAMPLER_TEXTUREIMAGE =    0x00000010,
     GRAPHCIS_COMBINEDIMAGESAMPLER_DEPTHIMAGE =      0x00000020,  //for main camera
     GRAPHCIS_COMBINEDIMAGESAMPLER_LIGHTDEPTHIMAGE = 0x00000040,  //for light camera
-    GRAPHCIS_COMBINEDIMAGESAMPLER_LIGHTDEPTHIMAGE_HARDWARE = 0x00000080,  //for light camera(Hardware)
+    GRAPHCIS_COMBINEDIMAGESAMPLER_LIGHTDEPTHIMAGE_HARDWAREDEPTHBIAS = 0x00000080,  //for light camera(Hardware depth bias, use two renderpass, dynamic depth bias)
 
     COMPUTE_UNIFORMBUFFER_CUSTOM =   0x00000100,
     COMPUTE_STORAGEBUFFER_DOUBLE =   0x00000200,
@@ -323,11 +323,15 @@ private:
 
 struct MVPData{
     alignas(16) glm::mat4 model; //16*4=64 bytes
-	alignas(16) glm::mat4 proj; //16*4=64 bytes
+	alignas(16) glm::mat4 mainCameraProj; //16*4=64 bytes
+    alignas(16) glm::mat4 lightCameraProj; //16*4=64 bytes, TODO: alignment?
     alignas(16) glm::mat4 mainCameraView; //16*4=64 bytes
     //alignas(16) glm::mat4 padding; //: MVP size is 192 bytes, but require a multiple of device limit minUniformBufferOffsetAlignment 256.
     alignas(16) glm::mat4 lightCameraView;
     //Each element of pDynamicOffsets which corresponds to a descriptor binding with type VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC must be a multiple of VkPhysicalDeviceLimits::minUniformBufferOffsetAlignment
+    alignas(16) glm::mat4 padding0; 
+    alignas(16) glm::mat4 padding1; 
+    alignas(16) glm::mat4 padding2; 
 };  
 
 #define MVP_NUM 256
@@ -336,7 +340,7 @@ struct MVPUniformBufferObject {
 
     //for now, support two groups of mvpData. Each draw only use one mvpData matrices. Use offset to access.
     //Each mvpData is to be aligned to be 256 bytes
-    //Support up to 256 (MVP) objects. buffer size is 256*256 = 65536 bytes; Buffer range is 256 bytes(for each object)
+    //Support up to 256 (MVP) objects. buffer size is 256*256(TODO: update to 320) = 65536 bytes; Buffer range is 256 bytes(for each object)
     //65536 bytes = 64 kilo bytes
     MVPData mvpData[MVP_NUM]; 
 

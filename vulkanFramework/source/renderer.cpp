@@ -414,7 +414,7 @@ void CRenderer::StartRecordGraphicsCommandBuffer(VkRenderPass &renderPass,
     //std::cout<<"start record start"<<std::endl;
     BeginCommandBuffer(graphicsCmdId);
     //std::cout<<"BeginCommandBuffer done"<<std::endl;
-    BeginRenderPass(renderPass, swapChainFramebuffers, extent, clearValues);
+    BeginRenderPass(renderPass, swapChainFramebuffers, extent, clearValues, false);
     //std::cout<<"BeginRenderPass done"<<std::endl;
     //BindPipeline(pipeline, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsCmdId);
     //std::cout<<"BindPipeline done"<<std::endl;
@@ -438,11 +438,12 @@ void CRenderer::BeginCommandBuffer(int commandBufferIndex){
         std::cout<<"failed to begin recording command buffer!"<<std::endl;
     }
 }
-void CRenderer::BeginRenderPass(VkRenderPass &renderPass, std::vector<VkFramebuffer> &swapChainFramebuffers, VkExtent2D &extent, std::vector<VkClearValue> &clearValues){
+void CRenderer::BeginRenderPass(VkRenderPass &renderPass, std::vector<VkFramebuffer> &swapChainFramebuffers, VkExtent2D &extent, std::vector<VkClearValue> &clearValues, bool useSingleFramebuffer){
     VkRenderPassBeginInfo renderPassInfo{};
     renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_BEGIN_INFO;
     renderPassInfo.renderPass = renderPass;
-    renderPassInfo.framebuffer = swapChainFramebuffers[imageIndex];
+    if(useSingleFramebuffer) renderPassInfo.framebuffer = swapChainFramebuffers[0];
+    else renderPassInfo.framebuffer = swapChainFramebuffers[imageIndex];
     renderPassInfo.renderArea.offset = { 0, 0 };
     renderPassInfo.renderArea.extent = extent;//swapchain.swapChainExtent;
 
@@ -533,7 +534,7 @@ void CRenderer::BindDescriptorSets(VkPipelineLayout &pipelineLayout, std::vector
                 nullptr
             );
     }else{//assume the uniform is mvp
-        uint32_t offsets[1] ={256 * offsetIndex};
+        uint32_t offsets[1] ={512 * offsetIndex};
             vkCmdBindDescriptorSets(commandBuffers[commandBufferIndex][currentFrame], pipelineBindPoint, pipelineLayout, 0, 
                 setCount, sets,  
                 1, //dynamicOffsetCount. # means there is (exact)# uniform in the descriptor sets that are set to be dynamic 
