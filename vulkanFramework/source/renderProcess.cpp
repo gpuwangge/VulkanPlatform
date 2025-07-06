@@ -1,17 +1,17 @@
 #include "../include/renderProcess.h"
 
-void CRenderProcess::createSubpass_mainscene(int attachment_id_to_observe){ 
+void CRenderProcess::createSubpass_mainsceneRenderpass(int attachment_id_to_observe){ 
 	if(iMainSceneAttachmentDepthLight >= 0) clearValues.push_back({1.0f, 0}); 
 	if(iMainSceneAttachmentDepthCamera >= 0) clearValues.push_back({1.0f, 0}); 
 	if(iMainSceneAttachmentColorResovle >= 0) clearValues.push_back({0.0f, 0.0f, 0.0f, 1.0f});
 	if(iMainSceneAttachmentColorPresent >= 0) clearValues.push_back({0.0f, 0.0f, 0.0f, 1.0f});
 
-	if(bEnableSubpassShadowmap) createSubpass_mainscene_shadowmap();	
-	if(bEnableSubpassDraw) createSubpass_mainscene_draw();	
-	if(bEnableSubpassObserve) createSubpass_mainscene_observe(attachment_id_to_observe);	
+	if(bEnableMainSceneRenderpassSubpassShadowmap) createSubpass_mainsceneRenderpass_shadowmap();	
+	if(bEnableMainSceneRenderpassSubpassDraw) createSubpass_mainsceneRenderpass_draw();	
+	if(bEnableMainSceneRenderpassSubpassObserve) createSubpass_mainsceneRenderpass_observe(attachment_id_to_observe);	
 }
 
-void CRenderProcess::createSubpass_mainscene_shadowmap(){ //assume depth and MSAA are enabled
+void CRenderProcess::createSubpass_mainsceneRenderpass_shadowmap(){ //assume depth and MSAA are enabled
 	VkSubpassDescription subpass{};//to generate light depth for shadowmap
 
 	if(iMainSceneAttachmentDepthLight >= 0){
@@ -22,10 +22,10 @@ void CRenderProcess::createSubpass_mainscene_shadowmap(){ //assume depth and MSA
 
 	subpass.colorAttachmentCount = 0;
 	subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;			
-	subpasses_mainscene.push_back(subpass);
+	subpasses_mainsceneRenderpass.push_back(subpass);
 }
 
-void CRenderProcess::createSubpass_mainscene_draw(){ 
+void CRenderProcess::createSubpass_mainsceneRenderpass_draw(){ 
 	VkSubpassDescription subpass{};
 
 	// if(iAttachmentDepthLight >= 0 && iAttachmentDepthCamera >= 0){
@@ -62,10 +62,10 @@ void CRenderProcess::createSubpass_mainscene_draw(){
 	}
 
 	subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;			
-	subpasses_mainscene.push_back(subpass);
+	subpasses_mainsceneRenderpass.push_back(subpass);
 }
 
-void CRenderProcess::createSubpass_mainscene_observe(int attachment_id_to_observe){ 
+void CRenderProcess::createSubpass_mainsceneRenderpass_observe(int attachment_id_to_observe){ 
 	VkSubpassDescription subpass{};
 
 	attachmentRef_observe.attachment = attachment_id_to_observe; //iMainSceneAttachmentDepthCamera or iMainSceneAttachmentDepthLight
@@ -87,10 +87,10 @@ void CRenderProcess::createSubpass_mainscene_observe(int attachment_id_to_observ
 	}
 
 	subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;
-	subpasses_mainscene.push_back(subpass);
+	subpasses_mainsceneRenderpass.push_back(subpass);
 }
 
-void CRenderProcess::createSubpass_shadowmap(){
+void CRenderProcess::createSubpass_shadowmapRenderpass(){
 	clearValues_shadowmap.push_back({1.0f, 0});
 	// VkClearValue clearValue = {};
 	// clearValue.depthStencil.depth = 1.0f;
@@ -106,96 +106,96 @@ void CRenderProcess::createSubpass_shadowmap(){
 	subpass.pipelineBindPoint = VK_PIPELINE_BIND_POINT_GRAPHICS;	
 	subpass.pDepthStencilAttachment = &attachmentRef_light_depth_shadowmap_;
 
-	subpasses_shadowmap.push_back(subpass);
+	subpasses_shadowmapRenderpass.push_back(subpass);
 }
 
 
-void CRenderProcess::createDependency_mainscene(){  
-	if(!bEnableSubpassShadowmap && bEnableSubpassDraw && !bEnableSubpassObserve){ //single subpass
-		dependencies_mainscene.resize(1);
+void CRenderProcess::createDependency_mainsceneRenderpass(){  
+	if(!bEnableMainSceneRenderpassSubpassShadowmap && bEnableMainSceneRenderpassSubpassDraw && !bEnableMainSceneRenderpassSubpassObserve){ //single subpass
+		dependencies_mainsceneRenderpass.resize(1);
 
 		//external->0
 		if (iMainSceneAttachmentDepthCamera < 0) {
 			VkPipelineStageFlags srcPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
 			VkPipelineStageFlags dstPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-			dependencies_mainscene[0].srcSubpass = VK_SUBPASS_EXTERNAL;
-			dependencies_mainscene[0].dstSubpass = 0;
-			dependencies_mainscene[0].srcStageMask = srcPipelineStageFlag;
-			dependencies_mainscene[0].srcAccessMask = 0;//VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT
-			dependencies_mainscene[0].dstStageMask = dstPipelineStageFlag;
-			dependencies_mainscene[0].dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+			dependencies_mainsceneRenderpass[0].srcSubpass = VK_SUBPASS_EXTERNAL;
+			dependencies_mainsceneRenderpass[0].dstSubpass = 0;
+			dependencies_mainsceneRenderpass[0].srcStageMask = srcPipelineStageFlag;
+			dependencies_mainsceneRenderpass[0].srcAccessMask = 0;//VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT
+			dependencies_mainsceneRenderpass[0].dstStageMask = dstPipelineStageFlag;
+			dependencies_mainsceneRenderpass[0].dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
 		}else{
 			VkPipelineStageFlags srcPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
 			VkPipelineStageFlags dstPipelineStageFlag = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT | VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT;
-			dependencies_mainscene[0].srcSubpass = VK_SUBPASS_EXTERNAL;
-			dependencies_mainscene[0].dstSubpass = 0;
-			dependencies_mainscene[0].srcStageMask = srcPipelineStageFlag;
-			dependencies_mainscene[0].srcAccessMask = 0;//VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT
-			dependencies_mainscene[0].dstStageMask = dstPipelineStageFlag;
-			dependencies_mainscene[0].dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+			dependencies_mainsceneRenderpass[0].srcSubpass = VK_SUBPASS_EXTERNAL;
+			dependencies_mainsceneRenderpass[0].dstSubpass = 0;
+			dependencies_mainsceneRenderpass[0].srcStageMask = srcPipelineStageFlag;
+			dependencies_mainsceneRenderpass[0].srcAccessMask = 0;//VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT
+			dependencies_mainsceneRenderpass[0].dstStageMask = dstPipelineStageFlag;
+			dependencies_mainsceneRenderpass[0].dstAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
 
-			dependencies_mainscene[0].dstAccessMask |= VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+			dependencies_mainsceneRenderpass[0].dstAccessMask |= VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
 		}
 	}
 
-	if(!bEnableSubpassShadowmap && bEnableSubpassDraw && bEnableSubpassObserve){ //two subpasses
-		dependencies_mainscene.resize(2);
+	if(!bEnableMainSceneRenderpassSubpassShadowmap && bEnableMainSceneRenderpassSubpassDraw && bEnableMainSceneRenderpassSubpassObserve){ //two subpasses
+		dependencies_mainsceneRenderpass.resize(2);
 
 		//0->1
-        dependencies_mainscene[0].srcSubpass = 0;//subpass0 is the src subpass, write in color image, output depth image
-		dependencies_mainscene[0].dstSubpass = 1;//subpass1 is the dst subpass, input depth image, output color image(fragment shader convert depth image to color image)
+        dependencies_mainsceneRenderpass[0].srcSubpass = 0;//subpass0 is the src subpass, write in color image, output depth image
+		dependencies_mainsceneRenderpass[0].dstSubpass = 1;//subpass1 is the dst subpass, input depth image, output color image(fragment shader convert depth image to color image)
 
-		dependencies_mainscene[0].srcStageMask = VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT; //this is to make sure subpass0 finishes depth/color, then begin subpass1
-		dependencies_mainscene[0].srcAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT; //subpass0 need write depth image, subpass1 cant not access depth image before subpass 0 finish it
-		dependencies_mainscene[0].dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT; //this is to say subpass1's fragment shader can read depth image that subpass1 wrote(as input attachment)
-		dependencies_mainscene[0].dstAccessMask = VK_ACCESS_INPUT_ATTACHMENT_READ_BIT; //subpass1 need to read input attachment(that subpass0 generate)
+		dependencies_mainsceneRenderpass[0].srcStageMask = VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT; //this is to make sure subpass0 finishes depth/color, then begin subpass1
+		dependencies_mainsceneRenderpass[0].srcAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT; //subpass0 need write depth image, subpass1 cant not access depth image before subpass 0 finish it
+		dependencies_mainsceneRenderpass[0].dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT; //this is to say subpass1's fragment shader can read depth image that subpass1 wrote(as input attachment)
+		dependencies_mainsceneRenderpass[0].dstAccessMask = VK_ACCESS_INPUT_ATTACHMENT_READ_BIT; //subpass1 need to read input attachment(that subpass0 generate)
 
-		dependencies_mainscene[0].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT; //sync region instead of all framebuffer, to improve performance
+		dependencies_mainsceneRenderpass[0].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT; //sync region instead of all framebuffer, to improve performance
 	}
 
-	if(bEnableSubpassShadowmap && bEnableSubpassDraw && bEnableSubpassObserve){
-		dependencies_mainscene.resize(3);
+	if(bEnableMainSceneRenderpassSubpassShadowmap && bEnableMainSceneRenderpassSubpassDraw && bEnableMainSceneRenderpassSubpassObserve){
+		dependencies_mainsceneRenderpass.resize(3);
 
 		//0->1
-        dependencies_mainscene[0].srcSubpass = 0;//subpass0 is the src subpass, write in color image, output depth image
-		dependencies_mainscene[0].dstSubpass = 1;//subpass1 is the dst subpass, input depth image, output color image(fragment shader convert depth image to color image)
+        dependencies_mainsceneRenderpass[0].srcSubpass = 0;//subpass0 is the src subpass, write in color image, output depth image
+		dependencies_mainsceneRenderpass[0].dstSubpass = 1;//subpass1 is the dst subpass, input depth image, output color image(fragment shader convert depth image to color image)
 		//
-		dependencies_mainscene[0].srcStageMask = VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT; //this is to make sure subpass0 finishes depth/color, then begin subpass1
-		dependencies_mainscene[0].srcAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT; //subpass0 need write depth image, subpass1 cant not access depth image before subpass 0 finish it
-		dependencies_mainscene[0].dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT; //this is to say subpass1's fragment shader can read depth image that subpass1 wrote(as input attachment)
-		dependencies_mainscene[0].dstAccessMask = VK_ACCESS_INPUT_ATTACHMENT_READ_BIT; //subpass1 need to read input attachment(that subpass0 generate)
+		dependencies_mainsceneRenderpass[0].srcStageMask = VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT; //this is to make sure subpass0 finishes depth/color, then begin subpass1
+		dependencies_mainsceneRenderpass[0].srcAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT; //subpass0 need write depth image, subpass1 cant not access depth image before subpass 0 finish it
+		dependencies_mainsceneRenderpass[0].dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT; //this is to say subpass1's fragment shader can read depth image that subpass1 wrote(as input attachment)
+		dependencies_mainsceneRenderpass[0].dstAccessMask = VK_ACCESS_INPUT_ATTACHMENT_READ_BIT; //subpass1 need to read input attachment(that subpass0 generate)
 
-		dependencies_mainscene[0].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT; //sync region instead of all framebuffer, to improve performance
+		dependencies_mainsceneRenderpass[0].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT; //sync region instead of all framebuffer, to improve performance
 
 		//1->2
-		dependencies_mainscene[1].srcSubpass = 1;
-		dependencies_mainscene[1].dstSubpass = 2;
+		dependencies_mainsceneRenderpass[1].srcSubpass = 1;
+		dependencies_mainsceneRenderpass[1].dstSubpass = 2;
 		//
-		dependencies_mainscene[1].srcStageMask = VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-		dependencies_mainscene[1].srcAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
-		dependencies_mainscene[1].dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-		dependencies_mainscene[1].dstAccessMask = VK_ACCESS_INPUT_ATTACHMENT_READ_BIT;
+		dependencies_mainsceneRenderpass[1].srcStageMask = VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+		dependencies_mainsceneRenderpass[1].srcAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+		dependencies_mainsceneRenderpass[1].dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+		dependencies_mainsceneRenderpass[1].dstAccessMask = VK_ACCESS_INPUT_ATTACHMENT_READ_BIT;
 
-		dependencies_mainscene[1].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
+		dependencies_mainsceneRenderpass[1].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
 
 		//0->2
-		dependencies_mainscene[2].srcSubpass = 0;
-		dependencies_mainscene[2].dstSubpass = 2;
+		dependencies_mainsceneRenderpass[2].srcSubpass = 0;
+		dependencies_mainsceneRenderpass[2].dstSubpass = 2;
 
-		dependencies_mainscene[2].srcStageMask = VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-		dependencies_mainscene[2].srcAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
-		dependencies_mainscene[2].dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-		dependencies_mainscene[2].dstAccessMask = VK_ACCESS_INPUT_ATTACHMENT_READ_BIT;
+		dependencies_mainsceneRenderpass[2].srcStageMask = VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT | VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+		dependencies_mainsceneRenderpass[2].srcAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+		dependencies_mainsceneRenderpass[2].dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+		dependencies_mainsceneRenderpass[2].dstAccessMask = VK_ACCESS_INPUT_ATTACHMENT_READ_BIT;
 
-		dependencies_mainscene[2].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT; 	
+		dependencies_mainsceneRenderpass[2].dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT; 	
 	}
 }
 
-void CRenderProcess::createDependency_shadowmap(){
+void CRenderProcess::createDependency_shadowmapRenderpass(){
 	//TODO
 }
 
-void CRenderProcess::createRenderPass_mainscene(){ 
+void CRenderProcess::createRenderPass_mainsceneRenderpass(){ 
 	//std::cout<<"Begin create renderpass"<<std::endl;
 	VkResult result = VK_SUCCESS;
 
@@ -214,10 +214,10 @@ void CRenderProcess::createRenderPass_mainscene(){
 	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
 	renderPassInfo.attachmentCount = static_cast<uint32_t>(attachmentDescriptions.size());
 	renderPassInfo.pAttachments = attachmentDescriptions.data(); //1
-	renderPassInfo.subpassCount = subpasses_mainscene.size();//1;
-	renderPassInfo.pSubpasses = subpasses_mainscene.data();//&subpass;//2
-	renderPassInfo.dependencyCount = dependencies_mainscene.size();
-	renderPassInfo.pDependencies = dependencies_mainscene.data(); //&dependency;//3
+	renderPassInfo.subpassCount = subpasses_mainsceneRenderpass.size();//1;
+	renderPassInfo.pSubpasses = subpasses_mainsceneRenderpass.data();//&subpass;//2
+	renderPassInfo.dependencyCount = dependencies_mainsceneRenderpass.size();
+	renderPassInfo.pDependencies = dependencies_mainsceneRenderpass.data(); //&dependency;//3
 	//std::cout<<"Done prepare renderpass info: "<< subpasses.size()<<", "<<attachmentDescriptions.size()<<std::endl;
 
 	result = vkCreateRenderPass(CContext::GetHandle().GetLogicalDevice(), &renderPassInfo, nullptr, &renderPass_mainscene);
@@ -227,7 +227,7 @@ void CRenderProcess::createRenderPass_mainscene(){
 
 }
 
-void CRenderProcess::createRenderPass_shadowmap(){
+void CRenderProcess::createRenderPass_shadowmapRenderpass(){
 	//std::cout<<"Begin create renderpass"<<std::endl;
 	VkResult result = VK_SUCCESS;
 
@@ -244,8 +244,8 @@ void CRenderProcess::createRenderPass_shadowmap(){
 	renderPassInfo.sType = VK_STRUCTURE_TYPE_RENDER_PASS_CREATE_INFO;
 	renderPassInfo.attachmentCount = static_cast<uint32_t>(attachmentDescriptions.size());
 	renderPassInfo.pAttachments = attachmentDescriptions.data(); //1
-	renderPassInfo.subpassCount = subpasses_shadowmap.size();//1;
-	renderPassInfo.pSubpasses = subpasses_shadowmap.data();//&subpass;//2
+	renderPassInfo.subpassCount = subpasses_shadowmapRenderpass.size();//1;
+	renderPassInfo.pSubpasses = subpasses_shadowmapRenderpass.data();//&subpass;//2
 	renderPassInfo.dependencyCount = 0;
 	renderPassInfo.pDependencies = nullptr; //&dependency;//3
 	//std::cout<<"Done prepare renderpass info: "<< subpasses.size()<<", "<<attachmentDescriptions.size()<<std::endl;

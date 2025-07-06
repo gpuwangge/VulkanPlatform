@@ -33,25 +33,26 @@ public:
     /*********
     * Subpasses
     **********/
-    bool bEnableSubpassShadowmap = false;   
-    bool bEnableSubpassDraw = true;
-    bool bEnableSubpassObserve = false;
-    std::vector<VkSubpassDescription> subpasses_mainscene;
-    void createSubpass_mainscene(int attachment_id_to_observe); //this function will call shadowmap/draw/observe
-    void createSubpass_mainscene_shadowmap();
-    void createSubpass_mainscene_draw();
-    void createSubpass_mainscene_observe(int attachment_id_to_observe);
+    bool bEnableShadowmapRenderpassSubpassShadowmap = false;   
+    bool bEnableMainSceneRenderpassSubpassShadowmap = false;   
+    bool bEnableMainSceneRenderpassSubpassDraw = true;
+    bool bEnableMainSceneRenderpassSubpassObserve = false;
+    std::vector<VkSubpassDescription> subpasses_mainsceneRenderpass;
+    void createSubpass_mainsceneRenderpass(int attachment_id_to_observe); //this function will call shadowmap/draw/observe
+    void createSubpass_mainsceneRenderpass_shadowmap();
+    void createSubpass_mainsceneRenderpass_draw();
+    void createSubpass_mainsceneRenderpass_observe(int attachment_id_to_observe);
 
-    std::vector<VkSubpassDescription> subpasses_shadowmap;
-    void createSubpass_shadowmap(); //for shadowmap, this is the only subpass
+    std::vector<VkSubpassDescription> subpasses_shadowmapRenderpass;
+    void createSubpass_shadowmapRenderpass(); //for shadowmap, this is the only subpass
 
     /*********
     * Dependency
     **********/
-    std::vector<VkSubpassDependency> dependencies_mainscene;
-    void createDependency_mainscene();
-    std::vector<VkSubpassDependency> dependencies_shadowmap;
-    void createDependency_shadowmap();
+    std::vector<VkSubpassDependency> dependencies_mainsceneRenderpass;
+    void createDependency_mainsceneRenderpass();
+    std::vector<VkSubpassDependency> dependencies_shadowmapRenderpass;
+    void createDependency_shadowmapRenderpass();
 
 
     /*********
@@ -105,8 +106,8 @@ public:
     **********/
     VkRenderPass renderPass_shadowmap = VK_NULL_HANDLE;
     VkRenderPass renderPass_mainscene = VK_NULL_HANDLE; 
-    void createRenderPass_mainscene();
-    void createRenderPass_shadowmap();
+    void createRenderPass_mainsceneRenderpass();
+    void createRenderPass_shadowmapRenderpass();
 
     /*********
     * Misc

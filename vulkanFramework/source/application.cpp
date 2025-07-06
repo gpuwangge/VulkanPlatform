@@ -729,31 +729,32 @@ void CApplication::ReadAttachments(){
 }
 
 void CApplication::ReadSubpasses(){
-    renderProcess.bEnableSubpassShadowmap = config["MainSceneRenderpassSubpasses"]["mainsceneRenderpass_subpasses_shadowmap"] ? config["MainSceneRenderpassSubpasses"]["mainsceneRenderpass_subpasses_shadowmap"].as<bool>() : false;
-    renderProcess.bEnableSubpassDraw = config["MainSceneRenderpassSubpasses"]["mainsceneRenderpass_subpasses_draw"] ? config["MainSceneRenderpassSubpasses"]["mainsceneRenderpass_subpasses_draw"].as<bool>() : true; //need at least one subpass, even for compute sample
-    renderProcess.bEnableSubpassObserve = config["MainSceneRenderpassSubpasses"]["mainsceneRenderpass_subpasses_observe"] ? config["MainSceneRenderpassSubpasses"]["mainsceneRenderpass_subpasses_observe"].as<bool>() : false;
+    renderProcess.bEnableShadowmapRenderpassSubpassShadowmap = config["ShadowmapRenderpassSubpasses"]["shadowmapRenderpass_subpasses_shadowmap"] ? config["ShadowmapRenderpassSubpasses"]["shadowmapRenderpass_subpasses_shadowmap"].as<bool>() : false;
+    renderProcess.bEnableMainSceneRenderpassSubpassShadowmap = config["MainSceneRenderpassSubpasses"]["mainsceneRenderpass_subpasses_shadowmap"] ? config["MainSceneRenderpassSubpasses"]["mainsceneRenderpass_subpasses_shadowmap"].as<bool>() : false;
+    renderProcess.bEnableMainSceneRenderpassSubpassDraw = config["MainSceneRenderpassSubpasses"]["mainsceneRenderpass_subpasses_draw"] ? config["MainSceneRenderpassSubpasses"]["mainsceneRenderpass_subpasses_draw"].as<bool>() : true; //need at least one subpass, even for compute sample
+    renderProcess.bEnableMainSceneRenderpassSubpassObserve = config["MainSceneRenderpassSubpasses"]["mainsceneRenderpass_subpasses_observe"] ? config["MainSceneRenderpassSubpasses"]["mainsceneRenderpass_subpasses_observe"].as<bool>() : false;
 
+    //for shadowmap renderpass (this renderpass is optional)
+    if(renderProcess.bEnableShadowmapRenderpassSubpassShadowmap){
+        // std::cout<<"Application: Create Shadowmap Render Pass."<<std::endl;
+        renderProcess.createSubpass_shadowmapRenderpass();
+        renderProcess.createDependency_shadowmapRenderpass();
+        renderProcess.createRenderPass_shadowmapRenderpass();
+
+        // std::cout<<"Application: Create Shadowmap Framebuffer."<<std::endl;
+        swapchain.CreateFramebuffer_shadowmap(renderProcess.renderPass_shadowmap);
+    }
+
+    //for mainscene renderpass (this renderpass is mandatory)
     //create renderpass
     std::cout<<"Application: Create MainScene Render Pass."<<std::endl;
-    renderProcess.createSubpass_mainscene(appInfo.Feature.feature_graphics_observe_attachment_id);
-    renderProcess.createDependency_mainscene();
-    renderProcess.createRenderPass_mainscene();
+    renderProcess.createSubpass_mainsceneRenderpass(appInfo.Feature.feature_graphics_observe_attachment_id);
+    renderProcess.createDependency_mainsceneRenderpass();
+    renderProcess.createRenderPass_mainsceneRenderpass();
 
     //create framebuffer
     std::cout<<"Application: Create MainScene Framebuffer."<<std::endl;
     swapchain.CreateFramebuffer_mainscene(renderProcess.renderPass_mainscene);
-
-
-    //TODO: for shadowmap pass
-    // std::cout<<"Application: Create Shadowmap Render Pass."<<std::endl;
-    //renderProcess.createSubpass_shadowmap();
-    //renderProcess.createDependency_shadowmap();
-    //renderProcess.createRenderPass_shadowmap();
-
-    // std::cout<<"Application: Create Shadowmap Framebuffer."<<std::endl;
-    //swapchain.CreateFramebuffer_shadowmap(renderProcess.renderPass_shadowmap);
-
-
 }
 
 void CApplication::CreateUniformDescriptors(bool b_uniform_graphics, bool b_uniform_compute){
@@ -1041,7 +1042,7 @@ void CApplication::ReadMainCamera(){
     lightCamera.SetRotation(mainCamera.Rotation);
     lightCamera.setPerspective(mainCamera.fov,  (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, mainCamera.znear, mainCamera.zfar);
     //lightCamera.setPerspective(90, 1.0f, 0.1f, 6);
-   //lightCamera.setPerspective(90, 1.0f, 0.1f, 5);
+    //lightCamera.setPerspective(90, 1.0f, 0.1f, 5);
     //lightCamera.setPerspective(60, 1.0f, 0.5f, 10.0f); //TODO
 
     // lightCamera.setOrthographic(
