@@ -29,6 +29,7 @@ public:
     bool bComputeSwapChainImage = false; //added VK_IMAGE_USAGE_STORAGE_BIT for image storage
 
     //Attachments(Resources)
+    int iShadowmapAttachmentDepthLight = -1; //this is for shadowmap renderpass, not main scene renderpass
     int iMainSceneAttachmentDepthLight = -1;
     int iMainSceneAttachmentDepthCamera = -1;
     int iMainSceneAttachmentColorResovle = -1;

@@ -676,24 +676,28 @@ void CApplication::ReadResources(){
 }
 
 void CApplication::ReadAttachments(){
-    bool bAttachmentDepthLight = config["MainSceneAttachments"]["mainscene_attachment_depth_light"] ? config["MainSceneAttachments"]["mainscene_attachment_depth_light"].as<bool>() : false;
-    bool bAttachmentDepthCamera = config["MainSceneAttachments"]["mainscene_attachment_depth_camera"] ? config["MainSceneAttachments"]["mainscene_attachment_depth_camera"].as<bool>()  : false;
-    bool bAttachmentColorResovle = config["MainSceneAttachments"]["mainscene_attachment_color_resovle"] ? config["MainSceneAttachments"]["mainscene_attachment_color_resovle"].as<bool>()  : false;
-    bool bAttachmentColorPresent = config["MainSceneAttachments"]["mainscene_attachment_color_present"] ? config["MainSceneAttachments"]["mainscene_attachment_color_present"].as<bool>()  : true; //need al least one subpass with at least one color attachment
-    bool bEnableSamplerCountOne = config["MainSceneAttachments"]["mainscene_attachment_depth_light_enable_sampler_count_one"] ? config["MainSceneAttachments"]["mainscene_attachment_depth_light_enable_sampler_count_one"].as<bool>() : false;
+    bool bShadowmapAttachmentDepthLight = config["ShadowmapRenderpassAttachments"]["ShadowmapRenderpass_attachment_depth_light"] ? config["ShadowmapRenderpassAttachments"]["ShadowmapRenderpass_attachment_depth_light"].as<bool>() : false;
+    bool bMainSceneAttachmentDepthLight = config["MainSceneRenderpassAttachments"]["mainsceneRenderpass_attachment_depth_light"] ? config["MainSceneRenderpassAttachments"]["mainsceneRenderpass_attachment_depth_light"].as<bool>() : false;
+    bool bMainSceneAttachmentDepthCamera = config["MainSceneRenderpassAttachments"]["mainsceneRenderpass_attachment_depth_camera"] ? config["MainSceneRenderpassAttachments"]["mainsceneRenderpass_attachment_depth_camera"].as<bool>()  : false;
+    bool bMainSceneAttachmentColorResovle = config["MainSceneRenderpassAttachments"]["mainsceneRenderpass_attachment_color_resovle"] ? config["MainSceneRenderpassAttachments"]["mainsceneRenderpass_attachment_color_resovle"].as<bool>()  : false;
+    bool bMainSceneAttachmentColorPresent = config["MainSceneRenderpassAttachments"]["mainsceneRenderpass_attachment_color_present"] ? config["MainSceneRenderpassAttachments"]["mainsceneRenderpass_attachment_color_present"].as<bool>()  : true; //need al least one subpass with at least one color attachment
+
+    renderProcess.iShadowmapAttachmentDepthLight = bShadowmapAttachmentDepthLight ? 0 : -1; //shadowmap renderpass attachment depth light, only one attachment, so id is 0
 
     int AttachmentCount = 0;
-    renderProcess.iMainSceneAttachmentDepthLight = bAttachmentDepthLight ? AttachmentCount++ : -1;
-    renderProcess.iMainSceneAttachmentDepthCamera = bAttachmentDepthCamera ? AttachmentCount++ : -1;
-    renderProcess.iMainSceneAttachmentColorResovle = bAttachmentColorResovle ? AttachmentCount++ : -1;
-    renderProcess.iMainSceneAttachmentColorPresent = bAttachmentColorPresent ? AttachmentCount++ : -1;
+    renderProcess.iMainSceneAttachmentDepthLight = bMainSceneAttachmentDepthLight ? AttachmentCount++ : -1;
+    renderProcess.iMainSceneAttachmentDepthCamera = bMainSceneAttachmentDepthCamera ? AttachmentCount++ : -1;
+    renderProcess.iMainSceneAttachmentColorResovle = bMainSceneAttachmentColorResovle ? AttachmentCount++ : -1;
+    renderProcess.iMainSceneAttachmentColorPresent = bMainSceneAttachmentColorPresent ? AttachmentCount++ : -1;
 
+    swapchain.iShadowmapAttachmentDepthLight = renderProcess.iShadowmapAttachmentDepthLight;
     swapchain.iMainSceneAttachmentDepthLight = renderProcess.iMainSceneAttachmentDepthLight;
     swapchain.iMainSceneAttachmentDepthCamera = renderProcess.iMainSceneAttachmentDepthCamera;
     swapchain.iMainSceneAttachmentColorResovle = renderProcess.iMainSceneAttachmentColorResovle;
     swapchain.iMainSceneAttachmentColorPresent = renderProcess.iMainSceneAttachmentColorPresent;
 
-    std::cout<<"attachments: "<<swapchain.iMainSceneAttachmentDepthLight<<","<<swapchain.iMainSceneAttachmentDepthCamera<<","<<swapchain.iMainSceneAttachmentColorResovle<<","<<swapchain.iMainSceneAttachmentColorPresent<<std::endl;
+    std::cout<<"Shadowmap attachments: "<<swapchain.iShadowmapAttachmentDepthLight<<std::endl;
+    std::cout<<"Mainscene attachments: "<<swapchain.iMainSceneAttachmentDepthLight<<","<<swapchain.iMainSceneAttachmentDepthCamera<<","<<swapchain.iMainSceneAttachmentColorResovle<<","<<swapchain.iMainSceneAttachmentColorPresent<<std::endl;
 
     //when creating attachment resource, need 1.create attachment description in renderProcess; 2.create attachment buffer in swapchain
     if(swapchain.iMainSceneAttachmentColorResovle >= 0) swapchain.GetMaxUsableSampleCount(); //calcuate max sampler count first
@@ -701,41 +705,33 @@ void CApplication::ReadAttachments(){
     //If enable MSAA, must also enable Depth Test
     if(swapchain.iMainSceneAttachmentDepthCamera >= 0){
         swapchain.create_attachment_resource_depth_camera();
-        renderProcess.create_attachment_description_camera_depth_mainscene(swapchain.depthFormat, swapchain.msaaSamples);
+        renderProcess.create_attachment_description_camera_depth_mainsceneRenderPass(swapchain.depthFormat, swapchain.msaaSamples);
     }
 
     if(swapchain.iMainSceneAttachmentColorResovle >= 0){
         swapchain.create_attachment_resource_color_resolve();
-        renderProcess.create_attachment_description_color_resolve_mainscene(swapchain.swapChainImageFormat, swapchain.msaaSamples, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
+        renderProcess.create_attachment_description_color_resolve_mainsceneRenderPass(swapchain.swapChainImageFormat, swapchain.msaaSamples, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
     }
 
    
-    //swapchain.create_attachment_resource_depth_light(bEnableSamplerCountOne); //hardware bias todo
-    //renderProcess.create_attachment_description_light_depth_mainscene(swapchain.depthFormat, VK_SAMPLE_COUNT_1_BIT); //hardware bias todo
-    if(swapchain.iMainSceneAttachmentDepthLight >= 0){
-        swapchain.create_attachment_resource_depth_light(bEnableSamplerCountOne);
-        if(bEnableSamplerCountOne){
-            renderProcess.create_attachment_description_light_depth_mainscene(swapchain.depthFormat, VK_SAMPLE_COUNT_1_BIT);
-        }else{
-            renderProcess.create_attachment_description_light_depth_mainscene(swapchain.depthFormat, swapchain.msaaSamples);
-        }
+    //bool bEnableSamplerCountOne = appInfo.RenderMode == renderer.GRAPHICS_SHADOWMAP ? true : false; //if use shadowmap(2pass), then depthLight attachment must use samper count 1
+    if(swapchain.iShadowmapAttachmentDepthLight >= 0){ //if shadowmap renderpass attachment depth light is enabled
+        swapchain.create_attachment_resource_depth_light(true); //hardware bias todo
+        //renderProcess.create_attachment_description_light_depth_mainsceneRenderPass(swapchain.depthFormat, VK_SAMPLE_COUNT_1_BIT); //hardware bias todo
+        renderProcess.create_attachment_description_light_depth_shadowmapRenderPass(swapchain.depthFormat, VK_SAMPLE_COUNT_1_BIT); //hardware bias todo//should remove the second parameter
+    }else if(swapchain.iMainSceneAttachmentDepthLight >= 0){
+        swapchain.create_attachment_resource_depth_light(false);
+        renderProcess.create_attachment_description_light_depth_mainsceneRenderPass(swapchain.depthFormat, swapchain.msaaSamples);
     }
 
-    //TODO: temp for shadowmap pass
-    // swapchain.create_attachment_resource_depth_light(true);
-    // renderProcess.create_attachment_description_light_depth_mainscene(swapchain.depthFormat, VK_SAMPLE_COUNT_1_BIT);
-
     if(swapchain.iMainSceneAttachmentColorPresent >= 0) //dont need create swapchain attachment resource here
-        renderProcess.create_attachment_description_color_present_mainscene(swapchain.swapChainImageFormat);
-
-    //TODO: for shadowmap pass
-    renderProcess.create_attachment_description_light_depth_shadowmap(swapchain.depthFormat, swapchain.msaaSamples); //hardware bias todo//should remove the second parameter
+        renderProcess.create_attachment_description_color_present_mainsceneRenderPass(swapchain.swapChainImageFormat);
 }
 
 void CApplication::ReadSubpasses(){
-    renderProcess.bEnableSubpassShadowmap = config["MainSceneSubpasses"]["mainscene_subpasses_shadowmap"] ? config["MainSceneSubpasses"]["mainscene_subpasses_shadowmap"].as<bool>() : false;
-    renderProcess.bEnableSubpassDraw = config["MainSceneSubpasses"]["mainscene_subpasses_draw"] ? config["MainSceneSubpasses"]["mainscene_subpasses_draw"].as<bool>() : true; //need at least one subpass, even for compute sample
-    renderProcess.bEnableSubpassObserve = config["MainSceneSubpasses"]["mainscene_subpasses_observe"] ? config["MainSceneSubpasses"]["mainscene_subpasses_observe"].as<bool>() : false;
+    renderProcess.bEnableSubpassShadowmap = config["MainSceneRenderpassSubpasses"]["mainsceneRenderpass_subpasses_shadowmap"] ? config["MainSceneRenderpassSubpasses"]["mainsceneRenderpass_subpasses_shadowmap"].as<bool>() : false;
+    renderProcess.bEnableSubpassDraw = config["MainSceneRenderpassSubpasses"]["mainsceneRenderpass_subpasses_draw"] ? config["MainSceneRenderpassSubpasses"]["mainsceneRenderpass_subpasses_draw"].as<bool>() : true; //need at least one subpass, even for compute sample
+    renderProcess.bEnableSubpassObserve = config["MainSceneRenderpassSubpasses"]["mainsceneRenderpass_subpasses_observe"] ? config["MainSceneRenderpassSubpasses"]["mainsceneRenderpass_subpasses_observe"].as<bool>() : false;
 
     //create renderpass
     std::cout<<"Application: Create MainScene Render Pass."<<std::endl;
@@ -750,12 +746,12 @@ void CApplication::ReadSubpasses(){
 
     //TODO: for shadowmap pass
     // std::cout<<"Application: Create Shadowmap Render Pass."<<std::endl;
-    // renderProcess.createSubpass_shadowmap();
-    // renderProcess.createDependency_shadowmap();
-    // renderProcess.createRenderPass_shadowmap();
+    //renderProcess.createSubpass_shadowmap();
+    //renderProcess.createDependency_shadowmap();
+    //renderProcess.createRenderPass_shadowmap();
 
     // std::cout<<"Application: Create Shadowmap Framebuffer."<<std::endl;
-    // swapchain.CreateFramebuffer_shadowmap(renderProcess.renderPass_shadowmap);
+    //swapchain.CreateFramebuffer_shadowmap(renderProcess.renderPass_shadowmap);
 
 
 }
@@ -1046,7 +1042,7 @@ void CApplication::ReadMainCamera(){
     lightCamera.setPerspective(mainCamera.fov,  (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, mainCamera.znear, mainCamera.zfar);
     //lightCamera.setPerspective(90, 1.0f, 0.1f, 6);
    //lightCamera.setPerspective(90, 1.0f, 0.1f, 5);
-    //lightCamera.setPerspective(60, 1.0f, 0.5f, 10.0f);
+    //lightCamera.setPerspective(60, 1.0f, 0.5f, 10.0f); //TODO
 
     // lightCamera.setOrthographic(
     //     -10, 10, 

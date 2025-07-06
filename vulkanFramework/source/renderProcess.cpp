@@ -256,7 +256,7 @@ void CRenderProcess::createRenderPass_shadowmap(){
 
 }
 
-void CRenderProcess::create_attachment_description_light_depth_mainscene(VkFormat depthFormat, VkSampleCountFlagBits msaaSamples){  
+void CRenderProcess::create_attachment_description_light_depth_mainsceneRenderPass(VkFormat depthFormat, VkSampleCountFlagBits msaaSamples){  
 	//bUseAttachmentLightDepth = true;
 
 	//added for model
@@ -274,7 +274,7 @@ void CRenderProcess::create_attachment_description_light_depth_mainscene(VkForma
 
 }
 
-void CRenderProcess::create_attachment_description_light_depth_shadowmap(VkFormat depthFormat, VkSampleCountFlagBits msaaSamples){  
+void CRenderProcess::create_attachment_description_light_depth_shadowmapRenderPass(VkFormat depthFormat, VkSampleCountFlagBits msaaSamples){  
 	//bUseAttachmentLightDepth = true;
 
 	//added for model
@@ -292,7 +292,7 @@ void CRenderProcess::create_attachment_description_light_depth_shadowmap(VkForma
 	//attachment_description_light_depth_shadowmap.finalLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
 }
 
-void CRenderProcess::create_attachment_description_color_present_mainscene(VkFormat swapChainImageFormat){  
+void CRenderProcess::create_attachment_description_color_present_mainsceneRenderPass(VkFormat swapChainImageFormat){  
 	//bUseAttachmentColorPresent = true;
 
 	attachment_description_color_present_mainscene.format = swapChainImageFormat;
@@ -305,7 +305,7 @@ void CRenderProcess::create_attachment_description_color_present_mainscene(VkFor
 	attachment_description_color_present_mainscene.finalLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
 }
 
-void CRenderProcess::create_attachment_description_camera_depth_mainscene(VkFormat depthFormat, VkSampleCountFlagBits msaaSamples){  
+void CRenderProcess::create_attachment_description_camera_depth_mainsceneRenderPass(VkFormat depthFormat, VkSampleCountFlagBits msaaSamples){  
 	//bUseAttachmentDepth = true;
 
 	//added for model
@@ -322,7 +322,7 @@ void CRenderProcess::create_attachment_description_camera_depth_mainscene(VkForm
 
 }
 
-void CRenderProcess::create_attachment_description_color_resolve_mainscene(VkFormat swapChainImageFormat, VkSampleCountFlagBits msaaSamples, VkImageLayout imageLayout){  
+void CRenderProcess::create_attachment_description_color_resolve_mainsceneRenderPass(VkFormat swapChainImageFormat, VkSampleCountFlagBits msaaSamples, VkImageLayout imageLayout){  
 	//Concept of attachment in Vulkan is like render target in OpenGL
 	//Subpass is a procedure to write/read attachments (a render process can has many subpasses, aka a render pass)
 	//Subpass is designed for mobile TBDR architecture

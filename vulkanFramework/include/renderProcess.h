@@ -57,16 +57,17 @@ public:
     /*********
     * Attachments(Description) 
     **********/
+    int iShadowmapAttachmentDepthLight = -1; //this is for shadowmap renderpass, not main scene renderpass
     int iMainSceneAttachmentDepthLight = -1;
     int iMainSceneAttachmentDepthCamera = -1;
     int iMainSceneAttachmentColorResovle = -1;
     int iMainSceneAttachmentColorPresent = -1;
 
-    void create_attachment_description_light_depth_mainscene(VkFormat depthFormat, VkSampleCountFlagBits msaaSamples);
-    void create_attachment_description_light_depth_shadowmap(VkFormat depthFormat, VkSampleCountFlagBits msaaSamples);
-    void create_attachment_description_camera_depth_mainscene(VkFormat depthFormat, VkSampleCountFlagBits msaaSamples);
-    void create_attachment_description_color_resolve_mainscene(VkFormat swapChainImageFormat,VkSampleCountFlagBits msaaSamples = VK_SAMPLE_COUNT_1_BIT, VkImageLayout imageLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
-    void create_attachment_description_color_present_mainscene(VkFormat swapChainImageFormat);
+    void create_attachment_description_light_depth_mainsceneRenderPass(VkFormat depthFormat, VkSampleCountFlagBits msaaSamples);
+    void create_attachment_description_light_depth_shadowmapRenderPass(VkFormat depthFormat, VkSampleCountFlagBits msaaSamples);
+    void create_attachment_description_camera_depth_mainsceneRenderPass(VkFormat depthFormat, VkSampleCountFlagBits msaaSamples);
+    void create_attachment_description_color_resolve_mainsceneRenderPass(VkFormat swapChainImageFormat,VkSampleCountFlagBits msaaSamples = VK_SAMPLE_COUNT_1_BIT, VkImageLayout imageLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
+    void create_attachment_description_color_present_mainsceneRenderPass(VkFormat swapChainImageFormat);
 
     VkAttachmentDescription attachment_description_light_depth_mainscene{};
     VkAttachmentDescription attachment_description_light_depth_shadowmap{};

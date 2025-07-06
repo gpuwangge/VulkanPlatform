@@ -18,11 +18,20 @@ Features:
   feature_graphics_pipeline_skybox_id: -1
   feature_graphics_observe_attachment_id: -1
 
-MainSceneAttachments:
-  mainscene_attachment_depth_light: false
-  mainscene_attachment_depth_camera: false
-  mainscene_attachment_color_resovle: false
-  mainscene_attachment_color_present: true
+ShadowmapRenderpassAttachments:
+  ShadowmapRenderpass_attachment_depth_light: false
+MainSceneRenderpassAttachments:
+  mainsceneRenderpass_attachment_depth_light: false
+  mainsceneRenderpass_attachment_depth_camera: false
+  mainsceneRenderpass_attachment_color_resovle: false
+  mainsceneRenderpass_attachment_color_present: true
+
+ShadowmapRenderpassSubpasses:
+  shadowmapRenderpass_subpasses_shadowmap: false
+MainSceneRenderpassSubpasses: #the index is 0, 1, 2
+  mainsceneRenderpass_subpasses_shadowmap: false
+  mainsceneRenderpass_subpasses_draw: true
+  mainsceneRenderpass_subpasses_observe: false
 
 MainCamera:
   camera_mode: 0
