@@ -6,7 +6,7 @@ Camera CApplication::mainCamera;
 Camera CApplication::lightCamera;
 bool CApplication::NeedToExit = false; 
 bool CApplication::NeedToPause = false;
-int CApplication::focusObjectId = 0;
+//int CApplication::focusObjectId = 0;
 std::vector<CObject> CApplication::objects; 
 std::vector<CLight> CApplication::lights; 
 
@@ -247,10 +247,11 @@ void CApplication::update(){
     deltaTime = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - lastTime).count();
     lastTime = currentTime;
 
-    if(objects.size() > 0 && focusObjectId < objects.size()){
-        mainCamera.SetTargetPosition(objects[focusObjectId].Position);
-        lightCamera.SetTargetPosition(objects[focusObjectId].Position);
-    }
+    if(objects.size() > 0 && mainCamera.focusObjectId < objects.size())
+        mainCamera.SetTargetPosition(objects[mainCamera.focusObjectId].Position);
+    if(objects.size() > 0 && lightCamera.focusObjectId < objects.size())
+        lightCamera.SetTargetPosition(objects[lightCamera.focusObjectId].Position);
+
     mainCamera.update(deltaTime);
     lightCamera.update(deltaTime);
     for(int i = 0; i < objects.size(); i++) objects[i].Update(deltaTime, renderer.currentFrame, mainCamera, lightCamera); 
@@ -1021,7 +1022,7 @@ void CApplication::ReadCameras(){
         config["MainCamera"]["camera_rotation"][1].as<float>(), 
         config["MainCamera"]["camera_rotation"][2].as<float>());
         
-    focusObjectId = config["MainCamera"]["object_id_target"] ? config["MainCamera"]["object_id_target"].as<int>() : 0;
+    mainCamera.focusObjectId = config["MainCamera"]["object_id_target"] ? config["MainCamera"]["object_id_target"].as<int>() : 0;
     // mainCamera.SetTargetPosition(
     //     config["MainCamera"]["camera_target_position"][0].as<float>(), 
     //     config["MainCamera"]["camera_target_position"][1].as<float>(), 
@@ -1050,7 +1051,7 @@ void CApplication::ReadCameras(){
             config["LightCamera"]["camera_rotation"][0].as<float>(), 
             config["LightCamera"]["camera_rotation"][1].as<float>(), 
             config["LightCamera"]["camera_rotation"][2].as<float>());
-        //todo: focusObjectId
+        lightCamera.focusObjectId = config["LightCamera"]["object_id_target"] ? config["LightCamera"]["object_id_target"].as<int>() : 0;
         lightCamera.setPerspective(
             config["LightCamera"]["camera_fov"].as<float>(),  
             1.0f,

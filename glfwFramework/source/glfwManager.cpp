@@ -49,10 +49,6 @@ void CGLFWManager::GLFWKeyboard(GLFWwindow * window, int key, int scancode, int 
 
 	if (action == GLFW_PRESS) {
 		switch (key) {
-		case GLFW_KEY_RIGHT:
-			break;
-		case GLFW_KEY_LEFT:
-			break;
 		case GLFW_KEY_DOWN: 
 			CApplication::mainCamera.Velocity.y = 1 * keyboard_sensitive;
 			break;
@@ -67,10 +63,12 @@ void CGLFWManager::GLFWKeyboard(GLFWwindow * window, int key, int scancode, int 
 		case 'S':
 			CApplication::mainCamera.Velocity.z = -1 * keyboard_sensitive;
 			break;
+		case GLFW_KEY_LEFT:
 		case 'a':
 		case 'A':
 			CApplication::mainCamera.Velocity.x = 1 * keyboard_sensitive; 
 			break;
+		case GLFW_KEY_RIGHT:
 		case 'd':
 		case 'D':
 			CApplication::mainCamera.Velocity.x = -1 * keyboard_sensitive; 
@@ -84,8 +82,8 @@ void CGLFWManager::GLFWKeyboard(GLFWwindow * window, int key, int scancode, int 
 
 		case GLFW_KEY_TAB:
 			if(CApplication::mainCamera.cameraType == Camera::CameraType::LOCK) {
-				CApplication::focusObjectId += 1;
-				CApplication::focusObjectId = CApplication::focusObjectId % CApplication::objects.size();
+				CApplication::mainCamera.focusObjectId += 1;
+				CApplication::mainCamera.focusObjectId = CApplication::mainCamera.focusObjectId % CApplication::objects.size();
 			}
 			break;
 
@@ -136,10 +134,6 @@ void CGLFWManager::GLFWKeyboard(GLFWwindow * window, int key, int scancode, int 
 
 	if (action == GLFW_RELEASE) {	
 		switch (key) {
-		case GLFW_KEY_RIGHT:
-			break;
-		case GLFW_KEY_LEFT:
-			break;
 		case GLFW_KEY_DOWN:
 			CApplication::mainCamera.Velocity.y = 0;
 			break;
@@ -154,10 +148,12 @@ void CGLFWManager::GLFWKeyboard(GLFWwindow * window, int key, int scancode, int 
 		case 'S':
 			CApplication::mainCamera.Velocity.z = 0;
 			break;
+		case GLFW_KEY_LEFT:
 		case 'a':
 		case 'A':
 			CApplication::mainCamera.Velocity.x = 0;
 			break;
+		case GLFW_KEY_RIGHT:
 		case 'd':
 		case 'D':
 			CApplication::mainCamera.Velocity.x = 0;

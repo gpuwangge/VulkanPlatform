@@ -71,9 +71,11 @@ void CSDLManager::eventHandle(){
                     case SDLK_S:
                         CApplication::mainCamera.Velocity.z = -1 * keyboard_sensitive;
                         break;
+                    case SDLK_LEFT:
                     case SDLK_A:
                         CApplication::mainCamera.Velocity.x = 1 * keyboard_sensitive; 
                         break;
+                    case SDLK_RIGHT:
                     case SDLK_D:
                         CApplication::mainCamera.Velocity.x = -1 * keyboard_sensitive; 
                         break;
@@ -85,8 +87,8 @@ void CSDLManager::eventHandle(){
 
                     case SDLK_TAB:
                         if(CApplication::mainCamera.cameraType == Camera::CameraType::LOCK) {
-                            CApplication::focusObjectId += 1;
-                            CApplication::focusObjectId = CApplication::focusObjectId % CApplication::objects.size();
+                            CApplication::mainCamera.focusObjectId += 1;
+				            CApplication::mainCamera.focusObjectId = CApplication::mainCamera.focusObjectId % CApplication::objects.size();
                         }
                         break;
 
@@ -111,9 +113,11 @@ void CSDLManager::eventHandle(){
                     case SDLK_S:
                         CApplication::mainCamera.Velocity.z = 0;
                         break;
+                    case SDLK_LEFT:
                     case SDLK_A:
                         CApplication::mainCamera.Velocity.x = 0;
                         break;
+                    case SDLK_RIGHT:
                     case SDLK_D:
                         CApplication::mainCamera.Velocity.x = 0;
                         break;
