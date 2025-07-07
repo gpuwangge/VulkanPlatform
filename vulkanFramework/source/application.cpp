@@ -214,7 +214,7 @@ void CApplication::initialize(){
     /****************************
     * 9 Read Main Camera
     ****************************/
-    ReadMainCamera();
+    ReadCameras();
 
     /****************************
     * 10 Create Sync Objects and Clean up Shaders
@@ -628,23 +628,26 @@ void CApplication::ReadResources(){
         if (resource["Pipelines"]) {
             appInfo.VertexShader =  std::make_unique<std::vector<std::string>>(std::vector<std::string>());
             appInfo.FragmentShader =  std::make_unique<std::vector<std::string>>(std::vector<std::string>());
-            appInfo.EnableSamplerCountOne =  std::make_unique<std::vector<bool>>(std::vector<bool>());
-            appInfo.EnableDepthBias =  std::make_unique<std::vector<bool>>(std::vector<bool>());
+            //appInfo.EnableSamplerCountOne =  std::make_unique<std::vector<bool>>(std::vector<bool>());
+            //appInfo.EnableDepthBias =  std::make_unique<std::vector<bool>>(std::vector<bool>());
+            appInfo.RenderPassShadowmap = std::make_unique<std::vector<bool>>(std::vector<bool>());
             appInfo.Subpass =  std::make_unique<std::vector<int>>(std::vector<int>());
 
             for (const auto& pipeline : resource["Pipelines"]) {
                 std::string name = pipeline["resource_graphics_pipeline_name"].as<std::string>();
                 std::string vertexShaderName = pipeline["resource_graphics_pipeline_vertexshader_name"].as<std::string>();
                 std::string fragmentShaderName = pipeline["resource_graphics_pipeline_fragmentshader_name"].as<std::string>();
-                bool bEnableSamplerCountOne = pipeline["resource_graphics_pipeline_enable_sampler_count_one"] ? pipeline["resource_graphics_pipeline_enable_sampler_count_one"].as<bool>() : false;
-                bool bEnableDepthBias = pipeline["resource_graphics_pipeline_enable_depth_bias"] ? pipeline["resource_graphics_pipeline_enable_depth_bias"].as<bool>() : false;
+                //bool bEnableSamplerCountOne = pipeline["resource_graphics_pipeline_enable_sampler_count_one"] ? pipeline["resource_graphics_pipeline_enable_sampler_count_one"].as<bool>() : false;
+                //bool bEnableDepthBias = pipeline["resource_graphics_pipeline_enable_depth_bias"] ? pipeline["resource_graphics_pipeline_enable_depth_bias"].as<bool>() : false;
+                bool bRenderPassShadowmap = pipeline["renderpasses_shadowmap"] ? pipeline["renderpasses_shadowmap"].as<bool>() : false;
                 int subpassId = pipeline["subpasses_subpass_id"] ? pipeline["subpasses_subpass_id"].as<int>() : 0;
 
                 //std::cout<<"Pipeline Name: "<<name<<std::endl;
                 appInfo.VertexShader->push_back(vertexShaderName);
                 appInfo.FragmentShader->push_back(fragmentShaderName);
-                appInfo.EnableSamplerCountOne->push_back(bEnableSamplerCountOne);
-                appInfo.EnableDepthBias->push_back(bEnableDepthBias);
+                //appInfo.EnableSamplerCountOne->push_back(bEnableSamplerCountOne);
+               // appInfo.EnableDepthBias->push_back(bEnableDepthBias);
+                appInfo.RenderPassShadowmap->push_back(bRenderPassShadowmap);
                 appInfo.Subpass->push_back(subpassId);
             }
 
@@ -792,7 +795,7 @@ void CApplication::CreateUniformDescriptors(bool b_uniform_graphics, bool b_unif
 }
 
 void CApplication::CreatePipelines(){
-    bool bVerbose = true;
+    bool bVerbose = false;
 
     /****************************
     * Command Buffer
@@ -885,36 +888,36 @@ void CApplication::CreatePipelines(){
                         VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
                         shaderManager.vertShaderModules[i], 
                         shaderManager.fragShaderModules[i], i,
-                        (*appInfo.Subpass)[i], (*appInfo.EnableSamplerCountOne)[i], (*appInfo.EnableDepthBias)[i], renderProcess.renderPass_mainscene);  
+                        (*appInfo.Subpass)[i], false, false, renderProcess.renderPass_mainscene);  
                 break;
                 case VertexStructureTypes::ThreeDimension:
                     //TODO: for 2-renderpass case, each pipeline for different renderpass
-                    // if(i == 0)
-                    // renderProcess.createGraphicsPipeline<Vertex3D>(
-                    //     VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
-                    //     shaderManager.vertShaderModules[i], 
-                    //     shaderManager.fragShaderModules[i], true, i,
-                    //     (*appInfo.Subpass)[i], (*appInfo.EnableSamplerCountOne)[i], (*appInfo.EnableDepthBias)[i], renderProcess.renderPass_shadowmap);  
-                    // else
+                    if((*appInfo.RenderPassShadowmap)[i] == true)
                     renderProcess.createGraphicsPipeline<Vertex3D>(
                         VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
                         shaderManager.vertShaderModules[i], 
                         shaderManager.fragShaderModules[i], true, i,
-                        (*appInfo.Subpass)[i], (*appInfo.EnableSamplerCountOne)[i], (*appInfo.EnableDepthBias)[i], renderProcess.renderPass_mainscene);  
+                        (*appInfo.Subpass)[i], true, true, renderProcess.renderPass_shadowmap);  
+                    else
+                    renderProcess.createGraphicsPipeline<Vertex3D>(
+                        VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
+                        shaderManager.vertShaderModules[i], 
+                        shaderManager.fragShaderModules[i], true, i,
+                        (*appInfo.Subpass)[i], false, false, renderProcess.renderPass_mainscene);  
                 break;
                 case VertexStructureTypes::TwoDimension:
                     renderProcess.createGraphicsPipeline<Vertex2D>(
                         VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
                         shaderManager.vertShaderModules[i], 
                         shaderManager.fragShaderModules[i], true, i,
-                        (*appInfo.Subpass)[i], (*appInfo.EnableSamplerCountOne)[i], (*appInfo.EnableDepthBias)[i], renderProcess.renderPass_mainscene);
+                        (*appInfo.Subpass)[i], false, false, renderProcess.renderPass_mainscene);
                 break;
                 case VertexStructureTypes::ParticleType:
                     renderProcess.createGraphicsPipeline<Particle>(
                         VK_PRIMITIVE_TOPOLOGY_POINT_LIST, 
                         shaderManager.vertShaderModules[i], 
                         shaderManager.fragShaderModules[i], true, i,
-                        (*appInfo.Subpass)[i], (*appInfo.EnableSamplerCountOne)[i], (*appInfo.EnableDepthBias)[i], renderProcess.renderPass_mainscene);
+                        (*appInfo.Subpass)[i], false, false, renderProcess.renderPass_mainscene);
                 break;
                 default:
                 break;
@@ -1007,7 +1010,7 @@ void CApplication::ReadLightings(){
     }
 }
 
-void CApplication::ReadMainCamera(){
+void CApplication::ReadCameras(){
     mainCamera.cameraType = (Camera::CameraType)(config["MainCamera"]["camera_mode"] ? config["MainCamera"]["camera_mode"].as<int>() : 0);
     mainCamera.SetPosition(
         config["MainCamera"]["camera_position"][0].as<float>(), 
@@ -1036,20 +1039,29 @@ void CApplication::ReadMainCamera(){
     glfwManager.keyboard_sensitive = config["MainCamera"]["camera_keyboard_sensitive"] ? config["MainCamera"]["camera_keyboard_sensitive"].as<float>() : 3;
     glfwManager.mouse_sensitive = config["MainCamera"]["camera_mouse_sensitive"] ? config["MainCamera"]["camera_mouse_sensitive"].as<float>() : 60;
 #endif
- 
-    lightCamera.cameraType = mainCamera.cameraType;
-    lightCamera.SetPosition(mainCamera.Position);
-    lightCamera.SetRotation(mainCamera.Rotation);
-    lightCamera.setPerspective(mainCamera.fov,  (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, mainCamera.znear, mainCamera.zfar);
-    //lightCamera.setPerspective(90, 1.0f, 0.1f, 6);
-    //lightCamera.setPerspective(90, 1.0f, 0.1f, 5);
-    //lightCamera.setPerspective(60, 1.0f, 0.5f, 10.0f); //TODO
 
-    // lightCamera.setOrthographic(
-    //     -10, 10, 
-    //     -10, 10, 
-    //     0.1, 100);
-    //lightCamera.matrices.perspective[1][1] *= -1;
+    if (config["LightCamera"]) {
+        lightCamera.cameraType = (Camera::CameraType)(config["LightCamera"]["camera_mode"] ? config["LightCamera"]["camera_mode"].as<int>() : 0);
+        lightCamera.SetPosition(
+            config["LightCamera"]["camera_position"][0].as<float>(), 
+            config["LightCamera"]["camera_position"][1].as<float>(), 
+            config["LightCamera"]["camera_position"][2].as<float>());
+        lightCamera.SetRotation(
+            config["LightCamera"]["camera_rotation"][0].as<float>(), 
+            config["LightCamera"]["camera_rotation"][1].as<float>(), 
+            config["LightCamera"]["camera_rotation"][2].as<float>());
+        //todo: focusObjectId
+        lightCamera.setPerspective(
+            config["LightCamera"]["camera_fov"].as<float>(),  
+            1.0f,
+            config["LightCamera"]["camera_z"][0].as<float>(), 
+            config["LightCamera"]["camera_z"][1].as<float>());
+    }else{
+        lightCamera.cameraType = mainCamera.cameraType; //default to main camera type
+        lightCamera.SetPosition(mainCamera.Position);
+        lightCamera.SetRotation(mainCamera.Rotation);
+        lightCamera.setPerspective(mainCamera.fov,  (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, mainCamera.znear, mainCamera.zfar);
+    }
 }
 
 void CApplication::Dispatch(int numWorkGroupsX, int numWorkGroupsY, int numWorkGroupsZ){

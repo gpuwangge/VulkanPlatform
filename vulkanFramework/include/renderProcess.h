@@ -250,13 +250,13 @@ public:
         rasterizer.cullMode = VK_CULL_MODE_NONE;
         rasterizer.frontFace = VK_FRONT_FACE_COUNTER_CLOCKWISE;
         if(bEnableDepthBias){
-            std::cout<< "Enable depthBiasEnable" << std::endl;
+            //std::cout<< "Enable depthBiasEnable" << std::endl;
             rasterizer.depthBiasEnable = VK_TRUE; // for hardware depthibias shadowmap
             rasterizer.depthBiasConstantFactor = 1.25f;   // for hardware depthibias shadowmap
             rasterizer.depthBiasClamp = 0.0f; // for hardware depthibias shadowmap
             rasterizer.depthBiasSlopeFactor = 1.75f;      // for hardware depthibias shadowmap
         }else{
-            std::cout<< "Disable depthBiasEnable" << std::endl;
+            //std::cout<< "Disable depthBiasEnable" << std::endl;
             rasterizer.depthBiasEnable = VK_FALSE;
         }
         pipelineInfo.pRasterizationState = &rasterizer;
