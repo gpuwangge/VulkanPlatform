@@ -34,13 +34,6 @@ public:
 		appInfo.Uniform.GraphicsCustom.Size = sizeof(CustomUniformBufferObject);
 		appInfo.Uniform.GraphicsCustom.Binding = CustomUniformBufferObject::GetBinding();
 		CApplication::initialize();
-
-		//objectList[0].SetRotation(-135,0,45);
-		//objectList[0].YawLeft(90,200);
-		//objectList[0].RollLeft(90, 200);
-
-		objects[3].bSticker = true;
-		objects[3].SetScaleRectangleXY(0.5, 0.5, 1, 1);
 	} 
 
 	void update(){
