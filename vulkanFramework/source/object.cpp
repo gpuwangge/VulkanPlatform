@@ -161,13 +161,12 @@ void CObject::CreateDescriptorSets_TextureImageSampler(VkDescriptorPool &descrip
     //std::cout<<"Done set descriptor. "<<std::endl;
 }
 
-void CObject::Register(CApplication *p_app, int object_id, std::vector<int> texture_ids, int model_id, int graphics_pipeline_id_mainscene, int graphics_pipeline_id_mainscene2, int graphics_pipeline_id_shadowmap){
+void CObject::Register(CApplication *p_app, int object_id, std::vector<int> texture_ids, int model_id, int default_graphics_pipeline_id){
     m_object_id = object_id; 
     m_texture_ids = texture_ids; 
     m_model_id = model_id; 
-    m_graphics_pipeline_id_mainscene = graphics_pipeline_id_mainscene; 
-    m_graphics_pipeline_id_mainscene2 = graphics_pipeline_id_mainscene2; 
-    m_graphics_pipeline_id_shadowmap = graphics_pipeline_id_shadowmap; 
+    m_default_graphics_pipeline_id = default_graphics_pipeline_id; 
+    //m_graphics_pipeline_id2 = graphics_pipeline_id2; 
     bUseMVP_VP = CGraphicsDescriptorManager::CheckMVP();
 
     if(p_app->appInfo.VertexBufferType == VertexStructureTypes::TwoDimension || p_app->appInfo.VertexBufferType == VertexStructureTypes::ThreeDimension){
@@ -188,7 +187,7 @@ void CObject::Register(CApplication *p_app, int object_id, std::vector<int> text
     p_renderer = &(p_app->renderer);
     p_renderProcess = &(p_app->renderProcess);
     //p_graphicsPipelineLayout = &(p_app->renderProcess.graphicsPipelineLayouts[m_graphics_pipeline_id]);
-    p_descriptorSets_graphcis_general = &(p_app->graphicsDescriptorManager.descriptorSets_general);//?
+    p_descriptorSets_graphics_general = &(p_app->graphicsDescriptorManager.descriptorSets_general);//?
     p_textureManager = &(p_app->textureManager);
 
 
@@ -209,35 +208,37 @@ void CObject::Register(CApplication *p_app, int object_id, std::vector<int> text
 }
 
 
-void CObject::Draw(RenderPassTypes renderPassType, uint32_t n){
+void CObject::Draw(int graphicsPipelineId, uint32_t n){
     if(!bRegistered || !bVisible) return;
 
     //std::cout<<"CObject::Draw, renderPassType="<<renderPassType<<", n="<<n<<std::endl;
 
-    int graphicsPipelineId = m_graphics_pipeline_id_mainscene;
-    switch(renderPassType){
-        case RenderPassTypes::MAINSCENE:
-            graphicsPipelineId = m_graphics_pipeline_id_mainscene;
-            break;
-        case RenderPassTypes::MAINSCENE2:
-            graphicsPipelineId = m_graphics_pipeline_id_mainscene2;
-            break;
-        case RenderPassTypes::SHADOWMAP:
-            graphicsPipelineId = m_graphics_pipeline_id_shadowmap;
-            break;
-        default:
-            graphicsPipelineId = m_graphics_pipeline_id_mainscene; //default to mainscene
-    }
-    VkPipelineLayout *p_graphicsPipelineLayout = &(p_renderProcess->graphicsPipelineLayouts[graphicsPipelineId]);
+    // int graphicsPipelineId = m_graphics_pipeline_id_mainscene;
+    // switch(renderPassType){
+    //     case RenderPassTypes::MAINSCENE:
+    //         graphicsPipelineId = m_graphics_pipeline_id_mainscene;
+    //         break;
+    //     case RenderPassTypes::MAINSCENE2:
+    //         graphicsPipelineId = m_graphics_pipeline_id_mainscene2;
+    //         break;
+    //     case RenderPassTypes::SHADOWMAP:
+    //         graphicsPipelineId = m_graphics_pipeline_id_shadowmap;
+    //         break;
+    //     default:
+    //         graphicsPipelineId = m_graphics_pipeline_id_mainscene; //default to mainscene
+    // }
 
-    p_renderer->BindPipeline(p_renderProcess->graphicsPipelines[graphicsPipelineId], 
-        VK_PIPELINE_BIND_POINT_GRAPHICS, p_renderer->graphicsCmdId);
+    int current_graphics_pipeline_id = (graphicsPipelineId == -1) ? m_default_graphics_pipeline_id : graphicsPipelineId;
+
+    VkPipelineLayout *p_graphicsPipelineLayout = &(p_renderProcess->graphicsPipelineLayouts[current_graphics_pipeline_id]);
+    p_renderer->BindPipeline(p_renderProcess->graphicsPipelines[current_graphics_pipeline_id], VK_PIPELINE_BIND_POINT_GRAPHICS, p_renderer->graphicsCmdId);
+
     //std::cout<<"test2. p_graphicsDescriptorSets->size()="<<p_graphicsDescriptorSets->size()<<std::endl;
     //std::cout<<"test2. m_texture_ids.size()="<<m_texture_ids.size()<<std::endl;
 
     std::vector<std::vector<VkDescriptorSet>> dsSets; 
     //set = 0 is for general uniform; set = 1 is for texture sampler uniform
-    if(CGraphicsDescriptorManager::getSetSize_General() > 0) dsSets.push_back(*p_descriptorSets_graphcis_general); 
+    if(CGraphicsDescriptorManager::getSetSize_General() > 0) dsSets.push_back(*p_descriptorSets_graphics_general); 
     if(CGraphicsDescriptorManager::textureImageSamplers.size() > 0) dsSets.push_back(descriptorSets_graphics_texture_image_sampler); 
     //std::cout<<"test3.dsSets.size()="<<dsSets.size()<<std::endl;
     
@@ -263,29 +264,34 @@ void CObject::Draw(RenderPassTypes renderPassType, uint32_t n){
 }
 
 
-void CObject::Draw(std::vector<CWxjBuffer> &buffer, RenderPassTypes renderPassType, uint32_t n){ //const VkBuffer *pBuffers
+void CObject::Draw(std::vector<CWxjBuffer> &buffer, int graphicsPipelineId, uint32_t n){ //const VkBuffer *pBuffers
     if(!bRegistered || !bVisible) return;
 
-    int graphicsPipelineId = m_graphics_pipeline_id_mainscene;
-        switch(renderPassType){
-        case RenderPassTypes::MAINSCENE:
-            graphicsPipelineId = m_graphics_pipeline_id_mainscene;
-            break;
-        case RenderPassTypes::MAINSCENE2:
-            graphicsPipelineId = m_graphics_pipeline_id_mainscene2;
-            break;
-        case RenderPassTypes::SHADOWMAP:
-            graphicsPipelineId = m_graphics_pipeline_id_shadowmap;
-            break;
-        default:
-            graphicsPipelineId = m_graphics_pipeline_id_mainscene; //default to mainscene
-    }
+    // int graphicsPipelineId = m_graphics_pipeline_id_mainscene;
+    //     switch(renderPassType){
+    //     case RenderPassTypes::MAINSCENE:
+    //         graphicsPipelineId = m_graphics_pipeline_id_mainscene;
+    //         break;
+    //     case RenderPassTypes::MAINSCENE2:
+    //         graphicsPipelineId = m_graphics_pipeline_id_mainscene2;
+    //         break;
+    //     case RenderPassTypes::SHADOWMAP:
+    //         graphicsPipelineId = m_graphics_pipeline_id_shadowmap;
+    //         break;
+    //     default:
+    //         graphicsPipelineId = m_graphics_pipeline_id_mainscene; //default to mainscene
+    // }
     
+    int current_graphics_pipeline_id = (graphicsPipelineId == -1) ? m_default_graphics_pipeline_id : graphicsPipelineId;
+    p_renderer->BindPipeline(p_renderProcess->graphicsPipelines[current_graphics_pipeline_id], VK_PIPELINE_BIND_POINT_GRAPHICS, p_renderer->graphicsCmdId);
+
     //this function is used in sample:simpleparticle only
     //std::cout<<"testdraw1,"<<m_graphics_pipeline_id<<","<<p_renderer->graphicsCmdId<<std::endl;
-    p_renderer->BindPipeline(p_renderProcess->graphicsPipelines[graphicsPipelineId], 
-    //p_renderer->BindPipeline(p_renderProcess->graphicsPipeline, 
-        VK_PIPELINE_BIND_POINT_GRAPHICS, p_renderer->graphicsCmdId);
+
+    // if(graphicsPipelineId != -1)
+    //     p_renderer->BindPipeline(p_renderProcess->graphicsPipelines[graphicsPipelineId], VK_PIPELINE_BIND_POINT_GRAPHICS, p_renderer->graphicsCmdId);
+    // else
+    //     p_renderer->BindPipeline(p_renderProcess->graphicsPipelines[m_default_graphics_pipeline_id], VK_PIPELINE_BIND_POINT_GRAPHICS, p_renderer->graphicsCmdId);
 
     //TODO: bind descriptor set
     //std::cout<<"testdraw2"<<std::endl;

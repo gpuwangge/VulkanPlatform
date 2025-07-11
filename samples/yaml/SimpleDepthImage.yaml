@@ -9,8 +9,7 @@ Objects:
     object_skybox: false
     resource_model_id: 1
     resource_texture_id_list: [1]
-    resource_graphics_pipeline_id_mainscene: 0
-    resource_graphics_pipeline_id_mainscene2: 2
+    resource_default_graphics_pipeline_id: 0
   - object_name: Sphere
     object_id: 1
     object_scale: 0.04
@@ -21,31 +20,27 @@ Objects:
     object_skybox: false
     resource_model_id: 0
     resource_texture_id_list: [0]
-    resource_graphics_pipeline_id_mainscene: 0
-    resource_graphics_pipeline_id_mainscene2: 2
+    resource_default_graphics_pipeline_id: 0
   - object_name: LightSphere
     object_id: 2
     object_scale: 0.01
-    resource_graphics_pipeline_id_mainscene: 0
-    resource_graphics_pipeline_id_mainscene2: 2
+    resource_default_graphics_pipeline_id: 0
   - object_name: LightSphere
     object_id: 3
     object_scale: 0.01
-    resource_graphics_pipeline_id_mainscene: 0
-    resource_graphics_pipeline_id_mainscene2: 2
+    resource_default_graphics_pipeline_id: 0
   - object_name: LightSphere
     object_id: 4
     object_scale: 0.01
-    resource_graphics_pipeline_id_mainscene: 0
-    resource_graphics_pipeline_id_mainscene2: 2
+    resource_default_graphics_pipeline_id: 0
   - object_name: LightSphere
     object_id: 5
     object_scale: 0.01
+    resource_default_graphics_pipeline_id: 0
   - object_name: LightSphere
     object_id: 6
     object_scale: 0.01
-    resource_graphics_pipeline_id_mainscene: 0
-    resource_graphics_pipeline_id_mainscene2: 2                
+    resource_default_graphics_pipeline_id: 0                
   - object_name: Screen
     object_id: 7
     object_scale: 10
@@ -56,7 +51,7 @@ Objects:
     object_skybox: false
     resource_model_id: 2
     resource_texture_id_list: [0]
-    resource_graphics_pipeline_id_mainscene: 1
+    resource_default_graphics_pipeline_id: 1
 
 Resources:
   - Models:

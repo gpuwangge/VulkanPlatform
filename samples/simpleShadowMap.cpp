@@ -85,19 +85,19 @@ public:
 			//depthBiasConstantFactor, depthBiasClamp, depthBiasSlopeFactor
 			//vkCmdSetDepthBias(renderer.commandBuffers[renderer.graphicsCmdId][renderer.currentFrame], 10.0f, 0.0f, 10.0f);
 
-			objects[i].Draw(RenderPassTypes::SHADOWMAP); //draw shadowmap
+			objects[i].Draw(2); //draw with graphics pipeline id=2 (which is shadowmap)
 		}
 
 		vkCmdNextSubpass(renderer.commandBuffers[renderer.graphicsCmdId][renderer.currentFrame], VK_SUBPASS_CONTENTS_INLINE);
 
 		for(int i = 0; i < objects.size()-1; i++) {
 			//objects[i].m_graphics_pipeline_id = 0; //same object, first subpass use gid=2, second subpass use gid=0
-			objects[i].Draw();//draw objects
+			objects[i].Draw();//draw objects with default graphics pipeline id (0)
 		}
 
 		vkCmdNextSubpass(renderer.commandBuffers[renderer.graphicsCmdId][renderer.currentFrame], VK_SUBPASS_CONTENTS_INLINE);
 
-		objects[objects.size()-1].Draw(); //always draw with gid=1
+		objects[objects.size()-1].Draw(); //draw for observation, use default (1)
 	}
 };
 

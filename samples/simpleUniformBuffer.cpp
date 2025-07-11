@@ -32,7 +32,7 @@ public:
 	}
 
 	void recordGraphicsCommandBuffer_renderpassMainscene(){
-		objects[0].Draw(RenderPassTypes::MAINSCENE, 3);
+		objects[0].Draw(0, 3);
 	}	
 };
 

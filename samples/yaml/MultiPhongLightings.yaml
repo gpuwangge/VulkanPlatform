@@ -9,7 +9,7 @@ Objects:
     object_skybox: false
     resource_model_id: 0
     resource_texture_id_list: [0]
-    resource_graphics_pipeline_id_mainscene: 0
+    resource_default_graphics_pipeline_id: 0
   - object_name: Table
     object_id: 1
     object_scale: 1
@@ -20,7 +20,7 @@ Objects:
     object_skybox: false
     resource_model_id: 1
     resource_texture_id_list: [1]
-    resource_graphics_pipeline_id_mainscene: 0  
+    resource_default_graphics_pipeline_id: 0  
   - object_name: LightSphere
     object_id: 2
     object_scale: 0.01
