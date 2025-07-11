@@ -724,13 +724,11 @@ void CApplication::ReadAttachments(){
     }
 
    
-    //bool bEnableSamplerCountOne = appInfo.RenderMode == renderer.GRAPHICS_SHADOWMAP ? true : false; //if use shadowmap(2pass), then depthLight attachment must use samper count 1
     if(swapchain.iShadowmapAttachmentDepthLight >= 0){ //if shadowmap renderpass attachment depth light is enabled
-        swapchain.create_attachment_resource_depth_light(true); //hardware bias todo
-        //renderProcess.create_attachment_description_light_depth_mainsceneRenderPass(swapchain.depthFormat, VK_SAMPLE_COUNT_1_BIT); //hardware bias todo
-        renderProcess.create_attachment_description_light_depth_shadowmapRenderPass(swapchain.depthFormat, VK_SAMPLE_COUNT_1_BIT); //hardware bias todo//should remove the second parameter
+        swapchain.create_attachment_resource_depth_light(VK_SAMPLE_COUNT_1_BIT); //hardware bias todo
+        renderProcess.create_attachment_description_light_depth_shadowmapRenderPass(swapchain.depthFormat); 
     }else if(swapchain.iMainSceneAttachmentDepthLight >= 0){
-        swapchain.create_attachment_resource_depth_light(false);
+        swapchain.create_attachment_resource_depth_light(swapchain.msaaSamples);
         renderProcess.create_attachment_description_light_depth_mainsceneRenderPass(swapchain.depthFormat, swapchain.msaaSamples);
     }
 
@@ -757,13 +755,13 @@ void CApplication::ReadSubpasses(){
 
     //for mainscene renderpass (this renderpass is mandatory)
     //create renderpass
-    std::cout<<"Application: Create MainScene Render Pass."<<std::endl;
+    //std::cout<<"Application: Create MainScene Render Pass."<<std::endl;
     renderProcess.createSubpass_mainsceneRenderpass(appInfo.Feature.feature_graphics_observe_attachment_id);
     renderProcess.createDependency_mainsceneRenderpass();
     renderProcess.createRenderPass_mainsceneRenderpass();
 
     //create framebuffer
-    std::cout<<"Application: Create MainScene Framebuffer."<<std::endl;
+    //std::cout<<"Application: Create MainScene Framebuffer."<<std::endl;
     swapchain.CreateFramebuffer_mainscene(renderProcess.renderPass_mainscene);
 }
 

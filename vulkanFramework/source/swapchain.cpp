@@ -244,7 +244,7 @@ VkFormat CSwapchain::findDepthFormat() {
     );
 }
 
-void CSwapchain::create_attachment_resource_depth_light(bool bEnableSamplerCountOne){//2
+void CSwapchain::create_attachment_resource_depth_light(VkSampleCountFlagBits _msaaSamples){//2
     //bEnableLightDepth = true;
     depthFormat = findDepthFormat();
     std::cout<<"Depth Format: "<<depthFormat<<std::endl;
@@ -252,13 +252,13 @@ void CSwapchain::create_attachment_resource_depth_light(bool bEnableSamplerCount
 	//createDepthImages(VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT);
     //VK_SAMPLE_COUNT_1_BIT
     //std::cout<<"Creating depth light image..."<<std::endl;
-    if(bEnableSamplerCountOne){
-        lightDepthImageBuffer.createImage(swapChainExtent.width,swapChainExtent.height, 1, VK_SAMPLE_COUNT_1_BIT, depthFormat, VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, false,
+    //if(bEnableSamplerCountOne){
+    lightDepthImageBuffer.createImage(swapChainExtent.width,swapChainExtent.height, 1, _msaaSamples, depthFormat, VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, false,
             VK_IMAGE_LAYOUT_UNDEFINED); //for hardware depth bias VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL?
-    }else{
-        lightDepthImageBuffer.createImage(swapChainExtent.width,swapChainExtent.height, 1, msaaSamples, depthFormat, VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, false,
-            VK_IMAGE_LAYOUT_UNDEFINED); //?VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL
-    }
+    //}else{
+    //    lightDepthImageBuffer.createImage(swapChainExtent.width,swapChainExtent.height, 1, msaaSamples, depthFormat, VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, false,
+    //        VK_IMAGE_LAYOUT_UNDEFINED); //?VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL
+    //}
 	//createDepthImageViews(depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT);
     lightDepthImageBuffer.createImageView(depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT, 1, false);
     //std::cout<<"Enabled Light Depth Image Buffer"<<std::endl;

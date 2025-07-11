@@ -274,7 +274,7 @@ void CRenderProcess::create_attachment_description_light_depth_mainsceneRenderPa
 
 }
 
-void CRenderProcess::create_attachment_description_light_depth_shadowmapRenderPass(VkFormat depthFormat, VkSampleCountFlagBits msaaSamples){  
+void CRenderProcess::create_attachment_description_light_depth_shadowmapRenderPass(VkFormat depthFormat){  
 	//bUseAttachmentLightDepth = true;
 
 	//added for model

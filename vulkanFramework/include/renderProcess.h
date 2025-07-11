@@ -65,7 +65,7 @@ public:
     int iMainSceneAttachmentColorPresent = -1;
 
     void create_attachment_description_light_depth_mainsceneRenderPass(VkFormat depthFormat, VkSampleCountFlagBits msaaSamples);
-    void create_attachment_description_light_depth_shadowmapRenderPass(VkFormat depthFormat, VkSampleCountFlagBits msaaSamples);
+    void create_attachment_description_light_depth_shadowmapRenderPass(VkFormat depthFormat);
     void create_attachment_description_camera_depth_mainsceneRenderPass(VkFormat depthFormat, VkSampleCountFlagBits msaaSamples);
     void create_attachment_description_color_resolve_mainsceneRenderPass(VkFormat swapChainImageFormat,VkSampleCountFlagBits msaaSamples = VK_SAMPLE_COUNT_1_BIT, VkImageLayout imageLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
     void create_attachment_description_color_present_mainsceneRenderPass(VkFormat swapChainImageFormat);
