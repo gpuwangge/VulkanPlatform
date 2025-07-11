@@ -893,36 +893,37 @@ void CApplication::CreatePipelines(){
                         VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
                         shaderManager.vertShaderModules[i], 
                         shaderManager.fragShaderModules[i], i,
-                        (*appInfo.Subpass)[i], false, false, renderProcess.renderPass_mainscene);  
+                        (*appInfo.Subpass)[i], false, renderProcess.renderPass_mainscene);  
                 break;
                 case VertexStructureTypes::ThreeDimension:
-                    //TODO: for 2-renderpass case, each pipeline for different renderpass
-                    if((*appInfo.RenderPassShadowmap)[i] == true)
-                    renderProcess.createGraphicsPipeline<Vertex3D>(
-                        VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
-                        shaderManager.vertShaderModules[i], 
-                        shaderManager.fragShaderModules[i], true, i,
-                        (*appInfo.Subpass)[i], true, true, renderProcess.renderPass_shadowmap);  
-                    else
-                    renderProcess.createGraphicsPipeline<Vertex3D>(
-                        VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
-                        shaderManager.vertShaderModules[i], 
-                        shaderManager.fragShaderModules[i], true, i,
-                        (*appInfo.Subpass)[i], false, false, renderProcess.renderPass_mainscene);  
+                    //for 2-renderpass case, each pipeline for different renderpass
+                    if((*appInfo.RenderPassShadowmap)[i]) {
+                        renderProcess.createGraphicsPipeline<Vertex3D>(
+                            VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
+                            shaderManager.vertShaderModules[i], 
+                            shaderManager.fragShaderModules[i], true, i,
+                            (*appInfo.Subpass)[i], (*appInfo.RenderPassShadowmap)[i], renderProcess.renderPass_shadowmap);
+                    }else{
+                        renderProcess.createGraphicsPipeline<Vertex3D>(
+                            VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
+                            shaderManager.vertShaderModules[i], 
+                            shaderManager.fragShaderModules[i], true, i,
+                            (*appInfo.Subpass)[i], (*appInfo.RenderPassShadowmap)[i], renderProcess.renderPass_mainscene);  
+                    }
                 break;
                 case VertexStructureTypes::TwoDimension:
                     renderProcess.createGraphicsPipeline<Vertex2D>(
                         VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
                         shaderManager.vertShaderModules[i], 
                         shaderManager.fragShaderModules[i], true, i,
-                        (*appInfo.Subpass)[i], false, false, renderProcess.renderPass_mainscene);
+                        (*appInfo.Subpass)[i], false, renderProcess.renderPass_mainscene);
                 break;
                 case VertexStructureTypes::ParticleType:
                     renderProcess.createGraphicsPipeline<Particle>(
                         VK_PRIMITIVE_TOPOLOGY_POINT_LIST, 
                         shaderManager.vertShaderModules[i], 
                         shaderManager.fragShaderModules[i], true, i,
-                        (*appInfo.Subpass)[i], false, false, renderProcess.renderPass_mainscene);
+                        (*appInfo.Subpass)[i], false, renderProcess.renderPass_mainscene);
                 break;
                 default:
                 break;

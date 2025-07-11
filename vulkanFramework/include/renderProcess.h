@@ -164,14 +164,14 @@ public:
      * *****/
     //this function is for samples that are NOT using vertex shader
     void createGraphicsPipeline(VkPrimitiveTopology topology, VkShaderModule &vertShaderModule, VkShaderModule &fragShaderModule, int graphcisPipeline_id, 
-        int subpass_id, bool bEnableSamplerCountOne, bool bEnableDepthBias, VkRenderPass renderPass){
-        createGraphicsPipeline<DummyVertex>(topology, vertShaderModule, fragShaderModule, false, graphcisPipeline_id, subpass_id, bEnableSamplerCountOne, bEnableDepthBias, renderPass); //DummyVertex doesn't really matter here, because no vertex attributes used
+        int subpass_id, bool bEnableDepthBias, VkRenderPass renderPass){
+        createGraphicsPipeline<DummyVertex>(topology, vertShaderModule, fragShaderModule, false, graphcisPipeline_id, subpass_id, bEnableDepthBias, renderPass); //DummyVertex doesn't really matter here, because no vertex attributes used
     }
 
     //this function is for samples that are  using vertex shader
     template <typename T>
     void createGraphicsPipeline(VkPrimitiveTopology topology, VkShaderModule &vertShaderModule, VkShaderModule &fragShaderModule, bool bUseVertexBuffer, 
-        int graphcisPipeline_id, int subpass_id, bool bEnableSamplerCountOne, bool bEnableDepthBias, VkRenderPass renderPass){
+        int graphcisPipeline_id, int subpass_id, bool bEnableDepthBias, VkRenderPass renderPass){
         //HERE_I_AM("CreateGraphicsPipeline");
         bCreateGraphicsPipeline = true;
 
@@ -261,13 +261,12 @@ public:
         }
         pipelineInfo.pRasterizationState = &rasterizer;
         
-        
 
         /*********6 Multisample**********/
         VkPipelineMultisampleStateCreateInfo multisampling{};
         multisampling.sType = VK_STRUCTURE_TYPE_PIPELINE_MULTISAMPLE_STATE_CREATE_INFO;
         multisampling.sampleShadingEnable = VK_FALSE;
-        if(bEnableSamplerCountOne)
+        if(bEnableDepthBias)
             multisampling.rasterizationSamples = VK_SAMPLE_COUNT_1_BIT; //for hardware depthbias shadowmap, we use 1 sample
         else
             multisampling.rasterizationSamples = m_msaaSamples_renderProcess;
