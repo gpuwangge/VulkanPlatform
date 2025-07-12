@@ -44,7 +44,41 @@ layout (location = 0) out vec4 outColor;
 //Normal Shadow: hard shadows
 //PCF: fixed fiter size, soft shadow, slow
 //PCSS: adaptive filter size(depends on object distance), better soft shadow, slow
-//bool enablePCF = true;
+bool enablePCF = true;
+
+
+float GetShadow(vec3 shadowCoords, float depthBias){
+	return texture(lightDepthSampler, vec3(shadowCoords.xy, shadowCoords.z - depthBias)); 
+}
+
+float PCFShadow(vec3 shadowCoords){ //Percentage Closer Filtering, shadowCoords are within 0~1, shadowCoords.xy is light space coords, shadowCoords.z is light space depth
+	float shadow = 0.0f;
+	
+	float depthBias = 0.35f; //How to find this value? search for "Depth Bias". This value should be related to slope, use slope-scale depth bias instead
+	//float depthBias = SlopeScaleDepthBias(normal, lightDir, 10, 0.09); //not work correctly
+	//float depthBias = 0; //use hardware depth bias
+	
+	ivec2 texDim = ivec2(800,800);//textureSize(lightDepthSampler);
+	float scale = 1.5;
+	float dx = scale * 1.0 / float(texDim.x);
+	float dy = scale * 1.0 / float(texDim.y);
+
+	int range = 20;
+	float shadow_contribution = 0.23 / (range * range);
+	for (int x = -range; x <= range; x++){
+		for (int y = -range; y <= range; y++){
+			vec2 offset = vec2(dx * x, dy * y);
+			vec2 shadowCoords_offset = shadowCoords.xy+offset;
+			if(shadowCoords_offset.x >= 0.0 && shadowCoords_offset.x <= 1.0 &&
+				shadowCoords_offset.y >= 0.0 && shadowCoords_offset.y <= 1.0){//make sure shadowCoords_offset are still within 0~1, otherwise there is black box
+				float shadow_delta = GetShadow(vec3(shadowCoords_offset, shadowCoords.z), depthBias);
+				shadow += shadow_delta * shadow_contribution;
+			}
+		}
+	}
+
+	return shadow;
+}
 
 void main() {
 
@@ -77,21 +111,21 @@ void main() {
 	    	lightSpaceCoords.z >= 0.0 && lightSpaceCoords.z <= 1.0){
 			lightSpaceCoords = lightSpaceCoords * 0.5 + 0.5;
 
-			float bias = 0.35;
-			shadow = texture(lightDepthSampler, vec3(lightSpaceCoords.xy, lightSpaceCoords.z - bias)); //条纹状bug
+			if(enablePCF) shadow = PCFShadow(lightSpaceCoords); //PCFShadow(lightSpaceCoords, inNormal, L);
+			else shadow = GetShadow(lightSpaceCoords, 0.35f);
 				
-				// float z = lightSpaceCoords.z;
-				// if (z < 0.1) outColor = vec4(0.0, 0.0, 1.0, 1.0); // blue
-				// else if (z < 0.3) outColor = vec4(0.0, 1.0, 1.0, 1.0); // cyan
-				// else if (z < 0.5) outColor = vec4(0.0, 1.0, 0.0, 1.0); // green
-				// else if (z < 0.7) outColor = vec4(1.0, 1.0, 0.0, 1.0); // yellow
-				// else if (z < 0.9) outColor = vec4(1.0, 0.5, 0.0, 1.0); // orange
-				// else outColor = vec4(1.0, 0.0, 0.0, 1.0); // red
+			// float z = lightSpaceCoords.z;
+			// if (z < 0.1) outColor = vec4(0.0, 0.0, 1.0, 1.0); // blue
+			// else if (z < 0.3) outColor = vec4(0.0, 1.0, 1.0, 1.0); // cyan
+			// else if (z < 0.5) outColor = vec4(0.0, 1.0, 0.0, 1.0); // green
+			// else if (z < 0.7) outColor = vec4(1.0, 1.0, 0.0, 1.0); // yellow
+			// else if (z < 0.9) outColor = vec4(1.0, 0.5, 0.0, 1.0); // orange
+			// else outColor = vec4(1.0, 0.0, 0.0, 1.0); // red
 
 			outColor += vec4(ambient * ambientIntensity + diffuse * diffuseIntensity + specular * specularIntensity, 0.0) * shadow;
-		}else
-			outColor += vec4(ambient * ambientIntensity + diffuse * diffuseIntensity + specular * specularIntensity, 0.0);
-			//outColor = vec4(0.0, 0.0, 0.0, 1.0); // black
+		}//else outColor += vec4(ambient * ambientIntensity + diffuse * diffuseIntensity + specular * specularIntensity, 0.0);
+		
+		//outColor = vec4(0.0, 0.0, 0.0, 1.0); // black
 		//outColor = vec4(lightSpaceCoords.z, 0, 0, 1.0); // test: all red
 		//outColor = vec4(lightSpaceCoords.xyz, 1.0); // test
 
@@ -112,17 +146,3 @@ void main() {
 	
 }
 
-//Notes:
-//texelFetch() Explain: same function as texture , but no interpolate or filter
-//	sampler
-//	ivec2/ivec3: texture coordinates
-//	lod: Level of Details
-//	return: vec4, ivec4 or uvec4, depending on sampler type
-
-//texture() Explain: get texel from texture
-//	texture coordinate use unified values
-
-//textureSize() Explain: get texture size
-//	sampler
-//	lod
-//	return: texture's resolution, int, ivec2 or ivec3

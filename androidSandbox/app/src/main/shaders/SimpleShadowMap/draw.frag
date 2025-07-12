@@ -53,15 +53,13 @@ float SlopeScaleDepthBias(vec3 normal, vec3 lightDir, float slopeScale, float co
 
 
 
-float HardShadow(vec3 shadowCoords){
-	float depthBias = 0.08f;
+float GetShadow(vec3 shadowCoords, float depthBias, float shadowContribution){
 	float depth_lightDepthImage = texelFetch(lightDepthSampler, ivec2(shadowCoords.xy * textureSize(lightDepthSampler)), 0).r; //r==g==b, value is z
-	return  (shadowCoords.z-depth_lightDepthImage) > depthBias ? 0.9 : 0.0;
+	return  (shadowCoords.z-depth_lightDepthImage) > depthBias ? shadowContribution : 0.0;
 }
 
-float PCFShadow(vec3 shadowCoords, vec3 normal, vec3 lightDir){ //Percentage Closer Filtering
-	//shadowCoords are within 0~1, shadowCoords.xy is light space coords, shadowCoords.z is light space depth
-
+//float PCFShadow(vec3 shadowCoords, vec3 normal, vec3 lightDir){ //Percentage Closer Filtering, use lightDir/normal if need to calculate slope scale depth bias
+float PCFShadow(vec3 shadowCoords){ //Percentage Closer Filtering, shadowCoords are within 0~1, shadowCoords.xy is light space coords, shadowCoords.z is light space depth
 	float shadow = 0.0f;
 	
 	float depthBias = 0.08f; //How to find this value? search for "Depth Bias". This value should be related to slope, use slope-scale depth bias instead
@@ -73,28 +71,24 @@ float PCFShadow(vec3 shadowCoords, vec3 normal, vec3 lightDir){ //Percentage Clo
 	float dx = scale * 1.0 / float(texDim.x);
 	float dy = scale * 1.0 / float(texDim.y);
 
-	float depth_lightDepthImage = 0.0;
-	//int count = 0;
 	int range = 20; 
 	float shadow_contribution = 0.23 / (range * range);
-	for (int x = -range; x <= range; x++)
+	for (int x = -range; x <= range; x++){
 		for (int y = -range; y <= range; y++){
 			vec2 offset = vec2(dx * x, dy * y);
 			vec2 shadowCoords_offset = shadowCoords.xy+offset;
 			if(shadowCoords_offset.x >= 0.0 && shadowCoords_offset.x <= 1.0 &&
 				shadowCoords_offset.y >= 0.0 && shadowCoords_offset.y <= 1.0){//make sure shadowCoords_offset are still within 0~1, otherwise there is black box
-				depth_lightDepthImage = texelFetch(lightDepthSampler, ivec2(shadowCoords_offset * textureSize(lightDepthSampler)), 0).r; ////r==g==b, value is z
-				float shadow_delta = (shadowCoords.z-depth_lightDepthImage) > depthBias ? shadow_contribution : 0.0;
+				float shadow_delta = GetShadow(vec3(shadowCoords_offset, shadowCoords.z), depthBias, shadow_contribution);
 				shadow += shadow_delta;
-				//count++;
 			}
 		}
+	}
+
 	return shadow;
 }
 
 void main() {
-	
-
 	//Code to generate light shading
 	vec4 tex = texture(texSampler, inTexCoord);
 	//color = vec3(mix(tex.xyz, vec3(dot(vec3(0.2126,0.7152,0.0722), tex.xyz)), 0.65));	//Desaturate tex color
@@ -124,10 +118,8 @@ void main() {
 	    	lightSpaceCoords.z >= 0.0 && lightSpaceCoords.z <= 1.0){
 			lightSpaceCoords = lightSpaceCoords * 0.5 + 0.5;
 
-			if(enablePCF) shadow = PCFShadow(lightSpaceCoords, inNormal, L);
-			else 		  shadow = HardShadow(lightSpaceCoords);
-
-			//shadow = texture(lightDepthSampler, lightSpaceCoords);
+			if(enablePCF) shadow = PCFShadow(lightSpaceCoords); //PCFShadow(lightSpaceCoords, inNormal, L);
+			else shadow = GetShadow(lightSpaceCoords, 0.08f, 0.9f);
 		}
 
 		outColor += vec4(ambient * ambientIntensity + diffuse * diffuseIntensity + specular * specularIntensity, 0.0) * (1.0 - shadow);
