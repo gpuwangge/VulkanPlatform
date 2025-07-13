@@ -60,6 +60,7 @@ public:
 		for(int i = 0; i < lights.size(); i++) {
 			lights[i].SetLightPosition(
 				glm::vec3(lights[i].GetLightPosition().x, lights[i].GetLightPosition().y,lights[i].GetLightPosition().z)
+				//glm::vec3(lights[i].GetLightPosition().x, 1+2*sin(durationTime*0.25), lights[i].GetLightPosition().z)
 				//glm::vec3(0, 2.5, 0)
 				//glm::vec3(2.5 *cos(durationTime * (i+1)), 0, 2.5 *sin(durationTime * (i+1)))
 				//glm::vec3(0, 3+0.6*sin(durationTime * (i+1)/2), 0)
