@@ -1062,6 +1062,17 @@ void CApplication::ReadCameras(){
             1.0f,
             config["LightCamera"]["camera_z"][0].as<float>(), 
             config["LightCamera"]["camera_z"][1].as<float>());
+
+        
+        // float orthoWidth = 20.0f;
+        // float orthoHeight = 20.0f;
+        // float nearPlane = 0.1f;
+        // float farPlane = 50.0f;
+        // lightCamera.setOrthographic(
+        //     -orthoWidth / 2.0f, orthoWidth / 2.0f,
+        //     -orthoHeight / 2.0f, orthoHeight / 2.0f,
+        //     nearPlane, farPlane);
+
     }else{
         lightCamera.cameraType = mainCamera.cameraType; //default to main camera type
         lightCamera.SetPosition(mainCamera.Position);

@@ -208,7 +208,7 @@ void CObject::Register(CApplication *p_app, int object_id, std::vector<int> text
 }
 
 
-void CObject::Draw(int graphicsPipelineId, uint32_t n){
+void CObject::Draw(int graphicsPipelineId, uint32_t n, bool bSetDepthbias){
     if(!bRegistered || !bVisible) return;
 
     //std::cout<<"CObject::Draw, renderPassType="<<renderPassType<<", n="<<n<<std::endl;
@@ -232,6 +232,12 @@ void CObject::Draw(int graphicsPipelineId, uint32_t n){
 
     VkPipelineLayout *p_graphicsPipelineLayout = &(p_renderProcess->graphicsPipelineLayouts[current_graphics_pipeline_id]);
     p_renderer->BindPipeline(p_renderProcess->graphicsPipelines[current_graphics_pipeline_id], VK_PIPELINE_BIND_POINT_GRAPHICS, p_renderer->graphicsCmdId);
+
+    if(bSetDepthbias){
+        //std::cout<<"Set DepthBias for object:"<<m_object_id<<", graphicsPipelineId:"<<current_graphics_pipeline_id<<std::endl;
+        //vkCmdSetDepthBias( p_renderer->commandBuffers[ p_renderer->graphicsCmdId][ p_renderer->currentFrame], 1.25f, 0.0f, 1.75f);
+        vkCmdSetDepthBias( p_renderer->commandBuffers[ p_renderer->graphicsCmdId][ p_renderer->currentFrame], 200.0f, 0.0f, 200.0f);
+    }
 
     //std::cout<<"test2. p_graphicsDescriptorSets->size()="<<p_graphicsDescriptorSets->size()<<std::endl;
     //std::cout<<"test2. m_texture_ids.size()="<<m_texture_ids.size()<<std::endl;

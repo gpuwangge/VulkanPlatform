@@ -14,6 +14,8 @@ public:
 	// float keyboard_sensitive = 60;
   	// float mouse_sensitive = 3;
 
+	bool chickenbit = false;
+
 	glm::vec3 TargetPosition = glm::vec3(0.0f, 0.0f, 0.0f);
 	void SetTargetPosition(float x, float y, float z){ TargetPosition = glm::vec3(x, y, z); }
 	void SetTargetPosition(glm::vec3 pos){ TargetPosition = pos; }
@@ -55,6 +57,7 @@ public:
 
 	void setOrthographic(float left, float right, float bottom, float top, float znear, float zfar){
 		matrices.perspective = glm::ortho(left, right, bottom, top, znear, zfar);
+		chickenbit = true;
 	}
 
 	//this function is provided to user (no use case yet)
@@ -73,7 +76,15 @@ public:
 
 		CEntity::Update(deltaTime); //update TranslateMatrix RotationMatrix ScaleMatrix
 
-		matrices.view = glm::lookAt(Position, Position + DirectionFront, DirectionUp);
+		//hack
+		if(chickenbit){
+			glm::vec3 lightPosition = glm::vec3(0.0f, 10.0f, 0.0f);
+			glm::vec3 lightTarget = glm::vec3(0.0f, 0.0f, 0.0f);
+			matrices.view = glm::lookAt(lightPosition, lightTarget, glm::vec3(0, 1, 0));
+		}else{
+			matrices.view = glm::lookAt(Position, Position + DirectionFront, DirectionUp);
+		}
+		//matrices.view = glm::lookAt(Position, Position + DirectionFront, DirectionUp);
 
 
 

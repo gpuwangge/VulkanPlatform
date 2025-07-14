@@ -592,7 +592,7 @@ void CGraphicsDescriptorManager::addLightDepthImageSamplerUniformBuffer_hardware
     samplerInfo.borderColor = VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE;//VK_BORDER_COLOR_INT_OPAQUE_BLACK;
     samplerInfo.unnormalizedCoordinates = VK_FALSE;
     samplerInfo.compareEnable = VK_TRUE; //for hardware shadowmap
-    samplerInfo.compareOp = VK_COMPARE_OP_LESS;
+    samplerInfo.compareOp = VK_COMPARE_OP_LESS_OR_EQUAL;
     samplerInfo.mipmapMode = VK_SAMPLER_MIPMAP_MODE_LINEAR;
 
     VkResult result = vkCreateSampler(CContext::GetHandle().GetLogicalDevice(), &samplerInfo, nullptr, &lightDepthImageSampler_hardwareDepthBias);

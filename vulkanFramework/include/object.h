@@ -60,7 +60,7 @@ public:
     bool bVisible = true;
 
     //draw with renderer's buffer, or no buffer
-    void Draw(int graphicsPipelineId = -1, uint32_t n = 0); //-1 means use default graphics pipeline id
+    void Draw(int graphicsPipelineId = -1, uint32_t n = 0, bool bSetDepthbias = false); //-1 means use default graphics pipeline id
     //draw with external buffers
     void Draw(std::vector<CWxjBuffer> &buffer, int graphicsPipelineId = -1, uint32_t n = 0); //const VkBuffer *pBuffers
 };

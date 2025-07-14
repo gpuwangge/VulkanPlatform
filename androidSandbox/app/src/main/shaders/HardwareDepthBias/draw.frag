@@ -44,11 +44,13 @@ layout (location = 0) out vec4 outColor;
 //Normal Shadow: hard shadows
 //PCF: fixed fiter size, soft shadow, slow
 //PCSS: adaptive filter size(depends on object distance), better soft shadow, slow
-bool enablePCF = true;
+bool enablePCF = false;
 
 
 float GetShadow(vec3 shadowCoords, float depthBias){
-	return texture(lightDepthSampler, vec3(shadowCoords.xy, shadowCoords.z - depthBias)); 
+	//The texture() here will run: return (compareDepth <= depthMap[uv]) ? 1.0 : 0.0;
+	//return texture(lightDepthSampler, vec3(shadowCoords.xy, shadowCoords.z - depthBias));
+	return texture(lightDepthSampler, vec3(shadowCoords.xy, shadowCoords.z));
 }
 
 float PCFShadow(vec3 shadowCoords){ //Percentage Closer Filtering, shadowCoords are within 0~1, shadowCoords.xy is light space coords, shadowCoords.z is light space depth
@@ -106,9 +108,9 @@ void main() {
 		//Code to generate shadow(need use L)
 		float shadow = 0.0f;
 		vec3 lightSpaceCoords = inFragPosLightSpace.xyz/inFragPosLightSpace.w;
-		if(lightSpaceCoords.x >= -1.0 && lightSpaceCoords.x <= 1.0 && //make sure after convert to light space, the point is in view frustum; outside of view frustum has no shadow calculation
-	    	lightSpaceCoords.y >= -1.0 && lightSpaceCoords.y <= 1.0 &&
-	    	lightSpaceCoords.z >= 0.0 && lightSpaceCoords.z <= 1.0){
+		//if(lightSpaceCoords.x >= -1.0 && lightSpaceCoords.x <= 1.0 && //make sure after convert to light space, the point is in view frustum; outside of view frustum has no shadow calculation
+	    //	lightSpaceCoords.y >= -1.0 && lightSpaceCoords.y <= 1.0 &&
+	    //	lightSpaceCoords.z >= 0.0 && lightSpaceCoords.z <= 1.0){
 			lightSpaceCoords = lightSpaceCoords * 0.5 + 0.5;
 
 			if(enablePCF) shadow = PCFShadow(lightSpaceCoords); //PCFShadow(lightSpaceCoords, inNormal, L);
@@ -123,7 +125,7 @@ void main() {
 			// else outColor = vec4(1.0, 0.0, 0.0, 1.0); // red
 
 			outColor += vec4(ambient * ambientIntensity + diffuse * diffuseIntensity + specular * specularIntensity, 0.0) * shadow;
-		}else outColor += vec4(ambient * ambientIntensity + diffuse * diffuseIntensity + specular * specularIntensity, 0.0);
+		//}else outColor += vec4(ambient * ambientIntensity + diffuse * diffuseIntensity + specular * specularIntensity, 0.0);
 		
 		//outColor = vec4(0.0, 0.0, 0.0, 1.0); // black
 		//outColor = vec4(lightSpaceCoords.z, 0, 0, 1.0); // test: all red
