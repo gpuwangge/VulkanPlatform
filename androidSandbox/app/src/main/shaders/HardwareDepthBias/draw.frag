@@ -49,8 +49,8 @@ bool enablePCF = false;
 
 float GetShadow(vec3 shadowCoords, float depthBias){
 	//The texture() here will run: return (compareDepth <= depthMap[uv]) ? 1.0 : 0.0;
-	//return texture(lightDepthSampler, vec3(shadowCoords.xy, shadowCoords.z - depthBias));
-	return texture(lightDepthSampler, vec3(shadowCoords.xy, shadowCoords.z));
+	return texture(lightDepthSampler, vec3(shadowCoords.xy, shadowCoords.z - depthBias));
+	//return texture(lightDepthSampler, vec3(shadowCoords.xy, shadowCoords.z));
 }
 
 float PCFShadow(vec3 shadowCoords){ //Percentage Closer Filtering, shadowCoords are within 0~1, shadowCoords.xy is light space coords, shadowCoords.z is light space depth
@@ -108,13 +108,13 @@ void main() {
 		//Code to generate shadow(need use L)
 		float shadow = 0.0f;
 		vec3 lightSpaceCoords = inFragPosLightSpace.xyz/inFragPosLightSpace.w;
-		//if(lightSpaceCoords.x >= -1.0 && lightSpaceCoords.x <= 1.0 && //make sure after convert to light space, the point is in view frustum; outside of view frustum has no shadow calculation
-	    //	lightSpaceCoords.y >= -1.0 && lightSpaceCoords.y <= 1.0 &&
-	    //	lightSpaceCoords.z >= 0.0 && lightSpaceCoords.z <= 1.0){
+		if(lightSpaceCoords.x >= -1.0 && lightSpaceCoords.x <= 1.0 && //make sure after convert to light space, the point is in view frustum; outside of view frustum has no shadow calculation
+	    	lightSpaceCoords.y >= -1.0 && lightSpaceCoords.y <= 1.0 &&
+	    	lightSpaceCoords.z >= 0.0 && lightSpaceCoords.z <= 1.0){
 			lightSpaceCoords = lightSpaceCoords * 0.5 + 0.5;
 
 			if(enablePCF) shadow = PCFShadow(lightSpaceCoords); //PCFShadow(lightSpaceCoords, inNormal, L);
-			else shadow = GetShadow(lightSpaceCoords, 0.35f);
+			else shadow = GetShadow(lightSpaceCoords, 0.49f);
 				
 			// float z = lightSpaceCoords.z;
 			// if (z < 0.1) outColor = vec4(0.0, 0.0, 1.0, 1.0); // blue
@@ -125,10 +125,15 @@ void main() {
 			// else outColor = vec4(1.0, 0.0, 0.0, 1.0); // red
 
 			outColor += vec4(ambient * ambientIntensity + diffuse * diffuseIntensity + specular * specularIntensity, 0.0) * shadow;
-		//}else outColor += vec4(ambient * ambientIntensity + diffuse * diffuseIntensity + specular * specularIntensity, 0.0);
+
+			//float s = texture(lightDepthSampler, vec3(lightSpaceCoords.xy, lightSpaceCoords.z - 0.49f));
+			//outColor += vec4(ambient * ambientIntensity + diffuse * diffuseIntensity + specular * specularIntensity, 0.0) * s;
+			
+
+		}else //outColor += vec4(ambient * ambientIntensity + diffuse * diffuseIntensity + specular * specularIntensity, 0.0);
 		
 		//outColor = vec4(0.0, 0.0, 0.0, 1.0); // black
-		//outColor = vec4(lightSpaceCoords.z, 0, 0, 1.0); // test: all red
+			outColor = vec4(1.0, 0, 0, 1.0); // test: all red
 		//outColor = vec4(lightSpaceCoords.xyz, 1.0); // test
 
 		//vec3 lightDir = normalize((mvpUBO.lightCameraView * vec4(0, 0, -1, 0)).xyz);
@@ -144,6 +149,19 @@ void main() {
 		//outColor = vec4(vec3(mvpUBO.mainCameraView[0].x, mvpUBO.mainCameraView[1].y, mvpUBO.mainCameraView[2].z), 1.0);
 		//outColor = vec4(vec3(mvpUBO.lightCameraView[0].x, mvpUBO.lightCameraView[1].y, mvpUBO.lightCameraView[2].z), 1.0);
 
+	
+		// vec4 lightSpace = mvpUBO.lightCameraProj * mvpUBO.lightCameraView * vec4(inPosWorld, 1.0);
+		// vec3 lsc = lightSpace.xyz / lightSpace.w;
+		// if(lsc.x >= -1.0 && lsc.x <= 1.0 && //make sure after convert to light space, the point is in view frustum; outside of view frustum has no shadow calculation
+	    // 	lsc.y >= -1.0 && lsc.y <= 1.0 &&
+	    // 	lsc.z >= 0.0 && lsc.z <= 1.0){
+		// 	outColor = vec4(lsc * 0.5 + 0.5, 1.0);
+		// }else{
+		// 	outColor = vec4(1.0, 0.0, 0.0, 1.0); // red
+		// }
+
+
+				
 	}
 	
 }

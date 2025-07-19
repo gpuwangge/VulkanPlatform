@@ -13,7 +13,7 @@ Objects:
   - object_name: Sphere
     object_id: 1
     object_scale: 0.04
-    object_position: [0,0.5,0]
+    object_position: [0,0.0,0]
     object_rotation: [0,0,0]
     object_velocity: [0,0,0]
     object_angular_velocity: [0,0,0]
@@ -95,8 +95,11 @@ MainCamera:
   camera_position: [0,1,-7] #[0,3,-4]
   camera_rotation: [0,0,0]
   object_id_target: 1
-  camera_fov: 60
   camera_z: [0.1, 30]
+  camera_projection_enable_orthographic: false
+  camera_projection_perspective_fov: 60
+  camera_projection_orthographic_width: 8
+  camera_projection_orthographic_height: 8
   camera_keyboard_sensitive: 3
   camera_mouse_sensitive: 60
 
@@ -105,14 +108,16 @@ LightCamera:
   camera_position: [0,0.5,-4] #[0,3,-4]
   camera_rotation: [0,0,0]
   object_id_target: 1
-  camera_fov: 90
-  camera_z: [0.5, 20]
-
+  camera_z: [0.01, 20]
+  camera_projection_enable_orthographic: true
+  camera_projection_perspective_fov: 60
+  camera_projection_orthographic_width: 20
+  camera_projection_orthographic_height: 20
 
 Lights:
   - light_name: Light
     light_id: 0
-    light_position: [2.5,0.0,0]
+    light_position: [0.0,3.0,0.0]
     light_intensity: [0.5,2,4,1]
 
 

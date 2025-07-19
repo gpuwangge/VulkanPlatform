@@ -62,7 +62,7 @@ float GetShadow(vec3 shadowCoords, float depthBias, float shadowContribution){
 float PCFShadow(vec3 shadowCoords){ //Percentage Closer Filtering, shadowCoords are within 0~1, shadowCoords.xy is light space coords, shadowCoords.z is light space depth
 	float shadow = 0.0f;
 	
-	float depthBias = 0.08f; //How to find this value? search for "Depth Bias". This value should be related to slope, use slope-scale depth bias instead
+	float depthBias = 0.04f; //How to find this value? search for "Depth Bias". This value should be related to slope, use slope-scale depth bias instead
 	//float depthBias = SlopeScaleDepthBias(normal, lightDir, 10, 0.09); //not work correctly
 	//float depthBias = 0; //use hardware depth bias
 	

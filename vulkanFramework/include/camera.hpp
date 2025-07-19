@@ -14,7 +14,8 @@ public:
 	// float keyboard_sensitive = 60;
   	// float mouse_sensitive = 3;
 
-	bool chickenbit = false;
+	//bool chickenbit = false;
+	bool bEnableOrthographic = false; //if true, use orthographic projection, otherwise use perspective projection
 
 	glm::vec3 TargetPosition = glm::vec3(0.0f, 0.0f, 0.0f);
 	void SetTargetPosition(float x, float y, float z){ TargetPosition = glm::vec3(x, y, z); }
@@ -57,7 +58,7 @@ public:
 
 	void setOrthographic(float left, float right, float bottom, float top, float znear, float zfar){
 		matrices.perspective = glm::ortho(left, right, bottom, top, znear, zfar);
-		chickenbit = true;
+		//chickenbit = true;
 	}
 
 	//this function is provided to user (no use case yet)
@@ -77,14 +78,24 @@ public:
 		CEntity::Update(deltaTime); //update TranslateMatrix RotationMatrix ScaleMatrix
 
 		//hack
-		if(chickenbit){
-			glm::vec3 lightPosition = glm::vec3(0.0f, 10.0f, 0.0f);
-			glm::vec3 lightTarget = glm::vec3(0.0f, 0.0f, 0.0f);
-			matrices.view = glm::lookAt(lightPosition, lightTarget, glm::vec3(0, 1, 0));
+		/*
+		if(bEnableOrthographic){
+			// DirectionFront = glm::vec3(0,1,0);
+
+			// std::cout<<"Position="<<Position.x<<","<<Position.y<<","<<Position.z<<std::endl;
+			// std::cout<<"DirectionFront="<<DirectionFront.x<<","<<DirectionFront.y<<","<<DirectionFront.z<<std::endl;
+			// std::cout<<"DirectionUp="<<DirectionUp.x<<","<<DirectionUp.y<<","<<DirectionUp.z<<std::endl;
+
+			matrices.view = glm::lookAt(Position, Position + DirectionFront, DirectionUp);
+
+			//glm::vec3 lightPosition = glm::vec3(0.0f, 3.0f, 0.0f);
+			//glm::vec3 lightTarget = glm::vec3(0.0f, 2.0f, 0.0f);
+			//matrices.view = glm::lookAt(lightPosition, lightTarget, glm::vec3(0, 0, 1));
 		}else{
 			matrices.view = glm::lookAt(Position, Position + DirectionFront, DirectionUp);
 		}
-		//matrices.view = glm::lookAt(Position, Position + DirectionFront, DirectionUp);
+		*/
+		matrices.view = glm::lookAt(Position, Position + DirectionFront, DirectionUp);
 
 
 

@@ -235,8 +235,9 @@ void CObject::Draw(int graphicsPipelineId, uint32_t n, bool bSetDepthbias){
 
     if(bSetDepthbias){
         //std::cout<<"Set DepthBias for object:"<<m_object_id<<", graphicsPipelineId:"<<current_graphics_pipeline_id<<std::endl;
-        //vkCmdSetDepthBias( p_renderer->commandBuffers[ p_renderer->graphicsCmdId][ p_renderer->currentFrame], 1.25f, 0.0f, 1.75f);
-        vkCmdSetDepthBias( p_renderer->commandBuffers[ p_renderer->graphicsCmdId][ p_renderer->currentFrame], 200.0f, 0.0f, 200.0f);
+        vkCmdSetDepthBias( p_renderer->commandBuffers[ p_renderer->graphicsCmdId][ p_renderer->currentFrame], 1.25f, 0.0f, 1.75f);
+        //vkCmdSetDepthBias( p_renderer->commandBuffers[ p_renderer->graphicsCmdId][ p_renderer->currentFrame], 5.0f, 0.0f, 5.0f);
+        //vkCmdSetDepthBias( p_renderer->commandBuffers[ p_renderer->graphicsCmdId][ p_renderer->currentFrame], 200.0f, 0.0f, 200.0f);
     }
 
     //std::cout<<"test2. p_graphicsDescriptorSets->size()="<<p_graphicsDescriptorSets->size()<<std::endl;

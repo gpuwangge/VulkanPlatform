@@ -1028,15 +1028,28 @@ void CApplication::ReadCameras(){
         config["MainCamera"]["camera_rotation"][2].as<float>());
         
     mainCamera.focusObjectId = config["MainCamera"]["object_id_target"] ? config["MainCamera"]["object_id_target"].as<int>() : 0;
+
+    mainCamera.bEnableOrthographic = config["MainCamera"]["camera_projection_enable_orthographic"] ? config["MainCamera"]["camera_projection_enable_orthographic"].as<bool>() : false;
+    float nearPlane = config["MainCamera"]["camera_z"][0].as<float>();
+    float farPlane = config["MainCamera"]["camera_z"][1].as<float>();
+
+    if(!mainCamera.bEnableOrthographic){
+        float fov = config["MainCamera"]["camera_projection_perspective_fov"] ? config["MainCamera"]["camera_projection_perspective_fov"].as<float>() : 90.0f;
+        mainCamera.setPerspective(fov, 1.0f, nearPlane, farPlane);
+    }else{
+        float orthoWidth = config["MainCamera"]["camera_projection_orthographic_width"] ? config["MainCamera"]["camera_projection_orthographic_width"].as<float>() : 20.0f;
+        float orthoHeight = config["MainCamera"]["camera_projection_orthographic_height"] ? config["MainCamera"]["camera_projection_orthographic_height"].as<float>() : 20.0f;
+        mainCamera.setOrthographic(
+            -orthoWidth / 2.0f, orthoWidth / 2.0f,
+            -orthoHeight / 2.0f, orthoHeight / 2.0f,
+            nearPlane, farPlane);
+    }
+
+
     // mainCamera.SetTargetPosition(
     //     config["MainCamera"]["camera_target_position"][0].as<float>(), 
     //     config["MainCamera"]["camera_target_position"][1].as<float>(), 
     //     config["MainCamera"]["camera_target_position"][2].as<float>());
-    mainCamera.setPerspective(
-        config["MainCamera"]["camera_fov"].as<float>(),  
-        (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT,
-        config["MainCamera"]["camera_z"][0].as<float>(), 
-        config["MainCamera"]["camera_z"][1].as<float>());
 
 #ifdef SDL
     sdlManager.keyboard_sensitive = config["MainCamera"]["camera_keyboard_sensitive"] ? config["MainCamera"]["camera_keyboard_sensitive"].as<float>() : 3;
@@ -1057,21 +1070,22 @@ void CApplication::ReadCameras(){
             config["LightCamera"]["camera_rotation"][1].as<float>(), 
             config["LightCamera"]["camera_rotation"][2].as<float>());
         lightCamera.focusObjectId = config["LightCamera"]["object_id_target"] ? config["LightCamera"]["object_id_target"].as<int>() : 0;
-        lightCamera.setPerspective(
-            config["LightCamera"]["camera_fov"].as<float>(),  
-            1.0f,
-            config["LightCamera"]["camera_z"][0].as<float>(), 
-            config["LightCamera"]["camera_z"][1].as<float>());
 
-        
-        // float orthoWidth = 20.0f;
-        // float orthoHeight = 20.0f;
-        // float nearPlane = 0.1f;
-        // float farPlane = 50.0f;
-        // lightCamera.setOrthographic(
-        //     -orthoWidth / 2.0f, orthoWidth / 2.0f,
-        //     -orthoHeight / 2.0f, orthoHeight / 2.0f,
-        //     nearPlane, farPlane);
+        lightCamera.bEnableOrthographic = config["LightCamera"]["camera_projection_enable_orthographic"] ? config["LightCamera"]["camera_projection_enable_orthographic"].as<bool>() : false;
+        float nearPlane = config["LightCamera"]["camera_z"][0].as<float>();
+        float farPlane = config["LightCamera"]["camera_z"][1].as<float>();
+
+        if(!lightCamera.bEnableOrthographic){
+            float fov = config["LightCamera"]["camera_projection_perspective_fov"] ? config["LightCamera"]["camera_projection_perspective_fov"].as<float>() : 90.0f;
+            lightCamera.setPerspective(fov, 1.0f, nearPlane, farPlane);
+        }else{
+            float orthoWidth = config["LightCamera"]["camera_projection_orthographic_width"] ? config["LightCamera"]["camera_projection_orthographic_width"].as<float>() : 20.0f;
+            float orthoHeight = config["LightCamera"]["camera_projection_orthographic_height"] ? config["LightCamera"]["camera_projection_orthographic_height"].as<float>() : 20.0f;
+            lightCamera.setOrthographic(
+                -orthoWidth / 2.0f, orthoWidth / 2.0f,
+                -orthoHeight / 2.0f, orthoHeight / 2.0f,
+                nearPlane, farPlane);
+        }
 
     }else{
         lightCamera.cameraType = mainCamera.cameraType; //default to main camera type
