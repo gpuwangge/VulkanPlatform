@@ -58,7 +58,10 @@ public:
 
 	void setOrthographic(float left, float right, float bottom, float top, float znear, float zfar){
 		matrices.perspective = glm::ortho(left, right, bottom, top, znear, zfar);
-		//chickenbit = true;
+		//matrices.perspective = glm::ortho(-4.0f, 4.0f, -4.0f, 4.0f, -6.0f, -1.5f);//hack
+
+		std::cout<<"Camera setOrthographic: left="<<left<<", right="<<right<<", bottom="<<bottom<<", top="<<top<<", znear="<<znear<<", zfar="<<zfar<<std::endl;
+
 	}
 
 	//this function is provided to user (no use case yet)
@@ -95,7 +98,21 @@ public:
 			matrices.view = glm::lookAt(Position, Position + DirectionFront, DirectionUp);
 		}
 		*/
-		matrices.view = glm::lookAt(Position, Position + DirectionFront, DirectionUp);
+
+		//hack
+		if(bEnableOrthographic){
+			DirectionUp = glm::vec3(1.0f, 0.0f, 0.0f); //TODO: remove this hack
+		}
+
+		glm::vec3 Target = Position + DirectionFront;
+		matrices.view = glm::lookAt(Position, Target, DirectionUp);
+
+		//print for debug
+		// if(bEnableOrthographic){
+		// 	std::cout<<"Position="<<Position.x<<","<<Position.y<<","<<Position.z<<std::endl;
+		// 	std::cout<<"Target="<<Target.x<<","<<Target.y<<","<<Target.z<<std::endl;
+		// 	std::cout<<"DirectionUp="<<DirectionUp.x<<","<<DirectionUp.y<<","<<DirectionUp.z<<std::endl;
+		// }
 
 
 

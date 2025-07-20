@@ -78,6 +78,25 @@ CObject::CObject(){
             CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].lightCameraView = glm::mat4(1.0f);
         }
 
+        // std::cout<<"myUBO.mvpDATA["<<m_object_id<<"] lightCameraProj:"<<std::endl;
+        // std::cout<<CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].lightCameraProj[0][0]<<","<<CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].lightCameraProj[0][1]<<","<<CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].lightCameraProj[0][2]<<","<<CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].lightCameraProj[0][3]<<std::endl;
+        // std::cout<<CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].lightCameraProj[1][0]<<","<<CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].lightCameraProj[1][1]<<","<<CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].lightCameraProj[1][2]<<","<<CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].lightCameraProj[1][3]<<std::endl;
+        // std::cout<<CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].lightCameraProj[2][0]<<","<<CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].lightCameraProj[2][1]<<","<<CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].lightCameraProj[2][2]<<","<<CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].lightCameraProj[2][3]<<std::endl;
+        // std::cout<<CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].lightCameraProj[3][0]<<","<<CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].lightCameraProj[3][1]<<","<<CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].lightCameraProj[3][2]<<","<<CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].lightCameraProj[3][3]<<std::endl;
+
+        // std::cout<<"myUBO.mvpDATA["<<m_object_id<<"] lightCameraView:"<<std::endl;
+        // std::cout<<CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].lightCameraView[0][0]<<","<<CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].lightCameraView[0][1]<<","<<CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].lightCameraView[0][2]<<","<<CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].lightCameraView[0][3]<<std::endl;
+        // std::cout<<CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].lightCameraView[1][0]<<","<<CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].lightCameraView[1][1]<<","<<CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].lightCameraView[1][2]<<","<<CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].lightCameraView[1][3]<<std::endl;
+        // std::cout<<CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].lightCameraView[2][0]<<","<<CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].lightCameraView[2][1]<<","<<CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].lightCameraView[2][2]<<","<<CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].lightCameraView[2][3]<<std::endl;
+        // std::cout<<CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].lightCameraView[3][0]<<","<<CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].lightCameraView[3][1]<<","<<CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].lightCameraView[3][2]<<","<<CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].lightCameraView[3][3]<<std::endl;
+
+        // std::cout<<"myUBO.mvpDATA["<<m_object_id<<"] model:"<<std::endl;
+        // std::cout<<CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].model[0][0]<<","<<CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].model[0][1]<<","<<CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].model[0][2]<<","<<CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].model[0][3]<<std::endl;
+        // std::cout<<CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].model[1][0]<<","<<CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].model[1][1]<<","<<CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].model[1][2]<<","<<CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].model[1][3]<<std::endl;
+        // std::cout<<CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].model[2][0]<<","<<CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].model[2][1]<<","<<CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].model[2][2]<<","<<CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].model[2][3]<<std::endl;
+        // std::cout<<CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].model[3][0]<<","<<CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].model[3][1]<<","<<CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].model[3][2]<<","<<CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].model[3][3]<<std::endl;
+
+
         //memcpy to GPU memory
         memcpy(CGraphicsDescriptorManager::mvpUniformBuffersMapped[currentFrame], &CGraphicsDescriptorManager::mvpUBO, sizeof(CGraphicsDescriptorManager::mvpUBO));
     }
@@ -235,8 +254,8 @@ void CObject::Draw(int graphicsPipelineId, uint32_t n, bool bSetDepthbias){
 
     if(bSetDepthbias){
         //std::cout<<"Set DepthBias for object:"<<m_object_id<<", graphicsPipelineId:"<<current_graphics_pipeline_id<<std::endl;
-        vkCmdSetDepthBias( p_renderer->commandBuffers[ p_renderer->graphicsCmdId][ p_renderer->currentFrame], 1.25f, 0.0f, 1.75f);
-        //vkCmdSetDepthBias( p_renderer->commandBuffers[ p_renderer->graphicsCmdId][ p_renderer->currentFrame], 5.0f, 0.0f, 5.0f);
+        //vkCmdSetDepthBias( p_renderer->commandBuffers[ p_renderer->graphicsCmdId][ p_renderer->currentFrame], 1.25f, 0.0f, 1.75f);
+       // vkCmdSetDepthBias( p_renderer->commandBuffers[ p_renderer->graphicsCmdId][ p_renderer->currentFrame], 1.25f-0.49f, 0.0f, 1.75f);
         //vkCmdSetDepthBias( p_renderer->commandBuffers[ p_renderer->graphicsCmdId][ p_renderer->currentFrame], 200.0f, 0.0f, 200.0f);
     }
 

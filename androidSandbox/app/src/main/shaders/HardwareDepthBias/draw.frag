@@ -49,8 +49,8 @@ bool enablePCF = false;
 
 float GetShadow(vec3 shadowCoords, float depthBias){
 	//The texture() here will run: return (compareDepth <= depthMap[uv]) ? 1.0 : 0.0;
-	return texture(lightDepthSampler, vec3(shadowCoords.xy, shadowCoords.z - depthBias));
-	//return texture(lightDepthSampler, vec3(shadowCoords.xy, shadowCoords.z));
+	//return texture(lightDepthSampler, vec3(shadowCoords.xy, shadowCoords.z - depthBias));
+	return texture(lightDepthSampler, vec3(shadowCoords.xy, shadowCoords.z));
 }
 
 float PCFShadow(vec3 shadowCoords){ //Percentage Closer Filtering, shadowCoords are within 0~1, shadowCoords.xy is light space coords, shadowCoords.z is light space depth
@@ -112,9 +112,10 @@ void main() {
 	    	lightSpaceCoords.y >= -1.0 && lightSpaceCoords.y <= 1.0 &&
 	    	lightSpaceCoords.z >= 0.0 && lightSpaceCoords.z <= 1.0){
 			lightSpaceCoords = lightSpaceCoords * 0.5 + 0.5;
+			lightSpaceCoords.z -= 0.5f; //Hack: depth bias, this value is related to the slope of the surface, use hardware depth bias instead
 
 			if(enablePCF) shadow = PCFShadow(lightSpaceCoords); //PCFShadow(lightSpaceCoords, inNormal, L);
-			else shadow = GetShadow(lightSpaceCoords, 0.49f);
+			else shadow = GetShadow(lightSpaceCoords, 0.55f);
 				
 			// float z = lightSpaceCoords.z;
 			// if (z < 0.1) outColor = vec4(0.0, 0.0, 1.0, 1.0); // blue
@@ -135,6 +136,18 @@ void main() {
 		//outColor = vec4(0.0, 0.0, 0.0, 1.0); // black
 			outColor = vec4(1.0, 0, 0, 1.0); // test: all red
 		//outColor = vec4(lightSpaceCoords.xyz, 1.0); // test
+
+		// float z = lightSpaceCoords.z;
+		// if (z < 0.1) outColor = vec4(0.0, 0.0, 1.0, 1.0); // blue
+		// else if (z < 0.3) outColor = vec4(0.0, 1.0, 1.0, 1.0); // cyan
+		// else if (z < 0.51) outColor = vec4(0.0, 1.0, 0.0, 1.0); // green
+		// else if (z < 0.79) outColor = vec4(1.0, 1.0, 0.0, 1.0); // yellow
+		// else if (z < 0.9) outColor = vec4(1.0, 0.5, 0.0, 1.0); // orange
+		// else outColor = vec4(1.0, 0.0, 0.0, 1.0); // red
+
+		//outColor = vec4(vec3(z), 1.0); // depth in [0,1]
+
+		//outColor = vec4(vec3(lightSpaceCoords.z), 1.0); // test
 
 		//vec3 lightDir = normalize((mvpUBO.lightCameraView * vec4(0, 0, -1, 0)).xyz);
 		//vec3 lightDir = normalize((inverse(mvpUBO.lightCameraView) * vec4(0, 0, -1, 0)).xyz);
