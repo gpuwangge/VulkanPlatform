@@ -44,12 +44,12 @@ layout (location = 0) out vec4 outColor;
 //Normal Shadow: hard shadows
 //PCF: fixed fiter size, soft shadow, slow
 //PCSS: adaptive filter size(depends on object distance), better soft shadow, slow
-bool enablePCF = false;
+bool enablePCF = true;
 
 
 float GetShadow(vec3 shadowCoords){
 	//Note:The texture() here will run: return (compareDepth <= depthMap[uv]) ? 1.0 : 0.0;
-	return texture(lightDepthSampler, vec3(shadowCoords.xy, shadowCoords.z - 0.0));
+	return texture(lightDepthSampler, vec3(shadowCoords.xy, shadowCoords.z));
 }
 
 float PCFShadow(vec3 shadowCoords){ //Percentage Closer Filtering, shadowCoords are within 0~1, shadowCoords.xy is light space coords, shadowCoords.z is light space depth
@@ -60,19 +60,32 @@ float PCFShadow(vec3 shadowCoords){ //Percentage Closer Filtering, shadowCoords 
 	float dx = scale * 1.0 / float(texDim.x);
 	float dy = scale * 1.0 / float(texDim.y);
 
-	int range = 20;
-	float shadow_contribution = 0.23 / (range * range);
+	int range = 3;
+	float bias = 0.005;
+	//float shadow_contribution = 0.23 / (range * range);
+	//float shadow_contribution = 1.0 / pow((2 * range + 1), 2);
+	int validSamples = 0; //use valid sampler instead of shadow_contribution, because the shadow_contribution is not accurate when the shadowCoords are near the edge of the texture
 	for (int x = -range; x <= range; x++){
 		for (int y = -range; y <= range; y++){
 			vec2 offset = vec2(dx * x, dy * y);
 			vec2 shadowCoords_offset = shadowCoords.xy+offset;
-			if(shadowCoords_offset.x >= 0.0 && shadowCoords_offset.x <= 1.0 &&
-				shadowCoords_offset.y >= 0.0 && shadowCoords_offset.y <= 1.0){//make sure shadowCoords_offset are still within 0~1, otherwise there is black box
-				float shadow_delta = GetShadow(vec3(shadowCoords_offset, shadowCoords.z));
-				shadow += shadow_delta * shadow_contribution;
-			}
+			// if(shadowCoords_offset.x >= 0.0 && shadowCoords_offset.x <= 1.0 &&
+			// 	shadowCoords_offset.y >= 0.0 && shadowCoords_offset.y <= 1.0){//make sure shadowCoords_offset are still within 0~1, otherwise there is black box
+			// 	float shadow_delta = GetShadow(vec3(shadowCoords_offset, shadowCoords.z-bias));
+			// 	shadow += shadow_delta * shadow_contribution;
+			// }
+			if (all(greaterThanEqual(shadowCoords_offset, vec2(0.0))) &&
+                all(lessThanEqual(shadowCoords_offset, vec2(1.0)))) {
+
+                float shadow_delta = GetShadow(vec3(shadowCoords_offset, shadowCoords.z - bias));
+                shadow += shadow_delta;// * shadow_contribution;
+				validSamples += 1;
+            }
 		}
 	}
+
+	if (validSamples > 0) shadow /= float(validSamples); 
+	else shadow = 1.0;
 
 	return shadow;
 }

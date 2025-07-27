@@ -40,7 +40,7 @@ public:
 		for(int i = 0; i < lights.size(); i++) {
 			lights[i].SetLightPosition(
 				glm::vec3(lights[i].GetLightPosition().x, lights[i].GetLightPosition().y,lights[i].GetLightPosition().z)
-				//glm::vec3(lights[i].GetLightPosition().x, 1+2*sin(durationTime*0.25), lights[i].GetLightPosition().z)
+				//glm::vec3(lights[i].GetLightPosition().x, 2+sin(durationTime*2.5), lights[i].GetLightPosition().z)
 				//glm::vec3(0, 2.5, 0)
 				//glm::vec3(2.5 *cos(durationTime * (i+1)), 0, 2.5 *sin(durationTime * (i+1)))
 				//glm::vec3(0, 3+0.6*sin(durationTime * (i+1)/2), 0)
@@ -54,12 +54,10 @@ public:
 	}
 
 	void recordGraphicsCommandBuffer_renderpassShadowmap(){
-		//vkCmdSetDepthBias(renderer.commandBuffers[renderer.graphicsCmdId][renderer.currentFrame], 1.25f, 0.0f, 1.75f);
-		//vkCmdSetDepthBias(renderer.commandBuffers[renderer.graphicsCmdId][renderer.currentFrame], 20000.0f, 0.0f, 0);
-		//vkCmdSetDepthBias(renderer.commandBuffers[renderer.graphicsCmdId][renderer.currentFrame], 0.0f, 0.0f, 0.0);
-		vkCmdSetDepthBias(renderer.commandBuffers[renderer.graphicsCmdId][renderer.currentFrame], 1.25f, 0.0f, 1.75f);
-		//vkCmdSetDepthBias(renderer.commandBuffers[renderer.graphicsCmdId][renderer.currentFrame], 150.0f, 0.0f, 150.0f);
-		//vkCmdSetDepthBias(renderer.commandBuffers[renderer.graphicsCmdId][renderer.currentFrame], 500.0f, 0.0f, 500.0f);
+		//vkCmdSetDepthBias(renderer.commandBuffers[renderer.graphicsCmdId][renderer.currentFrame], 1.25f, 0.0f, 1.75f); (self-shadowing)
+		//vkCmdSetDepthBias(renderer.commandBuffers[renderer.graphicsCmdId][renderer.currentFrame], 2.0f, 0.0f, 2.5f);
+		//vkCmdSetDepthBias(renderer.commandBuffers[renderer.graphicsCmdId][renderer.currentFrame], 2.0f, 0.01f, 2.5f); //need enable clamp
+		vkCmdSetDepthBias(renderer.commandBuffers[renderer.graphicsCmdId][renderer.currentFrame], 3.0f, 0.0f, 4.0f);
 
 		for(int i = 0; i < objects.size()-1; i++) {
 			if(i == 2) continue; //dont draw the light ball in shadowmap
