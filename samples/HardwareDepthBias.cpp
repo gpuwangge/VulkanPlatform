@@ -56,8 +56,10 @@ public:
 	void recordGraphicsCommandBuffer_renderpassShadowmap(){
 		//vkCmdSetDepthBias(renderer.commandBuffers[renderer.graphicsCmdId][renderer.currentFrame], 1.25f, 0.0f, 1.75f);
 		//vkCmdSetDepthBias(renderer.commandBuffers[renderer.graphicsCmdId][renderer.currentFrame], 20000.0f, 0.0f, 0);
-		//vkCmdSetDepthBias(renderer.commandBuffers[renderer.graphicsCmdId][renderer.currentFrame], 18000.0f, 0.0f, 18000.0);
+		//vkCmdSetDepthBias(renderer.commandBuffers[renderer.graphicsCmdId][renderer.currentFrame], 0.0f, 0.0f, 0.0);
 		vkCmdSetDepthBias(renderer.commandBuffers[renderer.graphicsCmdId][renderer.currentFrame], 1.25f, 0.0f, 1.75f);
+		//vkCmdSetDepthBias(renderer.commandBuffers[renderer.graphicsCmdId][renderer.currentFrame], 150.0f, 0.0f, 150.0f);
+		//vkCmdSetDepthBias(renderer.commandBuffers[renderer.graphicsCmdId][renderer.currentFrame], 500.0f, 0.0f, 500.0f);
 
 		for(int i = 0; i < objects.size()-1; i++) {
 			if(i == 2) continue; //dont draw the light ball in shadowmap

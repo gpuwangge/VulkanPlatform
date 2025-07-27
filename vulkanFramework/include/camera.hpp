@@ -100,9 +100,10 @@ public:
 		*/
 
 		//hack
-		if(bEnableOrthographic){
-			DirectionUp = glm::vec3(1.0f, 0.0f, 0.0f); //TODO: remove this hack
-		}
+		//if(bEnableOrthographic){
+			//DirectionUp = glm::vec3(1.0f, 0.0f, 0.0f); //TODO: remove this hack
+			//DirectionUp = glm::vec3(0.0f, 0.0f, -1.0f); //TODO: remove this hack
+		//}
 
 		glm::vec3 Target = Position + DirectionFront;
 		matrices.view = glm::lookAt(Position, Target, DirectionUp);

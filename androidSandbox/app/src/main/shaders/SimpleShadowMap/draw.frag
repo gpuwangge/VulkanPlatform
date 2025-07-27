@@ -59,12 +59,8 @@ float GetShadow(vec3 shadowCoords, float depthBias, float shadowContribution){
 }
 
 //float PCFShadow(vec3 shadowCoords, vec3 normal, vec3 lightDir){ //Percentage Closer Filtering, use lightDir/normal if need to calculate slope scale depth bias
-float PCFShadow(vec3 shadowCoords){ //Percentage Closer Filtering, shadowCoords are within 0~1, shadowCoords.xy is light space coords, shadowCoords.z is light space depth
+float PCFShadow(vec3 shadowCoords, float depthBias){ //Percentage Closer Filtering, shadowCoords are within 0~1, shadowCoords.xy is light space coords, shadowCoords.z is light space depth
 	float shadow = 0.0f;
-	
-	float depthBias = 0.04f; //How to find this value? search for "Depth Bias". This value should be related to slope, use slope-scale depth bias instead
-	//float depthBias = SlopeScaleDepthBias(normal, lightDir, 10, 0.09); //not work correctly
-	//float depthBias = 0; //use hardware depth bias
 	
 	ivec2 texDim = textureSize(lightDepthSampler);
 	float scale = 1.5;
@@ -116,10 +112,13 @@ void main() {
 		if(lightSpaceCoords.x >= -1.0 && lightSpaceCoords.x <= 1.0 && //make sure after convert to light space, the point is in view frustum; outside of view frustum has no shadow calculation
 	    	lightSpaceCoords.y >= -1.0 && lightSpaceCoords.y <= 1.0 &&
 	    	lightSpaceCoords.z >= 0.0 && lightSpaceCoords.z <= 1.0){
-			lightSpaceCoords = lightSpaceCoords * 0.5 + 0.5;
+			lightSpaceCoords.xy = lightSpaceCoords.xy * 0.5 + 0.5;
 
-			if(enablePCF) shadow = PCFShadow(lightSpaceCoords); //PCFShadow(lightSpaceCoords, inNormal, L);
-			else shadow = GetShadow(lightSpaceCoords, 0.08f, 0.9f);
+			float depthBias = 0.001f; //How to find this value? search for "Depth Bias". This value should be related to slope, use slope-scale depth bias instead
+			//float depthBias = SlopeScaleDepthBias(normal, lightDir, 10, 0.09); //not work correctly
+			//float depthBias = 0; //use hardware depth bias 
+			if(enablePCF) shadow = PCFShadow(lightSpaceCoords, depthBias); //PCFShadow(lightSpaceCoords, inNormal, L);
+			else shadow = GetShadow(lightSpaceCoords, depthBias, 0.9f);
 		}
 
 		outColor += vec4(ambient * ambientIntensity + diffuse * diffuseIntensity + specular * specularIntensity, 0.0) * (1.0 - shadow);

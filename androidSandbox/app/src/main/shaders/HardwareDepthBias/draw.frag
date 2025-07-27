@@ -47,19 +47,14 @@ layout (location = 0) out vec4 outColor;
 bool enablePCF = false;
 
 
-float GetShadow(vec3 shadowCoords, float depthBias){
-	//The texture() here will run: return (compareDepth <= depthMap[uv]) ? 1.0 : 0.0;
-	//return texture(lightDepthSampler, vec3(shadowCoords.xy, shadowCoords.z - depthBias));
-	return texture(lightDepthSampler, vec3(shadowCoords.xy, shadowCoords.z));
+float GetShadow(vec3 shadowCoords){
+	//Note:The texture() here will run: return (compareDepth <= depthMap[uv]) ? 1.0 : 0.0;
+	return texture(lightDepthSampler, vec3(shadowCoords.xy, shadowCoords.z - 0.0));
 }
 
 float PCFShadow(vec3 shadowCoords){ //Percentage Closer Filtering, shadowCoords are within 0~1, shadowCoords.xy is light space coords, shadowCoords.z is light space depth
 	float shadow = 0.0f;
-	
-	float depthBias = 0.35f; //How to find this value? search for "Depth Bias". This value should be related to slope, use slope-scale depth bias instead
-	//float depthBias = SlopeScaleDepthBias(normal, lightDir, 10, 0.09); //not work correctly
-	//float depthBias = 0; //use hardware depth bias
-	
+
 	ivec2 texDim = ivec2(800,800);//textureSize(lightDepthSampler);
 	float scale = 1.5;
 	float dx = scale * 1.0 / float(texDim.x);
@@ -73,7 +68,7 @@ float PCFShadow(vec3 shadowCoords){ //Percentage Closer Filtering, shadowCoords 
 			vec2 shadowCoords_offset = shadowCoords.xy+offset;
 			if(shadowCoords_offset.x >= 0.0 && shadowCoords_offset.x <= 1.0 &&
 				shadowCoords_offset.y >= 0.0 && shadowCoords_offset.y <= 1.0){//make sure shadowCoords_offset are still within 0~1, otherwise there is black box
-				float shadow_delta = GetShadow(vec3(shadowCoords_offset, shadowCoords.z), depthBias);
+				float shadow_delta = GetShadow(vec3(shadowCoords_offset, shadowCoords.z));
 				shadow += shadow_delta * shadow_contribution;
 			}
 		}
@@ -111,11 +106,10 @@ void main() {
 		if(lightSpaceCoords.x >= -1.0 && lightSpaceCoords.x <= 1.0 && //make sure after convert to light space, the point is in view frustum; outside of view frustum has no shadow calculation
 	    	lightSpaceCoords.y >= -1.0 && lightSpaceCoords.y <= 1.0 &&
 	    	lightSpaceCoords.z >= 0.0 && lightSpaceCoords.z <= 1.0){
-			lightSpaceCoords = lightSpaceCoords * 0.5 + 0.5;
-			lightSpaceCoords.z -= 0.5f; //Hack: depth bias, this value is related to the slope of the surface, use hardware depth bias instead
+			lightSpaceCoords.xy = lightSpaceCoords.xy * 0.5 + 0.5;
 
 			if(enablePCF) shadow = PCFShadow(lightSpaceCoords); //PCFShadow(lightSpaceCoords, inNormal, L);
-			else shadow = GetShadow(lightSpaceCoords, 0.55f);
+			else shadow = GetShadow(lightSpaceCoords);
 				
 			// float z = lightSpaceCoords.z;
 			// if (z < 0.1) outColor = vec4(0.0, 0.0, 1.0, 1.0); // blue
@@ -131,22 +125,8 @@ void main() {
 			//outColor += vec4(ambient * ambientIntensity + diffuse * diffuseIntensity + specular * specularIntensity, 0.0) * s;
 			
 
-		}else //outColor += vec4(ambient * ambientIntensity + diffuse * diffuseIntensity + specular * specularIntensity, 0.0);
+		}else outColor += vec4(ambient * ambientIntensity + diffuse * diffuseIntensity + specular * specularIntensity, 0.0);
 		
-		//outColor = vec4(0.0, 0.0, 0.0, 1.0); // black
-			outColor = vec4(1.0, 0, 0, 1.0); // test: all red
-		//outColor = vec4(lightSpaceCoords.xyz, 1.0); // test
-
-		// float z = lightSpaceCoords.z;
-		// if (z < 0.1) outColor = vec4(0.0, 0.0, 1.0, 1.0); // blue
-		// else if (z < 0.3) outColor = vec4(0.0, 1.0, 1.0, 1.0); // cyan
-		// else if (z < 0.51) outColor = vec4(0.0, 1.0, 0.0, 1.0); // green
-		// else if (z < 0.79) outColor = vec4(1.0, 1.0, 0.0, 1.0); // yellow
-		// else if (z < 0.9) outColor = vec4(1.0, 0.5, 0.0, 1.0); // orange
-		// else outColor = vec4(1.0, 0.0, 0.0, 1.0); // red
-
-		//outColor = vec4(vec3(z), 1.0); // depth in [0,1]
-
 		//outColor = vec4(vec3(lightSpaceCoords.z), 1.0); // test
 
 		//vec3 lightDir = normalize((mvpUBO.lightCameraView * vec4(0, 0, -1, 0)).xyz);
