@@ -1,7 +1,6 @@
 #ifndef H_OBJECT
 #define H_OBJECT
 
-//#include <glm/gtc/quaternion.hpp>
 #include "graphicsDescriptor.h"
 #include "entity.h"
 #include "renderProcess.h"

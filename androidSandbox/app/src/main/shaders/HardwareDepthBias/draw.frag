@@ -61,7 +61,6 @@ float PCFShadow(vec3 shadowCoords){ //Percentage Closer Filtering, shadowCoords 
 	float dy = scale * 1.0 / float(texDim.y);
 
 	int range = 3;
-	float bias = 0.005;
 	//float shadow_contribution = 0.23 / (range * range);
 	//float shadow_contribution = 1.0 / pow((2 * range + 1), 2);
 	int validSamples = 0; //use valid sampler instead of shadow_contribution, because the shadow_contribution is not accurate when the shadowCoords are near the edge of the texture
@@ -77,7 +76,7 @@ float PCFShadow(vec3 shadowCoords){ //Percentage Closer Filtering, shadowCoords 
 			if (all(greaterThanEqual(shadowCoords_offset, vec2(0.0))) &&
                 all(lessThanEqual(shadowCoords_offset, vec2(1.0)))) {
 
-                float shadow_delta = GetShadow(vec3(shadowCoords_offset, shadowCoords.z - bias));
+                float shadow_delta = GetShadow(vec3(shadowCoords_offset, shadowCoords.z));
                 shadow += shadow_delta;// * shadow_contribution;
 				validSamples += 1;
             }

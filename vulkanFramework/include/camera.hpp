@@ -59,8 +59,15 @@ public:
 	void setOrthographic(float left, float right, float bottom, float top, float znear, float zfar){
 		matrices.perspective = glm::ortho(left, right, bottom, top, znear, zfar);
 		//matrices.perspective = glm::ortho(-4.0f, 4.0f, -4.0f, 4.0f, -6.0f, -1.5f);//hack
+		
+		// std::cout<<"matrices.perspective="<<std::endl;
+		// std::cout<<matrices.perspective[0][0]<<","<<matrices.perspective[0][1]<<","<<matrices.perspective[0][2]<<","<<matrices.perspective[0][3]<<std::endl;
+		// std::cout<<matrices.perspective[1][0]<<","<<matrices.perspective[1][1]<<","<<matrices.perspective[1][2]<<","<<matrices.perspective[1][3]<<std::endl;
+		// std::cout<<matrices.perspective[2][0]<<","<<matrices.perspective[2][1]<<","<<matrices.perspective[2][2]<<","<<matrices.perspective[2][3]<<std::endl;
+		// std::cout<<matrices.perspective[3][0]<<","<<matrices.perspective[3][1]<<","<<matrices.perspective[3][2]<<","<<matrices.perspective[3][3]<<std::endl;
+		// std::cout << glm::to_string(matrices.perspective) << std::endl;
 
-		std::cout<<"Camera setOrthographic: left="<<left<<", right="<<right<<", bottom="<<bottom<<", top="<<top<<", znear="<<znear<<", zfar="<<zfar<<std::endl;
+		//std::cout<<"Camera setOrthographic: left="<<left<<", right="<<right<<", bottom="<<bottom<<", top="<<top<<", znear="<<znear<<", zfar="<<zfar<<std::endl;
 
 	}
 

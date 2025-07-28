@@ -2,7 +2,6 @@
 #define H_LIGHT
 
 #include "graphicsDescriptor.h"
-#include <glm/gtc/quaternion.hpp>
 #include <string>
 #include <vector>
 #include "camera.hpp"

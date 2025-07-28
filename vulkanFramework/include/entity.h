@@ -1,6 +1,8 @@
 #ifndef H_ENTITY
 #define H_ENTITY
-#include <glm/gtc/quaternion.hpp>
+
+//redundant?
+#include "common.h"
 #include <string>
 
 class CEntity{
