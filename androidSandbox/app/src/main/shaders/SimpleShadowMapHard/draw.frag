@@ -49,7 +49,7 @@ bool enablePCF = true;
 
 float GetShadow(vec3 shadowCoords, float shadowContribution){
 	//Note:The texture() here will run: return (compareDepth <= depthMap[uv]) ? 1.0 : 0.0;
-	return texture(lightDepthSampler, vec3(shadowCoords.xy, shadowCoords.z)) * shadowContribution;
+	return (1.0f - texture(lightDepthSampler, vec3(shadowCoords.xy, shadowCoords.z))) * shadowContribution;
 }
 
 float PCFShadow(vec3 shadowCoords){ //Percentage Closer Filtering, shadowCoords are within 0~1, shadowCoords.xy is light space coords, shadowCoords.z is light space depth
@@ -74,13 +74,12 @@ float PCFShadow(vec3 shadowCoords){ //Percentage Closer Filtering, shadowCoords 
 			// 	shadow += shadow_delta * shadow_contribution;
 			// }
 			if (all(greaterThanEqual(shadowCoords_offset, vec2(0.0))) && all(lessThanEqual(shadowCoords_offset, vec2(1.0)))) {
-                float shadow_delta = GetShadow(vec3(shadowCoords_offset, shadowCoords.z), 1.0f);
+                float shadow_delta = GetShadow(vec3(shadowCoords_offset, shadowCoords.z), 0.95f);
                 shadow += shadow_delta;// * shadow_contribution;
 				validSamples += 1;
             }
 		}
 	}
-
 	if (validSamples > 0) shadow /= float(validSamples); 
 	else shadow = 1.0;
 
@@ -118,7 +117,7 @@ void main() {
 			lightSpaceCoords.xy = lightSpaceCoords.xy * 0.5 + 0.5;
 
 			if(enablePCF) shadow = PCFShadow(lightSpaceCoords); //PCFShadow(lightSpaceCoords, inNormal, L);
-			else shadow = GetShadow(lightSpaceCoords, 0.9f);
+			else shadow = GetShadow(lightSpaceCoords, 0.95f);
 				
 			// float z = lightSpaceCoords.z; //to visualize the depth
 			// if (z < 0.1) outColor = vec4(0.0, 0.0, 1.0, 1.0); // blue
@@ -128,7 +127,7 @@ void main() {
 			// else if (z < 0.9) outColor = vec4(1.0, 0.5, 0.0, 1.0); // orange
 			// else outColor = vec4(1.0, 0.0, 0.0, 1.0); // red
 
-			outColor += vec4(ambient * ambientIntensity + diffuse * diffuseIntensity + specular * specularIntensity, 0.0) * shadow;
+			outColor += vec4(ambient * ambientIntensity + diffuse * diffuseIntensity + specular * specularIntensity, 0.0) * (1.0 - shadow);
 		}else outColor += vec4(ambient * ambientIntensity + diffuse * diffuseIntensity + specular * specularIntensity, 0.0);	
 	}
 	

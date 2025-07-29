@@ -51,8 +51,6 @@ float SlopeScaleDepthBias(vec3 normal, vec3 lightDir, float slopeScale, float co
 	return m * slopeScale + constantBias;
 }
 
-
-
 float GetShadow(vec3 shadowCoords, float depthBias, float shadowContribution){
 	float depth_lightDepthImage = texelFetch(lightDepthSampler, ivec2(shadowCoords.xy * textureSize(lightDepthSampler)), 0).r; //r==g==b, value is z
 	return  (shadowCoords.z-depth_lightDepthImage) > depthBias ? shadowContribution : 0.0;
