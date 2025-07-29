@@ -81,6 +81,22 @@ float PCFShadow(vec3 shadowCoords, float depthBias){ //Percentage Closer Filteri
 		}
 	}
 
+	// int range = 5;
+	// int validSamples = 0; //use valid sampler instead of shadow_contribution, because the shadow_contribution is not accurate when the shadowCoords are near the edge of the texture
+	// for (int x = -range; x <= range; x++){
+	// 	for (int y = -range; y <= range; y++){
+	// 		vec2 offset = vec2(dx * x, dy * y);
+	// 		vec2 shadowCoords_offset = shadowCoords.xy+offset;
+	// 		if (all(greaterThanEqual(shadowCoords_offset, vec2(0.0))) && all(lessThanEqual(shadowCoords_offset, vec2(1.0)))) {
+    //             float shadow_delta = GetShadow(vec3(shadowCoords_offset, shadowCoords.z), depthBias, 0.95f);
+    //             shadow += shadow_delta;// * shadow_contribution;
+	// 			validSamples += 1;
+    //         }
+	// 	}
+	// }
+	// if (validSamples > 0) shadow /= float(validSamples); 
+	// else shadow = 1.0;
+
 	return shadow;
 }
 
