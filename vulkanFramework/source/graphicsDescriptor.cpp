@@ -575,7 +575,7 @@ void CGraphicsDescriptorManager::addLightDepthImageSamplerUniformBuffer(){
 VkSampler CGraphicsDescriptorManager::lightDepthImageSampler_hardwareDepthBias;
 void CGraphicsDescriptorManager::addLightDepthImageSamplerUniformBuffer_hardwareDepthBias(){
     CGraphicsDescriptorManager::graphicsUniformTypes |= GRAPHCIS_COMBINEDIMAGESAMPLER_LIGHTDEPTHIMAGE_HARDWAREDEPTHBIAS;
-    std::cout<<"8 GRAPHCIS_COMBINEDIMAGESAMPLER_LIGHTDEPTHIMAGE_HARDWAREDEPTHBIAS()" << std::endl;
+    //std::cout<<"8 GRAPHCIS_COMBINEDIMAGESAMPLER_LIGHTDEPTHIMAGE_HARDWAREDEPTHBIAS()" << std::endl;
 
     VkPhysicalDeviceProperties properties{};
     vkGetPhysicalDeviceProperties(CContext::GetHandle().GetPhysicalDevice(), &properties);

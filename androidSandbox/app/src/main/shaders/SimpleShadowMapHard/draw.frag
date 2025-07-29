@@ -90,7 +90,6 @@ float PCFShadow(vec3 shadowCoords){ //Percentage Closer Filtering, shadowCoords 
 }
 
 void main() {
-
 	//Code to generate light shading
 	vec4 tex = texture(texSampler, inTexCoord);
 	//color = vec3(mix(tex.xyz, vec3(dot(vec3(0.2126,0.7152,0.0722), tex.xyz)), 0.65));	//Desaturate tex color
@@ -123,7 +122,7 @@ void main() {
 			if(enablePCF) shadow = PCFShadow(lightSpaceCoords); //PCFShadow(lightSpaceCoords, inNormal, L);
 			else shadow = GetShadow(lightSpaceCoords);
 				
-			// float z = lightSpaceCoords.z;
+			// float z = lightSpaceCoords.z; //to visualize the depth
 			// if (z < 0.1) outColor = vec4(0.0, 0.0, 1.0, 1.0); // blue
 			// else if (z < 0.3) outColor = vec4(0.0, 1.0, 1.0, 1.0); // cyan
 			// else if (z < 0.5) outColor = vec4(0.0, 1.0, 0.0, 1.0); // green
@@ -132,41 +131,7 @@ void main() {
 			// else outColor = vec4(1.0, 0.0, 0.0, 1.0); // red
 
 			outColor += vec4(ambient * ambientIntensity + diffuse * diffuseIntensity + specular * specularIntensity, 0.0) * shadow;
-
-			//float s = texture(lightDepthSampler, vec3(lightSpaceCoords.xy, lightSpaceCoords.z - 0.49f));
-			//outColor += vec4(ambient * ambientIntensity + diffuse * diffuseIntensity + specular * specularIntensity, 0.0) * s;
-			
-
-		}else outColor += vec4(ambient * ambientIntensity + diffuse * diffuseIntensity + specular * specularIntensity, 0.0);
-		
-		//outColor = vec4(vec3(lightSpaceCoords.z), 1.0); // test
-
-		//vec3 lightDir = normalize((mvpUBO.lightCameraView * vec4(0, 0, -1, 0)).xyz);
-		//vec3 lightDir = normalize((inverse(mvpUBO.lightCameraView) * vec4(0, 0, -1, 0)).xyz);
-		//outColor = vec4(abs(lightDir), 1.0);
-
-		//vec3 lightToObj = normalize(inPosWorld - customUBO.lights[0].lightPos.xyz);
-		//outColor = vec4(abs(lightToObj), 1.0);
-
-
-		//outColor = vec4(vec3(mvpUBO.mainCameraProj[0].x, mvpUBO.mainCameraProj[1].y, mvpUBO.mainCameraProj[2].z), 1.0);
-		//outColor = vec4(vec3(mvpUBO.lightCameraProj[0].x, mvpUBO.lightCameraProj[1].y, mvpUBO.lightCameraProj[2].z), 1.0);
-		//outColor = vec4(vec3(mvpUBO.mainCameraView[0].x, mvpUBO.mainCameraView[1].y, mvpUBO.mainCameraView[2].z), 1.0);
-		//outColor = vec4(vec3(mvpUBO.lightCameraView[0].x, mvpUBO.lightCameraView[1].y, mvpUBO.lightCameraView[2].z), 1.0);
-
-	
-		// vec4 lightSpace = mvpUBO.lightCameraProj * mvpUBO.lightCameraView * vec4(inPosWorld, 1.0);
-		// vec3 lsc = lightSpace.xyz / lightSpace.w;
-		// if(lsc.x >= -1.0 && lsc.x <= 1.0 && //make sure after convert to light space, the point is in view frustum; outside of view frustum has no shadow calculation
-	    // 	lsc.y >= -1.0 && lsc.y <= 1.0 &&
-	    // 	lsc.z >= 0.0 && lsc.z <= 1.0){
-		// 	outColor = vec4(lsc * 0.5 + 0.5, 1.0);
-		// }else{
-		// 	outColor = vec4(1.0, 0.0, 0.0, 1.0); // red
-		// }
-
-
-				
+		}else outColor += vec4(ambient * ambientIntensity + diffuse * diffuseIntensity + specular * specularIntensity, 0.0);	
 	}
 	
 }

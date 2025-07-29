@@ -1,15 +1,13 @@
 #include "..\\vulkanFramework\\include\\application.h"
-#define TEST_CLASS_NAME CHardwareDepthBias
+#define TEST_CLASS_NAME CSimpleShadowMapHard
 class TEST_CLASS_NAME: public CApplication{
+/*********
+ * Implementation of Shadow Map
+ * Simple scenario: A single light source casting one shadow on a plane
+ * Use two renderpasses: one for shadowmap, one for main scene
+ * Use hardware depth bias (vkCmdSetDepthBias)
+ */
 public:
-	std::vector<Vertex3D> vertices3D = {
-		{ { -0.5f, 0.5f, 0.0f },{ 1.0f, 0.0f, 0.0f },{ 0.0f, 1.0f } ,{ 0.0f, 0.0f, 1.0f }},
-		{ { -0.5f, -0.5f, 0.0f },{ 0.0f, 1.0f, 0.0f },{ 0.0f, 0.0f } ,{ 0.0f, 0.0f, 1.0f }},
-		{ { 0.5f, 0.5f, 0.0f },{ 0.0f, 0.0f, 1.0f },{ 1.0f, 1.0f } ,{ 0.0f, 0.0f, 1.0f }},
-		{ { 0.5f, -0.5f, 0.0f },{ 1.0f, 1.0f, 1.0f },{ 1.0f, 0.0f } ,{ 0.0f, 0.0f, 1.0f }}
-	};
-	std::vector<uint32_t> indices3D = { 0, 1, 2, 2, 1, 3};
-
 	struct CustomUniformBufferObject {
 		glm::vec3 lightPos;
 		glm::mat4 lightSpace;
@@ -28,8 +26,6 @@ public:
 
 	void initialize(){
 		appInfo.RenderMode = renderer.GRAPHICS_SHADOWMAP; //two renderpasses: shadowmap and main scene
-
-		modelManager.CreateCustomModel3D(vertices3D, indices3D); //create the 0th custom model 3D (CUSTOM3D0)
 
 		appInfo.Uniform.GraphicsCustom.Size = sizeof(CustomUniformBufferObject);
 		appInfo.Uniform.GraphicsCustom.Binding = CustomUniformBufferObject::GetBinding();
@@ -61,7 +57,6 @@ public:
 
 		for(int i = 0; i < objects.size()-1; i++) {
 			if(i == 2) continue; //dont draw the light ball in shadowmap
-			//objects[i].m_graphics_pipeline_id = 1; //same object, first subpass use gid=2, second subpass use gid=0
 			objects[i].Draw(0, 0, true);//draw objects with gid=0, shadowmap pipeline
 		}
 	}
