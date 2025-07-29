@@ -93,10 +93,12 @@ public:
     static bool NeedToExit;
     static bool NeedToPause;
 
+    static bool PrintFPS;
+
     /*Clean up Functions*/
     void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator);
-    
-    float durationTime = 0;
+
+    float elapseTime = 0;
     float deltaTime = 0;
 
     std::string m_sampleName;
@@ -145,6 +147,7 @@ public:
         bool b_feature_graphics_rainbow_mipmap = false;
         int feature_graphics_pipeline_skybox_id = -1;
         int feature_graphics_observe_attachment_id = -1;
+        bool b_feature_graphics_fps = false;
     };
     // struct AttachmentInfo{
     //     bool bAttachmentDepthLight;

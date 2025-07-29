@@ -8,7 +8,7 @@ public:
 
 	void update(){
 		for(int i = 0; i < lights.size(); i++) {
-			lights[i].SetLightPosition(glm::vec3(1.5f * cos(durationTime * 1.2), 1.5f * cos(durationTime * 0.85), 1.5f * cos(durationTime * 1)));
+			lights[i].SetLightPosition(glm::vec3(1.5f * cos(elapseTime * 1.2), 1.5f * cos(elapseTime * 0.85), 1.5f * cos(elapseTime * 1)));
 			objects[1+i].SetPosition(lights[i].GetLightPosition()); 
 		}
 

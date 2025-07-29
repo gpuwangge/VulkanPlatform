@@ -62,6 +62,7 @@ Features:
   feature_graphics_rainbow_mipmap: false
   feature_graphics_pipeline_skybox_id: -1
   feature_graphics_observe_attachment_id: -1
+  feature_graphics_fps: true
 
 ShadowmapRenderpassAttachments:
   ShadowmapRenderpass_attachment_depth_light: false

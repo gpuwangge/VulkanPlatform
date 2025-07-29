@@ -36,9 +36,9 @@ public:
 	}
 
 	void update(){
-        customUBO.u_time = durationTime;
+        customUBO.u_time = elapseTime;
         customUBO.u_resolution = glm::vec2(windowWidth, windowHeight);
-		graphicsDescriptorManager.updateCustomUniformBuffer<CustomUniformBufferObject>(renderer.currentFrame, durationTime, customUBO);
+		graphicsDescriptorManager.updateCustomUniformBuffer<CustomUniformBufferObject>(renderer.currentFrame, customUBO);
 		CApplication::update();
 	}
 

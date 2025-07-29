@@ -36,7 +36,7 @@ public:
 		for(int i = 0; i < lights.size(); i++) {
 			lights[i].SetLightPosition(
 				//glm::vec3(lights[i].GetLightPosition().x, lights[i].GetLightPosition().y,lights[i].GetLightPosition().z)
-				glm::vec3(2.5 *cos(durationTime * (i+1)), lights[i].GetLightPosition().y, 2.5 *sin(durationTime * (i+1)))
+				glm::vec3(2.5 *cos(elapseTime * (i+1)), lights[i].GetLightPosition().y, 2.5 *sin(elapseTime * (i+1)))
 			);
 			objects[2+i].SetPosition(lights[i].GetLightPosition()); 
 		}
@@ -53,7 +53,7 @@ public:
 		vkCmdSetDepthBias(renderer.commandBuffers[renderer.graphicsCmdId][renderer.currentFrame], 1.25f, 0.0f, 6.0f);
 
 		for(int i = 0; i < objects.size()-1; i++) {
-			if(i == 2) continue; //dont draw the light ball in shadowmap
+			//if(i == 2) continue; //dont draw the light ball in shadowmap
 			objects[i].Draw(0, 0, true);//draw objects with gid=0, shadowmap pipeline
 		}
 	}

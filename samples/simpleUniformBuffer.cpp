@@ -26,8 +26,8 @@ public:
 
 	void update(){
 		//printf("%f\n", durationTime);
-		customUBO.color = {(sin(durationTime*3) + 1.0f) / 2.0f, (cos(durationTime*3) + 1.0f) / 2.0f, 0.0f, 1.0f};
-		graphicsDescriptorManager.updateCustomUniformBuffer<CustomUniformBufferObject>(renderer.currentFrame, durationTime, customUBO);
+		customUBO.color = {(sin(elapseTime*3) + 1.0f) / 2.0f, (cos(elapseTime*3) + 1.0f) / 2.0f, 0.0f, 1.0f};
+		graphicsDescriptorManager.updateCustomUniformBuffer<CustomUniformBufferObject>(renderer.currentFrame, customUBO);
 		CApplication::update();
 	}
 

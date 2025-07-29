@@ -41,7 +41,7 @@ public:
     static VkDeviceSize m_customUniformBufferSize;
     static void addCustomUniformBuffer(VkDeviceSize customUniformBufferSize);
     template <typename T>
-    void updateCustomUniformBuffer(uint32_t currentFrame, float durationTime, T customUniformBufferObject){
+    void updateCustomUniformBuffer(uint32_t currentFrame, T customUniformBufferObject){
         if(computeUniformTypes & COMPUTE_UNIFORMBUFFER_CUSTOM)
             memcpy(customUniformBuffersMapped[currentFrame], &customUniformBufferObject, sizeof(customUniformBufferObject));
     }
@@ -56,7 +56,7 @@ public:
     static VkDeviceSize m_storageBufferSize;
     static void addStorageBuffer(VkDeviceSize storageBufferSize, VkBufferUsageFlags usage = VK_BUFFER_USAGE_STORAGE_BUFFER_BIT); //the same function to add storage 1&2
     template <typename T>
-    void updateStorageBuffer(uint32_t currentFrame, float durationTime, T storageBufferObject){ 
+    void updateStorageBuffer(uint32_t currentFrame, T storageBufferObject){ 
         memcpy(storageBuffersMapped[currentFrame], &storageBufferObject, sizeof(storageBufferObject));
     }
 

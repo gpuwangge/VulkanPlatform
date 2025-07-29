@@ -86,7 +86,7 @@ public:
 		// Copy initial particle data to all storage buffers
 		// Alternative: create particle info in a buffer, and copybuffer to all storage buffers
         for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) 
-			computeDescriptorManager.updateStorageBuffer<StructStorageBuffer>(i, durationTime, storageBufferObject);
+			computeDescriptorManager.updateStorageBuffer<StructStorageBuffer>(i, storageBufferObject);
 		//descriptors[1].updateStorageBuffer<StructStorageBuffer>(renderer.currentFrame+1, durationTime, storageBufferObject);
 		
 		std::cout<<"Host >> Device done."<<std::endl;
@@ -101,7 +101,7 @@ public:
 		customUniformBufferObject.deltaTime = deltaTime * 1000;
 		//std::cout<<deltaTime<<std::endl;
 		//customUniformBufferObject.color = {(sin(durationTime*3) + 1.0f) / 2.0f, (cos(durationTime*3) + 1.0f) / 2.0f, 0.0f, 1.0f};
-		computeDescriptorManager.updateCustomUniformBuffer<CustomUniformBufferObject>(renderer.currentFrame, durationTime, customUniformBufferObject);
+		computeDescriptorManager.updateCustomUniformBuffer<CustomUniformBufferObject>(renderer.currentFrame, customUniformBufferObject);
 
 		CApplication::update(); //update deltaTime and durationTime (and mainCamera and MVP, VP)
 		//PRINT("update(): Delta Time: %f, Duration Time: %f", deltaTime, durationTime);

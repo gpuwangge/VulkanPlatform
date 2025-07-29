@@ -26,7 +26,7 @@ public:
 
 	void update(){
 		customUBO.cameraPos = mainCamera.Position;
-		graphicsDescriptorManager.updateCustomUniformBuffer<CustomUniformBufferObject>(renderer.currentFrame, durationTime, customUBO);
+		graphicsDescriptorManager.updateCustomUniformBuffer<CustomUniformBufferObject>(renderer.currentFrame, customUBO);
 
 		objects[0].SetVelocity(glm::cross(objects[0].Position - glm::vec3(0,0,0), glm::vec3(0,0,1)));
 		objects[1].SetVelocity(glm::cross(objects[1].Position - glm::vec3(0,0,0), glm::vec3(0,0,1)));

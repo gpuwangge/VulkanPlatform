@@ -70,8 +70,8 @@ public:
 
 		for(int i = 0; i < lights.size(); i++) {
 			lights[i].SetLightPosition(
-				//glm::vec3(0, lights[i].GetLightPosition().y,0)
-				glm::vec3(0, 3.5 + sin(durationTime * (i+1)),0)
+				//glm::vec3(lights[i].GetLightPosition().x, lights[i].GetLightPosition().y,lights[i].GetLightPosition().z)
+				glm::vec3(0, 3.5 + sin(elapseTime * (i+1)),0)
 			);
 			objects[2+i].SetPosition(lights[i].GetLightPosition()); 
 		}
@@ -95,6 +95,7 @@ public:
 		vkCmdNextSubpass(renderer.commandBuffers[renderer.graphicsCmdId][renderer.currentFrame], VK_SUBPASS_CONTENTS_INLINE);
 
 		for(int i = 0; i < objects.size()-1; i++) {
+			//if(i == 2) continue; //dont draw the light ball
 			//objects[i].m_graphics_pipeline_id = 0; //same object, first subpass use gid=2, second subpass use gid=0
 			objects[i].Draw();//draw objects with default graphics pipeline id (0)
 		}

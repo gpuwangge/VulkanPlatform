@@ -22,9 +22,9 @@ public:
 	}
 
 	void update(){
-		objects[0].SetVelocity(0, 3*sin(durationTime * 2), 0);
+		objects[0].SetVelocity(0, 3*sin(elapseTime * 2), 0);
 		objects[1].SetAngularVelocity(50,0,50); //rotation around x and z axis
-		objects[2].SetVelocity(0, 3*sin(durationTime * 4), 0);
+		objects[2].SetVelocity(0, 3*sin(elapseTime * 4), 0);
 		CApplication::update();
 	}
 

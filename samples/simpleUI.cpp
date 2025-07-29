@@ -43,7 +43,7 @@ public:
 		//objectList[0].SetVelocity(0, sin(durationTime * 2), 0);
 		//objectList[0].SetAngularVelocity(0,0,50); //rotation around z axis
 		objects[1].SetAngularVelocity(50,0,50); //rotation around x and z axis
-		objects[2].SetVelocity(0, 3*sin(durationTime * 2), 0);
+		objects[2].SetVelocity(0, 3*sin(elapseTime * 2), 0);
 		//objectList[3].SetVelocity(3*sin(durationTime * 2), 0, 0);
 		CApplication::update();
 	}

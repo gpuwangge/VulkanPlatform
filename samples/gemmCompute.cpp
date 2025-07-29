@@ -47,8 +47,8 @@ public:
 		std::cout<<"Initialized A and B."<<std::endl;
 
 		//Host >> Device
-		computeDescriptorManager.updateStorageBuffer<StructStorageBuffer>(renderer.currentFrame, durationTime, storageBufferObject); //1 TODO: fill all inflight, update input only
-		computeDescriptorManager.updateStorageBuffer<StructStorageBuffer>(renderer.currentFrame+1, durationTime, storageBufferObject); //1
+		computeDescriptorManager.updateStorageBuffer<StructStorageBuffer>(renderer.currentFrame, storageBufferObject); //1 TODO: fill all inflight, update input only
+		computeDescriptorManager.updateStorageBuffer<StructStorageBuffer>(renderer.currentFrame+1, storageBufferObject); //1
 	}
 
 	void update(){

@@ -34,9 +34,9 @@ public:
 	}
 
 	void update(){
-		customUBO.color = {(sin(durationTime) + 1.0f) / 2.0f, 0.0f, (cos(durationTime) + 1.0f) / 2.0f};
-		graphicsDescriptorManager.updateCustomUniformBuffer<CustomUniformBufferObject>(renderer.currentFrame, durationTime, customUBO);
-		objects[0].SetVelocity(0.5 * sin(durationTime * 2), 0.5 * sin(durationTime * 2), 0.5 * sin(durationTime * 2)); //Left, Down, Front
+		customUBO.color = {(sin(elapseTime) + 1.0f) / 2.0f, 0.0f, (cos(elapseTime) + 1.0f) / 2.0f};
+		graphicsDescriptorManager.updateCustomUniformBuffer<CustomUniformBufferObject>(renderer.currentFrame, customUBO);
+		objects[0].SetVelocity(0.5 * sin(elapseTime * 2), 0.5 * sin(elapseTime * 2), 0.5 * sin(elapseTime * 2)); //Left, Down, Front
 		CApplication::update();
 	}
 

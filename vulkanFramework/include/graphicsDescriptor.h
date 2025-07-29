@@ -41,7 +41,7 @@ public:
     static VkDeviceSize m_customUniformBufferSize;
     static void addCustomUniformBuffer(VkDeviceSize customUniformBufferSize);
     template <typename T>
-    void updateCustomUniformBuffer(uint32_t currentFrame, float durationTime, T customUniformBufferObject){
+    void updateCustomUniformBuffer(uint32_t currentFrame, T customUniformBufferObject){
         //std::cout<<"sizeof(customUniformBufferObject)="<<sizeof(customUniformBufferObject)<<std::endl;
         if(graphicsUniformTypes & GRAPHCIS_UNIFORMBUFFER_CUSTOM)
             memcpy(customUniformBuffersMapped[currentFrame], &customUniformBufferObject, sizeof(customUniformBufferObject));

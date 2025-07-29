@@ -6,6 +6,7 @@ Camera CApplication::mainCamera;
 Camera CApplication::lightCamera;
 bool CApplication::NeedToExit = false; 
 bool CApplication::NeedToPause = false;
+bool CApplication::PrintFPS = false;
 //int CApplication::focusObjectId = 0;
 std::vector<CObject> CApplication::objects; 
 std::vector<CLight> CApplication::lights; 
@@ -245,7 +246,7 @@ void CApplication::update(){
     static auto lastTime = std::chrono::high_resolution_clock::now();
 
     auto currentTime = std::chrono::high_resolution_clock::now();
-    durationTime = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
+    elapseTime = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
     deltaTime = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - lastTime).count();
     lastTime = currentTime;
 
@@ -258,7 +259,20 @@ void CApplication::update(){
     lightCamera.update(deltaTime);
     for(int i = 0; i < objects.size(); i++) objects[i].Update(deltaTime, renderer.currentFrame, mainCamera, lightCamera); 
     for(int i = 0; i < lights.size(); i++) lights[i].Update(deltaTime, renderer.currentFrame, mainCamera); 
-    
+
+    /*Calcuate FPS*/
+    static int frameCount = 0;
+    static auto intervalStartTime = std::chrono::high_resolution_clock::now();
+    static auto intervalEndTime = std::chrono::high_resolution_clock::now();
+    if(PrintFPS){
+        intervalEndTime = std::chrono::high_resolution_clock::now();
+        auto intervalElapseTime = std::chrono::duration<float, std::chrono::milliseconds::period>(intervalEndTime - intervalStartTime).count();
+        if(intervalElapseTime > 1000){
+            std::cout<<"FPS: "<<frameCount<<" interval: "<<intervalElapseTime<<" milliseconds"<<std::endl;
+            frameCount = 0;
+            intervalStartTime = std::chrono::high_resolution_clock::now();
+        }else frameCount++;
+    }
 }
 
 void CApplication::recordGraphicsCommandBuffer_renderpassMainscene(){}
@@ -464,6 +478,7 @@ void CApplication::ReadFeatures(){
     appInfo.Feature.b_feature_graphics_rainbow_mipmap = config["Features"]["feature_graphics_rainbow_mipmap"] ? config["Features"]["feature_graphics_rainbow_mipmap"].as<bool>() : false;
     appInfo.Feature.feature_graphics_pipeline_skybox_id = config["Features"]["feature_graphics_pipeline_skybox_id"] ? config["Features"]["feature_graphics_pipeline_skybox_id"].as<int>() : -1;
     appInfo.Feature.feature_graphics_observe_attachment_id = config["Features"]["feature_graphics_observe_attachment_id"] ? config["Features"]["feature_graphics_observe_attachment_id"].as<int>() : -1;
+    appInfo.Feature.b_feature_graphics_fps = config["Features"]["feature_graphics_fps"] ? config["Features"]["feature_graphics_fps"].as<bool>() : false;
 
     if(appInfo.Feature.b_feature_graphics_push_constant){
         shaderManager.CreatePushConstantRange<ModelPushConstants>(VK_SHADER_STAGE_VERTEX_BIT, 0);
@@ -474,6 +489,7 @@ void CApplication::ReadFeatures(){
             VK_BLEND_OP_ADD, VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO);        
     }
     renderProcess.skyboxID = appInfo.Feature.feature_graphics_pipeline_skybox_id;
+    PrintFPS = appInfo.Feature.b_feature_graphics_fps;
 }
 
 void CApplication::ReadUniforms(){
