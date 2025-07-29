@@ -1,9 +1,9 @@
 #include "..\\vulkanFramework\\include\\application.h"
-#define TEST_CLASS_NAME CShadowMapMove
+#define TEST_CLASS_NAME CSimpleShadowMapMultiple
 class TEST_CLASS_NAME: public CApplication{
 /*********
  * Implementation of Shadow Map
- * Simple scenario: A single light source casting one shadow on a plane
+ * Simple scenario: multiple lights casting multiple shadows on a plane
  * Use two renderpasses: one for shadowmap, one for main scene
  * Use hardware depth bias (vkCmdSetDepthBias)
  */
@@ -35,10 +35,9 @@ public:
 	void update(){
 		for(int i = 0; i < lights.size(); i++) {
 			lights[i].SetLightPosition(
-				glm::vec3(lights[i].GetLightPosition().x, lights[i].GetLightPosition().y,lights[i].GetLightPosition().z)
-				//glm::vec3(lights[i].GetLightPosition().x, 2+sin(durationTime*2.5), lights[i].GetLightPosition().z)
-				//glm::vec3(0, 2.5, 0)
-				//glm::vec3(2.5 *cos(durationTime * (i+1)), 0, 2.5 *sin(durationTime * (i+1)))
+				//glm::vec3(lights[i].GetLightPosition().x, lights[i].GetLightPosition().y,lights[i].GetLightPosition().z)
+				//glm::vec3(lights[i].GetLightPosition().x, 1+1.5*sin(durationTime*1.5), lights[i].GetLightPosition().z)
+				glm::vec3(2.5 *cos(durationTime * (i+1)), lights[i].GetLightPosition().y, 2.5 *sin(durationTime * (i+1)))
 				//glm::vec3(0, 3+0.6*sin(durationTime * (i+1)/2), 0)
 			);
 			objects[2+i].SetPosition(lights[i].GetLightPosition()); 

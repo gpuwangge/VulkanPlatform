@@ -133,10 +133,14 @@ void main() {
 			//float depthBias = 0; //use hardware depth bias 
 			if(enablePCF) shadow = PCFShadow(lightSpaceCoords, depthBias); //PCFShadow(lightSpaceCoords, inNormal, L);
 			else shadow = GetShadow(lightSpaceCoords, depthBias, 0.9f);
-		}
 
-		outColor += vec4(ambient * ambientIntensity + diffuse * diffuseIntensity + specular * specularIntensity, 0.0) * (1.0 - shadow);
-	}	
+			outColor += vec4(ambient * ambientIntensity + diffuse * diffuseIntensity + specular * specularIntensity, 0.0) * (1.0 - shadow);
+		}else
+			outColor += vec4(ambient * ambientIntensity + diffuse * diffuseIntensity + specular * specularIntensity, 0.0);
+			//outColor = vec4(0.0, 0.0, 0.0, 1.0); //if the point is outside of view frustum, no shadow calculation, just return black color
+
+
+	}
 	
 }
 

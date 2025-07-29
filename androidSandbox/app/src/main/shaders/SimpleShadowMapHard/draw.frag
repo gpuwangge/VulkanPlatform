@@ -128,7 +128,9 @@ void main() {
 			// else outColor = vec4(1.0, 0.0, 0.0, 1.0); // red
 
 			outColor += vec4(ambient * ambientIntensity + diffuse * diffuseIntensity + specular * specularIntensity, 0.0) * (1.0 - shadow);
-		}else outColor += vec4(ambient * ambientIntensity + diffuse * diffuseIntensity + specular * specularIntensity, 0.0);	
+		}else 
+			outColor += vec4(ambient * ambientIntensity + diffuse * diffuseIntensity + specular * specularIntensity, 0.0);
+			//outColor = vec4(0.0, 0.0, 0.0, 1.0); //if the point is outside of view frustum, no shadow calculation, just return black color
 	}
 	
 }
