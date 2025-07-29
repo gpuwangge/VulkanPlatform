@@ -1,6 +1,12 @@
 #include "..\\vulkanFramework\\include\\application.h"
-#define TEST_CLASS_NAME CSimpleShadowMap
+#define TEST_CLASS_NAME CSimpleShadowMapSoft
 class TEST_CLASS_NAME: public CApplication{
+/*********
+ * Implementation of Shadow Map
+ * Simple scenario: A single light source casting one shadow on a plane
+ * Use one renderpass, use two subpasses: one for shadowmap, one for main scene
+ * Use software depth bias
+ */
 public:
 	std::vector<Vertex3D> vertices3D = {
 		{ { -0.5f, 0.5f, 0.0f },{ 1.0f, 0.0f, 0.0f },{ 0.0f, 1.0f } ,{ 0.0f, 0.0f, 1.0f }},
