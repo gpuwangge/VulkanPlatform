@@ -65,8 +65,10 @@ float PCFShadow(vec3 shadowCoords, float depthBias){ //Percentage Closer Filteri
 	float dx = scale * 1.0 / float(texDim.x);
 	float dy = scale * 1.0 / float(texDim.y);
 
-	int range = 20; 
-	float shadow_contribution = 0.23 / (range * range);
+	//int range = 20; 
+	//float shadow_contribution = 0.23 / (range * range);
+	int range = 5; 
+	float shadow_contribution = 0.2 / (range * range);
 	for (int x = -range; x <= range; x++){
 		for (int y = -range; y <= range; y++){
 			vec2 offset = vec2(dx * x, dy * y);
