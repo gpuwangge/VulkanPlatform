@@ -1,6 +1,6 @@
 #version 450 core
 
-layout(set = 0, binding = 1) uniform UniformBufferObject {
+layout(set = 0, binding = 1) uniform MVPBufferObject {
 	mat4 model;
 	mat4 mainCameraProj;
 	mat4 lightCameraProj;
