@@ -8,27 +8,8 @@ class TEST_CLASS_NAME: public CApplication{
  * Use hardware depth bias (vkCmdSetDepthBias)
  */
 public:
-	// struct CustomUniformBufferObject {
-	// 	glm::vec3 lightPos;
-	// 	glm::mat4 lightSpace;
-
-	// 	static VkDescriptorSetLayoutBinding GetBinding(){
-	// 		VkDescriptorSetLayoutBinding binding;
-	// 		binding.binding = 0;//not important, will be reset
-	// 		binding.descriptorCount = 1;
-	// 		binding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-	// 		binding.pImmutableSamplers = nullptr;
-	// 		binding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-	// 		return binding;
-	// 	}
-	// };
-	// CustomUniformBufferObject customUBO{};
-
 	void initialize(){
 		appInfo.RenderMode = renderer.GRAPHICS_SHADOWMAP; //two renderpasses: shadowmap and main scene
-
-		// appInfo.Uniform.GraphicsCustom.Size = sizeof(CustomUniformBufferObject);
-		// appInfo.Uniform.GraphicsCustom.Binding = CustomUniformBufferObject::GetBinding();
 		CApplication::initialize();
 	} 
 

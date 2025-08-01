@@ -9,15 +9,14 @@ struct LightStructure{
 	float dimmerSwitch;
 };
 
-layout(set = 0, binding = 1) uniform lightsBufferObject { 
+layout(set = 0, binding = 0) uniform lightsBufferObject { 
 	LightStructure lights[LIGHT_MAX];
 	vec4 mainCameraPos; 
 	int lightNum; //number of lights, max is LIGHT_MAX
 } lightsUBO;
 
-layout (set = 0, binding = 3) uniform sampler2D depthSampler;//test
+layout (set = 0, binding = 2) uniform sampler2D depthSampler;//test
 layout (set = 1, binding = 0) uniform sampler2D texSampler;
-
 
 layout (location = 0) in vec3 inNormal;
 layout (location = 1) in vec3 inColor;//inColor is not used here	

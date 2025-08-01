@@ -1,12 +1,6 @@
 #version 450
 
-// layout(set = 0, binding = 0) uniform UniformCustomBufferObject { 
-//     vec3 lightPos; //for shadowmap
-// 	mat4 lightSpace; //for shadowmap
-//     vec3 cameraPos; //for environmentmap
-// } customUBO;
-
-layout(set = 0, binding = 1) uniform UniformBufferObject {
+layout(set = 0, binding = 1) uniform MVPBufferObject {
 	mat4 model;
 	mat4 mainCameraProj;
 	mat4 lightCameraProj;
@@ -64,7 +58,7 @@ void main() {
 	//outNormal_shadowmap = mat3(ubo.model) * inNormal;
 	//outLightVec = normalize(customUBO.lightPos - inPosition.xyz);
 	//outViewVec = -outPos.xyz;		
-	//outShadowCoord = (biasMat * customUBO.lightSpace * ubo.model ) * vec4(inPosition, 1.0);
+	//outShadowCoord = (biasMat * customUBO.light Space * ubo.model ) * vec4(inPosition, 1.0);
 
     /**********for phong Lighting**********/
 	// outNormal_shadowmap = inNormal; //mat3(ubo.model) * inNormal;

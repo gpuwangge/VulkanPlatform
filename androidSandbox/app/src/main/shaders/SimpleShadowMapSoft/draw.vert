@@ -1,10 +1,5 @@
 #version 450
 
-// layout(set = 0, binding = 0) uniform UniformCustomBufferObject { 
-//     vec3 lightPos;
-// 	mat4 lightSpace;
-// } customUBO;
-
 layout(set = 0, binding = 1) uniform UniformBufferObject {
 	mat4 model;
 	mat4 mainCameraProj;

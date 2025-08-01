@@ -15,12 +15,6 @@ layout(set = 0, binding = 0) uniform lightsBufferObject {
 	int lightNum; //number of lights, max is LIGHT_MAX
 } lightsUBO;
 
-// layout(set = 0, binding = 0) uniform UniformCustomBufferObject { 
-//     vec3 lightPos; //for shadowmap
-// 	mat4 lightSpace; //for shadowmap
-//     vec3 cameraPos; //for environmentmap
-// } customUBO;
-
 //layout(location = 0) in vec3 fragColor;
 //layout(location = 1) in vec2 fragTexCoord;
 //layout(location = 0) in vec3 pos;
