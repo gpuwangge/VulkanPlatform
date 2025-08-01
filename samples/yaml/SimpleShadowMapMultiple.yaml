@@ -23,6 +23,10 @@ Objects:
     object_id: 2
     object_scale: 0.01
     resource_default_graphics_pipeline_id: 1
+  - object_name: LightSphere
+    object_id: 3
+    object_scale: 0.01
+    resource_default_graphics_pipeline_id: 1
 
 Resources:
   - Models:
@@ -52,7 +56,7 @@ Resources:
 Uniforms:
   - Graphics:
     - uniform_graphics_name: Graphics
-      uniform_graphics_custom: true
+      uniform_graphics_custom: false
       uniform_graphics_lighting: true
       uniform_graphics_mvp: true
       uniform_graphics_vp: false
@@ -118,5 +122,8 @@ Lights:
     light_id: 0
     light_position: [3.0,3.0,0.0]
     light_intensity: [0.5,2,4,1]
-
+  - light_name: Light
+    light_id: 1
+    light_position: [3.0,2.0,0.0]
+    light_intensity: [0.5,2,4,1]
 

@@ -41,10 +41,11 @@ struct LightAttribute{
 //also provide function to update non-texture uniform(static) (TODO)
 
 
-#define LIGHT_NUM 256
+#define LIGHT_MAX 64
 struct LightingUniformBufferObject {
-    alignas(16) LightAttribute lights[LIGHT_NUM]; //support up to 256 lights: 256*32+16=8208 bytes. Normal uniform buffer size is 65536 bytes(64kb)
-    alignas(16) glm::vec4 cameraPos; 
+    alignas(16) LightAttribute lights[LIGHT_MAX]; //support up to 256 lights: 256*32+16=8208 bytes. Normal uniform buffer size is 65536 bytes(64kb)
+    alignas(16) glm::vec4 mainCameraPos;
+    alignas(16) int lightNum; //number of lights in use, used to avoid loop
 
     static VkDescriptorSetLayoutBinding GetBinding(){
         VkDescriptorSetLayoutBinding binding;

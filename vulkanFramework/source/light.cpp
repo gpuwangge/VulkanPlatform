@@ -14,7 +14,7 @@ void CLight::Update(float deltaTime, int currentFrame, Camera &mainCamera){
         CGraphicsDescriptorManager::m_lightingUBO.lights[m_light_id].specularIntensity = m_intensity[2];
         CGraphicsDescriptorManager::m_lightingUBO.lights[m_light_id].dimmerSwitch = m_intensity[3];
         //update camera to ubo
-        CGraphicsDescriptorManager::m_lightingUBO.cameraPos = glm::vec4(mainCamera.Position, 0);
+        CGraphicsDescriptorManager::m_lightingUBO.mainCameraPos = glm::vec4(mainCamera.Position, 0);
         //memcpy to GPU memory 
         memcpy(CGraphicsDescriptorManager::m_lightingUniformBuffersMapped[currentFrame], &CGraphicsDescriptorManager::m_lightingUBO, sizeof(CGraphicsDescriptorManager::m_lightingUBO));
     }

@@ -16,27 +16,27 @@ public:
 	};
 	std::vector<uint32_t> indices3D = { 0, 1, 2, 2, 1, 3};
 
-	struct CustomUniformBufferObject {
-		glm::vec3 lightPos;
-		glm::mat4 lightSpace;
+	// struct CustomUniformBufferObject {
+	// 	glm::vec3 lightPos;
+	// 	glm::mat4 lightSpace;
 
-		static VkDescriptorSetLayoutBinding GetBinding(){
-			VkDescriptorSetLayoutBinding binding;
-			binding.binding = 0;//not important, will be reset
-			binding.descriptorCount = 1;
-			binding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-			binding.pImmutableSamplers = nullptr;
-			binding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
-			return binding;
-		}
-	};
-	CustomUniformBufferObject customUBO{};
+	// 	static VkDescriptorSetLayoutBinding GetBinding(){
+	// 		VkDescriptorSetLayoutBinding binding;
+	// 		binding.binding = 0;//not important, will be reset
+	// 		binding.descriptorCount = 1;
+	// 		binding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+	// 		binding.pImmutableSamplers = nullptr;
+	// 		binding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT;
+	// 		return binding;
+	// 	}
+	// };
+	// CustomUniformBufferObject customUBO{};
 
 	void initialize(){
 		modelManager.CreateCustomModel3D(vertices3D, indices3D); //create the 0th custom model 3D (CUSTOM3D0)
 
-		appInfo.Uniform.GraphicsCustom.Size = sizeof(CustomUniformBufferObject);
-		appInfo.Uniform.GraphicsCustom.Binding = CustomUniformBufferObject::GetBinding();
+		//appInfo.Uniform.GraphicsCustom.Size = sizeof(CustomUniformBufferObject);
+		//appInfo.Uniform.GraphicsCustom.Binding = CustomUniformBufferObject::GetBinding();
 		CApplication::initialize();
 
 		//objectList[0].SetRotation(-135,0,45);

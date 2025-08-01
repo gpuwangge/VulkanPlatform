@@ -1,5 +1,5 @@
 #version 450
-#define LIGHT_NUM 1 //max 256
+#define LIGHT_MAX 64
 
 struct LightStructure{
 	vec4 lightPos;
@@ -9,25 +9,26 @@ struct LightStructure{
 	float dimmerSwitch;
 };
 
-layout(set = 0, binding = 1) uniform UniformCustomBufferObject { 
-	LightStructure lights[LIGHT_NUM];
-	vec4 cameraPos; 
-} customUBO;
+layout(set = 0, binding = 0) uniform UniformLightsBufferObject { 
+	LightStructure lights[LIGHT_MAX];
+	vec4 mainCameraPos;
+	int lightNum; //number of lights, max is LIGHT_MAX
+} lightsUBO;
 
-layout(set = 0, binding = 2) uniform UniformBufferObject {
-	mat4 model;
-	mat4 mainCameraProj;
-	mat4 lightCameraProj;
-	mat4 mainCameraView;
-	mat4 lightCameraView;
-	mat4 padding0;
-	mat4 padding1;
-	mat4 padding2; 
-} mvpUBO;
+// layout(set = 0, binding = 2) uniform UniformBufferObject {
+// 	mat4 model;
+// 	mat4 mainCameraProj;
+// 	mat4 lightCameraProj;
+// 	mat4 mainCameraView;
+// 	mat4 lightCameraView;
+// 	mat4 padding0;
+// 	mat4 padding1;
+// 	mat4 padding2; 
+// } mvpUBO;
 
 //layout (set = 0, binding = 3) uniform sampler2D depthSampler;//single sampled
-layout (set = 0, binding = 3) uniform sampler2DMS depthSampler; //msaa, there is no use to this uniform in this shader
-layout (set = 0, binding = 4) uniform sampler2DMS lightDepthSampler; //msaa
+layout (set = 0, binding = 2) uniform sampler2DMS depthSampler; //msaa, there is no use to this uniform in this shader
+layout (set = 0, binding = 3) uniform sampler2DMS lightDepthSampler; //msaa
 //layout (set = 0, binding = 4) uniform sampler2DShadow lightDepthSampler; //depthbias hardware compare
 layout (set = 1, binding = 0) uniform sampler2D texSampler;
 
@@ -107,12 +108,12 @@ void main() {
 	vec3 N = normalize(inNormal);
 
 	outColor = vec4(0,0,0,0);
-	for(int i = 0; i < LIGHT_NUM; i++){
-		vec3 viewVec = customUBO.cameraPos.xyz - inPosWorld;		
-		vec3 lightVec = customUBO.lights[i].lightPos.xyz - inPosWorld;
-		float ambientIntensity = customUBO.lights[i].ambientIntensity * customUBO.lights[i].dimmerSwitch;
-		float diffuseIntensity = customUBO.lights[i].diffuseIntensity * customUBO.lights[i].dimmerSwitch;
-		float specularIntensity = customUBO.lights[i].specularIntensity * customUBO.lights[i].dimmerSwitch;
+	for(int i = 0; i < lightsUBO.lightNum; i++){
+		vec3 viewVec = lightsUBO.mainCameraPos.xyz - inPosWorld;		
+		vec3 lightVec = lightsUBO.lights[i].lightPos.xyz - inPosWorld;
+		float ambientIntensity = lightsUBO.lights[i].ambientIntensity * lightsUBO.lights[i].dimmerSwitch;
+		float diffuseIntensity = lightsUBO.lights[i].diffuseIntensity * lightsUBO.lights[i].dimmerSwitch;
+		float specularIntensity = lightsUBO.lights[i].specularIntensity * lightsUBO.lights[i].dimmerSwitch;
 
 		vec3 L = normalize(lightVec); //point from pos to light
 		vec3 V = normalize(viewVec); //point from pos to camera

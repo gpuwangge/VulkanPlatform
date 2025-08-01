@@ -1,11 +1,6 @@
 #version 450
 
-layout(set = 0, binding = 0) uniform UniformCustomBufferObject { 
-    vec3 lightPos;
-	mat4 lightSpace;
-} customUBO;
-
-layout(set = 0, binding = 2) uniform UniformBufferObject {
+layout(set = 0, binding = 1) uniform MVPBufferObject {
 	mat4 model;
 	mat4 mainCameraProj;
 	mat4 lightCameraProj;
@@ -15,7 +10,6 @@ layout(set = 0, binding = 2) uniform UniformBufferObject {
 	mat4 padding1;
 	mat4 padding2; 
 } mvpUBO;
-
 
 layout(location = 0) in vec3 inPosition;
 layout(location = 1) in vec3 inColor;
@@ -36,22 +30,7 @@ const mat4 biasMat = mat4(
 	0.0, 0.0, 1.0, 0.0,
 	0.5, 0.5, 0.0, 1.0 );
 
-void main() 
-{
-	// outNormal = inNormal;
-	// outColor = inColor;
-	// fragTexCoord = inTexCoord;
-	
-	// gl_Position = ubo.proj * ubo.view * ubo.model * vec4(inPosition, 1.0);
-	
-	// vec4 pos = ubo.model * vec4(inPosition, 1.0);
-	// outNormal = mat3(ubo.model) * inNormal;
-	// //vec3 lPos = mat3(ubo.model) * customUBO.lightPos;
-	// outLightVec = normalize(customUBO.lightPos - inPosition.xyz);
-	// outViewVec = -pos.xyz;		
-
-	// outShadowCoord = (biasMat * customUBO.lightSpace * ubo.model ) * vec4(inPosition, 1.0);
-
+void main() {
 	gl_Position = mvpUBO.mainCameraProj * mvpUBO.mainCameraView * mvpUBO.model * vec4(inPosition, 1.0);
 
 	outNormal = mat3(mvpUBO.model) * inNormal;
@@ -60,5 +39,4 @@ void main()
 	outPosWorld = vec3(mvpUBO.model * vec4(inPosition, 1.0));
 
 	outFragPosLightSpace = mvpUBO.lightCameraProj * mvpUBO.lightCameraView * mvpUBO.model * vec4(inPosition, 1.0); 
-	//outFragPosLightSpace = mvpUBO.lightCameraView * mvpUBO.model * vec4(inPosition, 1.0); 
 }

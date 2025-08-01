@@ -1,8 +1,7 @@
 #version 450
-#define LIGHT_NUM 256
 //layout (set = 0, binding = 3) uniform sampler2D depthSampler; //single sample
-layout (set = 0, binding = 3) uniform sampler2DMS depthSampler; //msaa
-layout (set = 0, binding = 4) uniform sampler2DMS lightDepthSampler; //msaa
+layout (set = 0, binding = 2) uniform sampler2DMS depthSampler; //msaa
+layout (set = 0, binding = 3) uniform sampler2DMS lightDepthSampler; //msaa
 
 layout (location = 0) in vec2 inTexCoord;
 layout (location = 0) out vec4 outColor;

@@ -164,6 +164,9 @@ void CApplication::initialize(){
         lights.resize(((max_light_d+1) < config["Lights"].size())?(max_light_d+1):config["Lights"].size()); 
         std::cout<<"Light Size: "<<lights.size()<<std::endl;
     }
+    //update light number to ubo
+    std::cout<<"CGraphicsDescriptorManager::m_lightingUBO.lightNum = "<<lights.size()<<std::endl;
+    CGraphicsDescriptorManager::m_lightingUBO.lightNum = lights.size();
 
     /****************************
     * 2 Read Features
