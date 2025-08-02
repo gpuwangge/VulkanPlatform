@@ -25,7 +25,7 @@ public:
     float GetIntensity(int i){return m_intensity[i];};
 
     bool bUpdate = true;
-    void Update(float deltaTime, int currentFrame, Camera &mainCamer);
+    void Update(float deltaTime, int currentFrame, Camera &mainCamera, Camera &lightCamera);
 
     bool bRegistered = false;
     void Register(std::string lightName, int lightId, glm::vec3 lightPos, std::vector<float> &lightIntensity); 

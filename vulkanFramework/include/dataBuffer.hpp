@@ -29,6 +29,8 @@ enum UniformTypes {
 
 //each line must be aligned to 16 bytes. In shader use vec4 instead of vec3
 struct LightAttribute{
+    alignas(16) glm::mat4 lightCameraProj;
+    alignas(16) glm::mat4 lightCameraView;
     glm::vec4 lightPos;
     float ambientIntensity;
     float diffuseIntensity;
@@ -331,8 +333,10 @@ struct MVPData{
     alignas(16) glm::mat4 lightCameraView;
     //Each element of pDynamicOffsets which corresponds to a descriptor binding with type VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC must be a multiple of VkPhysicalDeviceLimits::minUniformBufferOffsetAlignment
     alignas(16) glm::mat4 padding0; 
-    alignas(16) glm::mat4 padding1; 
-    alignas(16) glm::mat4 padding2; 
+    alignas(16) glm::mat4 padding1;
+    alignas(16) glm::mat4 padding2;
+    //alignas(16) glm::mat4 padding3;
+    //alignas(16) glm::mat4 padding4;
 };  
 
 #define MVP_NUM 256

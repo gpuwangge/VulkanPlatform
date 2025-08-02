@@ -1,7 +1,9 @@
 #version 450
 #define LIGHT_MAX 64 
 
-struct LightStructure{
+struct LightAttribute{
+	mat4 lightCameraProj;
+    mat4 lightCameraView;
 	vec4 lightPos;
 	float ambientIntensity;
 	float diffuseIntensity;
@@ -10,7 +12,7 @@ struct LightStructure{
 };
 
 layout(set = 0, binding = 0) uniform LightsBufferObject { 
-	LightStructure lights[LIGHT_MAX];
+	LightAttribute lights[LIGHT_MAX];
 	vec4 mainCameraPos;
 	int lightNum; //number of lights, max is LIGHT_MAX
 } lightsUBO;
@@ -36,9 +38,9 @@ layout (set = 1, binding = 0) uniform sampler2D texSampler;
 layout (location = 0) in vec3 inNormal;
 layout (location = 1) in vec3 inColor; //inColor is not used here
 layout (location = 2) in vec2 inTexCoord;
-layout (location = 3) in vec3 inPosWorld;
+layout (location = 3) in vec4 inPosWorld;
 
-layout (location = 4) in vec4 inFragPosLightSpace;
+//layout (location = 4) in vec4 inFragPosLightSpace;
 
 layout (location = 0) out vec4 outColor;
 
@@ -94,9 +96,11 @@ void main() {
 	vec3 N = normalize(inNormal);
 
 	outColor = vec4(0,0,0,0);
-	for(int i = 0; i < lightsUBO.lightNum; i++){
-		vec3 viewVec = lightsUBO.mainCameraPos.xyz - inPosWorld;		
-		vec3 lightVec = lightsUBO.lights[i].lightPos.xyz - inPosWorld;
+	//for(int i = 0; i < lightsUBO.lightNum; i++){
+	int i = 0;
+	{
+		vec3 viewVec = lightsUBO.mainCameraPos.xyz - inPosWorld.xyz;		
+		vec3 lightVec = lightsUBO.lights[i].lightPos.xyz - inPosWorld.xyz;
 		float ambientIntensity = lightsUBO.lights[i].ambientIntensity * lightsUBO.lights[i].dimmerSwitch;
 		float diffuseIntensity = lightsUBO.lights[i].diffuseIntensity * lightsUBO.lights[i].dimmerSwitch;
 		float specularIntensity = lightsUBO.lights[i].specularIntensity * lightsUBO.lights[i].dimmerSwitch;
@@ -111,7 +115,9 @@ void main() {
 
 		//Code to generate shadow(need use L)
 		float shadow = 0.0f;
-		vec3 lightSpaceCoords = inFragPosLightSpace.xyz/inFragPosLightSpace.w;
+		vec4 temp = lightsUBO.lights[i].lightCameraProj * lightsUBO.lights[i].lightCameraView * inPosWorld;
+		vec3 lightSpaceCoords = temp.xyz / temp.w; //convert to clip space
+		//vec3 lightSpaceCoords = inFragPosLightSpace.xyz/inFragPosLightSpace.w;
 		if(lightSpaceCoords.x >= -1.0 && lightSpaceCoords.x <= 1.0 && //make sure after convert to light space, the point is in view frustum; outside of view frustum has no shadow calculation
 	    	lightSpaceCoords.y >= -1.0 && lightSpaceCoords.y <= 1.0 &&
 	    	lightSpaceCoords.z >= 0.0 && lightSpaceCoords.z <= 1.0){
@@ -128,10 +134,13 @@ void main() {
 			// else if (z < 0.9) outColor = vec4(1.0, 0.5, 0.0, 1.0); // orange
 			// else outColor = vec4(1.0, 0.0, 0.0, 1.0); // red
 
+			//outColor = vec4(lightSpaceCoords.z, lightSpaceCoords.z, lightSpaceCoords.z, 1.0); //for debug, visualize the depth
+
 			outColor += vec4(ambient * ambientIntensity + diffuse * diffuseIntensity + specular * specularIntensity, 0.0) * (1.0 - shadow);
 		}else 
 			outColor += vec4(ambient * ambientIntensity + diffuse * diffuseIntensity + specular * specularIntensity, 0.0);
 			//outColor = vec4(0.0, 0.0, 0.0, 1.0); //if the point is outside of view frustum, no shadow calculation, just return black color
+		//outColor = vec4(lightSpaceCoords.z, lightSpaceCoords.z, lightSpaceCoords.z, 1.0); //for debug, visualize the depth
 	}
 	
 }

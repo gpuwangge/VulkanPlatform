@@ -3,7 +3,7 @@
 //static class members must be defined outside. 
 //otherwise invoke 'undefined reference' error when linking
 Camera CApplication::mainCamera;
-Camera CApplication::lightCamera;
+Camera CApplication::lightCamera[2];
 bool CApplication::NeedToExit = false; 
 bool CApplication::NeedToPause = false;
 bool CApplication::PrintFPS = false;
@@ -378,13 +378,16 @@ void CApplication::update(){
 
     if(objects.size() > 0 && mainCamera.focusObjectId < objects.size())
         mainCamera.SetTargetPosition(objects[mainCamera.focusObjectId].Position);
-    if(objects.size() > 0 && lightCamera.focusObjectId < objects.size())
-        lightCamera.SetTargetPosition(objects[lightCamera.focusObjectId].Position);
+    if(objects.size() > 0 && lightCamera[0].focusObjectId < objects.size())
+        lightCamera[0].SetTargetPosition(objects[lightCamera[0].focusObjectId].Position);
+    if(objects.size() > 0 && lightCamera[1].focusObjectId < objects.size())
+        lightCamera[1].SetTargetPosition(objects[lightCamera[1].focusObjectId].Position);
 
     mainCamera.update(deltaTime);
-    lightCamera.update(deltaTime);
-    for(int i = 0; i < objects.size(); i++) objects[i].Update(deltaTime, renderer.currentFrame, mainCamera, lightCamera);
-    for(int i = 0; i < lights.size(); i++) lights[i].Update(deltaTime, renderer.currentFrame, mainCamera);
+    lightCamera[0].update(deltaTime);
+    lightCamera[1].update(deltaTime);
+    for(int i = 0; i < objects.size(); i++) objects[i].Update(deltaTime, renderer.currentFrame, mainCamera, lightCamera[0]);
+    for(int i = 0; i < lights.size(); i++) lights[i].Update(deltaTime, renderer.currentFrame, mainCamera, lightCamera[i]);
 
     /*Calcuate FPS*/
     static int frameCount = 0;
@@ -1219,39 +1222,51 @@ void CApplication::ReadCameras(){
 #endif
 
     if (config["LightCamera"]) {
-        lightCamera.cameraType = (Camera::CameraType)(config["LightCamera"]["camera_mode"] ? config["LightCamera"]["camera_mode"].as<int>() : 0);
-        lightCamera.SetPosition(
+        lightCamera[0].cameraType = (Camera::CameraType)(config["LightCamera"]["camera_mode"] ? config["LightCamera"]["camera_mode"].as<int>() : 0);
+        lightCamera[0].SetPosition(
             config["LightCamera"]["camera_position"][0].as<float>(), 
             config["LightCamera"]["camera_position"][1].as<float>(), 
             config["LightCamera"]["camera_position"][2].as<float>());
-        lightCamera.SetRotation(
+        lightCamera[0].SetRotation(
             config["LightCamera"]["camera_rotation"][0].as<float>(), 
             config["LightCamera"]["camera_rotation"][1].as<float>(), 
             config["LightCamera"]["camera_rotation"][2].as<float>());
-        lightCamera.focusObjectId = config["LightCamera"]["object_id_target"] ? config["LightCamera"]["object_id_target"].as<int>() : 0;
+        lightCamera[0].focusObjectId = config["LightCamera"]["object_id_target"] ? config["LightCamera"]["object_id_target"].as<int>() : 0;
 
-        lightCamera.bEnableOrthographic = config["LightCamera"]["camera_projection_enable_orthographic"] ? config["LightCamera"]["camera_projection_enable_orthographic"].as<bool>() : false;
+        lightCamera[0].bEnableOrthographic = config["LightCamera"]["camera_projection_enable_orthographic"] ? config["LightCamera"]["camera_projection_enable_orthographic"].as<bool>() : false;
         float nearPlane = config["LightCamera"]["camera_z"][0].as<float>();
         float farPlane = config["LightCamera"]["camera_z"][1].as<float>();
 
-        if(!lightCamera.bEnableOrthographic){
+        if(!lightCamera[0].bEnableOrthographic){
             float fov = config["LightCamera"]["camera_projection_perspective_fov"] ? config["LightCamera"]["camera_projection_perspective_fov"].as<float>() : 90.0f;
-            lightCamera.setPerspective(fov, 1.0f, nearPlane, farPlane);
+            lightCamera[0].setPerspective(fov, 1.0f, nearPlane, farPlane);
         }else{
             float orthoWidth = config["LightCamera"]["camera_projection_orthographic_width"] ? config["LightCamera"]["camera_projection_orthographic_width"].as<float>() : 20.0f;
             float orthoHeight = config["LightCamera"]["camera_projection_orthographic_height"] ? config["LightCamera"]["camera_projection_orthographic_height"].as<float>() : 20.0f;
-            lightCamera.setOrthographic(
+            lightCamera[0].setOrthographic(
                 -orthoWidth / 2.0f, orthoWidth / 2.0f,
                 -orthoHeight / 2.0f, orthoHeight / 2.0f,
                 nearPlane, farPlane);
         }
 
     }else{
-        lightCamera.cameraType = mainCamera.cameraType; //default to main camera type
-        lightCamera.SetPosition(mainCamera.Position);
-        lightCamera.SetRotation(mainCamera.Rotation);
-        lightCamera.setPerspective(mainCamera.fov,  (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, mainCamera.znear, mainCamera.zfar);
+        lightCamera[0].cameraType = mainCamera.cameraType; //default to main camera type
+        lightCamera[0].SetPosition(mainCamera.Position);
+        lightCamera[0].SetRotation(mainCamera.Rotation);
+        lightCamera[0].setPerspective(mainCamera.fov,  (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, mainCamera.znear, mainCamera.zfar);
+        lightCamera[0].focusObjectId = mainCamera.focusObjectId; //default to main camera focus object id
+        lightCamera[0].bEnableOrthographic = mainCamera.bEnableOrthographic; //default to main camera orthographic mode
     }
+
+    //TODO
+    lightCamera[1].cameraType = lightCamera[0].cameraType; //default to light camera type
+    lightCamera[1].SetPosition(lightCamera[0].Position);
+    lightCamera[1].SetRotation(lightCamera[0].Rotation);
+    lightCamera[1].setPerspective(lightCamera[0].fov,  (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, lightCamera[0].znear, lightCamera[0].zfar);
+    lightCamera[1].setOrthographic(-20, 20, -20, 20, lightCamera[0].znear, lightCamera[0].zfar);
+    lightCamera[1].focusObjectId = lightCamera[0].focusObjectId; //default to main camera focus object id
+    lightCamera[1].bEnableOrthographic = lightCamera[0].bEnableOrthographic; //default to main camera orthographic mode
+
 }
 
 void CApplication::Dispatch(int numWorkGroupsX, int numWorkGroupsY, int numWorkGroupsZ){

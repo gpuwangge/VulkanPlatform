@@ -1,7 +1,9 @@
 #version 450 core
 #define LIGHT_MAX 64
 
-struct LightStructure{
+struct LightAttribute{
+	mat4 lightCameraProj;
+    mat4 lightCameraView;
 	vec4 lightPos;
 	float ambientIntensity;
 	float diffuseIntensity;
@@ -10,7 +12,7 @@ struct LightStructure{
 };
 
 layout(set = 0, binding = 0) uniform lightsBufferObject { 
-	LightStructure lights[LIGHT_MAX];
+	LightAttribute lights[LIGHT_MAX];
 	vec4 mainCameraPos;
 	int lightNum; //number of lights, max is LIGHT_MAX
 } lightsUBO;

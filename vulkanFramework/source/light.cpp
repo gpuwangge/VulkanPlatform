@@ -1,12 +1,15 @@
 #include "../include/light.h"
 //#include "../include/application.h"
 
-void CLight::Update(float deltaTime, int currentFrame, Camera &mainCamera){
+void CLight::Update(float deltaTime, int currentFrame, Camera &mainCamera, Camera &lightCamera){
     if(!bRegistered) return;
     if(!bUpdate) return;
 
     //update camera pos to ubo, then memcpy to GPU memory
     if(CGraphicsDescriptorManager::graphicsUniformTypes & GRAPHCIS_UNIFORMBUFFER_LIGHTING){
+        CGraphicsDescriptorManager::m_lightingUBO.lights[m_light_id].lightCameraProj = lightCamera.matrices.perspective;
+        CGraphicsDescriptorManager::m_lightingUBO.lights[m_light_id].lightCameraView = lightCamera.matrices.view;
+
         //update light pos and intensity to ubo
         CGraphicsDescriptorManager::m_lightingUBO.lights[m_light_id].lightPos = glm::vec4(m_position, 0);
         CGraphicsDescriptorManager::m_lightingUBO.lights[m_light_id].ambientIntensity = m_intensity[0];

@@ -20,10 +20,9 @@ public:
 				glm::vec3(2.5 *cos(elapseTime * (i+1)), lights[i].GetLightPosition().y, 2.5 *sin(elapseTime * (i+1)))
 			);
 			objects[2+i].SetPosition(lights[i].GetLightPosition()); 
+
+			lightCamera[i].SetPosition(lights[i].GetLightPosition());
 		}
-
-		lightCamera.SetPosition(lights[0].GetLightPosition());
-
 		CApplication::update();
 	}
 
