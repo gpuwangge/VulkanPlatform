@@ -100,11 +100,16 @@ void CApplication::run(){ //Entrance Function
     std::cout<<"======Welcome to Vulkan Platform======="<<std::endl;
     std::cout<<"======================================="<<std::endl;
 
-    auto startInitialzeTime = std::chrono::high_resolution_clock::now();
+    //auto startInitialzeTime = std::chrono::high_resolution_clock::now();
+
+    TimePoint T0 = now();
     initialize();
-    auto endInitializeTime = std::chrono::high_resolution_clock::now();
-    auto durationInitializationTime = std::chrono::duration<float, std::chrono::seconds::period>(endInitializeTime - startInitialzeTime).count() * 1000;
-    std::cout<<"Total Initialization cost: "<<durationInitializationTime<<" milliseconds"<<std::endl;
+    TimePoint T1 = now();
+    printElapsed("Application: Total Initialization cost", T0, T1);
+
+    //auto endInitializeTime = std::chrono::high_resolution_clock::now();
+    //auto durationInitializationTime = std::chrono::duration<float, std::chrono::seconds::period>(endInitializeTime - startInitialzeTime).count() * 1000;
+    //std::cout<<"Total Initialization cost: "<<durationInitializationTime<<" milliseconds"<<std::endl;
 
 #ifdef SDL   
     while(sdlManager.bStillRunning) {
@@ -135,6 +140,21 @@ void CApplication::run(){ //Entrance Function
 #endif
 
 void CApplication::initialize(){
+    bool bVerboseInitialization = false;
+    TimePoint T0 = now();
+
+    // static auto startInitTime = std::chrono::high_resolution_clock::now();
+    // static auto lastInitTime = std::chrono::high_resolution_clock::now();
+    // auto currentInitTime = std::chrono::high_resolution_clock::now();
+    // float elapseInitTime = 0;
+    // float deltaInitTime = 0;
+
+    //m_timer.reset();
+
+    //auto currentTime = std::chrono::high_resolution_clock::now();
+    //elapseTime = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
+    //deltaTime = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - lastTime).count();
+
     std::string fullYamlName = "../samples/yaml/" + m_sampleName + ".yaml";
     try{
         config = YAML::LoadFile(fullYamlName);
@@ -168,32 +188,93 @@ void CApplication::initialize(){
     std::cout<<"CGraphicsDescriptorManager::m_lightingUBO.lightNum = "<<lights.size()<<std::endl;
     CGraphicsDescriptorManager::m_lightingUBO.lightNum = lights.size();
 
+    // if(bVerboseInitialization){
+    //     currentInitTime = std::chrono::high_resolution_clock::now();
+    //     elapseInitTime = std::chrono::duration<float, std::chrono::milliseconds::period>(currentInitTime - startInitTime).count();
+    //     deltaInitTime = std::chrono::duration<float, std::chrono::milliseconds::period>(currentInitTime - lastInitTime).count();
+    //     std::cout<<": Initialize Object and Light List time cost: "<<deltaInitTime<<" milliseconds"<<std::endl;
+    //     std::cout<<": Initialize time elapsed: "<<elapseInitTime<<" milliseconds"<<std::endl;
+    //     lastInitTime = currentInitTime;
+    // }
+
+
+    //std::cout<<"Application: Initialize time for object and light List: "<<m_timer.elapsedSinceLastCheck()<<" milliseconds"<<std::endl;
+    //std::cout<<"Application: Total initialize elapsed time: "<<m_timer.elapsedMilliseconds()<<" milliseconds"<<std::endl;
+
+    TimePoint T1 = now();
+    if(bVerboseInitialization){
+        printElapsed("Application: Initialize time for object and light List", T0, T1);
+        //printElapsed("Application: Total initialize elapsed time", T0, T1);
+    }
+
     /****************************
     * 2 Read Features
     ****************************/   
     renderer.m_renderMode = appInfo.RenderMode;
     ReadFeatures();
 
+    // if(bVerboseInitialization){
+    //     currentInitTime = std::chrono::high_resolution_clock::now();
+    //     elapseInitTime = std::chrono::duration<float, std::chrono::milliseconds::period>(currentInitTime - startInitTime).count();
+    //     deltaInitTime = std::chrono::duration<float, std::chrono::milliseconds::period>(currentInitTime - lastInitTime).count();
+    //     std::cout<<": Initialize ReadFeatures time cost: "<<deltaInitTime<<" milliseconds"<<std::endl;
+    //     std::cout<<": Initialize time elapsed: "<<elapseInitTime<<" milliseconds"<<std::endl;
+    //     lastInitTime = currentInitTime;
+    // }
+
+    //std::cout<<"Application: Initialize time for reading features: "<<m_timer.elapsedSinceLastCheck()<<" milliseconds"<<std::endl;
+    //std::cout<<"Application: Initialize total elapsed time: "<<m_timer.elapsedMilliseconds()<<" milliseconds"<<std::endl;
+
+    TimePoint T2 = now();
+    if(bVerboseInitialization){
+        printElapsed("Application: Initialize time for reading features", T1, T2);
+        //printElapsed("Application: Total initialize elapsed time", T0, T2);
+    }
+
     /****************************
     * 3 Read Uniforms
     ****************************/
     ReadUniforms();
+
+    TimePoint T3 = now();
+    if(bVerboseInitialization){
+        printElapsed("Application: Initialize time for reading uniforms", T2, T3);
+        //printElapsed("Application: Total initialize elapsed time", T0, T3);
+    }
 
     /****************************
     * 3.2 Read Subpasses
     ****************************/
     ReadAttachments();
 
+    TimePoint T4 = now();
+    if(bVerboseInitialization){
+        printElapsed("Application: Initialize time for reading attachements", T3, T4);
+        //printElapsed("Application: Total initialize elapsed time", T0, T4);
+    }
+
     /****************************
     * 3.5 Read Subpasses
     ****************************/
     ReadSubpasses();
+
+    TimePoint T5 = now();
+    if(bVerboseInitialization){
+        printElapsed("Application: Initialize time for reading subpasses", T4, T5);
+        //printElapsed("Application: Total initialize elapsed time", T0, T5);
+    }
     
     /****************************
     * 4 Read Resources
     ****************************/
     //When creating texture resource, need uniform information, so must read uniforms before read resources
     ReadResources();
+
+    TimePoint T6 = now();
+    if(bVerboseInitialization){
+        printElapsed("Application: Initialize time for reading resources", T5, T6);
+        //printElapsed("Application: Total initialize elapsed time", T0, T6);
+    }
 
     /****************************
     * 5 Create Uniform Descriptors
@@ -202,31 +283,67 @@ void CApplication::initialize(){
     bool b_uniform_compute = appInfo.Uniform.b_uniform_compute_custom || appInfo.Uniform.b_uniform_compute_storage || appInfo.Uniform.b_uniform_compute_swapchain_storage || appInfo.Uniform.b_uniform_compute_texture_storage;
     CreateUniformDescriptors(b_uniform_graphics, b_uniform_compute);
 
+    TimePoint T7 = now();
+    if(bVerboseInitialization){
+        printElapsed("Application: Initialize time for creating uniform descriptors", T6, T7);
+        //printElapsed("Application: Total initialize elapsed time", T0, T7);
+    }
+
     /****************************
     * 6 Create Pipelines
     ****************************/
     CreatePipelines();
+
+    TimePoint T8 = now();
+    if(bVerboseInitialization){
+        printElapsed("Application: Initialize time for creating pipelines", T7, T8);
+        //printElapsed("Application: Total initialize elapsed time", T0, T8);
+    }
 
     /****************************
     * 7 Read and Register Objects
     ****************************/
     ReadRegisterObjects();
 
+    TimePoint T9 = now();
+    if(bVerboseInitialization){
+        printElapsed("Application: Initialize time for reading register objects", T8, T9);
+        //printElapsed("Application: Total initialize elapsed time", T0, T9);
+    }
+
     /****************************
     * 8 Read Lightings
     ****************************/
     ReadLightings();
+
+    TimePoint T10 = now();
+    if(bVerboseInitialization){
+        printElapsed("Application: Initialize time for reading lightings", T9, T10);
+        //printElapsed("Application: Total initialize elapsed time", T0, T10);
+    }
     
     /****************************
     * 9 Read Main Camera
     ****************************/
     ReadCameras();
 
+    TimePoint T11 = now();
+    if(bVerboseInitialization){
+        printElapsed("Application: Initialize time for reading cameras", T10, T11);
+        //printElapsed("Application: Total initialize elapsed time", T0, T11);
+    }
+
     /****************************
     * 10 Create Sync Objects and Clean up Shaders
     ****************************/
     renderer.CreateSyncObjects(swapchain.imageSize);
     shaderManager.Destroy();
+
+    TimePoint T12 = now();
+    if(bVerboseInitialization){
+        printElapsed("Application: Initialize time for creating sync objects and destroy shaders", T11, T12);
+        //printElapsed("Application: Total initialize elapsed time", T0, T12);
+    }
 
     // CContext::GetHandle().logManager.print("Test single string!\n");
     // CContext::GetHandle().logManager.print("Test interger: %d!\n", 999);
@@ -245,13 +362,19 @@ void CApplication::initialize(){
 }
 
 void CApplication::update(){
-    static auto startTime = std::chrono::high_resolution_clock::now();
-    static auto lastTime = std::chrono::high_resolution_clock::now();
+    static TimePoint startTimePoint = now();
+    static TimePoint lastTimePoint = now();
+    TimePoint currentTimePoint = now();
+    elapseTime = secondsBetween(startTimePoint, currentTimePoint);
+    deltaTime = secondsBetween(lastTimePoint, currentTimePoint);
+    lastTimePoint = currentTimePoint;
 
-    auto currentTime = std::chrono::high_resolution_clock::now();
-    elapseTime = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
-    deltaTime = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - lastTime).count();
-    lastTime = currentTime;
+    //static auto startTime = std::chrono::high_resolution_clock::now();
+    //static auto lastTime = std::chrono::high_resolution_clock::now();
+    // auto currentTime = std::chrono::high_resolution_clock::now();
+    // elapseTime = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - startTime).count();
+    // deltaTime = std::chrono::duration<float, std::chrono::seconds::period>(currentTime - lastTime).count();
+    // lastTime = currentTime;
 
     if(objects.size() > 0 && mainCamera.focusObjectId < objects.size())
         mainCamera.SetTargetPosition(objects[mainCamera.focusObjectId].Position);
@@ -260,22 +383,33 @@ void CApplication::update(){
 
     mainCamera.update(deltaTime);
     lightCamera.update(deltaTime);
-    for(int i = 0; i < objects.size(); i++) objects[i].Update(deltaTime, renderer.currentFrame, mainCamera, lightCamera); 
-    for(int i = 0; i < lights.size(); i++) lights[i].Update(deltaTime, renderer.currentFrame, mainCamera); 
+    for(int i = 0; i < objects.size(); i++) objects[i].Update(deltaTime, renderer.currentFrame, mainCamera, lightCamera);
+    for(int i = 0; i < lights.size(); i++) lights[i].Update(deltaTime, renderer.currentFrame, mainCamera);
 
     /*Calcuate FPS*/
     static int frameCount = 0;
-    static auto intervalStartTime = std::chrono::high_resolution_clock::now();
-    static auto intervalEndTime = std::chrono::high_resolution_clock::now();
+    static TimePoint intervalStartTimePoint = now();
     if(PrintFPS){
-        intervalEndTime = std::chrono::high_resolution_clock::now();
-        auto intervalElapseTime = std::chrono::duration<float, std::chrono::milliseconds::period>(intervalEndTime - intervalStartTime).count();
+        double intervalElapseTime = millisecondsBetween(intervalStartTimePoint, currentTimePoint);
         if(intervalElapseTime > 1000){
             std::cout<<"FPS: "<<frameCount<<" interval: "<<intervalElapseTime<<" milliseconds"<<std::endl;
             frameCount = 0;
-            intervalStartTime = std::chrono::high_resolution_clock::now();
+            intervalStartTimePoint = now();
         }else frameCount++;
     }
+
+
+    // static auto intervalStartTime = std::chrono::high_resolution_clock::now();
+    // static auto intervalEndTime = std::chrono::high_resolution_clock::now();
+    // if(PrintFPS){
+    //     intervalEndTime = std::chrono::high_resolution_clock::now();
+    //     auto intervalElapseTime = std::chrono::duration<float, std::chrono::milliseconds::period>(intervalEndTime - intervalStartTime).count();
+    //     if(intervalElapseTime > 1000){
+    //         std::cout<<"FPS: "<<frameCount<<" interval: "<<intervalElapseTime<<" milliseconds"<<std::endl;
+    //         frameCount = 0;
+    //         intervalStartTime = std::chrono::high_resolution_clock::now();
+    //     }else frameCount++;
+    // }
 }
 
 void CApplication::recordGraphicsCommandBuffer_renderpassMainscene(){}
@@ -702,6 +836,8 @@ void CApplication::ReadResources(){
             appInfo.ComputeShader = std::move(computeShaderList);
         }
     }
+
+    //std::cout<<"Application: Read Resources Done."<<std::endl;
 }
 
 void CApplication::ReadAttachments(){
@@ -753,6 +889,8 @@ void CApplication::ReadAttachments(){
 
     if(swapchain.iMainSceneAttachmentColorPresent >= 0) //dont need create swapchain attachment resource here
         renderProcess.create_attachment_description_color_present_mainsceneRenderPass(swapchain.swapChainImageFormat);
+
+    //std::cout<<"Application: Read Attachments Done."<<std::endl;
 }
 
 void CApplication::ReadSubpasses(){
@@ -782,6 +920,8 @@ void CApplication::ReadSubpasses(){
     //create framebuffer
     //std::cout<<"Application: Create MainScene Framebuffer."<<std::endl;
     swapchain.CreateFramebuffer_mainscene(renderProcess.renderPass_mainscene);
+
+    //std::cout<<"Application: Read Subpasses Done."<<std::endl;
 }
 
 void CApplication::CreateUniformDescriptors(bool b_uniform_graphics, bool b_uniform_compute){

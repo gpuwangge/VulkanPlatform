@@ -5,6 +5,7 @@
 #include "renderer.h"
 #include "context.h"
 #include "logManager.h"
+#include "timer.h"
 
 class CTextureImage final{
 public:

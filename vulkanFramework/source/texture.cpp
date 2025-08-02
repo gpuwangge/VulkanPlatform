@@ -21,7 +21,8 @@ CTextureManager::~CTextureManager(){
 //The main entrance to create texture image
 void CTextureManager::CreateTextureImage(const std::string texturePath, VkImageUsageFlags usage, VkCommandPool &commandPool, 
 		int miplevel, int sampler_id, VkFormat imageFormat, unsigned short bitPerTexelPerChannel, bool bCubemap){
-	auto startTextureTime = std::chrono::high_resolution_clock::now();
+	//auto startTextureTime = std::chrono::high_resolution_clock::now();
+	TimePoint startTimePoint = now();
 
 	CTextureImage textureImage;
 	textureImage.m_imageFormat = imageFormat;
@@ -49,14 +50,17 @@ void CTextureManager::CreateTextureImage(const std::string texturePath, VkImageU
 	//textureImages[0].CreateTextureImage("texture.jpg", usage, renderer.commandPool);
 	//textureImages[0].CreateImageView(VK_IMAGE_ASPECT_COLOR_BIT);
 
-	auto endTextureTime = std::chrono::high_resolution_clock::now();
-    auto durationTime = std::chrono::duration<float, std::chrono::seconds::period>(endTextureTime - startTextureTime).count()*1000;
+	//auto endTextureTime = std::chrono::high_resolution_clock::now();
+    //auto durationTime = std::chrono::duration<float, std::chrono::seconds::period>(endTextureTime - startTextureTime).count()*1000;
+	TimePoint endTimePoint = now();
+	double durationTime = millisecondsBetween(startTimePoint, endTimePoint);
+
 	logManager.print("Load Texture Image %s", texturePath);
 	//logManager.print("\tenable mipmap: %d", textureImage.bEnableMipMap);
 	logManager.print("\tenable miplevels: %d", (int)textureImage.m_mipLevels);
 	logManager.print("\tuse sampler: %d", (int)textureImage.m_sampler_id);
 	logManager.print("\tenable cubemap: %d", bCubemap);
-	logManager.print("\tcost %f milliseconds", durationTime);
+	logManager.print("\tcost %f milliseconds", (float)durationTime);
     //std::cout<<"Load Texture '"<< (*textureNames)[i].first <<"' cost: "<<durationTime<<" milliseconds"<<std::endl;
 }
 

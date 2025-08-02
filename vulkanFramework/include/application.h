@@ -16,6 +16,7 @@
 #include "modelManager.h"
 #include "object.h"
 #include "light.h"
+#include "timer.h"
 
 //Macro to convert the macro value to a string
 #define STRINGIFY(x) #x
@@ -98,8 +99,9 @@ public:
     /*Clean up Functions*/
     void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator);
 
-    float elapseTime = 0;
-    float deltaTime = 0;
+    //Make elapseTime and deltaTime public so that user(sample) can access them
+    double elapseTime = 0;
+    double deltaTime = 0;
 
     std::string m_sampleName;
     YAML::Node config;
