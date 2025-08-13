@@ -15,14 +15,14 @@ public:
 	static const int KernelRunNumber = 1;
 
 	TEST_CLASS_NAME(){//these must be updated before initialization
-		swapchain.imageSize = MAX_FRAMES_IN_FLIGHT;
+		swapchain.swapchainImageSize = MAX_FRAMES_IN_FLIGHT;
 		swapchain.bComputeSwapChainImage = true;
 	}
 
 	void initialize(){
         appInfo.RenderMode = renderer.COMPUTE_SWAPCHAIN;
 		CApplication::initialize();
-		createComputeCommandBuffers(renderer.commandBuffers[renderer.computeCmdId], swapchain.images);
+		createComputeCommandBuffers(renderer.commandBuffers[renderer.computeCmdId], swapchain.swapchain_images);
 	}
 
 	void update(){

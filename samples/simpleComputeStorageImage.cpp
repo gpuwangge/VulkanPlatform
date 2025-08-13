@@ -11,14 +11,14 @@ public:
 	std::vector<VkClearValue> clearValues{ {  0.0f, 1.0f, 0.0f, 1.0f  } };
 
 	CSimpleComputeStorageImage(){
-		swapchain.imageSize = MAX_FRAMES_IN_FLIGHT;
+		swapchain.swapchainImageSize = MAX_FRAMES_IN_FLIGHT;
 		swapchain.bComputeSwapChainImage = true;
 	}
 
 	void initialize(){
         appInfo.RenderMode = renderer.COMPUTE_SWAPCHAIN;
 		CApplication::initialize();
-		createComputeCommandBuffers(renderer.commandBuffers[renderer.computeCmdId], swapchain.images);
+		createComputeCommandBuffers(renderer.commandBuffers[renderer.computeCmdId], swapchain.swapchain_images);
 	}
 
 	void update(){

@@ -91,8 +91,8 @@ void CApplication::run(){ //Entrance Function
     //std::cout<<"Surface min extent: width="<<pSurfaceCapabilities->minImageExtent.width<<", Surface min extent: height="<<pSurfaceCapabilities->minImageExtent.height<<std::endl;
     //std::cout<<"Surface max extent: width="<<pSurfaceCapabilities->maxImageExtent.width<<", Surface max extent: height="<<pSurfaceCapabilities->maxImageExtent.height<<std::endl;
 
-    swapchain.createImages(surface, windowWidth, windowHeight);
-	swapchain.createImageViews(VK_IMAGE_ASPECT_COLOR_BIT);
+    swapchain.createSwapchainImages(surface, windowWidth, windowHeight);
+	swapchain.createSwapchainViews(VK_IMAGE_ASPECT_COLOR_BIT);
 
     renderer.CreateCommandPool(surface);
 
@@ -336,7 +336,7 @@ void CApplication::initialize(){
     /****************************
     * 10 Create Sync Objects and Clean up Shaders
     ****************************/
-    renderer.CreateSyncObjects(swapchain.imageSize);
+    renderer.CreateSyncObjects(swapchain.swapchainImageSize);
     shaderManager.Destroy();
 
     TimePoint T12 = now();
@@ -872,21 +872,21 @@ void CApplication::ReadAttachments(){
 
     //If enable MSAA, must also enable Depth Test
     if(swapchain.iMainSceneAttachmentDepthCamera >= 0){
-        swapchain.create_attachment_resource_depth_camera();
+        swapchain.create_attachment_resource_depthcamera();
         renderProcess.create_attachment_description_camera_depth_mainsceneRenderPass(swapchain.depthFormat, swapchain.msaaSamples);
     }
 
     if(swapchain.iMainSceneAttachmentColorResovle >= 0){
-        swapchain.create_attachment_resource_color_resolve();
+        swapchain.create_attachment_resource_colorresolve();
         renderProcess.create_attachment_description_color_resolve_mainsceneRenderPass(swapchain.swapChainImageFormat, swapchain.msaaSamples, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
     }
 
    
     if(swapchain.iShadowmapAttachmentDepthLight >= 0){ //if shadowmap renderpass attachment depth light is enabled
-        swapchain.create_attachment_resource_depth_light(VK_SAMPLE_COUNT_1_BIT); //hardware bias todo
+        swapchain.create_attachment_resource_depthlight(VK_SAMPLE_COUNT_1_BIT); //hardware bias todo
         renderProcess.create_attachment_description_light_depth_shadowmapRenderPass(swapchain.depthFormat); 
     }else if(swapchain.iMainSceneAttachmentDepthLight >= 0){
-        swapchain.create_attachment_resource_depth_light(swapchain.msaaSamples);
+        swapchain.create_attachment_resource_depthlight(swapchain.msaaSamples);
         renderProcess.create_attachment_description_light_depth_mainsceneRenderPass(swapchain.depthFormat, swapchain.msaaSamples);
     }
 
@@ -947,7 +947,7 @@ void CApplication::CreateUniformDescriptors(bool b_uniform_graphics, bool b_unif
     //UNIFORM STEP 3/3 (Set)
     if(b_uniform_graphics){
         //if(appInfo.Feature.feature_graphics_observe_attachment_id == 0) //assume 0 is light Depth Image Buffer
-            graphicsDescriptorManager.createDescriptorSets_General(swapchain.depthImageBuffer.view, swapchain.lightDepthImageBuffer.view, swapchain.lightDepthImageBuffer.view); //TODO
+            graphicsDescriptorManager.createDescriptorSets_General(swapchain.buffer_depthcamera.view, swapchain.buffer_depthlight[0].view, swapchain.buffer_depthlight[0].view); //TODO
            // graphicsDescriptorManager.createDescriptorSets_General(swapchain.depthImageBuffer.view, swapchain.lightDepthImageBuffer.view); //TODO
         //else// if(appInfo.Feature.feature_graphics_observe_attachment_id == 1)
             //graphicsDescriptorManager.createDescriptorSets_General(swapchain.depthImageBuffer.view);//TODO: what if no depthImageBuffer is not enable 
@@ -955,8 +955,8 @@ void CApplication::CreateUniformDescriptors(bool b_uniform_graphics, bool b_unif
     if(b_uniform_compute){
         if(appInfo.Uniform.b_uniform_compute_swapchain_storage) {
             if(appInfo.Uniform.b_uniform_compute_texture_storage)
-                computeDescriptorManager.createDescriptorSets(&(textureManager.textureImages), &(swapchain.views));//this must be called after texture resource is loaded
-            else computeDescriptorManager.createDescriptorSets(NULL, &(swapchain.views));
+                computeDescriptorManager.createDescriptorSets(&(textureManager.textureImages), &(swapchain.swapchain_views));//this must be called after texture resource is loaded
+            else computeDescriptorManager.createDescriptorSets(NULL, &(swapchain.swapchain_views));
         }else computeDescriptorManager.createDescriptorSets();
     }
 }
