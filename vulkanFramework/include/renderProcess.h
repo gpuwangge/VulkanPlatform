@@ -15,20 +15,50 @@ public:
 
     void Cleanup();
 
-    // enum RenderFeatures {
-    //     PRESENT,
-    //     PRESENT_DEPTH,
-    //     PRESENT_DEPTH_MSAA
-    // };
-    // RenderFeatures m_renderFeature = RenderFeatures::PRESENT;
+    /**************************
+    * Attachments(Description) 
+    **************************/
+    int iShadowmapAttachmentDepthLight = -1; //this is for shadowmap renderpass, not main scene renderpass
+    int iMainSceneAttachmentDepthLight = -1;
+    int iMainSceneAttachmentDepthCamera = -1;
+    int iMainSceneAttachmentColorResovle = -1;
+    int iMainSceneAttachmentColorPresent = -1;
 
-    // enum SubpassPatterns {
-    //     DRAW,
-    //     DRAW_OBSERVE,
-    //     LDEPTH_DRAW,
-    //     LDEPTH_DRAW_OBSERVE
-    // };
-    // SubpassPatterns m_subpassPattern = SubpassPatterns::DRAW;
+    void create_attachmentdescription_shadowmap_depthlight(VkFormat depthFormat);
+    void create_attachmentdescription_mainscene_depthlight(VkFormat depthFormat, VkSampleCountFlagBits msaaSamples);
+    void create_attachmentdescription_mainscene_depthcamera(VkFormat depthFormat, VkSampleCountFlagBits msaaSamples);
+    void create_attachmentdescription_mainscene_colorresolve(VkFormat swapChainImageFormat,VkSampleCountFlagBits msaaSamples = VK_SAMPLE_COUNT_1_BIT, VkImageLayout imageLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
+    void create_attachmentdescription_mainscene_colorpresent(VkFormat swapChainImageFormat);
+
+    VkAttachmentDescription attachmentdescription_shadowmap_depthlight{};
+    VkAttachmentDescription attachmentdescription_mainscene_depthlight{};
+    VkAttachmentDescription attachmentdescription_mainscene_depthcamera{};
+    VkAttachmentDescription attachmentdescription_mainscene_colorresolve{};
+    VkAttachmentDescription attachmentdescription_mainscene_colorpresent{};//these are descriptions, not attachment buffer, each has many(9) properties
+
+    /*********
+    * Attachments Reference
+    * (number of refs can be different from descriptions)
+    **********/
+    //for shadowmap renderpass
+    VkAttachmentReference attachmentRef_shadowmap_lightdepth{};
+
+    //for mainscene renderpass: there are 3 subpass
+    //subpass1.for subpass_shadowmap
+    VkAttachmentReference attachmentRef_mainscene_lightdepth{};
+    //subpass2.for subpass_draw
+    std::vector<VkAttachmentReference> attachmentRef_mainscene_draw_input = {
+        {0, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL},
+        {1, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL},
+    };
+    VkAttachmentReference attachmentRef_mainscene_draw_color{};
+    VkAttachmentReference attachmentRef_mainscene_draw_depth{};
+    VkAttachmentReference attachmentRef_mainscene_draw_color_multisample{};
+    //subpass3.for subpass_observe
+    VkAttachmentReference attachmentRef_mainscene_observe{}; //target: attachment-lightDepth or cameraDepth as input attachment
+    VkAttachmentReference attachmentRef_mainscene_observe_color{};
+    VkAttachmentReference attachmentRef_mainscene_observe_color_multisample{};
+    
 
     /*********
     * Subpasses
@@ -37,80 +67,36 @@ public:
     bool bEnableMainSceneRenderpassSubpassShadowmap = false;   
     bool bEnableMainSceneRenderpassSubpassDraw = true;
     bool bEnableMainSceneRenderpassSubpassObserve = false;
-    std::vector<VkSubpassDescription> subpasses_mainsceneRenderpass;
-    void createSubpass_mainsceneRenderpass(int attachment_id_to_observe); //this function will call shadowmap/draw/observe
-    void createSubpass_mainsceneRenderpass_shadowmap();
-    void createSubpass_mainsceneRenderpass_draw();
-    void createSubpass_mainsceneRenderpass_observe(int attachment_id_to_observe);
 
-    std::vector<VkSubpassDescription> subpasses_shadowmapRenderpass;
-    void createSubpass_shadowmapRenderpass(); //for shadowmap, this is the only subpass
+    std::vector<VkSubpassDescription> subpasses_shadowmap;
+    void createSubpass_shadowmap(); //for shadowmap, this is the only subpass
+
+    std::vector<VkSubpassDescription> subpasses_mainscene;
+    void createSubpass_mainscene(int attachment_id_to_observe); //this function will call shadowmap/draw/observe
+    void createSubpass_mainscene_lightdepth();
+    void createSubpass_mainscene_draw();
+    void createSubpass_mainscene_observe(int attachment_id_to_observe);
+
 
     /*********
     * Dependency
     **********/
-    std::vector<VkSubpassDependency> dependencies_mainsceneRenderpass;
-    void createDependency_mainsceneRenderpass();
-    std::vector<VkSubpassDependency> dependencies_shadowmapRenderpass;
-    void createDependency_shadowmapRenderpass();
-
-
-    /*********
-    * Attachments(Description) 
-    **********/
-    int iShadowmapAttachmentDepthLight = -1; //this is for shadowmap renderpass, not main scene renderpass
-    int iMainSceneAttachmentDepthLight = -1;
-    int iMainSceneAttachmentDepthCamera = -1;
-    int iMainSceneAttachmentColorResovle = -1;
-    int iMainSceneAttachmentColorPresent = -1;
-
-    void create_attachment_description_light_depth_mainsceneRenderPass(VkFormat depthFormat, VkSampleCountFlagBits msaaSamples);
-    void create_attachment_description_light_depth_shadowmapRenderPass(VkFormat depthFormat);
-    void create_attachment_description_camera_depth_mainsceneRenderPass(VkFormat depthFormat, VkSampleCountFlagBits msaaSamples);
-    void create_attachment_description_color_resolve_mainsceneRenderPass(VkFormat swapChainImageFormat,VkSampleCountFlagBits msaaSamples = VK_SAMPLE_COUNT_1_BIT, VkImageLayout imageLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
-    void create_attachment_description_color_present_mainsceneRenderPass(VkFormat swapChainImageFormat);
-
-    VkAttachmentDescription attachment_description_light_depth_mainscene{};
-    VkAttachmentDescription attachment_description_light_depth_shadowmap{};
-    VkAttachmentDescription attachment_description_depth_mainscene{};
-    VkAttachmentDescription attachment_description_color_resolve_mainscene{};
-    VkAttachmentDescription attachment_description_color_present_mainscene{};//these are descriptions, not attachment buffer, each has many(9) properties
-
-    /*********
-    * Attachments Reference
-    **********/
-    //number of refs can be different from descriptions
-    //1.for subpass_shadowmap
-    VkAttachmentReference attachmentRef_light_depth_shadowmap{};
-    //2.for subpass_draw
-    std::vector<VkAttachmentReference> attachmentRef_input_draw = {
-        {0, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL},
-        {1, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL},
-    };
-    //VkAttachmentReference attachmentRef_input_draw{}; //to input light depth(of the previous subpass)
-    //VkAttachmentReference attachmentRef_input_depth_draw{}; //to input camera depth(of this same subpass)
-    VkAttachmentReference attachmentRef_color_draw{};
-    VkAttachmentReference attachmentRef_depth_draw{};
-    VkAttachmentReference attachmentRef_color_multisample_draw{};
-    //3.subpass_observe
-    VkAttachmentReference attachmentRef_observe{}; //target: attachment-lightDepth or cameraDepth as input attachment
-    VkAttachmentReference attachmentRef_color_observe{};
-    VkAttachmentReference attachmentRef_color_multisample_observe{};
+    std::vector<VkSubpassDependency> dependencies_shadowmap;
+    void createDependency_shadowmap();
+    std::vector<VkSubpassDependency> dependencies_mainscene;
+    void createDependency_mainscene();
     
-
-    //for shadowmap renderpass
-    VkAttachmentReference attachmentRef_light_depth_shadowmap_{};
-
     /*********
     * Renderpass
     **********/
     VkRenderPass renderPass_shadowmap = VK_NULL_HANDLE;
+    void createRenderPass_shadowmap();
     VkRenderPass renderPass_mainscene = VK_NULL_HANDLE; 
-    void createRenderPass_mainsceneRenderpass();
-    void createRenderPass_shadowmapRenderpass();
+    void createRenderPass_mainscene();
+    
 
     /*********
-    * Misc
+    * Help variables and functions
     **********/
     std::vector<VkClearValue> clearValues;
     std::vector<VkClearValue> clearValues_shadowmap;
@@ -123,17 +109,14 @@ public:
     VkSampleCountFlagBits m_msaaSamples_renderProcess = VK_SAMPLE_COUNT_1_BIT;
     //VkFormat m_swapChainImageFormat;
 
-    /*********
-    * Pipeline Layouts
-    **********/
+    /*******************************
+    * Pipeline Layouts and Pipelines
+    ********************************/
     void createComputePipelineLayout(VkDescriptorSetLayout &descriptorSetLayout);
 
     void createGraphicsPipelineLayout(std::vector<VkDescriptorSetLayout> &descriptorSetLayouts, int graphicsPipelineLayout_id);
     void createGraphicsPipelineLayout(std::vector<VkDescriptorSetLayout> &descriptorSetLayouts, VkPushConstantRange &pushConstantRange, bool bUsePushConstant, int graphicsPipelineLayout_id);
 
-    /*********
-    * Pipelines
-    **********/
     bool bCreateComputePipeline = false;
     VkPipelineLayout computePipelineLayout;
 	VkPipeline computePipeline;

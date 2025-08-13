@@ -870,28 +870,23 @@ void CApplication::ReadAttachments(){
     //when creating attachment resource, need 1.create attachment description in renderProcess; 2.create attachment buffer in swapchain
     if(swapchain.iMainSceneAttachmentColorResovle >= 0) swapchain.GetMaxUsableSampleCount(); //calcuate max sampler count first
 
-    //If enable MSAA, must also enable Depth Test
-    if(swapchain.iMainSceneAttachmentDepthCamera >= 0){
-        swapchain.create_attachment_resource_depthcamera();
-        renderProcess.create_attachment_description_camera_depth_mainsceneRenderPass(swapchain.depthFormat, swapchain.msaaSamples);
-    }
-
-    if(swapchain.iMainSceneAttachmentColorResovle >= 0){
-        swapchain.create_attachment_resource_colorresolve();
-        renderProcess.create_attachment_description_color_resolve_mainsceneRenderPass(swapchain.swapChainImageFormat, swapchain.msaaSamples, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
-    }
-
-   
     if(swapchain.iShadowmapAttachmentDepthLight >= 0){ //if shadowmap renderpass attachment depth light is enabled
         swapchain.create_attachment_resource_depthlight(VK_SAMPLE_COUNT_1_BIT); //hardware bias todo
-        renderProcess.create_attachment_description_light_depth_shadowmapRenderPass(swapchain.depthFormat); 
+        renderProcess.create_attachmentdescription_shadowmap_depthlight(swapchain.depthFormat); 
     }else if(swapchain.iMainSceneAttachmentDepthLight >= 0){
         swapchain.create_attachment_resource_depthlight(swapchain.msaaSamples);
-        renderProcess.create_attachment_description_light_depth_mainsceneRenderPass(swapchain.depthFormat, swapchain.msaaSamples);
+        renderProcess.create_attachmentdescription_mainscene_depthlight(swapchain.depthFormat, swapchain.msaaSamples);
     }
-
+    if(swapchain.iMainSceneAttachmentDepthCamera >= 0){//If enable MSAA, must also enable Depth Test
+        swapchain.create_attachment_resource_depthcamera();
+        renderProcess.create_attachmentdescription_mainscene_depthcamera(swapchain.depthFormat, swapchain.msaaSamples);
+    }
+    if(swapchain.iMainSceneAttachmentColorResovle >= 0){
+        swapchain.create_attachment_resource_colorresolve();
+        renderProcess.create_attachmentdescription_mainscene_colorresolve(swapchain.swapChainImageFormat, swapchain.msaaSamples, VK_IMAGE_LAYOUT_PRESENT_SRC_KHR);
+    }
     if(swapchain.iMainSceneAttachmentColorPresent >= 0) //dont need create swapchain attachment resource here
-        renderProcess.create_attachment_description_color_present_mainsceneRenderPass(swapchain.swapChainImageFormat);
+        renderProcess.create_attachmentdescription_mainscene_colorpresent(swapchain.swapChainImageFormat);
 
     //std::cout<<"Application: Read Attachments Done."<<std::endl;
 }
@@ -905,9 +900,9 @@ void CApplication::ReadSubpasses(){
     //for shadowmap renderpass (this renderpass is optional)
     if(renderProcess.bEnableShadowmapRenderpassSubpassShadowmap){
         // std::cout<<"Application: Create Shadowmap Render Pass."<<std::endl;
-        renderProcess.createSubpass_shadowmapRenderpass();
-        renderProcess.createDependency_shadowmapRenderpass();
-        renderProcess.createRenderPass_shadowmapRenderpass();
+        renderProcess.createSubpass_shadowmap();
+        renderProcess.createDependency_shadowmap();
+        renderProcess.createRenderPass_shadowmap();
 
         // std::cout<<"Application: Create Shadowmap Framebuffer."<<std::endl;
         swapchain.CreateFramebuffer_shadowmap(renderProcess.renderPass_shadowmap);
@@ -916,9 +911,9 @@ void CApplication::ReadSubpasses(){
     //for mainscene renderpass (this renderpass is mandatory)
     //create renderpass
     //std::cout<<"Application: Create MainScene Render Pass."<<std::endl;
-    renderProcess.createSubpass_mainsceneRenderpass(appInfo.Feature.feature_graphics_observe_attachment_id);
-    renderProcess.createDependency_mainsceneRenderpass();
-    renderProcess.createRenderPass_mainsceneRenderpass();
+    renderProcess.createSubpass_mainscene(appInfo.Feature.feature_graphics_observe_attachment_id);
+    renderProcess.createDependency_mainscene();
+    renderProcess.createRenderPass_mainscene();
 
     //create framebuffer
     //std::cout<<"Application: Create MainScene Framebuffer."<<std::endl;
