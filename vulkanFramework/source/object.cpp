@@ -63,19 +63,19 @@ CObject::CObject(){
         //update view and perspective matrices to ubo
         if(!bSticker){
             CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].mainCameraProj = mainCamera.matrices.perspective;
-            CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].lightCameraProj = lightCamera.matrices.perspective; 
+            //CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].lightCameraProj = lightCamera.matrices.perspective; 
             if(bSkybox) {
                 CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].mainCameraView = glm::mat4(glm::mat3(mainCamera.matrices.view)); //remove translate
-                CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].lightCameraView = glm::mat4(glm::mat3(lightCamera.matrices.view));
+                //CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].lightCameraView = glm::mat4(glm::mat3(lightCamera.matrices.view));
             }else{
                 CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].mainCameraView = mainCamera.matrices.view;
-                CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].lightCameraView = lightCamera.matrices.view;
+                //CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].lightCameraView = lightCamera.matrices.view;
             }
         }else{
             CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].mainCameraProj = glm::mat4(1.0f);
-            CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].lightCameraProj = glm::mat4(1.0f);
+            //CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].lightCameraProj = glm::mat4(1.0f);
             CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].mainCameraView = glm::mat4(1.0f);
-            CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].lightCameraView = glm::mat4(1.0f);
+            //CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].lightCameraView = glm::mat4(1.0f);
         }
 
         // std::cout<<"myUBO.mvpDATA["<<m_object_id<<"] lightCameraProj:"<<std::endl;

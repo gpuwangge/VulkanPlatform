@@ -1,14 +1,14 @@
 #version 450 core
 
-layout(set = 0, binding = 1) uniform MVPBufferObject {
+layout(set = 0, binding = 1) uniform UniformBufferObject {
 	mat4 model;
 	mat4 mainCameraProj;
-	mat4 lightCameraProj;
 	mat4 mainCameraView;
-	mat4 lightCameraView;
 	mat4 padding0;
 	mat4 padding1;
-	mat4 padding2; 
+	mat4 padding2;
+	mat4 padding3;
+	mat4 padding4; 
 } mvpUBO;
 
 layout(location = 0) in vec3 inPosition;

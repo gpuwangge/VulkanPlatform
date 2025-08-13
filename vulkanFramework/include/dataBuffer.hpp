@@ -55,7 +55,7 @@ struct LightingUniformBufferObject {
         binding.descriptorCount = 1;
         binding.descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
         binding.pImmutableSamplers = nullptr;
-        binding.stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;//VK_SHADER_STAGE_VERTEX_BIT;
+        binding.stageFlags = VK_SHADER_STAGE_VERTEX_BIT | VK_SHADER_STAGE_FRAGMENT_BIT;
         return binding;
     }
 };
@@ -327,16 +327,16 @@ private:
 struct MVPData{
     alignas(16) glm::mat4 model; //16*4=64 bytes
 	alignas(16) glm::mat4 mainCameraProj; //16*4=64 bytes
-    alignas(16) glm::mat4 lightCameraProj; //16*4=64 bytes, TODO: alignment?
+    //alignas(16) glm::mat4 lightCameraProj; //16*4=64 bytes, TODO: alignment?
     alignas(16) glm::mat4 mainCameraView; //16*4=64 bytes
     //alignas(16) glm::mat4 padding; //: MVP size is 192 bytes, but require a multiple of device limit minUniformBufferOffsetAlignment 256.
-    alignas(16) glm::mat4 lightCameraView;
+    //alignas(16) glm::mat4 lightCameraView;
     //Each element of pDynamicOffsets which corresponds to a descriptor binding with type VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC must be a multiple of VkPhysicalDeviceLimits::minUniformBufferOffsetAlignment
     alignas(16) glm::mat4 padding0; 
     alignas(16) glm::mat4 padding1;
     alignas(16) glm::mat4 padding2;
-    //alignas(16) glm::mat4 padding3;
-    //alignas(16) glm::mat4 padding4;
+    alignas(16) glm::mat4 padding3;
+    alignas(16) glm::mat4 padding4;
 };  
 
 #define MVP_NUM 256

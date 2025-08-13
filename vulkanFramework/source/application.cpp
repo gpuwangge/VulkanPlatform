@@ -387,7 +387,7 @@ void CApplication::update(){
     lightCamera[0].update(deltaTime);
     lightCamera[1].update(deltaTime);
     for(int i = 0; i < objects.size(); i++) objects[i].Update(deltaTime, renderer.currentFrame, mainCamera, lightCamera[0]);
-    for(int i = 0; i < lights.size(); i++) lights[i].Update(deltaTime, renderer.currentFrame, mainCamera, lightCamera[i]);
+    for(int i = 0; i < lights.size(); i++) lights[i].Update(deltaTime, renderer.currentFrame, mainCamera, lightCamera[0]);
 
     /*Calcuate FPS*/
     static int frameCount = 0;
