@@ -62,8 +62,8 @@ CObject::CObject(){
 
         //update view and perspective matrices to ubo
         if(!bSticker){
-            CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].mainCameraProj = mainCamera.matrices.perspective;
-            //CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].lightCameraProj = lightCamera.matrices.perspective; 
+            CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].mainCameraProj = mainCamera.matrices.projection;
+            //CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].lightCameraProj = lightCamera.matrices.projection; 
             if(bSkybox) {
                 CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].mainCameraView = glm::mat4(glm::mat3(mainCamera.matrices.view)); //remove translate
                 //CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].lightCameraView = glm::mat4(glm::mat3(lightCamera.matrices.view));
@@ -103,7 +103,7 @@ CObject::CObject(){
 
     if(CGraphicsDescriptorManager::graphicsUniformTypes & GRAPHCIS_UNIFORMBUFFER_VP){
         CGraphicsDescriptorManager::vpUBO.view = mainCamera.matrices.view;
-        CGraphicsDescriptorManager::vpUBO.proj = mainCamera.matrices.perspective;
+        CGraphicsDescriptorManager::vpUBO.proj = mainCamera.matrices.projection;
         memcpy(CGraphicsDescriptorManager::vpUniformBuffersMapped[currentFrame], &CGraphicsDescriptorManager::vpUBO, sizeof(CGraphicsDescriptorManager::vpUBO));
     }
  }

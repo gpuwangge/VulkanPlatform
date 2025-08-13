@@ -7,7 +7,7 @@ void CLight::Update(float deltaTime, int currentFrame, Camera &mainCamera, Camer
 
     //update camera pos to ubo, then memcpy to GPU memory
     if(CGraphicsDescriptorManager::graphicsUniformTypes & GRAPHCIS_UNIFORMBUFFER_LIGHTING){
-        CGraphicsDescriptorManager::m_lightingUBO.lights[m_light_id].lightCameraProj = lightCamera.matrices.perspective;
+        CGraphicsDescriptorManager::m_lightingUBO.lights[m_light_id].lightCameraProj = lightCamera.matrices.projection;
         CGraphicsDescriptorManager::m_lightingUBO.lights[m_light_id].lightCameraView = lightCamera.matrices.view;
 
         //update light pos and intensity to ubo

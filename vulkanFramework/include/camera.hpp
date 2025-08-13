@@ -27,7 +27,7 @@ public:
 	}
 
 	struct{
-		glm::mat4 perspective;
+		glm::mat4 projection;
 		glm::mat4 view;
 	} matrices;
 
@@ -52,12 +52,12 @@ public:
 		this->fov = fov;
 		this->znear = znear;
 		this->zfar = zfar;
-		matrices.perspective = glm::perspective(glm::radians(fov), aspect, znear, zfar);
-		//if (flipY) matrices.perspective[1][1] *= -1.0f;
+		matrices.projection = glm::perspective(glm::radians(fov), aspect, znear, zfar);
+		//if (flipY) matrices.projection[1][1] *= -1.0f;
 	};
 
 	void setOrthographic(float left, float right, float bottom, float top, float znear, float zfar){
-		matrices.perspective = glm::ortho(left, right, bottom, top, znear, zfar);
+		matrices.projection = glm::ortho(left, right, bottom, top, znear, zfar);
 		//matrices.perspective = glm::ortho(-4.0f, 4.0f, -4.0f, 4.0f, -6.0f, -1.5f);//hack
 		
 		// std::cout<<"matrices.perspective="<<std::endl;
@@ -73,8 +73,8 @@ public:
 
 	//this function is provided to user (no use case yet)
 	void updateAspectRatio(float aspect){
-		matrices.perspective = glm::perspective(glm::radians(fov), aspect, znear, zfar);
-		//if (flipY) matrices.perspective[1][1] *= -1.0f;
+		matrices.projection = glm::perspective(glm::radians(fov), aspect, znear, zfar);
+		//if (flipY) matrices.projection[1][1] *= -1.0f;
 	}
 
 	void update(float deltaTime){
