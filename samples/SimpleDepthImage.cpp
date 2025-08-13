@@ -1,6 +1,9 @@
 #include "..\\vulkanFramework\\include\\application.h"
 #define TEST_CLASS_NAME CSimpleDepthImage
 class TEST_CLASS_NAME: public CApplication{
+//This test draws the depth image on the right side of the screen
+//This test also sets up the light cameras for one of the lights, so the light can be observed from the camera's perspective.
+//To change the observation from depth image to light shadowmap, change one line of code in observe.frag
 public:
 	std::vector<Vertex3D> vertices3D = {
 		{ { -0.5f, 0.5f, 0.0f },{ 1.0f, 0.0f, 0.0f },{ 0.0f, 1.0f } ,{ 0.0f, 0.0f, 1.0f }},
@@ -32,8 +35,10 @@ public:
 				glm::vec3(2.5 *cos(elapseTime * (i+1)), 0, 2.5 *sin(elapseTime * (i+1)))
 			);
 			objects[2+i].SetPosition(lights[i].GetLightPosition()); 
-			lightCamera[i].SetPosition(lights[i].GetLightPosition());
+			//lightCamera[i].SetPosition(lights[i].GetLightPosition());
 		}
+
+		lightCamera[0].SetPosition(lights[0].GetLightPosition()); //set light camera to one of the lightball, the lightball should be not drawn in subpass 0.
 
 		//lightCamera.SetPosition(lights[3].GetLightPosition());
 
@@ -42,7 +47,7 @@ public:
 
 	void recordGraphicsCommandBuffer_renderpassMainscene(){
 		for(int i = 0; i < objects.size()-1; i++) {
-			if(i == 5) continue; //dont draw the light ball in shadowmap
+			if(i == 2) continue; //dont draw the light ball in shadowmap. the 5th object is the 3rd lightball. the 2rd object is the 0th lightball
 			//objects[i].m_graphics_pipeline_id = 2;
 			objects[i].Draw(2);
 		}
