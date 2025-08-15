@@ -5,6 +5,7 @@ CSwapchain::CSwapchain(){
 
     //swapchainImageSize = 0; //0 means the size is not set, will query for the value
     buffer_depthlight.resize(1);
+    framebuffers_shadowmap.resize(1);
     msaaSamples = VK_SAMPLE_COUNT_1_BIT;
 
 #ifndef ANDROID
@@ -22,8 +23,10 @@ CSwapchain::~CSwapchain(){
 void CSwapchain::create_attachment_resource_depthlight(VkSampleCountFlagBits _msaaSamples){
     depthFormat = findDepthFormat();
 	VkImageUsageFlags usage = VK_IMAGE_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT;
-    buffer_depthlight[0].createImage(swapChainExtent.width,swapChainExtent.height, 1, _msaaSamples, depthFormat, VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, false, VK_IMAGE_LAYOUT_UNDEFINED); 
-    buffer_depthlight[0].createImageView(depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT, 1, false);
+    for(int i = 0; i < buffer_depthlight.size(); i++){
+        buffer_depthlight[i].createImage(swapChainExtent.width,swapChainExtent.height, 1, _msaaSamples, depthFormat, VK_IMAGE_TILING_OPTIMAL, usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, false, VK_IMAGE_LAYOUT_UNDEFINED); 
+        buffer_depthlight[i].createImageView(depthFormat, VK_IMAGE_ASPECT_DEPTH_BIT, 1, false);
+    }
 }
 
 //Resource#2.buffer_depthcamera
@@ -194,8 +197,33 @@ void CSwapchain::createSwapchainViews(VkImageAspectFlags aspectFlags){
 /************************
 * Framebuffers
 ************************/
+void CSwapchain::CreateFramebuffer_shadowmap(VkRenderPass &renderPass, int shadowmapIndex){ //pAttachments order must match CRenderProcess::createRenderPass_shadowmap()
+    //std::cout<<"Begin create framebuffer"<<std::endl;
 
-void CSwapchain::CreateFramebuffer_mainscene(VkRenderPass &renderPass){
+	VkResult result = VK_SUCCESS;
+    framebuffers_shadowmap[shadowmapIndex].resize(1);//shadowmap renderpass only use 1 attachment
+
+	for (size_t i = 0; i < 1; i++) {
+        std::vector<VkImageView> imageViews_to_attach; 
+        imageViews_to_attach.push_back(buffer_depthlight[shadowmapIndex].view);
+
+		VkFramebufferCreateInfo framebufferInfo{};
+		framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
+		framebufferInfo.renderPass = renderPass;
+		framebufferInfo.attachmentCount = static_cast<uint32_t>(imageViews_to_attach.size());
+		framebufferInfo.pAttachments = imageViews_to_attach.data();
+		framebufferInfo.width = swapChainExtent.width;
+		framebufferInfo.height = swapChainExtent.height;
+		framebufferInfo.layers = 1;
+
+		result = vkCreateFramebuffer(CContext::GetHandle().GetLogicalDevice(), &framebufferInfo, nullptr, &framebuffers_shadowmap[shadowmapIndex][i]);
+		if (result != VK_SUCCESS) throw std::runtime_error("failed to create framebuffer!");
+	}	
+
+    //std::cout<<"Done create framebuffer"<<std::endl;
+}
+
+void CSwapchain::CreateFramebuffer_mainscene(VkRenderPass &renderPass){ //pAttachments order must match CRenderProcess::createRenderPass_mainscene()
     //std::cout<<"Begin create framebuffer"<<std::endl;
 
 	VkResult result = VK_SUCCESS;
@@ -225,32 +253,6 @@ void CSwapchain::CreateFramebuffer_mainscene(VkRenderPass &renderPass){
 		framebufferInfo.layers = 1;
 
 		result = vkCreateFramebuffer(CContext::GetHandle().GetLogicalDevice(), &framebufferInfo, nullptr, &framebuffers_mainscene[i]);
-		if (result != VK_SUCCESS) throw std::runtime_error("failed to create framebuffer!");
-	}	
-
-    //std::cout<<"Done create framebuffer"<<std::endl;
-}
-
-void CSwapchain::CreateFramebuffer_shadowmap(VkRenderPass &renderPass){
-    //std::cout<<"Begin create framebuffer"<<std::endl;
-
-	VkResult result = VK_SUCCESS;
-    framebuffers_shadowmap.resize(1);//shadowmap renderpass only use 1 attachment
-
-	for (size_t i = 0; i < 1; i++) {
-        std::vector<VkImageView> imageViews_to_attach; 
-        imageViews_to_attach.push_back(buffer_depthlight[0].view);
-
-		VkFramebufferCreateInfo framebufferInfo{};
-		framebufferInfo.sType = VK_STRUCTURE_TYPE_FRAMEBUFFER_CREATE_INFO;
-		framebufferInfo.renderPass = renderPass;
-		framebufferInfo.attachmentCount = static_cast<uint32_t>(imageViews_to_attach.size());
-		framebufferInfo.pAttachments = imageViews_to_attach.data();
-		framebufferInfo.width = swapChainExtent.width;
-		framebufferInfo.height = swapChainExtent.height;
-		framebufferInfo.layers = 1;
-
-		result = vkCreateFramebuffer(CContext::GetHandle().GetLogicalDevice(), &framebufferInfo, nullptr, &framebuffers_shadowmap[i]);
 		if (result != VK_SUCCESS) throw std::runtime_error("failed to create framebuffer!");
 	}	
 
@@ -345,15 +347,18 @@ void CSwapchain::displaySwapchainInfo(SwapChainSupportDetails details){
 void CSwapchain::CleanUp(){
     for (auto framebuffer : framebuffers_mainscene) 
         vkDestroyFramebuffer(CContext::GetHandle().GetLogicalDevice(), framebuffer, nullptr);
-    for (auto framebuffer : framebuffers_shadowmap) 
+    for (int i = 0; i < framebuffers_shadowmap.size(); i++) {
+        for (auto framebuffer : framebuffers_shadowmap[i]) 
         vkDestroyFramebuffer(CContext::GetHandle().GetLogicalDevice(), framebuffer, nullptr);
+    }
 
     for (auto imageView : swapchain_views) 
         vkDestroyImageView(CContext::GetHandle().GetLogicalDevice(), imageView, nullptr);
     
     vkDestroySwapchainKHR(CContext::GetHandle().GetLogicalDevice(), handle, nullptr);
 
-    buffer_depthlight[0].destroy();
+    for(int i = 0; i < buffer_depthlight.size(); i++)
+        buffer_depthlight[i].destroy();
     buffer_depthcamera.destroy();
     buffer_colorresolve.destroy();
 }

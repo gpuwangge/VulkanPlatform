@@ -26,7 +26,9 @@ public:
 		CApplication::update();
 	}
 
-	void recordGraphicsCommandBuffer_renderpassShadowmap(){
+	void recordGraphicsCommandBuffer_renderpassShadowmap(int renderpassIndex){
+		//pipeline0 for shadowmap renderpassIndex = 0
+
 		//vkCmdSetDepthBias(renderer.commandBuffers[renderer.graphicsCmdId][renderer.currentFrame], 1.25f, 0.0f, 1.75f); (self-shadowing)
 		//vkCmdSetDepthBias(renderer.commandBuffers[renderer.graphicsCmdId][renderer.currentFrame], 2.0f, 0.0f, 2.5f);
 		//vkCmdSetDepthBias(renderer.commandBuffers[renderer.graphicsCmdId][renderer.currentFrame], 2.0f, 0.01f, 2.5f); //need enable clamp
@@ -34,13 +36,13 @@ public:
 
 		for(int i = 0; i < objects.size()-1; i++) {
 			//if(i == 2) continue; //dont draw the light ball in shadowmap
-			objects[i].Draw(0, 0, true);//draw objects with gid=0, shadowmap pipeline
+			objects[i].Draw(renderpassIndex, 0, true); //pipeline#
 		}
 	}
 
 	void recordGraphicsCommandBuffer_renderpassMainscene(){
 		for(int i = 0; i < objects.size(); i++) 
-			objects[i].Draw();
+			objects[i].Draw(); //use object's default pipeline#. In this case it is pipeline1
 	}
 };
 

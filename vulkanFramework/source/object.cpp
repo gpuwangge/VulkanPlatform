@@ -30,7 +30,7 @@ CObject::CObject(){
     TempMoveAngularVelocity = glm::vec4();
 }
 
- void CObject::Update(float deltaTime, int currentFrame, Camera &mainCamera, Camera &lightCamera){
+ void CObject::Update(float deltaTime, int currentFrame, Camera &mainCamera){
     if(!bRegistered)  return;
     if(!bUpdate) return;
 

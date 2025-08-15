@@ -51,7 +51,7 @@ public:
     int GetModelID(){return m_model_id;}
 
     bool bUpdate = true;
-    void Update(float deltaTime, int currentFrame, Camera &mainCamera, Camera &lightCamera);
+    void Update(float deltaTime, int currentFrame, Camera &mainCamera);
 
     bool bRegistered = false;
     void Register(CApplication *p_app, int object_id, std::vector<int> texture_ids, int model_id, int default_graphics_pipeline_id);

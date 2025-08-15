@@ -30,13 +30,12 @@ layout(set = 0, binding = 1) uniform MVPBufferObject {
 	mat4 padding4;
 } mvpUBO;
 
-
-
 layout(location = 0) in vec3 inPosition; //not used
 layout(location = 1) in vec3 inColor; //not used
 layout(location = 2) in vec2 inTexCoord; //not used
 layout(location = 3) in vec3 inNormal; //not used
 
 void main() {
-	gl_Position = lightsUBO.lights[0].lightCameraProj * lightsUBO.lights[0].lightCameraView * mvpUBO.model * vec4(inPosition, 1.0); //use light camera view to generate light depth image
+	//gl_Position = mvpUBO.lightCameraProj * mvpUBO.lightCameraView * mvpUBO.model * vec4(inPosition, 1.0); //use light camera view to generate light depth image
+	gl_Position = lightsUBO.lights[1].lightCameraProj * lightsUBO.lights[1].lightCameraView * mvpUBO.model * vec4(inPosition, 1.0);
 }

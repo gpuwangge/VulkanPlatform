@@ -114,7 +114,7 @@ public:
     //void initialize(); //base: create sync object, destroy shader resource
     virtual void update(); //base: update time, frame id, camera and ubo
     virtual void recordGraphicsCommandBuffer_renderpassMainscene();
-    virtual void recordGraphicsCommandBuffer_renderpassShadowmap();
+    virtual void recordGraphicsCommandBuffer_renderpassShadowmap(int renderpassIndex);
     virtual void recordComputeCommandBuffer();
     virtual void postUpdate();
 

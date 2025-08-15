@@ -296,7 +296,7 @@ void CRenderProcess::createDependency_mainscene(){
 /*********
 * Renderpass
 **********/
-void CRenderProcess::createRenderPass_shadowmap(){
+void CRenderProcess::createRenderPass_shadowmap(){ //pAttachments order must match CSwapchain::CreateFramebuffer_shadowmap0/1()
 	//std::cout<<"Begin create renderpass"<<std::endl;
 	VkResult result = VK_SUCCESS;
 
@@ -325,7 +325,7 @@ void CRenderProcess::createRenderPass_shadowmap(){
 
 }
 
-void CRenderProcess::createRenderPass_mainscene(){ 
+void CRenderProcess::createRenderPass_mainscene(){ //pAttachments order must match CSwapchain::CreateFramebuffer_mainscene()
 	//std::cout<<"Begin create renderpass"<<std::endl;
 	VkResult result = VK_SUCCESS;
 

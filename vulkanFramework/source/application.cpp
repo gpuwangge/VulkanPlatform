@@ -183,6 +183,9 @@ void CApplication::initialize(){
         }
         lights.resize(((max_light_d+1) < config["Lights"].size())?(max_light_d+1):config["Lights"].size()); 
         std::cout<<"Light Size: "<<lights.size()<<std::endl;
+
+        swapchain.buffer_depthlight.resize(lights.size());
+        swapchain.framebuffers_shadowmap.resize(lights.size());
     }
     //update light number to ubo
     std::cout<<"CGraphicsDescriptorManager::m_lightingUBO.lightNum = "<<lights.size()<<std::endl;
@@ -386,8 +389,8 @@ void CApplication::update(){
     mainCamera.update(deltaTime);
     lightCamera[0].update(deltaTime);
     lightCamera[1].update(deltaTime);
-    for(int i = 0; i < objects.size(); i++) objects[i].Update(deltaTime, renderer.currentFrame, mainCamera, lightCamera[0]);
-    for(int i = 0; i < lights.size(); i++) lights[i].Update(deltaTime, renderer.currentFrame, mainCamera, lightCamera[0]);
+    for(int i = 0; i < objects.size(); i++) objects[i].Update(deltaTime, renderer.currentFrame, mainCamera); 
+    for(int i = 0; i < lights.size(); i++) lights[i].Update(deltaTime, renderer.currentFrame, mainCamera, lightCamera[i]);
 
     /*Calcuate FPS*/
     static int frameCount = 0;
@@ -416,7 +419,7 @@ void CApplication::update(){
 }
 
 void CApplication::recordGraphicsCommandBuffer_renderpassMainscene(){}
-void CApplication::recordGraphicsCommandBuffer_renderpassShadowmap(){}
+void CApplication::recordGraphicsCommandBuffer_renderpassShadowmap(int renderpassIndex){}
 void CApplication::recordComputeCommandBuffer(){}
 void CApplication::postUpdate(){}
 
@@ -461,13 +464,14 @@ void CApplication::UpdateRecordRender(){
 
             renderer.BeginCommandBuffer(renderer.graphicsCmdId);
 
-
-            //std::cout<<"Application: Begin Shadowmap Render Pass."<<std::endl;
-            renderer.BeginRenderPass(renderProcess.renderPass_shadowmap, swapchain.framebuffers_shadowmap, swapchain.swapChainExtent, renderProcess.clearValues_shadowmap, true);
-            renderer.SetViewport(swapchain.swapChainExtent);
-            renderer.SetScissor(swapchain.swapChainExtent);
-            recordGraphicsCommandBuffer_renderpassShadowmap();
-            renderer.EndRenderPass();
+            for(int i = 0; i < swapchain.framebuffers_shadowmap.size(); i++){
+                //std::cout<<"Application: Begin Shadowmap"<<i<<" Render Pass."<<std::endl;
+                renderer.BeginRenderPass(renderProcess.renderPass_shadowmap, swapchain.framebuffers_shadowmap[i], swapchain.swapChainExtent, renderProcess.clearValues_shadowmap, true);
+                renderer.SetViewport(swapchain.swapChainExtent);
+                renderer.SetScissor(swapchain.swapChainExtent);
+                recordGraphicsCommandBuffer_renderpassShadowmap(i); //renderpassIndex
+                renderer.EndRenderPass();
+            }
 
             //std::cout<<"Application: Begin Mainscene Render Pass."<<std::endl;
             renderer.BeginRenderPass(renderProcess.renderPass_mainscene, swapchain.framebuffers_mainscene, swapchain.swapChainExtent, renderProcess.clearValues, false);
@@ -667,8 +671,10 @@ void CApplication::ReadUniforms(){
                 if(appInfo.Uniform.b_uniform_graphics_lightdepth_image_sampler)
                     CGraphicsDescriptorManager::addLightDepthImageSamplerUniformBuffer();
 
-                if(appInfo.Uniform.b_uniform_graphics_lightdepth_image_sampler_hardware)
+                if(appInfo.Uniform.b_uniform_graphics_lightdepth_image_sampler_hardware){
                     CGraphicsDescriptorManager::addLightDepthImageSamplerUniformBuffer_hardwareDepthBias();
+                    //CGraphicsDescriptorManager::addLightDepthImageSamplerUniformBuffer_hardwareDepthBias2();
+                }
 
             }
         }
@@ -905,7 +911,8 @@ void CApplication::ReadSubpasses(){
         renderProcess.createRenderPass_shadowmap();
 
         // std::cout<<"Application: Create Shadowmap Framebuffer."<<std::endl;
-        swapchain.CreateFramebuffer_shadowmap(renderProcess.renderPass_shadowmap);
+        for(int i = 0; i < swapchain.framebuffers_shadowmap.size(); i++)
+            swapchain.CreateFramebuffer_shadowmap(renderProcess.renderPass_shadowmap, i);
     }
 
     //for mainscene renderpass (this renderpass is mandatory)
@@ -941,8 +948,9 @@ void CApplication::CreateUniformDescriptors(bool b_uniform_graphics, bool b_unif
 
     //UNIFORM STEP 3/3 (Set)
     if(b_uniform_graphics){
+        graphicsDescriptorManager.createDescriptorSets_General(swapchain.buffer_depthcamera.view, swapchain.buffer_depthlight);
         //if(appInfo.Feature.feature_graphics_observe_attachment_id == 0) //assume 0 is light Depth Image Buffer
-            graphicsDescriptorManager.createDescriptorSets_General(swapchain.buffer_depthcamera.view, swapchain.buffer_depthlight[0].view, swapchain.buffer_depthlight[0].view); //TODO
+            //graphicsDescriptorManager.createDescriptorSets_General(swapchain.buffer_depthcamera.view, swapchain.buffer_depthlight[0].view, swapchain.buffer_depthlight[1].view); //TODO
            // graphicsDescriptorManager.createDescriptorSets_General(swapchain.depthImageBuffer.view, swapchain.lightDepthImageBuffer.view); //TODO
         //else// if(appInfo.Feature.feature_graphics_observe_attachment_id == 1)
             //graphicsDescriptorManager.createDescriptorSets_General(swapchain.depthImageBuffer.view);//TODO: what if no depthImageBuffer is not enable 

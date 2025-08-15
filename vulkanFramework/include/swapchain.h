@@ -61,8 +61,8 @@ public:
     /************************
     * Framebuffers
     ************************/
-    std::vector<VkFramebuffer> framebuffers_shadowmap;
-    void CreateFramebuffer_shadowmap(VkRenderPass &renderPass);  //will use Resource#1
+    std::vector<std::vector<VkFramebuffer>> framebuffers_shadowmap;//a 2D vector, framebuffers_shadowmap[i][j] is for the ith shadowmap, which has j attachment (j is normally 1)
+    void CreateFramebuffer_shadowmap(VkRenderPass &renderPass, int shadowmapIndex); //will use Resource#1
 
     std::vector<VkFramebuffer> framebuffers_mainscene;
     void CreateFramebuffer_mainscene(VkRenderPass &renderPass);  //will use Resource#1/2/3/4

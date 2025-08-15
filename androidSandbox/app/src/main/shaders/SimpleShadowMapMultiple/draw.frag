@@ -31,7 +31,7 @@ layout(set = 0, binding = 0) uniform UniformLightsBufferObject {
 //layout (set = 0, binding = 3) uniform sampler2D depthSampler;//single sampled
 layout (set = 0, binding = 2) uniform sampler2DMS depthSampler; //msaa, there is no use to this uniform in this shader
 //layout (set = 0, binding = 4) uniform sampler2DMS lightDepthSampler; //msaa
-layout (set = 0, binding = 3) uniform sampler2DShadow lightDepthSampler; //depthbias hardware compare: has bug
+layout (set = 0, binding = 3) uniform sampler2DShadow lightDepthSampler[2]; //depthbias hardware compare
 
 layout (set = 1, binding = 0) uniform sampler2D texSampler;
 
@@ -50,12 +50,12 @@ layout (location = 0) out vec4 outColor;
 bool enablePCF = true;
 
 
-float GetShadow(vec3 shadowCoords, float shadowContribution){
+float GetShadow(vec3 shadowCoords, float shadowContribution, int lightID){
 	//Note:The texture() here will run: return (compareDepth <= depthMap[uv]) ? 1.0 : 0.0;
-	return (1.0f - texture(lightDepthSampler, vec3(shadowCoords.xy, shadowCoords.z))) * shadowContribution;
+	return (1.0f - texture(lightDepthSampler[lightID], vec3(shadowCoords.xy, shadowCoords.z))) * shadowContribution;
 }
 
-float PCFShadow(vec3 shadowCoords){ //Percentage Closer Filtering, shadowCoords are within 0~1, shadowCoords.xy is light space coords, shadowCoords.z is light space depth
+float PCFShadow(vec3 shadowCoords, int lightID){ //Percentage Closer Filtering, shadowCoords are within 0~1, shadowCoords.xy is light space coords, shadowCoords.z is light space depth
 	float shadow = 0.0f;
 
 	ivec2 texDim = ivec2(800,800);//textureSize(lightDepthSampler);
@@ -77,7 +77,7 @@ float PCFShadow(vec3 shadowCoords){ //Percentage Closer Filtering, shadowCoords 
 			// 	shadow += shadow_delta * shadow_contribution;
 			// }
 			if (all(greaterThanEqual(shadowCoords_offset, vec2(0.0))) && all(lessThanEqual(shadowCoords_offset, vec2(1.0)))) {
-                float shadow_delta = GetShadow(vec3(shadowCoords_offset, shadowCoords.z), 0.95f);
+                float shadow_delta = GetShadow(vec3(shadowCoords_offset, shadowCoords.z), 0.95f, lightID);
                 shadow += shadow_delta;// * shadow_contribution;
 				validSamples += 1;
             }
@@ -96,9 +96,7 @@ void main() {
 	vec3 N = normalize(inNormal);
 
 	outColor = vec4(0,0,0,0);
-	//for(int i = 0; i < lightsUBO.lightNum; i++){
-	int i = 0;
-	{
+	for(int i = 0; i < lightsUBO.lightNum; i++){
 		vec3 viewVec = lightsUBO.mainCameraPos.xyz - vec3(inPosWorld);		
 		vec3 lightVec = lightsUBO.lights[i].lightPos.xyz - vec3(inPosWorld);
 		float ambientIntensity = lightsUBO.lights[i].ambientIntensity * lightsUBO.lights[i].dimmerSwitch;
@@ -123,9 +121,9 @@ void main() {
 	    	lightSpaceCoords.z >= 0.0 && lightSpaceCoords.z <= 1.0){
 			lightSpaceCoords.xy = lightSpaceCoords.xy * 0.5 + 0.5;
 
-			if(enablePCF) shadow = PCFShadow(lightSpaceCoords); //PCFShadow(lightSpaceCoords, inNormal, L);
-			else shadow = GetShadow(lightSpaceCoords, 0.95f);
-				
+			if(enablePCF) shadow = PCFShadow(lightSpaceCoords, i); //PCFShadow(lightSpaceCoords, inNormal, L);
+			else shadow = GetShadow(lightSpaceCoords, 0.95f, i);
+
 			// float z = lightSpaceCoords.z; //to visualize the depth
 			// if (z < 0.1) outColor = vec4(0.0, 0.0, 1.0, 1.0); // blue
 			// else if (z < 0.3) outColor = vec4(0.0, 1.0, 1.0, 1.0); // cyan
@@ -135,7 +133,9 @@ void main() {
 			// else outColor = vec4(1.0, 0.0, 0.0, 1.0); // red
 
 			outColor += vec4(ambient * ambientIntensity + diffuse * diffuseIntensity + specular * specularIntensity, 0.0) * (1.0 - shadow);
+
 		}else outColor += vec4(ambient * ambientIntensity + diffuse * diffuseIntensity + specular * specularIntensity, 0.0);	
+
 	}
 	
 }

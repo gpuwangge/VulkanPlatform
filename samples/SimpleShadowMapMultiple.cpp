@@ -23,27 +23,33 @@ public:
 				glm::vec3(2.5 *cos(elapseTime * (i+1)), lights[i].GetLightPosition().y, 2.5 *sin(elapseTime * (i+1)))
 				//glm::vec3(0, 3+0.6*sin(elapseTime * (i+1)/2), 0)
 			);
-			objects[2+i].SetPosition(lights[i].GetLightPosition());
+			objects[2+i].SetPosition(lights[i].GetLightPosition()); //object2<-light0's position; object3<-light1's position;
 			lightCamera[i].SetPosition(lights[i].GetLightPosition());
+			//lightCamera[i].SetPosition(lights[0].GetLightPosition()); //TODO: set to 0 to test, so both light cameras are at the same position(light0)
+			//lightCamera[i].SetPosition(lights[1].GetLightPosition()); //TODO: set to 1 to test, so both light cameras are at the same position(light1)
 		}
 		CApplication::update();
 	}
 
-	void recordGraphicsCommandBuffer_renderpassShadowmap(){
-		//vkCmdSetDepthBias(renderer.commandBuffers[renderer.graphicsCmdId][renderer.currentFrame], 1.25f, 0.0f, 1.75f); (self-shadowing)
-		//vkCmdSetDepthBias(renderer.commandBuffers[renderer.graphicsCmdId][renderer.currentFrame], 2.0f, 0.0f, 2.5f);
-		//vkCmdSetDepthBias(renderer.commandBuffers[renderer.graphicsCmdId][renderer.currentFrame], 2.0f, 0.01f, 2.5f); //need enable clamp
+	void recordGraphicsCommandBuffer_renderpassShadowmap(int renderpassIndex){
+		//pipeline0 for shadowmap renderpassIndex = 0
+		//pipeline1 for shadowmap renderpassIndex = 1
 		vkCmdSetDepthBias(renderer.commandBuffers[renderer.graphicsCmdId][renderer.currentFrame], 1.25f, 0.0f, 6.0f);
 
-		for(int i = 0; i < objects.size()-1; i++) {
-			//if(i == 2) continue; //dont draw the light ball in shadowmap
-			objects[i].Draw(0, 0, true);//draw objects with gid=0, shadowmap pipeline
+		//object0: table
+		//object1: middle big sphere
+		//object2: small light sphere0 (light0), because both light cameras are at this position, it should not be drawn
+		//object3: small light sphere1 (light1)
+		for(int i = 0; i < objects.size(); i++) {
+			if(i == 2) continue; //dont draw object2(light0) in shadowmap
+			if(i == 3) continue; //dont draw object3(light1) in shadowmap
+			objects[i].Draw(renderpassIndex, 0, true); //pipeline#
 		}
 	}
 
 	void recordGraphicsCommandBuffer_renderpassMainscene(){
 		for(int i = 0; i < objects.size(); i++) 
-			objects[i].Draw();
+			objects[i].Draw(); //use object's default pipeline#. In this case it is pipeline2
 	}
 };
 
