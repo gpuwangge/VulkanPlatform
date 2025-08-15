@@ -1,5 +1,5 @@
 #include "..\\vulkanFramework\\include\\application.h"
-#define TEST_CLASS_NAME CSimpleShadowMapSoft
+#define TEST_CLASS_NAME CSimpleShadowMapShaderDepthbias
 class TEST_CLASS_NAME: public CApplication{
 /*********
  * Implementation of Shadow Map
