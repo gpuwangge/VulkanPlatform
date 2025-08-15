@@ -6,6 +6,7 @@ class TEST_CLASS_NAME: public CApplication{
  * Simple scenario: A single light source casting one shadow on a plane
  * Use two renderpasses: one for shadowmap, one for main scene
  * Use hardware depth bias (vkCmdSetDepthBias)
+ * Use push constant to pass shadowmap renderpass index to vertex shader
  */
 public:
 	void initialize(){
@@ -27,7 +28,9 @@ public:
 	}
 
 	void recordGraphicsCommandBuffer_renderpassShadowmap(int renderpassIndex){
-		//pipeline0 for shadowmap renderpassIndex = 0
+		IntPushConstants pushConstants;
+        pushConstants.value = renderpassIndex; //pass shadowmap renderpass index to device
+        renderer.PushConstantToCommand<IntPushConstants>(pushConstants, renderProcess.graphicsPipelineLayouts[0], shaderManager.pushConstantRange); //pipeline0 is for shadowmap
 
 		//vkCmdSetDepthBias(renderer.commandBuffers[renderer.graphicsCmdId][renderer.currentFrame], 1.25f, 0.0f, 1.75f); (self-shadowing)
 		//vkCmdSetDepthBias(renderer.commandBuffers[renderer.graphicsCmdId][renderer.currentFrame], 2.0f, 0.0f, 2.5f);
@@ -36,7 +39,7 @@ public:
 
 		for(int i = 0; i < objects.size()-1; i++) {
 			//if(i == 2) continue; //dont draw the light ball in shadowmap
-			objects[i].Draw(renderpassIndex, 0, true); //pipeline#
+			objects[i].Draw(0, 0, true); //pipeline0 is for shadowmap
 		}
 	}
 

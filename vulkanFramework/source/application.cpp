@@ -469,7 +469,7 @@ void CApplication::UpdateRecordRender(){
                 renderer.BeginRenderPass(renderProcess.renderPass_shadowmap, swapchain.framebuffers_shadowmap[i], swapchain.swapChainExtent, renderProcess.clearValues_shadowmap, true);
                 renderer.SetViewport(swapchain.swapChainExtent);
                 renderer.SetScissor(swapchain.swapChainExtent);
-                recordGraphicsCommandBuffer_renderpassShadowmap(i); //renderpassIndex
+                recordGraphicsCommandBuffer_renderpassShadowmap(i);
                 renderer.EndRenderPass();
             }
 

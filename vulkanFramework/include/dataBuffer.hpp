@@ -399,4 +399,8 @@ struct ModelPushConstants{
     glm::mat4 model;
 };
 
+struct IntPushConstants{
+    int value;
+};
+
 #endif

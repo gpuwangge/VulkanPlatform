@@ -1,6 +1,10 @@
 #version 450
 #define LIGHT_MAX 64 
 
+layout(push_constant) uniform PushConstant{
+    int value; //the index of shadowmap renderpass
+} pc;
+
 struct LightAttribute{
 	mat4 lightCameraProj;
     mat4 lightCameraView;
@@ -20,9 +24,7 @@ layout(set = 0, binding = 0) uniform UniformLightsBufferObject {
 layout(set = 0, binding = 1) uniform MVPBufferObject {
 	mat4 model;
 	mat4 mainCameraProj;
-	//mat4 lightCameraProj;
 	mat4 mainCameraView;
-	//mat4 lightCameraView;
 	mat4 padding0;
 	mat4 padding1;
 	mat4 padding2;
@@ -30,12 +32,11 @@ layout(set = 0, binding = 1) uniform MVPBufferObject {
 	mat4 padding4;
 } mvpUBO;
 
-layout(location = 0) in vec3 inPosition; //not used
+layout(location = 0) in vec3 inPosition;
 layout(location = 1) in vec3 inColor; //not used
 layout(location = 2) in vec2 inTexCoord; //not used
 layout(location = 3) in vec3 inNormal; //not used
 
 void main() {
-	//gl_Position = mvpUBO.lightCameraProj * mvpUBO.lightCameraView * mvpUBO.model * vec4(inPosition, 1.0); //use light camera view to generate light depth image
-	gl_Position = lightsUBO.lights[0].lightCameraProj * lightsUBO.lights[0].lightCameraView * mvpUBO.model * vec4(inPosition, 1.0);
+	gl_Position = lightsUBO.lights[pc.value].lightCameraProj * lightsUBO.lights[pc.value].lightCameraView * mvpUBO.model * vec4(inPosition, 1.0);
 }

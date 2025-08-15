@@ -9,7 +9,7 @@ Objects:
     object_skybox: false
     resource_model_id: 1
     resource_texture_id_list: [1]
-    resource_default_graphics_pipeline_id: 2
+    resource_default_graphics_pipeline_id: 1
   - object_name: Sphere
     object_id: 1
     object_scale: 0.04
@@ -18,15 +18,15 @@ Objects:
     object_velocity: [0,0,0]
     object_angular_velocity: [0,0,0]
     object_skybox: false
-    resource_default_graphics_pipeline_id: 2
+    resource_default_graphics_pipeline_id: 1
   - object_name: LightSphere
     object_id: 2
     object_scale: 0.01
-    resource_default_graphics_pipeline_id: 2
+    resource_default_graphics_pipeline_id: 1
   - object_name: LightSphere
     object_id: 3
     object_scale: 0.01
-    resource_default_graphics_pipeline_id: 2
+    resource_default_graphics_pipeline_id: 1
 
 Resources:
   - Models:
@@ -42,14 +42,9 @@ Resources:
       resource_texture_cubmap: false
       uniform_Sampler_id: 1
   - Pipelines:
-    - resource_graphics_pipeline_name: pipeline_lightdepth0
-      resource_graphics_pipeline_vertexshader_name: SimpleShadowMapMultiple/lightdepth0.vert.spv
-      resource_graphics_pipeline_fragmentshader_name: SimpleShadowMapMultiple/lightdepth.frag.spv
-      renderpasses_shadowmap: true
-      subpasses_subpass_id: 0
-    - resource_graphics_pipeline_name: pipeline_lightdepth1
-      resource_graphics_pipeline_vertexshader_name: SimpleShadowMapMultiple/lightdepth1.vert.spv
-      resource_graphics_pipeline_fragmentshader_name: SimpleShadowMapMultiple/lightdepth.frag.spv
+    - resource_graphics_pipeline_name: pipeline_shadowmap
+      resource_graphics_pipeline_vertexshader_name: SimpleShadowMapMultiple/shadowmap.vert.spv
+      resource_graphics_pipeline_fragmentshader_name: SimpleShadowMapMultiple/shadowmap.frag.spv
       renderpasses_shadowmap: true
       subpasses_subpass_id: 0
     - resource_graphics_pipeline_name: pipeline_mainscene
@@ -76,7 +71,7 @@ Uniforms:
   
 Features:
   feature_graphics_48pbt: false
-  feature_graphics_push_constant: false
+  feature_graphics_push_constant: true
   feature_graphics_blend: false
   feature_graphics_rainbow_mipmap: false
   feature_graphics_pipeline_skybox_id: -1
