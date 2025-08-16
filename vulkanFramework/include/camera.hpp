@@ -81,8 +81,8 @@ public:
 		
 		if(cameraType == CameraType::LOCK){ //calculate angular velocity so focus is on target
 			glm::vec3 cameraPos2TargetPos = TargetPosition - Position;
-			AngularVelocity.x = 100 * glm::dot(glm::cross(DirectionFront, cameraPos2TargetPos), DirectionLeft);
-			AngularVelocity.y = 100 * glm::dot(glm::cross(cameraPos2TargetPos, DirectionFront), DirectionUp);
+			AngularVelocity.x = 2000 * glm::dot(glm::cross(DirectionFront, cameraPos2TargetPos), DirectionLeft);
+			AngularVelocity.y = 2000 * glm::dot(glm::cross(cameraPos2TargetPos, DirectionFront), DirectionUp);
 		}
 
 		CEntity::Update(deltaTime); //update TranslateMatrix RotationMatrix ScaleMatrix

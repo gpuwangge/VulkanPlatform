@@ -90,7 +90,7 @@ void main() {
 
 	outColor = vec4(0,0,0,0);
 	for(int i = 0; i < lightsUBO.lightNum; i++){
-//=====1 Ambient/Diffuse/Specular Intensity=====
+		//=====1 Ambient/Diffuse/Specular Intensity=====
 		vec3 viewVec = lightsUBO.mainCameraPos.xyz - vec3(inPosWorld);		
 		vec3 lightVec = lightsUBO.lights[i].lightPos.xyz - vec3(inPosWorld);
 		float ambientIntensity = lightsUBO.lights[i].ambientIntensity * lightsUBO.lights[i].dimmerSwitch;
@@ -115,8 +115,9 @@ void main() {
 		}
 
 		//====Ambient/Diffuse/Specular with Intensity1/2/3=====
-		vec3 ambient = tex.xyz / distCoff * ambientIntensity * spotIntensity;
-		vec3 diffuse = max(dot(N, L), 0.0) * tex.xyz / distCoff * diffuseIntensity * spotIntensity; 
+		vec3 color = tex.xyz * lightsUBO.lights[i].lightColor.xyz;
+		vec3 ambient = color / distCoff * ambientIntensity * spotIntensity;
+		vec3 diffuse = max(dot(N, L), 0.0) * color / distCoff * diffuseIntensity * spotIntensity; 
 		vec3 specular = pow(max(dot(R, V), 0.0), 32.0) * vec3(0.35) / distCoff * specularIntensity * spotIntensity;
 
 		//=====shadow(need use L)=====

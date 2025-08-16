@@ -21,13 +21,11 @@ public:
 			lights[i].SetLightPosition(
 				//glm::vec3(lights[i].GetLightPosition().x, lights[i].GetLightPosition().y,lights[i].GetLightPosition().z)
 				//glm::vec3(lights[i].GetLightPosition().x, 1+1.5*sin(elapseTime*1.5), lights[i].GetLightPosition().z)
-				glm::vec3(2.5 *cos(elapseTime * (i+1)), lights[i].GetLightPosition().y, 2.5 *sin(elapseTime * (i+1)))
+				glm::vec3(2.5 *cos(elapseTime * (i+1) * 0.5), lights[i].GetLightPosition().y, 2.5 *sin(elapseTime * (i+1) * 0.5))
 				//glm::vec3(0, 3+0.6*sin(elapseTime * (i+1)/2), 0)
 			);
-			objects[2+i].SetPosition(lights[i].GetLightPosition()); //object2<-light0's position; object3<-light1's position;
+			//objects[2+i].SetPosition(lights[i].GetLightPosition()); //object2<-light0's position; object3<-light1's position;
 			lightCamera[i].SetPosition(lights[i].GetLightPosition());
-			//lightCamera[i].SetPosition(lights[0].GetLightPosition()); //TODO: set to 0 to test, so both light cameras are at the same position(light0)
-			//lightCamera[i].SetPosition(lights[1].GetLightPosition()); //TODO: set to 1 to test, so both light cameras are at the same position(light1)
 		}
 		CApplication::update();
 	}
@@ -41,11 +39,11 @@ public:
 
 		//object0: table
 		//object1: middle big sphere
-		//object2: small light sphere0 (light0), because both light cameras are at this position, it should not be drawn
-		//object3: small light sphere1 (light1)
+		//object2(removed): small light sphere0 (light0), because both light cameras are at this position, it should not be drawn
+		//object3(removed): small light sphere1 (light1)
 		for(int i = 0; i < objects.size(); i++) {
-			if(i == 2) continue; //dont draw object2(light0) in shadowmap
-			if(i == 3) continue; //dont draw object3(light1) in shadowmap
+			//if(i == 2) continue; //dont draw object2(light0) in shadowmap
+			//if(i == 3) continue; //dont draw object3(light1) in shadowmap
 			objects[i].Draw(0, 0, true); //pipeline0 is for shadowmap
 		}
 	}

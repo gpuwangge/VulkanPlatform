@@ -91,7 +91,7 @@ MainSceneRenderpassSubpasses: #the index is 0, 1, 2
 
 MainCamera:
   camera_mode: 0
-  camera_position: [0,1,-10]
+  camera_position: [0,1,-15]
   camera_rotation: [0,0,0]
   object_id_target: 1
   camera_z: [0.1, 30]
@@ -119,5 +119,5 @@ Lights:
     light_position: [0.0,2.0,0.0]
     light_intensity: [0.5,2,4,1]
     light_color: [1.0,1.0,1.0]
-    light_spot: [45,50]
+    light_spot: [20,25]
 
