@@ -1168,9 +1168,17 @@ void CApplication::ReadLightings(){
 
             auto position = light["light_position"] ? light["light_position"].as<std::vector<float>>(): std::vector<float>(3,0);
             glm::vec3 glm_position(position[0], position[1], position[2]);
+
             auto intensity = light["light_intensity"] ? light["light_intensity"].as<std::vector<float>>(): std::vector<float>(4,0);
 
-            lights[id].Register(name, id, glm_position, intensity);
+            auto color = light["light_color"] ? light["light_color"].as<std::vector<float>>(): std::vector<float>(3,1.0f);
+            glm::vec3 glm_color(color[0], color[1], color[2]);
+
+            auto spotAngle = light["light_spot"] ? light["light_spot"].as<std::vector<float>>() : std::vector<float>(2, 180.0f); //the default value is [180,180] degrees which sets the light to point light instead of spot light
+            float spotInnerAngle = spotAngle[0];
+            float spotOuterAngle = spotAngle[1];
+
+            lights[id].Register(name, id, glm_position, intensity, glm_color, spotInnerAngle, spotOuterAngle);
 
             std::cout<<"LightId:("<<id<<") Name:("<<lights[id].GetLightName()<<") Intensity:("<<lights[id].GetIntensity(0)<<","<<lights[id].GetIntensity(1)<<","<<lights[id].GetIntensity(2)<<","<<lights[id].GetIntensity(3)<<")"
                 <<" Position:("<<lights[id].GetLightPosition().x<<","<<lights[id].GetLightPosition().y<<","<<lights[id].GetLightPosition().z<<")"<<std::endl;

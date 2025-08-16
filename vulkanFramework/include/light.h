@@ -11,6 +11,10 @@ class CLight {
     int m_light_id;
     glm::vec3 m_position;
     std::vector<float> m_intensity=std::vector<float>(4,0);
+
+    glm::vec3 m_color;
+    float m_spotInnerAngle;
+    float m_spotOuterAngle;
 public:
     CLight() {};
 
@@ -28,7 +32,7 @@ public:
     void Update(float deltaTime, int currentFrame, Camera &mainCamera, Camera &lightCamera);
 
     bool bRegistered = false;
-    void Register(std::string lightName, int lightId, glm::vec3 lightPos, std::vector<float> &lightIntensity); 
+    void Register(std::string lightName, int lightId, glm::vec3 lightPos, std::vector<float> &lightIntensity, glm::vec3 lightColor, float spotInnerAngle, float spotOuterAngle); 
 };
 
 #endif

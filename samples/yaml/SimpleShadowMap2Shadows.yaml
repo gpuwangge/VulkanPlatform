@@ -106,7 +106,7 @@ MainCamera:
   camera_keyboard_sensitive: 3
   camera_mouse_sensitive: 60
 
-LightCamera:
+LightCamera: #you can have more than one light cameras. the yaml code here is giving them default values
   camera_mode: 0
   camera_position: [0,0.5,-4] #[0,3,-4]
   camera_rotation: [0,0,0]
@@ -122,8 +122,12 @@ Lights:
     light_id: 0
     light_position: [3.0,3.0,0.0]
     light_intensity: [0.5,2,4,0.8]
+    light_color: [1.0,1.0,1.0]
+    light_spot: [45,50]
   - light_name: Light
     light_id: 1
     light_position: [3.0,2.0,0.0]
     light_intensity: [0.5,2,4,0.8]
+    light_color: [1.0,1.0,1.0]
+    light_spot: [65,70]
 

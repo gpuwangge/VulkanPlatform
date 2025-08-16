@@ -33,10 +33,14 @@ struct LightAttribute{
     alignas(16) glm::mat4 lightCameraProj;
     alignas(16) glm::mat4 lightCameraView;
     glm::vec4 lightPos;
+    glm::vec4 lightDir;
+    glm::vec4 lightColor; //RGBA
     float ambientIntensity;
     float diffuseIntensity;
     float specularIntensity;
     float dimmerSwitch;
+    float spotInnerAngle;
+    float spotOuterAngle;
 };
 
 //this class to create graphics descript layer(static), and non-texture descripter set(static), create sampler(static)

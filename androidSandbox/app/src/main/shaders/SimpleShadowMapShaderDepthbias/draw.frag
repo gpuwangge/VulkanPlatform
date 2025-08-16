@@ -5,10 +5,14 @@ struct LightAttribute{
 	mat4 lightCameraProj;
     mat4 lightCameraView;	
 	vec4 lightPos;
+	vec4 lightDir;
+    vec4 lightColor; //RGBA
 	float ambientIntensity;
 	float diffuseIntensity;
 	float specularIntensity;
 	float dimmerSwitch;
+	float spotInnerAngle;
+    float spotOuterAngle;
 };
 
 layout(set = 0, binding = 0) uniform UniformLightsBufferObject { 
@@ -16,17 +20,6 @@ layout(set = 0, binding = 0) uniform UniformLightsBufferObject {
 	vec4 mainCameraPos;
 	int lightNum; //number of lights, max is LIGHT_MAX
 } lightsUBO;
-
-// layout(set = 0, binding = 2) uniform UniformBufferObject {
-// 	mat4 model;
-// 	mat4 mainCameraProj;
-// 	mat4 lightCameraProj;
-// 	mat4 mainCameraView;
-// 	mat4 lightCameraView;
-// 	mat4 padding0;
-// 	mat4 padding1;
-// 	mat4 padding2; 
-// } mvpUBO;
 
 //layout (set = 0, binding = 3) uniform sampler2D depthSampler;//single sampled
 layout (set = 0, binding = 2) uniform sampler2DMS depthSampler; //msaa, there is no use to this uniform in this shader
@@ -111,21 +104,36 @@ void main() {
 
 	outColor = vec4(0,0,0,0);
 	for(int i = 0; i < lightsUBO.lightNum; i++){
+		//=====1 Ambient/Diffuse/Specular Intensity=====
 		vec3 viewVec = lightsUBO.mainCameraPos.xyz - inPosWorld.xyz;		
 		vec3 lightVec = lightsUBO.lights[i].lightPos.xyz - inPosWorld.xyz;
 		float ambientIntensity = lightsUBO.lights[i].ambientIntensity * lightsUBO.lights[i].dimmerSwitch;
 		float diffuseIntensity = lightsUBO.lights[i].diffuseIntensity * lightsUBO.lights[i].dimmerSwitch;
 		float specularIntensity = lightsUBO.lights[i].specularIntensity * lightsUBO.lights[i].dimmerSwitch;
 
+		//=====2 Attenuation Intensity=====
 		vec3 L = normalize(lightVec); //point from pos to light
 		vec3 V = normalize(viewVec); //point from pos to camera
 		vec3 R = reflect(-L, N); //calculate from L
 		float distCoff = pow(lightVec.x, 2) + pow(lightVec.y, 2) + pow(lightVec.z, 2);
-		vec3 ambient = tex.xyz / distCoff;
-		vec3 diffuse = max(dot(N, L), 0.0) * tex.xyz / distCoff; 
-		vec3 specular = pow(max(dot(R, V), 0.0), 32.0) * vec3(0.35) / distCoff;
 
-		//Code to generate shadow(need use L)
+		//=====3 Spot Light Intensity=====
+		vec3 spotDir = normalize(lightsUBO.lights[i].lightDir.xyz);
+		float spotInnerAngle = lightsUBO.lights[i].spotInnerAngle;
+		float spotOuterAngle = lightsUBO.lights[i].spotOuterAngle;
+		float theta = dot(spotDir, -L);
+		float spotIntensity = 0.0;
+		if (theta > spotInnerAngle) {
+			float epsilon = spotOuterAngle - spotInnerAngle;
+			spotIntensity = clamp((theta - spotInnerAngle) / epsilon, 0.0, 1.0);
+		}
+
+		//====Ambient/Diffuse/Specular with Intensity1/2/3=====
+		vec3 ambient = tex.xyz / distCoff * ambientIntensity * spotIntensity;
+		vec3 diffuse = max(dot(N, L), 0.0) * tex.xyz / distCoff * diffuseIntensity * spotIntensity; 
+		vec3 specular = pow(max(dot(R, V), 0.0), 32.0) * vec3(0.35) / distCoff * specularIntensity * spotIntensity;
+
+		//=====shadow(need use L)=====
 		float shadow = 0.0f;
 		vec4 temp = lightsUBO.lights[i].lightCameraProj * lightsUBO.lights[i].lightCameraView * inPosWorld;
 		vec3 lightSpaceCoords = temp.xyz / temp.w; //convert to clip space
@@ -141,11 +149,8 @@ void main() {
 			if(enablePCF) shadow = PCFShadow(lightSpaceCoords, depthBias); //PCFShadow(lightSpaceCoords, inNormal, L);
 			else shadow = GetShadow(lightSpaceCoords, depthBias, 0.9f);
 
-			outColor += vec4(ambient * ambientIntensity + diffuse * diffuseIntensity + specular * specularIntensity, 0.0) * (1.0 - shadow);
-		}else
-			outColor += vec4(ambient * ambientIntensity + diffuse * diffuseIntensity + specular * specularIntensity, 0.0);
-			//outColor = vec4(0.0, 0.0, 0.0, 1.0); //if the point is outside of view frustum, no shadow calculation, just return black color
-
+			outColor += vec4(ambient + diffuse + specular, 0.0) * (1.0 - shadow);
+		}else outColor += vec4(ambient + diffuse + specular, 0.0);
 
 	}
 	
