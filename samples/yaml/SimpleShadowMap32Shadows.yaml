@@ -62,13 +62,13 @@ Resources:
       uniform_Sampler_id: 1
   - Pipelines:
     - resource_graphics_pipeline_name: pipeline_shadowmap
-      resource_graphics_pipeline_vertexshader_name: SimpleShadowMap64Shadows/shadowmap.vert.spv
-      resource_graphics_pipeline_fragmentshader_name: SimpleShadowMap64Shadows/shadowmap.frag.spv
+      resource_graphics_pipeline_vertexshader_name: SimpleShadowMap32Shadows/shadowmap.vert.spv
+      resource_graphics_pipeline_fragmentshader_name: SimpleShadowMap32Shadows/shadowmap.frag.spv
       renderpasses_shadowmap: true
       subpasses_subpass_id: 0
     - resource_graphics_pipeline_name: pipeline_mainscene
-      resource_graphics_pipeline_vertexshader_name: SimpleShadowMap64Shadows/draw.vert.spv
-      resource_graphics_pipeline_fragmentshader_name: SimpleShadowMap64Shadows/draw.frag.spv
+      resource_graphics_pipeline_vertexshader_name: SimpleShadowMap32Shadows/draw.vert.spv
+      resource_graphics_pipeline_fragmentshader_name: SimpleShadowMap32Shadows/draw.frag.spv
       renderpasses_shadowmap: false
       subpasses_subpass_id: 0
 
