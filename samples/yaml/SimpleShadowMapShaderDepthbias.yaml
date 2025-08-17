@@ -73,6 +73,7 @@ Uniforms:
       uniform_graphics_vp: false
       uniform_graphics_depth_image_sampler: true
       uniform_graphics_lightdepth_image_sampler: true
+      uniform_graphics_lightdepth_image_sampler_hardware: false
   - GraphicsTextureImageSamplers:
     - uniform_graphics_texture_image_sampler_name: Sampler
       uniform_graphics_texture_image_sampler_miplevel: 1

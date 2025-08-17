@@ -37,7 +37,7 @@ public:
 				glm::vec3(0, 3.5 + sin(elapseTime * (i+1)),0)
 			);
 			objects[2+i].SetPosition(lights[i].GetLightPosition()); 
-			lightCamera[i].SetPosition(lights[i].GetLightPosition());
+			lightCameras[i].SetPosition(lights[i].GetLightPosition());
 		}
 		CApplication::update();
 	}

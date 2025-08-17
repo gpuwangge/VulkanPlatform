@@ -90,7 +90,13 @@ public:
 
     //for static class member. But can not define and init them in the header file!
     static Camera mainCamera; 
-    static Camera lightCamera[2];
+
+    //static Camera lightCameras[2];
+    //static std::vector<Camera> lightCameras;
+
+    //Camera lightCameras[2]; //works
+    std::vector<Camera> lightCameras; 
+
     static bool NeedToExit;
     static bool NeedToPause;
 

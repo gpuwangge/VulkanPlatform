@@ -120,13 +120,13 @@ LightCamera: #you can have more than one light cameras. the yaml code here is gi
 Lights:
   - light_name: Light
     light_id: 0
-    light_position: [3.0,3.0,0.0]
+    light_position: [0.0,3.0,0.0]
     light_intensity: [0.5,2,4,1.0]
     light_color: [0.0,1.0,1.0]
     light_spot: [20,25]
   - light_name: Light
     light_id: 1
-    light_position: [3.0,2.0,0.0]
+    light_position: [0.0,2.0,0.0]
     light_intensity: [0.5,2,4,1.0]
     light_color: [1.0,1.0,0.0]
     light_spot: [20,25]

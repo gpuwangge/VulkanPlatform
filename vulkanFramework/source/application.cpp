@@ -3,7 +3,8 @@
 //static class members must be defined outside. 
 //otherwise invoke 'undefined reference' error when linking
 Camera CApplication::mainCamera;
-Camera CApplication::lightCamera[2];
+//Camera CApplication::lightCameras[2];
+//std::vector<Camera> CApplication::lightCameras;
 bool CApplication::NeedToExit = false; 
 bool CApplication::NeedToPause = false;
 bool CApplication::PrintFPS = false;
@@ -17,6 +18,9 @@ CApplication::CApplication(){
     //NeedToExit = false;
     windowWidth = 0;
     windowHeight = 0;
+
+    //lightCameras.resize(2); //work
+    lightCameras.resize(LIGHT_MAX); //TODO: for test purpose, create more cameras than needed
 }
 
 #ifndef ANDROID
@@ -90,8 +94,9 @@ void CApplication::run(){ //Entrance Function
     //std::cout<<vkGetPhysicalDeviceSurfaceCapabilitiesKHR(CContext::GetHandle().GetPhysicalDevice(), surface, pSurfaceCapabilities)<<std::endl;
     //std::cout<<"Surface min extent: width="<<pSurfaceCapabilities->minImageExtent.width<<", Surface min extent: height="<<pSurfaceCapabilities->minImageExtent.height<<std::endl;
     //std::cout<<"Surface max extent: width="<<pSurfaceCapabilities->maxImageExtent.width<<", Surface max extent: height="<<pSurfaceCapabilities->maxImageExtent.height<<std::endl;
-
+    //lightCameras.resize(2);//work
     swapchain.createSwapchainImages(surface, windowWidth, windowHeight);
+    //lightCameras.resize(2);//not work
 	swapchain.createSwapchainViews(VK_IMAGE_ASPECT_COLOR_BIT);
 
     renderer.CreateCommandPool(surface);
@@ -381,16 +386,22 @@ void CApplication::update(){
 
     if(objects.size() > 0 && mainCamera.focusObjectId < objects.size())
         mainCamera.SetTargetPosition(objects[mainCamera.focusObjectId].Position);
-    if(objects.size() > 0 && lightCamera[0].focusObjectId < objects.size())
-        lightCamera[0].SetTargetPosition(objects[lightCamera[0].focusObjectId].Position);
-    if(objects.size() > 0 && lightCamera[1].focusObjectId < objects.size())
-        lightCamera[1].SetTargetPosition(objects[lightCamera[1].focusObjectId].Position);
-
     mainCamera.update(deltaTime);
-    lightCamera[0].update(deltaTime);
-    lightCamera[1].update(deltaTime);
+
+    for(int i = 0; i < lights.size(); i++){//lightCameras.size()
+        if(lights.size() > 0 && lightCameras[i].focusObjectId < objects.size())
+            lightCameras[i].SetTargetPosition(objects[lightCameras[i].focusObjectId].Position);
+        lightCameras[i].update(deltaTime);
+    }
+    // if(objects.size() > 0 && lightCamera[0].focusObjectId < objects.size())
+    //     lightCamera[0].SetTargetPosition(objects[lightCamera[0].focusObjectId].Position);
+    // if(objects.size() > 0 && lightCamera[1].focusObjectId < objects.size())
+    //     lightCamera[1].SetTargetPosition(objects[lightCamera[1].focusObjectId].Position);  
+    //lightCamera[0].update(deltaTime);
+    //lightCamera[1].update(deltaTime);
+
     for(int i = 0; i < objects.size(); i++) objects[i].Update(deltaTime, renderer.currentFrame, mainCamera); 
-    for(int i = 0; i < lights.size(); i++) lights[i].Update(deltaTime, renderer.currentFrame, mainCamera, lightCamera[i]);
+    for(int i = 0; i < lights.size(); i++) lights[i].Update(deltaTime, renderer.currentFrame, mainCamera, lightCameras[i]);
 
     /*Calcuate FPS*/
     static int frameCount = 0;
@@ -1217,6 +1228,7 @@ void CApplication::ReadCameras(){
             -orthoHeight / 2.0f, orthoHeight / 2.0f,
             nearPlane, farPlane);
     }
+    mainCamera.SetRotationSensitivity(200.0f);
 
 
     // mainCamera.SetTargetPosition(
@@ -1233,50 +1245,52 @@ void CApplication::ReadCameras(){
 #endif
 
     if (config["LightCamera"]) {
-        lightCamera[0].cameraType = (Camera::CameraType)(config["LightCamera"]["camera_mode"] ? config["LightCamera"]["camera_mode"].as<int>() : 0);
-        lightCamera[0].SetPosition(
+        lightCameras[0].cameraType = (Camera::CameraType)(config["LightCamera"]["camera_mode"] ? config["LightCamera"]["camera_mode"].as<int>() : 0);
+        lightCameras[0].SetPosition(
             config["LightCamera"]["camera_position"][0].as<float>(), 
             config["LightCamera"]["camera_position"][1].as<float>(), 
             config["LightCamera"]["camera_position"][2].as<float>());
-        lightCamera[0].SetRotation(
+        lightCameras[0].SetRotation(
             config["LightCamera"]["camera_rotation"][0].as<float>(), 
             config["LightCamera"]["camera_rotation"][1].as<float>(), 
             config["LightCamera"]["camera_rotation"][2].as<float>());
-        lightCamera[0].focusObjectId = config["LightCamera"]["object_id_target"] ? config["LightCamera"]["object_id_target"].as<int>() : 0;
+        lightCameras[0].focusObjectId = config["LightCamera"]["object_id_target"] ? config["LightCamera"]["object_id_target"].as<int>() : 0;
 
-        lightCamera[0].bEnableOrthographic = config["LightCamera"]["camera_projection_enable_orthographic"] ? config["LightCamera"]["camera_projection_enable_orthographic"].as<bool>() : false;
+        lightCameras[0].bEnableOrthographic = config["LightCamera"]["camera_projection_enable_orthographic"] ? config["LightCamera"]["camera_projection_enable_orthographic"].as<bool>() : false;
         float nearPlane = config["LightCamera"]["camera_z"][0].as<float>();
         float farPlane = config["LightCamera"]["camera_z"][1].as<float>();
 
-        if(!lightCamera[0].bEnableOrthographic){
+        if(!lightCameras[0].bEnableOrthographic){
             float fov = config["LightCamera"]["camera_projection_perspective_fov"] ? config["LightCamera"]["camera_projection_perspective_fov"].as<float>() : 90.0f;
-            lightCamera[0].setPerspective(fov, 1.0f, nearPlane, farPlane);
+            lightCameras[0].setPerspective(fov, 1.0f, nearPlane, farPlane);
         }else{
             float orthoWidth = config["LightCamera"]["camera_projection_orthographic_width"] ? config["LightCamera"]["camera_projection_orthographic_width"].as<float>() : 20.0f;
             float orthoHeight = config["LightCamera"]["camera_projection_orthographic_height"] ? config["LightCamera"]["camera_projection_orthographic_height"].as<float>() : 20.0f;
-            lightCamera[0].setOrthographic(
+            lightCameras[0].setOrthographic(
                 -orthoWidth / 2.0f, orthoWidth / 2.0f,
                 -orthoHeight / 2.0f, orthoHeight / 2.0f,
                 nearPlane, farPlane);
         }
-
     }else{
-        lightCamera[0].cameraType = mainCamera.cameraType; //default to main camera type
-        lightCamera[0].SetPosition(mainCamera.Position);
-        lightCamera[0].SetRotation(mainCamera.Rotation);
-        lightCamera[0].setPerspective(mainCamera.fov,  (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, mainCamera.znear, mainCamera.zfar);
-        lightCamera[0].focusObjectId = mainCamera.focusObjectId; //default to main camera focus object id
-        lightCamera[0].bEnableOrthographic = mainCamera.bEnableOrthographic; //default to main camera orthographic mode
+        lightCameras[0].cameraType = mainCamera.cameraType; //default to main camera type
+        lightCameras[0].SetPosition(mainCamera.Position);
+        lightCameras[0].SetRotation(mainCamera.Rotation);
+        lightCameras[0].setPerspective(mainCamera.fov,  (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, mainCamera.znear, mainCamera.zfar);
+        lightCameras[0].focusObjectId = mainCamera.focusObjectId; //default to main camera focus object id
+        lightCameras[0].bEnableOrthographic = mainCamera.bEnableOrthographic; //default to main camera orthographic mode
     }
+    //lightCameras[0].SetRotationSensitivity(100.0f);
 
-    //TODO
-    lightCamera[1].cameraType = lightCamera[0].cameraType; //default to light camera type
-    lightCamera[1].SetPosition(lightCamera[0].Position);
-    lightCamera[1].SetRotation(lightCamera[0].Rotation);
-    lightCamera[1].setPerspective(lightCamera[0].fov,  (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, lightCamera[0].znear, lightCamera[0].zfar);
-    lightCamera[1].setOrthographic(-20, 20, -20, 20, lightCamera[0].znear, lightCamera[0].zfar);
-    lightCamera[1].focusObjectId = lightCamera[0].focusObjectId; //default to main camera focus object id
-    lightCamera[1].bEnableOrthographic = lightCamera[0].bEnableOrthographic; //default to main camera orthographic mode
+    for(int i = 1; i < lights.size(); i++){//lightCameras.size()
+        lightCameras[i].cameraType = lightCameras[0].cameraType; //default to light camera type
+        lightCameras[i].SetPosition(lightCameras[0].Position);
+        lightCameras[i].SetRotation(lightCameras[0].Rotation);
+        lightCameras[i].setPerspective(lightCameras[0].fov,  (float)WINDOW_WIDTH / (float)WINDOW_HEIGHT, lightCameras[0].znear, lightCameras[0].zfar);
+        lightCameras[i].setOrthographic(-20, 20, -20, 20, lightCameras[0].znear, lightCameras[0].zfar);
+        lightCameras[i].focusObjectId = lightCameras[0].focusObjectId; //default to main camera focus object id
+        lightCameras[i].bEnableOrthographic = lightCameras[0].bEnableOrthographic; //default to main camera orthographic mode
+        //lightCameras[i].SetRotationSensitivity(100.0f);
+    }
 
 }
 

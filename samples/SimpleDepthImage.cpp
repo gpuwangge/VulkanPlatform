@@ -38,7 +38,7 @@ public:
 			//lightCamera[i].SetPosition(lights[i].GetLightPosition());
 		}
 
-		lightCamera[0].SetPosition(lights[0].GetLightPosition()); //set light camera to one of the lightball, the lightball should be not drawn in subpass 0.
+		lightCameras[0].SetPosition(lights[0].GetLightPosition()); //set light camera to one of the lightball, the lightball should be not drawn in subpass 0.
 
 		//lightCamera.SetPosition(lights[3].GetLightPosition());
 

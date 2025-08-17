@@ -24,7 +24,7 @@ layout(set = 0, binding = 0) uniform LightsBufferObject {
 //layout (set = 0, binding = 3) uniform sampler2D depthSampler;//single sampled
 layout (set = 0, binding = 2) uniform sampler2DMS depthSampler; //msaa, there is no use to this uniform in this shader
 //layout (set = 0, binding = 4) uniform sampler2DMS lightDepthSampler; //msaa
-layout (set = 0, binding = 3) uniform sampler2DShadow lightDepthSampler[2]; //depthbias hardware compare: has bug
+layout (set = 0, binding = 3) uniform sampler2DShadow lightDepthSampler[LIGHT_MAX];
 
 layout (set = 1, binding = 0) uniform sampler2D texSampler;
 

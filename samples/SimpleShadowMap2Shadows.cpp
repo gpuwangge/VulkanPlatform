@@ -25,7 +25,7 @@ public:
 				//glm::vec3(0, 3+0.6*sin(elapseTime * (i+1)/2), 0)
 			);
 			//objects[2+i].SetPosition(lights[i].GetLightPosition()); //object2<-light0's position; object3<-light1's position;
-			lightCamera[i].SetPosition(lights[i].GetLightPosition());
+			lightCameras[i].SetPosition(lights[i].GetLightPosition());
 		}
 		CApplication::update();
 	}

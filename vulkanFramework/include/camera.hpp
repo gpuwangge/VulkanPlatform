@@ -17,6 +17,8 @@ public:
 	//bool chickenbit = false;
 	bool bEnableOrthographic = false; //if true, use orthographic projection, otherwise use perspective projection
 
+	float rotationSensitivity = 1000;
+
 	glm::vec3 TargetPosition = glm::vec3(0.0f, 0.0f, 0.0f);
 	void SetTargetPosition(float x, float y, float z){ TargetPosition = glm::vec3(x, y, z); }
 	void SetTargetPosition(glm::vec3 pos){ TargetPosition = pos; }
@@ -71,6 +73,10 @@ public:
 
 	}
 
+	void SetRotationSensitivity(float sensitivity){
+		rotationSensitivity = sensitivity;
+	}
+
 	//this function is provided to user (no use case yet)
 	void updateAspectRatio(float aspect){
 		matrices.projection = glm::perspective(glm::radians(fov), aspect, znear, zfar);
@@ -81,8 +87,8 @@ public:
 		
 		if(cameraType == CameraType::LOCK){ //calculate angular velocity so focus is on target
 			glm::vec3 cameraPos2TargetPos = TargetPosition - Position;
-			AngularVelocity.x = 2000 * glm::dot(glm::cross(DirectionFront, cameraPos2TargetPos), DirectionLeft);
-			AngularVelocity.y = 2000 * glm::dot(glm::cross(cameraPos2TargetPos, DirectionFront), DirectionUp);
+			AngularVelocity.x = rotationSensitivity * glm::dot(glm::cross(DirectionFront, cameraPos2TargetPos), DirectionLeft);
+			AngularVelocity.y = rotationSensitivity * glm::dot(glm::cross(cameraPos2TargetPos, DirectionFront), DirectionUp);
 		}
 
 		CEntity::Update(deltaTime); //update TranslateMatrix RotationMatrix ScaleMatrix

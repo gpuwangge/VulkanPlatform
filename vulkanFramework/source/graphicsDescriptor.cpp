@@ -59,7 +59,7 @@ void CGraphicsDescriptorManager::createDescriptorPool(unsigned int object_count)
     if(graphicsUniformTypes & GRAPHCIS_COMBINEDIMAGESAMPLER_LIGHTDEPTHIMAGE_HARDWAREDEPTHBIAS){
         //std::cout<<"createDescriptorPool():GRAPHCIS_COMBINEDIMAGESAMPLER_LIGHTDEPTHIMAGE_HARDWAREDEPTHBIAS"<<std::endl;
         graphicsDescriptorPoolSizes[counter].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-        graphicsDescriptorPoolSizes[counter].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT*2);//one depth sampler
+        graphicsDescriptorPoolSizes[counter].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT*LIGHT_MAX);
         counter++; 
     }
     /*
@@ -154,7 +154,7 @@ void CGraphicsDescriptorManager::createDescriptorSetLayout_General(VkDescriptorS
         //std::cout<<"createDescriptorSetLayout_General():GRAPHCIS_COMBINEDIMAGESAMPLER_DEPTHIMAGE"<<std::endl;
         VkDescriptorSetLayoutBinding binding = VPUniformBufferObject::GetBinding();
         graphicsBindings[bindingCounter].binding = bindingCounter;
-		graphicsBindings[bindingCounter].descriptorCount = 2;
+		graphicsBindings[bindingCounter].descriptorCount = LIGHT_MAX;
 		graphicsBindings[bindingCounter].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
 		graphicsBindings[bindingCounter].pImmutableSamplers = nullptr;
 		graphicsBindings[bindingCounter].stageFlags = VK_SHADER_STAGE_FRAGMENT_BIT;
@@ -349,11 +349,11 @@ void CGraphicsDescriptorManager::createDescriptorSets_General(VkImageView depthI
             counter++;
         }
         //VkDescriptorImageInfo lightDepthImage_hardware_Info{}; //for lightdepth sampler(HARDWARE)
-        VkDescriptorImageInfo lightDepthImage_hardware_Info[2] = {};
+        VkDescriptorImageInfo lightDepthImage_hardware_Info[LIGHT_MAX] = {};
         if(graphicsUniformTypes & GRAPHCIS_COMBINEDIMAGESAMPLER_LIGHTDEPTHIMAGE_HARDWAREDEPTHBIAS){
             //std::cout<<"createDescriptorSets_General():GRAPHCIS_COMBINEDIMAGESAMPLER_LIGHTDEPTHIMAGE_HARDWAREDEPTHBIAS"<<std::endl;
             int lightBufferSize = lightDepthBuffers.size();
-            for(int i = 0; i < 2 ; i++){
+            for(int i = 0; i < LIGHT_MAX; i++){
                 if(i < lightBufferSize){
                     lightDepthImage_hardware_Info[i].imageLayout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
                     lightDepthImage_hardware_Info[i].imageView = lightDepthBuffers[i].view; 
@@ -369,7 +369,7 @@ void CGraphicsDescriptorManager::createDescriptorSets_General(VkImageView depthI
             descriptorWrites[counter].dstBinding = counter;
             descriptorWrites[counter].dstArrayElement = 0;
             descriptorWrites[counter].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-            descriptorWrites[counter].descriptorCount = 2;
+            descriptorWrites[counter].descriptorCount = LIGHT_MAX;
             descriptorWrites[counter].pImageInfo = lightDepthImage_hardware_Info;
             counter++;
         }

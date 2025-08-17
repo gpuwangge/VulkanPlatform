@@ -22,7 +22,7 @@ public:
 			);
 			objects[2+i].SetPosition(lights[i].GetLightPosition()); 
 
-			lightCamera[i].SetPosition(lights[i].GetLightPosition());
+			lightCameras[i].SetPosition(lights[i].GetLightPosition());
 		}
 		CApplication::update();
 	}

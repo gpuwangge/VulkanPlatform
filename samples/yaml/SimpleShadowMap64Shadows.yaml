@@ -19,14 +19,33 @@ Objects:
     object_angular_velocity: [0,0,0]
     object_skybox: false
     resource_default_graphics_pipeline_id: 1
- # - object_name: LightSphere
- #   object_id: 2
- #   object_scale: 0.01
- #   resource_default_graphics_pipeline_id: 1
- # - object_name: LightSphere
- #   object_id: 3
- #   object_scale: 0.01
- #   resource_default_graphics_pipeline_id: 1
+  - object_name: Sphere
+    object_id: 2
+    object_scale: 0.04
+    object_position: [7.0,0.0,0]
+    object_rotation: [0,0,0]
+    object_velocity: [0,0,0]
+    object_angular_velocity: [0,0,0]
+    object_skybox: false
+    resource_default_graphics_pipeline_id: 1    
+  - object_name: Sphere
+    object_id: 3
+    object_scale: 0.04
+    object_position: [-7.0,0.0,0]
+    object_rotation: [0,0,0]
+    object_velocity: [0,0,0]
+    object_angular_velocity: [0,0,0]
+    object_skybox: false
+    resource_default_graphics_pipeline_id: 1
+  - object_name: Sphere
+    object_id: 4
+    object_scale: 0.04
+    object_position: [0.0,0.0,7.0]
+    object_rotation: [0,0,0]
+    object_velocity: [0,0,0]
+    object_angular_velocity: [0,0,0]
+    object_skybox: false
+    resource_default_graphics_pipeline_id: 1  
 
 Resources:
   - Models:
@@ -95,10 +114,10 @@ MainSceneRenderpassSubpasses: #the index is 0, 1, 2
 
 MainCamera:
   camera_mode: 0
-  camera_position: [0,10,0] #[0,3,-4]
+  camera_position: [0,10,-20] #[0,3,-4]
   camera_rotation: [0,0,0]
   object_id_target: 1
-  camera_z: [0.1, 30]
+  camera_z: [0.1, 256]
   camera_projection_enable_orthographic: false
   camera_projection_perspective_fov: 60
   camera_projection_orthographic_width: 8
@@ -120,14 +139,212 @@ LightCamera: #you can have more than one light cameras. the yaml code here is gi
 Lights:
   - light_name: Light
     light_id: 0
-    light_position: [3.0,3.0,0.0]
+    light_position: [0.0,1.0,0.0]
     light_intensity: [0.5,2,4,1.0]
     light_color: [0.0,1.0,1.0]
     light_spot: [20,25]
   - light_name: Light
     light_id: 1
-    light_position: [3.0,2.0,0.0]
+    light_position: [0.0,1.5,0.0]
+    light_intensity: [0.5,2,4,1.0]
+    light_color: [1.0,0.0,1.0]
+    light_spot: [20,25]
+  - light_name: Light
+    light_id: 2
+    light_position: [0.0,2.0,0.0]
     light_intensity: [0.5,2,4,1.0]
     light_color: [1.0,1.0,0.0]
     light_spot: [20,25]
+  - light_name: Light
+    light_id: 3
+    light_position: [0.0,2.5,0.0]
+    light_intensity: [0.5,2,4,1.0]
+    light_color: [1.0,0.0,0.0]
+    light_spot: [20,25]
+  - light_name: Light
+    light_id: 4
+    light_position: [0.0,3.0,0.0]
+    light_intensity: [0.5,2,4,1.0]
+    light_color: [0.0,1.0,0.0]
+    light_spot: [20,25]
+  - light_name: Light
+    light_id: 5
+    light_position: [0.0,3.5,0.0]
+    light_intensity: [0.5,2,4,1.0]
+    light_color: [0.0,0.0,1.0]
+    light_spot: [20,25]
+  - light_name: Light
+    light_id: 6
+    light_position: [0.0,4.0,0.0]
+    light_intensity: [0.5,2,4,1.0]
+    light_color: [1.0,0.5,0.0]
+    light_spot: [20,25]
+  - light_name: Light
+    light_id: 7
+    light_position: [0.0,4.5,0.0]
+    light_intensity: [0.5,2,4,1.0]
+    light_color: [0.0,1.0,0.5]
+    light_spot: [20,25]
+
+  - light_name: Light
+    light_id: 8
+    light_position: [0.0,1.0,0.0]
+    light_intensity: [0.5,2,4,1.0]
+    light_color: [0.0,1.0,1.0]
+    light_spot: [20,25]
+  - light_name: Light
+    light_id: 9
+    light_position: [0.0,1.5,0.0]
+    light_intensity: [0.5,2,4,1.0]
+    light_color: [1.0,0.0,1.0]
+    light_spot: [20,25]
+  - light_name: Light
+    light_id: 10
+    light_position: [0.0,2.0,0.0]
+    light_intensity: [0.5,2,4,1.0]
+    light_color: [1.0,1.0,0.0]
+    light_spot: [20,25]
+  - light_name: Light
+    light_id: 11
+    light_position: [0.0,2.5,0.0]
+    light_intensity: [0.5,2,4,1.0]
+    light_color: [1.0,0.0,0.0]
+    light_spot: [20,25]
+  - light_name: Light
+    light_id: 12
+    light_position: [0.0,3.0,0.0]
+    light_intensity: [0.5,2,4,1.0]
+    light_color: [0.0,1.0,0.0]
+    light_spot: [20,25]
+  - light_name: Light
+    light_id: 13
+    light_position: [0.0,3.5,0.0]
+    light_intensity: [0.5,2,4,1.0]
+    light_color: [0.0,0.0,1.0]
+    light_spot: [20,25]
+  - light_name: Light
+    light_id: 14
+    light_position: [0.0,4.0,0.0]
+    light_intensity: [0.5,2,4,1.0]
+    light_color: [1.0,0.5,0.0]
+    light_spot: [20,25]
+  - light_name: Light
+    light_id: 15
+    light_position: [0.0,4.5,0.0]
+    light_intensity: [0.5,2,4,1.0]
+    light_color: [0.0,1.0,0.5]
+    light_spot: [20,25]
+
+  - light_name: Light
+    light_id: 16
+    light_position: [0.0,1.0,0.0]
+    light_intensity: [0.5,2,4,1.0]
+    light_color: [0.0,1.0,1.0]
+    light_spot: [20,25]
+  - light_name: Light
+    light_id: 17
+    light_position: [0.0,1.5,0.0]
+    light_intensity: [0.5,2,4,1.0]
+    light_color: [1.0,0.0,1.0]
+    light_spot: [20,25]
+  - light_name: Light
+    light_id: 18
+    light_position: [0.0,2.0,0.0]
+    light_intensity: [0.5,2,4,1.0]
+    light_color: [1.0,1.0,0.0]
+    light_spot: [20,25]
+  - light_name: Light
+    light_id: 19
+    light_position: [0.0,2.5,0.0]
+    light_intensity: [0.5,2,4,1.0]
+    light_color: [1.0,0.0,0.0]
+    light_spot: [20,25]
+  - light_name: Light
+    light_id: 20
+    light_position: [0.0,3.0,0.0]
+    light_intensity: [0.5,2,4,1.0]
+    light_color: [0.0,1.0,0.0]
+    light_spot: [20,25]
+  - light_name: Light
+    light_id: 21
+    light_position: [0.0,3.5,0.0]
+    light_intensity: [0.5,2,4,1.0]
+    light_color: [0.0,0.0,1.0]
+    light_spot: [20,25]
+  - light_name: Light
+    light_id: 22
+    light_position: [0.0,4.0,0.0]
+    light_intensity: [0.5,2,4,1.0]
+    light_color: [1.0,0.5,0.0]
+    light_spot: [20,25]
+  - light_name: Light
+    light_id: 23
+    light_position: [0.0,4.5,0.0]
+    light_intensity: [0.5,2,4,1.0]
+    light_color: [0.0,1.0,0.5]
+    light_spot: [20,25]
+
+  - light_name: Light
+    light_id: 24
+    light_position: [0.0,1.0,0.0]
+    light_intensity: [0.5,2,4,1.0]
+    light_color: [0.0,1.0,1.0]
+    light_spot: [20,25]
+  - light_name: Light
+    light_id: 25
+    light_position: [0.0,1.5,0.0]
+    light_intensity: [0.5,2,4,1.0]
+    light_color: [1.0,0.0,1.0]
+    light_spot: [20,25]
+  - light_name: Light
+    light_id: 26
+    light_position: [0.0,2.0,0.0]
+    light_intensity: [0.5,2,4,1.0]
+    light_color: [1.0,1.0,0.0]
+    light_spot: [20,25]
+  - light_name: Light
+    light_id: 27
+    light_position: [0.0,2.5,0.0]
+    light_intensity: [0.5,2,4,1.0]
+    light_color: [1.0,0.0,0.0]
+    light_spot: [20,25]
+  - light_name: Light
+    light_id: 28
+    light_position: [0.0,3.0,0.0]
+    light_intensity: [0.5,2,4,1.0]
+    light_color: [0.0,1.0,0.0]
+    light_spot: [20,25]
+  - light_name: Light
+    light_id: 29
+    light_position: [0.0,3.5,0.0]
+    light_intensity: [0.5,2,4,1.0]
+    light_color: [0.0,0.0,1.0]
+    light_spot: [20,25]
+  - light_name: Light
+    light_id: 30
+    light_position: [0.0,4.0,0.0]
+    light_intensity: [0.5,2,4,1.0]
+    light_color: [1.0,0.5,0.0]
+    light_spot: [20,25]
+  - light_name: Light
+    light_id: 31
+    light_position: [0.0,4.5,0.0]
+    light_intensity: [0.5,2,4,1.0]
+    light_color: [0.0,1.0,0.5]
+    light_spot: [20,25]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
