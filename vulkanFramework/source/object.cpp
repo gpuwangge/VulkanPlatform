@@ -227,7 +227,7 @@ void CObject::Register(CApplication *p_app, int object_id, std::vector<int> text
 }
 
 
-void CObject::Draw(int graphicsPipelineId, uint32_t n, bool bSetDepthbias){
+void CObject::Draw(int graphicsPipelineId, uint32_t n){
     if(!bRegistered || !bVisible) return;
 
     //std::cout<<"CObject::Draw, renderPassType="<<renderPassType<<", n="<<n<<std::endl;

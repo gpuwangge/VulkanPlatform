@@ -43,7 +43,7 @@ public:
 		//object3(removed): small light sphere1 (light1)
 		//...
 		for(int i = 0; i < 2; i++) { //only draw table and middle big sphere in shadowmap
-			objects[i].Draw(0, 0, true); //pipeline0 is for shadowmap
+			objects[i].Draw(0); //pipeline0 is for shadowmap
 		}
 	}
 

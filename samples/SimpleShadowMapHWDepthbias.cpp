@@ -39,7 +39,7 @@ public:
 
 		for(int i = 0; i < objects.size()-1; i++) {
 			//if(i == 2) continue; //dont draw the light ball in shadowmap
-			objects[i].Draw(0, 0, true); //pipeline0 is for shadowmap
+			objects[i].Draw(0); //pipeline0 is for shadowmap
 		}
 	}
 

@@ -44,7 +44,7 @@ public:
 		for(int i = 0; i < objects.size(); i++) {
 			//if(i == 2) continue; //dont draw object2(light0) in shadowmap
 			//if(i == 3) continue; //dont draw object3(light1) in shadowmap
-			objects[i].Draw(0, 0, true); //pipeline0 is for shadowmap
+			objects[i].Draw(0); //pipeline0 is for shadowmap
 		}
 	}
 
