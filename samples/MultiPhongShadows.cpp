@@ -1,5 +1,5 @@
 #include "..\\vulkanFramework\\include\\application.h"
-#define TEST_CLASS_NAME CSimpleShadowMap8Shadows
+#define TEST_CLASS_NAME CMultiPhongShadows
 class TEST_CLASS_NAME: public CApplication{
 /*********
  * Implementation of Shadow Map
@@ -37,8 +37,8 @@ public:
 		
 		vkCmdSetDepthBias(renderer.commandBuffers[renderer.graphicsCmdId][renderer.currentFrame], 1.25f, 0.0f, 6.0f);
 
-		//object0: table
-		//object1: middle big sphere
+		//object0: middle big sphere
+		//object1: table
 		//object2(removed): small light sphere0 (light0), because both light cameras are at this position, it should not be drawn
 		//object3(removed): small light sphere1 (light1)
 		//...

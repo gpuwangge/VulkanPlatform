@@ -1,6 +1,15 @@
 Objects:
-  - object_name: Table
+  - object_name: Sphere
     object_id: 0
+    object_scale: 0.04
+    object_position: [0,0.25,0]
+    object_rotation: [0,0,0]
+    object_velocity: [0,0,0]
+    object_angular_velocity: [0,0,0]
+    object_skybox: false
+    resource_default_graphics_pipeline_id: 1
+  - object_name: Table
+    object_id: 1
     object_scale: 1
     object_position: [0,-103,0]
     object_rotation: [0,0,0]
@@ -9,15 +18,6 @@ Objects:
     object_skybox: false
     resource_model_id: 1
     resource_texture_id_list: [1]
-    resource_default_graphics_pipeline_id: 1
-  - object_name: Sphere
-    object_id: 1
-    object_scale: 0.04
-    object_position: [0,0.0,0]
-    object_rotation: [0,0,0]
-    object_velocity: [0,0,0]
-    object_angular_velocity: [0,0,0]
-    object_skybox: false
     resource_default_graphics_pipeline_id: 1
   - object_name: LightSphere
     object_id: 2
@@ -119,12 +119,12 @@ MainSceneRenderpassSubpasses: #the index is 0, 1, 2
 
 MainCamera:
   camera_mode: 0
-  camera_position: [0,5,-10] #[0,3,-4]
+  camera_position: [0,3,-10] #[0,3,-4]
   camera_rotation: [0,0,0]
-  object_id_target: 1
-  camera_z: [0.1, 30]
+  object_id_target: 0
+  camera_z: [0.1, 256]
   camera_projection_enable_orthographic: false
-  camera_projection_perspective_fov: 60
+  camera_projection_perspective_fov: 90
   camera_projection_orthographic_width: 8
   camera_projection_orthographic_height: 8
   camera_keyboard_sensitive: 3
@@ -132,10 +132,10 @@ MainCamera:
 
 LightCamera: #you can have more than one light cameras. the yaml code here is giving them default values
   camera_mode: 0
-  camera_position: [0,0.5,-4] #[0,3,-4]
+  camera_position: [0,3,-10]
   camera_rotation: [0,0,0]
-  object_id_target: 1
-  camera_z: [0.01, 20]
+  object_id_target: 0
+  camera_z: [0.01, 256]
   camera_projection_enable_orthographic: true
   camera_projection_perspective_fov: 60
   camera_projection_orthographic_width: 20
@@ -144,49 +144,33 @@ LightCamera: #you can have more than one light cameras. the yaml code here is gi
 Lights:
   - light_name: Light
     light_id: 0
-    light_position: [0.0,1.0,0.0]
-    light_intensity: [0.5,2,4,1.0]
-    light_color: [0.0,1.0,1.0]
-    light_spot: [20,25]
+    light_position: [0,3.5,-2]
+    light_intensity: [0.5,2,4,.8]
   - light_name: Light
     light_id: 1
-    light_position: [0.0,1.5,0.0]
-    light_intensity: [0.5,2,4,1.0]
-    light_color: [1.0,0.0,1.0]
-    light_spot: [20,25]
+    light_position: [0,4,-2]
+    light_intensity: [0.5,2,4,.8]
   - light_name: Light
     light_id: 2
-    light_position: [0.0,2.0,0.0]
-    light_intensity: [0.5,2,4,1.0]
-    light_color: [1.0,1.0,0.0]
-    light_spot: [20,25]
+    light_position: [0,4.5,-2]
+    light_intensity: [0.5,2,4,.8]
   - light_name: Light
     light_id: 3
-    light_position: [0.0,2.5,0.0]
-    light_intensity: [0.5,2,4,1.0]
-    light_color: [1.0,0.0,0.0]
-    light_spot: [20,25]
+    light_position: [0,5,-2]
+    light_intensity: [0.5,2,4,.8]
   - light_name: Light
     light_id: 4
-    light_position: [0.0,3.0,0.0]
-    light_intensity: [0.5,2,4,1.0]
-    light_color: [0.0,1.0,0.0]
-    light_spot: [20,25]
+    light_position: [0,5.5,-2]
+    light_intensity: [0.5,2,4,.8]
   - light_name: Light
     light_id: 5
-    light_position: [0.0,3.5,0.0]
-    light_intensity: [0.5,2,4,1.0]
-    light_color: [0.0,0.0,1.0]
-    light_spot: [20,25]
+    light_position: [0,6,-2]
+    light_intensity: [0.5,2,4,.8]
   - light_name: Light
     light_id: 6
-    light_position: [0.0,4.0,0.0]
-    light_intensity: [0.5,2,4,1.0]
-    light_color: [1.0,0.5,0.0]
-    light_spot: [20,25]
+    light_position: [0,6.5,-2]
+    light_intensity: [0.5,2,4,.8]
   - light_name: Light
     light_id: 7
-    light_position: [0.0,4.5,0.0]
-    light_intensity: [0.5,2,4,1.0]
-    light_color: [0.0,1.0,0.5]
-    light_spot: [20,25]
+    light_position: [0,7,-2]
+    light_intensity: [0.5,2,4,.8]

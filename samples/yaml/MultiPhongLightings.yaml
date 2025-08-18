@@ -107,7 +107,7 @@ MainSceneRenderpassSubpasses: #the index is 0, 1, 2
   mainsceneRenderpass_subpasses_observe: false
 
 MainCamera:
-  camera_mode: 1
+  camera_mode: 0
   camera_position: [0,3,-10]
   camera_rotation: [0,0,0]
   object_id_target: 0
