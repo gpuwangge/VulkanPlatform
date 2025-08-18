@@ -235,6 +235,7 @@ Lights:
     light_color: [0.0,1.0,0.5]
     light_spot: [20,25]
 
+disabled_config: |
   - light_name: Light
     light_id: 16
     light_position: [0.0,1.0,0.0]
