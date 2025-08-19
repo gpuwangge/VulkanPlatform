@@ -23,16 +23,16 @@ Prepare:
 ### for all samples
 ```
 mkdir build  
-cd build  
-cmake -G "MinGW Makefiles" ..   
-make -j  
+cd build
+cmake -G "MinGW Makefiles" ..
+make -j
 ```
 
 ### for one sample  
 ```
-mkdir build  
-cd build  
-cmake -G "MinGW Makefiles" -D SINGLE=true ..  
+mkdir build
+cd build
+cmake -G "MinGW Makefiles" -D SINGLE=true ..
 make -j
 ```
 - [Optional] Edit CMakeLists.txt to tell compiler which sample to build   
@@ -137,6 +137,14 @@ simpleObjLoader(GTX1080Ti Desktop Founders Edition):
 - Load Texture 'viking_room.png' cost: 67.998 milliseconds  
 - Load Textures (combined) cost: 69 milliseconds  
 - Total Initialization cost: 108.119 milliseconds  
+
+## Version
+### Vulkan
+1.3.296.0  
+### SDL3
+SDL3-devel-3.2.20-mingw.tar.gz  
+### SDL3_ttf
+SDL3_ttf-devel-3.2.2-mingw.tar.gz  
 
 ## References
 https://github.com/StanislavPetrovV/FurMark  

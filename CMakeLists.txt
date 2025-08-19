@@ -16,12 +16,12 @@ include_directories(
 link_directories(
     $ENV{VULKAN_SDK}/Lib #Put this in environment user variable LIB: C:\VulkanSDK\GLFW\lib-static-ucrt  
     $ENV{LIB}
-    ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty #put SDL3.dll and glfw3.dll in thirdparty/
+    ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty #put SDL3.dll, SDL3_ttf.dll and glfw3.dll in thirdparty/
     ${PROJECT_SOURCE_DIR}/thirdparty/yaml-cpp/lib) 
 
 add_subdirectory(sdlframework)
 add_subdirectory(vulkanFramework)
-link_libraries(vulkan-framework sdl-vulkan-framework vulkan-1 SDL3 yaml-cpp)
+link_libraries(vulkan-framework sdl-vulkan-framework vulkan-1 SDL3 SDL3_ttf yaml-cpp)
 
 set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/bin)
 
@@ -42,4 +42,6 @@ else()
 endif()
 
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/sdl3.dll DESTINATION ${EXECUTABLE_OUTPUT_PATH}/)
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/sdl3_ttf.dll DESTINATION ${EXECUTABLE_OUTPUT_PATH}/)
+file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/fonts/NotoSansCJK-VF.otf.ttc DESTINATION ${EXECUTABLE_OUTPUT_PATH}/)
 file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/thirdparty/yaml-cpp/lib/libyaml-cpp.dll DESTINATION ${EXECUTABLE_OUTPUT_PATH}/)

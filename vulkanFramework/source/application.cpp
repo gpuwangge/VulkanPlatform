@@ -34,6 +34,7 @@ void CApplication::run(){ //Entrance Function
     m_sampleName.erase(0, 1);
 #ifdef SDL
     sdlManager.createWindow(OUT windowWidth, OUT windowHeight, m_sampleName);
+    sdlManager.createFonts();
 #else
     glfwManager.createWindow(OUT windowWidth, OUT windowHeight, m_sampleName);
 #endif

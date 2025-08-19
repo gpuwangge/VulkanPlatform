@@ -12,6 +12,7 @@
 
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_vulkan.h>
+#include <SDL3_ttf/SDL_ttf.h>
 
 #include "common.h"
 #include "camera.hpp"
@@ -28,6 +29,8 @@ public:
     int m_windowWidth, m_windowHeight;
     int m_windowCenterX, m_windowCenterY;
 
+    TTF_Font* m_font;
+
     bool bStillRunning = true;
     bool bKeyDown = false;
     bool bMouseDown = false;
@@ -42,6 +45,7 @@ public:
     void createWindow(int &windowWidth, int &windowHeight, std::string windowTitle);
     void queryRequiredInstanceExtensions(std::vector<const char*> &requiredInstanceExtensions);
     void createSurface(std::unique_ptr<CInstance> &instance, VkSurfaceKHR &surface);
+    void createFonts();
 
     void eventHandle();
 };
