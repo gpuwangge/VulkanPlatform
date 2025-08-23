@@ -4,8 +4,6 @@
             "name": "windows-gcc-x64",
             "includePath": [
                 "${workspaceFolder}/**",
-                "${workspaceFolder}/vulkanFramework",
-                "${workspaceFolder}/glfwFramework",
                 "C:/VulkanSDK/GLFW/include",
                 "C:/VulkanSDK",
                 "C:/VulkanSDK/GLM",
@@ -17,6 +15,9 @@
             "intelliSenseMode": "windows-gcc-x64",
             "compilerArgs": [
                 ""
+            ],
+            "defines": [
+            "SDL"
             ]
         }
     ],

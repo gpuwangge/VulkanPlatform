@@ -55,10 +55,17 @@ void CSDLManager::createFonts(){
 
 
     //test SDL text (Test only, for this is conflict with Vulkan)
-    /*
-    SDL_Color white = {255, 255, 255, 255};
-    SDL_Surface* textSurface = TTF_RenderText_Blended(m_font, "hello你好", 11, white); //textSurface->pixels is RGBA
+   
+    // SDL_Color white = {255, 255, 255, 255};
+    // SDL_Surface* textSurface = TTF_RenderText_Blended(m_font, "hello你好", 11, white); //textSurface->pixels is RGBA
 
+    // int width  = textSurface->w;
+    // int height = textSurface->h;
+    // void* pixels = textSurface->pixels; //this saves the pixel data of the rendered text
+    // int pitch = textSurface->pitch;
+
+
+    /* these code render the textSurface into the screen. Will conflict with Vulkan renderer. So don't use this
     SDL_Renderer* renderer = SDL_CreateRenderer(window, NULL);
     SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
     SDL_FRect textRect = {20, 20, textSurface->w, textSurface->h};
