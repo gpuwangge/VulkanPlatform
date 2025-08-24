@@ -598,6 +598,7 @@ void CApplication::CleanUp(){
 
     //std::cout<<"Application: textureManager.Destroy()"<<std::endl;
     textureManager.Destroy();
+    textManager.Destroy();
     //std::cout<<"Application: renderer.Destroy()"<<std::endl;
     renderer.Destroy();
 
@@ -691,6 +692,20 @@ void CApplication::ReadUniforms(){
             }
         }
 
+        if (uniform["GraphicsTextureImageSamplers"]) {
+            std::vector<int> miplevels;
+            std::vector<std::vector<bool>> uvwRepeats;
+            for (const auto& samplerUniform : uniform["GraphicsTextureImageSamplers"]) {
+                std::string name = samplerUniform["uniform_graphics_texture_image_sampler_name"] ? samplerUniform["uniform_graphics_texture_image_sampler_name"].as<std::string>() : "Default";
+                int miplevel = samplerUniform["uniform_graphics_texture_image_sampler_miplevel"] ? samplerUniform["uniform_graphics_texture_image_sampler_miplevel"].as<int>() : 1;
+                miplevels.push_back(miplevel);
+                std::vector<bool> uvwRepeat = samplerUniform["uniform_graphics_texture_image_sampler_uvwrepeat"] ? samplerUniform["uniform_graphics_texture_image_sampler_uvwrepeat"].as<std::vector<bool>>() : std::vector<bool>{true, true, true};
+                uvwRepeats.push_back(uvwRepeat);
+            }
+            CGraphicsDescriptorManager::graphicsUniformTypes |= GRAPHCIS_COMBINEDIMAGESAMPLER_TEXTUREIMAGE;
+            CGraphicsDescriptorManager::addTextureImageSamplerUniformBuffer(miplevels, uvwRepeats);
+        }
+
         if (uniform["Compute"]) {
             for (const auto& computeUniform : uniform["Compute"]) {
                 std::string name = computeUniform["uniform_compute_name"] ? computeUniform["uniform_compute_name"].as<std::string>() : "Default";
@@ -717,16 +732,6 @@ void CApplication::ReadUniforms(){
             }  
         }
 
-        if (uniform["GraphicsTextureImageSamplers"]) {
-            std::vector<int> miplevels;
-            for (const auto& samplerUniform : uniform["GraphicsTextureImageSamplers"]) {
-                std::string name = samplerUniform["uniform_graphics_texture_image_sampler_name"] ? samplerUniform["uniform_graphics_texture_image_sampler_name"].as<std::string>() : "Default";
-                int miplevel = samplerUniform["uniform_graphics_texture_image_sampler_miplevel"] ? samplerUniform["uniform_graphics_texture_image_sampler_miplevel"].as<int>() : 1;
-                miplevels.push_back(miplevel);
-            }
-            CGraphicsDescriptorManager::graphicsUniformTypes |= GRAPHCIS_COMBINEDIMAGESAMPLER_TEXTUREIMAGE;
-            CGraphicsDescriptorManager::addTextureImageSamplerUniformBuffer(miplevels);
-        }
     }
 }
 
@@ -772,7 +777,7 @@ void CApplication::ReadResources(){
                 //int id = texture["resource_texture_id"].as<int>();
                 int miplevel = texture["resource_texture_miplevels"].as<int>();
                 bool enableCubemap = texture["resource_texture_cubmap"].as<bool>();
-                int samplerid = texture["uniform_Sampler_id"].as<int>();
+                int samplerid = texture["uniform_sampler_id"].as<int>();
 
                 VkImageUsageFlags usage;// = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
                 //VkImageUsageFlags usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT | VK_IMAGE_USAGE_STORAGE_BIT;
@@ -802,6 +807,53 @@ void CApplication::ReadResources(){
                     //auto durationTime = std::chrono::duration<float, std::chrono::seconds::period>(endTextureTime - startTextureTime).count()*1000;
                     //std::cout<<"Load Texture '"<< (*textureNames)[i].first <<"' cost: "<<durationTime<<" milliseconds"<<std::endl;
                 //}
+            }
+        }
+
+        if (resource["Texts"]) {
+            for (const auto& text : resource["Texts"]) {
+                std::string name = text["resource_text_name"].as<std::string>();
+                int samplerid = text["uniform_sampler_id"].as<int>();
+
+                //hack
+                SDL_Color white = {0, 0, 0, 255};
+                SDL_Surface* textSurface = TTF_RenderText_Blended(sdlManager.m_font, "hello你好", 11, white); //textSurface->pixels is RGBA
+                SDL_Surface* conv = SDL_ConvertSurface(textSurface, SDL_PIXELFORMAT_RGBA32);
+                if (!conv) {
+                    std::cerr << "SDL_ConvertSurfaceFormat failed: " << SDL_GetError() << std::endl;
+                }
+
+                int width  = conv->w;
+                int height = conv->h;
+                void* pixels = conv->pixels; //this saves the pixel data of the rendered text
+                int pitch = conv->pitch;
+
+                std::cout << "Text Surface '" << name << "' Width: " << width << ", Height: " << height << ", Pitch: " << pitch << std::endl;
+
+
+
+                CTextureImage textureImage;
+                textureImage.m_imageFormat = VK_FORMAT_R8G8B8A8_UNORM;//VK_FORMAT_R8G8B8A8_SRGB;
+                textureImage.m_mipLevels = 1;
+                textureImage.m_usage = VK_IMAGE_USAGE_TRANSFER_DST_BIT | VK_IMAGE_USAGE_SAMPLED_BIT;
+                textureImage.m_pCommandPool = &renderer.commandPool;
+
+                //textureImage.GetTexels(texturePath);
+                textureImage.m_pTexels = pixels;
+                textureImage.m_texWidth = width;
+                textureImage.m_texHeight = height;
+                textureImage.m_texChannels = 4;// STBI_rgb_alpha, RGBA
+                textureImage.m_texBptpc = 8;
+
+                textureImage.CreateTextureImage(false); //false: not use STBI to free pixels
+                SDL_DestroySurface(conv);
+                SDL_DestroySurface(textSurface);
+                textureImage.CreateImageView(VK_IMAGE_ASPECT_COLOR_BIT);
+
+                textureImage.m_sampler_id = samplerid;
+
+                //textureManager.textureImages.pop_back();
+                textManager.textureImages.push_back(textureImage);
             }
         }
 
@@ -1129,11 +1181,19 @@ void CApplication::ReadRegisterObjects(){
             //std::cout<<"before register Object id("<<object_id<<")!"<<std::endl;
             int resource_model_id = obj["resource_model_id"] ? obj["resource_model_id"].as<int>() : 0;
             auto resource_texture_id_list = obj["resource_texture_id_list"] ? obj["resource_texture_id_list"].as<std::vector<int>>() : std::vector<int>(1, 0);
+            auto resource_text_id_list = obj["resource_text_id_list"] ? obj["resource_text_id_list"].as<std::vector<int>>() : std::vector<int>(1, 0);
+            bool isText = false;
+            if(obj["resource_text_id_list"]) isText = true;
             int resource_default_graphics_pipeline_id = obj["resource_default_graphics_pipeline_id"] ? obj["resource_default_graphics_pipeline_id"].as<int>() : 0;
             //int resource_graphics_pipeline_id1 = obj["resource_graphics_pipeline_id1"] ? obj["resource_graphics_pipeline_id1"].as<int>() : 0;
             //int resource_graphics_pipeline_id2 = obj["resource_graphics_pipeline_id2"] ? obj["resource_graphics_pipeline_id2"].as<int>() : 0;
             //must load resources before object register
-            objects[object_id].Register((CApplication*)this, object_id, resource_texture_id_list, resource_model_id, resource_default_graphics_pipeline_id);
+            objects[object_id].Register((CApplication*)this, 
+                object_id, 
+                resource_texture_id_list, 
+                isText ? resource_text_id_list : std::vector<int>(),
+                resource_model_id, 
+                resource_default_graphics_pipeline_id);
             //std::cout<<"after register Object id("<<object_id<<")!"<<std::endl;
 
             std::string name = obj["object_name"] ? obj["object_name"].as<std::string>() : "Default";

@@ -70,6 +70,7 @@ public:
     CRenderer renderer;
     CModelManager modelManager;
     CTextureManager textureManager;
+    CTextManager textManager;
 
     //static int focusObjectId;
     static std::vector<CObject> objects;

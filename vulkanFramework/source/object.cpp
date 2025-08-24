@@ -155,13 +155,26 @@ void CObject::CreateDescriptorSets_TextureImageSampler(VkDescriptorPool &descrip
             imageInfo[j].imageLayout = VK_IMAGE_LAYOUT_GENERAL; //test compute storage image: ?need figure this out. VK_IMAGE_LAYOUT_GENERAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
             //imageInfo[j].imageView = textureImages[j].m_textureImageBuffer.view;
             //imageInfo[j].sampler = samplers[j];
-            if(j < m_texture_ids.size()){
-                imageInfo[j].imageView = p_textureManager->textureImages[m_texture_ids[j]].m_textureImageBuffer.view;
-                imageInfo[j].sampler = samplers[p_textureManager->textureImages[m_texture_ids[j]].m_sampler_id]; 
-            }else{ //There are more samplers than textures for this object, so use the first texture to fill other samplers
-                imageInfo[j].imageView = p_textureManager->textureImages[m_texture_ids[0]].m_textureImageBuffer.view;
-                imageInfo[j].sampler = samplers[p_textureManager->textureImages[m_texture_ids[0]].m_sampler_id]; 
+
+            if(b_isText){
+                if(j < m_text_ids.size()){
+                    imageInfo[j].imageView = p_textManager->textureImages[m_text_ids[j]].m_textureImageBuffer.view;
+                    imageInfo[j].sampler = samplers[p_textManager->textureImages[m_text_ids[j]].m_sampler_id]; 
+                }else{ //There are more samplers than textures for this object, so use the first texture to fill other samplers
+                    imageInfo[j].imageView = p_textManager->textureImages[m_text_ids[0]].m_textureImageBuffer.view;
+                    imageInfo[j].sampler = samplers[p_textManager->textureImages[m_text_ids[0]].m_sampler_id]; 
+                }
+            }else{
+                if(j < m_texture_ids.size()){
+                    imageInfo[j].imageView = p_textureManager->textureImages[m_texture_ids[j]].m_textureImageBuffer.view;
+                    imageInfo[j].sampler = samplers[p_textureManager->textureImages[m_texture_ids[j]].m_sampler_id]; 
+                }else{ //There are more samplers than textures for this object, so use the first texture to fill other samplers
+                    imageInfo[j].imageView = p_textureManager->textureImages[m_texture_ids[0]].m_textureImageBuffer.view;
+                    imageInfo[j].sampler = samplers[p_textureManager->textureImages[m_texture_ids[0]].m_sampler_id]; 
+                }
             }
+
+
             descriptorWrites[j].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
             descriptorWrites[j].dstSet = descriptorSets_graphics_texture_image_sampler[i];
             descriptorWrites[j].dstBinding = j;
@@ -180,9 +193,11 @@ void CObject::CreateDescriptorSets_TextureImageSampler(VkDescriptorPool &descrip
     //std::cout<<"Done set descriptor. "<<std::endl;
 }
 
-void CObject::Register(CApplication *p_app, int object_id, std::vector<int> texture_ids, int model_id, int default_graphics_pipeline_id){
+void CObject::Register(CApplication *p_app, int object_id, std::vector<int> texture_ids, std::vector<int> text_ids, int model_id, int default_graphics_pipeline_id){
     m_object_id = object_id; 
-    m_texture_ids = texture_ids; 
+    m_texture_ids = texture_ids;
+    m_text_ids = text_ids;
+    if(text_ids.size() > 0) b_isText = true;
     m_model_id = model_id; 
     m_default_graphics_pipeline_id = default_graphics_pipeline_id; 
     //m_graphics_pipeline_id2 = graphics_pipeline_id2; 
@@ -208,6 +223,7 @@ void CObject::Register(CApplication *p_app, int object_id, std::vector<int> text
     //p_graphicsPipelineLayout = &(p_app->renderProcess.graphicsPipelineLayouts[m_graphics_pipeline_id]);
     p_descriptorSets_graphics_general = &(p_app->graphicsDescriptorManager.descriptorSets_general);//?
     p_textureManager = &(p_app->textureManager);
+    p_textManager = &(p_app->textManager);
 
 
     //there are up to 3 samplers, support up to 3 different textures

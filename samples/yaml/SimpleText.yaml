@@ -1,28 +1,45 @@
 Objects:
-  - object_name: Quad
+  - object_name: QuadTexture
     object_id: 0
-    object_scale: 2
+    object_scale: 5
     object_position: [0,0,0]
     object_rotation: [0,0,0]
     object_velocity: [0,0,0]
-    object_angular_velocity: [0,0,50]
+    object_angular_velocity: [0,0,0]
     object_skybox: false
     resource_model_id: 0
     resource_texture_id_list: [0]
     resource_default_graphics_pipeline_id: 0
+  - object_name: QuadText
+    object_id: 1
+    object_scale: 2
+    object_position: [0,0,0]
+    object_rotation: [0,0,180]
+    object_velocity: [0,0,0]
+    object_angular_velocity: [0,0,0]
+    object_skybox: false
+    resource_model_id: 0
+    resource_text_id_list: [0]
+    resource_default_graphics_pipeline_id: 1
 
 Resources:
   - Models:
     - resource_model_name: CUSTOM3D0
   - Textures:
-    - resource_texture_name: texture.jpg
+    - resource_texture_name: repeat-pattern.jpg #yellowcloth.jpg
       resource_texture_miplevels: 1
       resource_texture_cubmap: false
-      uniform_Sampler_id: 0
+      uniform_sampler_id: 0
+  - Texts:
+    - resource_text_name: NumberEnglishChinese
+      uniform_sampler_id: 1
   - Pipelines:
-    - resource_graphics_pipeline_name: pipeline
-      resource_graphics_pipeline_vertexshader_name: simpleText/shader.vert.spv
-      resource_graphics_pipeline_fragmentshader_name: simpleText/shader.frag.spv
+    - resource_graphics_pipeline_name: backgroundPipeline
+      resource_graphics_pipeline_vertexshader_name: simpleText/background.vert.spv
+      resource_graphics_pipeline_fragmentshader_name: simpleText/background.frag.spv
+    - resource_graphics_pipeline_name: textPipeline
+      resource_graphics_pipeline_vertexshader_name: simpleText/text.vert.spv
+      resource_graphics_pipeline_fragmentshader_name: simpleText/text.frag.spv
 
 Uniforms:
   - Graphics:
@@ -34,8 +51,12 @@ Uniforms:
       uniform_graphics_depth_image_sampler: false
       uniform_graphics_lightdepth_image_sampler: false
   - GraphicsTextureImageSamplers:
-    - uniform_graphics_texture_image_sampler_name: Sampler
+    - uniform_graphics_texture_image_sampler_name: TextureSampler
       uniform_graphics_texture_image_sampler_miplevel: 1
+      uniform_graphics_texture_image_sampler_uvwrepeat: [true, true, true]
+    - uniform_graphics_texture_image_sampler_name: TextSampler
+      uniform_graphics_texture_image_sampler_miplevel: 1
+      uniform_graphics_texture_image_sampler_uvwrepeat: [false, false, true]
   - Compute:
     - uniform_compute_name: Compute
       uniform_compute_custom: false
@@ -46,7 +67,7 @@ Uniforms:
 Features:
   feature_graphics_48pbt: false
   feature_graphics_push_constant: false
-  feature_graphics_blend: false
+  feature_graphics_blend: true
   feature_graphics_rainbow_mipmap: false
   feature_graphics_pipeline_skybox_id: -1
   feature_graphics_observe_attachment_id: -1
@@ -69,7 +90,7 @@ MainSceneRenderpassSubpasses: #the index is 0, 1, 2
 
 MainCamera:
   camera_mode: 0
-  camera_position: [0,0,-3]
+  camera_position: [0,0,-2.55]
   camera_rotation: [0,0,0]
   object_id_target: 0
   camera_z: [0.1, 256]

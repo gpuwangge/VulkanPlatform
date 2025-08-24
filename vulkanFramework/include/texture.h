@@ -24,7 +24,7 @@ public:
     /*******************
     *	Texture Image: Create
     ********************/
-    void CreateTextureImage();
+    void CreateTextureImage(bool useSTBI = true);
     void CreateImageView(VkImageAspectFlags aspectFlags);
     
     /*******************
@@ -93,6 +93,19 @@ public:
     ~CTextureManager();
     void CreateTextureImage(const std::string texturePath, VkImageUsageFlags usage, VkCommandPool &commandPool, 
         int miplevel, int sampler_id, VkFormat imageFormat = VK_FORMAT_R8G8B8A8_SRGB, unsigned short bitPerTexelPerChannel = 8, bool bCubemap = false);
+    void Destroy();
+};
+
+
+class CTextManager{
+public:
+    std::vector<CTextureImage> textureImages;
+    //CLogManager logManager;
+    //unsigned int textureImageCount = 0;
+    CTextManager();
+    ~CTextManager();
+    // void CreateTextureImage(const std::string texturePath, VkImageUsageFlags usage, VkCommandPool &commandPool, 
+    //     int miplevel, int sampler_id, VkFormat imageFormat = VK_FORMAT_R8G8B8A8_SRGB, unsigned short bitPerTexelPerChannel = 8, bool bCubemap = false);
     void Destroy();
 };
 

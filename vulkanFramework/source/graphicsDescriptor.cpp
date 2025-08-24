@@ -502,7 +502,7 @@ bool CGraphicsDescriptorManager::CheckMVP(){ //to check if all objects associate
 * 5 GRAPHCIS_COMBINEDIMAGESAMPLER_TEXTUREIMAGE
 ************/
 std::vector<VkSampler> CGraphicsDescriptorManager::textureImageSamplers;
-void CGraphicsDescriptorManager::addTextureImageSamplerUniformBuffer(std::vector<int> mipLevels){
+void CGraphicsDescriptorManager::addTextureImageSamplerUniformBuffer(std::vector<int> mipLevels, std::vector<std::vector<bool>> UVWRepeats){
     graphicsUniformTypes |= GRAPHCIS_COMBINEDIMAGESAMPLER_TEXTUREIMAGE;//non-static content
     //std::cout<<"addImageSamplerUniformBuffer::uniformBufferUsageFlags = " << uniformBufferUsageFlags<<std::endl;
 
@@ -516,9 +516,9 @@ void CGraphicsDescriptorManager::addTextureImageSamplerUniformBuffer(std::vector
         samplerInfo.sType = VK_STRUCTURE_TYPE_SAMPLER_CREATE_INFO;
         samplerInfo.magFilter = VK_FILTER_LINEAR;
         samplerInfo.minFilter = VK_FILTER_LINEAR;
-        samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-        samplerInfo.addressModeV = VK_SAMPLER_ADDRESS_MODE_REPEAT;
-        samplerInfo.addressModeW = VK_SAMPLER_ADDRESS_MODE_REPEAT;
+        samplerInfo.addressModeU = UVWRepeats[i][0] ? VK_SAMPLER_ADDRESS_MODE_REPEAT : VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+        samplerInfo.addressModeV = UVWRepeats[i][1] ? VK_SAMPLER_ADDRESS_MODE_REPEAT : VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
+        samplerInfo.addressModeW = UVWRepeats[i][2] ? VK_SAMPLER_ADDRESS_MODE_REPEAT : VK_SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE;
         samplerInfo.anisotropyEnable = VK_TRUE;
         samplerInfo.maxAnisotropy = properties.limits.maxSamplerAnisotropy;
         samplerInfo.borderColor = VK_BORDER_COLOR_INT_OPAQUE_BLACK;

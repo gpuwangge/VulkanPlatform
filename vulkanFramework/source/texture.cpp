@@ -71,6 +71,25 @@ void CTextureManager::Destroy(){
 
 
 /*******************
+*	Text Manager: to manage a vector of CTextureImages
+********************/
+
+CTextManager::CTextManager(){
+	//std::cout<<"CTextureManager::CTextureManager()"<<std::endl;
+	//textureImages.resize(1);
+// #ifndef ANDROID
+//     logManager.setLogFile("textureManager.log");
+// #endif	
+}
+CTextManager::~CTextManager(){
+	//std::cout<<"CTextureManager::~CTextureManager()"<<std::endl;
+}
+void CTextManager::Destroy(){
+	//std::cout<<"CTextureManager::Destroy()"<<std::endl;
+	for(int i = 0; i < textureImages.size(); i++) textureImages[i].Destroy();
+}
+
+/*******************
 *	Texture Image: Basic
 ********************/
 CTextureImage::CTextureImage(){
@@ -154,15 +173,15 @@ static unsigned short frac_float16(unsigned short fp16){
  	
 }
 
-void CTextureImage::CreateTextureImage() {
+void CTextureImage::CreateTextureImage(bool useSTBI) {
 	//texWidth/=6;//test
 	VkDeviceSize imageSize = m_texWidth * m_texHeight * m_texChannels * m_texBptpc/8; 
 // #ifndef ANDROID	
-	//std::cout<<"m_texWidth: "<<m_texWidth<<" texels"<<std::endl;
-	//std::cout<<"m_texHeight: "<<m_texHeight<<" texels"<<std::endl;
-	//std::cout<<"m_texChannels: "<<m_texChannels<<" "<<std::endl;
-	//std::cout<<"m_texBptpc: "<<m_texBptpc<<" bit per texel per channel"<<std::endl;
- 	//std::cout<<"imageSize: "<<imageSize<<" bytes"<<std::endl;
+	std::cout<<"m_texWidth: "<<m_texWidth<<" texels"<<std::endl;
+	std::cout<<"m_texHeight: "<<m_texHeight<<" texels"<<std::endl;
+	std::cout<<"m_texChannels: "<<m_texChannels<<" "<<std::endl;
+	std::cout<<"m_texBptpc: "<<m_texBptpc<<" bit per texel per channel"<<std::endl;
+ 	std::cout<<"imageSize: "<<imageSize<<" bytes"<<std::endl;
 // #else
 // 	LOGI("imageSize: %d bytes", imageSize);
 // #endif	
@@ -182,18 +201,19 @@ void CTextureImage::CreateTextureImage() {
 	}
 
 	//mipLevels = bEnableMipMap ? (static_cast<uint32_t>(std::floor(std::log2(std::max(m_texWidth, m_texHeight)))) + 1) : 1;
-	//std::cout<<"mipLevels: "<<mipLevels<<std::endl;
+	std::cout<<"m_mipLevels: "<<m_mipLevels<<std::endl;
 
 	CWxjBuffer stagingBuffer;
 	VkResult result = stagingBuffer.init(imageSize, VK_BUFFER_USAGE_TRANSFER_SRC_BIT);
 	stagingBuffer.fill(m_pTexels);
 
-	stbi_image_free(m_pTexels);
+	if(useSTBI) stbi_image_free(m_pTexels);
 
 	//Step 2: create(allocate) image buffer
-	//std::cout<<"Creating texture image..."<<std::endl;
+	std::cout<<"Creating texture imagebuffer..."<<std::endl;
 	m_textureImageBuffer.createImage(m_texWidth, m_texHeight, m_mipLevels, VK_SAMPLE_COUNT_1_BIT, m_imageFormat, VK_IMAGE_TILING_OPTIMAL, m_usage, VK_MEMORY_PROPERTY_DEVICE_LOCAL_BIT, false,
 		VK_IMAGE_LAYOUT_UNDEFINED);
+	std::cout<<"Done creating texture imagebuffer."<<std::endl;
 
 	//Step 3: copy stagingBuffer(pixels) to imageBuffer(empty)
 	//To perform the copy, need change imageBuffer's layout: undefined->transferDST->shader-read-only 

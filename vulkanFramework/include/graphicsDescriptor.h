@@ -79,7 +79,7 @@ public:
      ************/
     static unsigned int textureImageSamplerSize;
     static std::vector<VkSampler> textureImageSamplers;
-    static void addTextureImageSamplerUniformBuffer(std::vector<int> mipLevels);
+    static void addTextureImageSamplerUniformBuffer(std::vector<int> mipLevels, std::vector<std::vector<bool>> UVWRepeats);
 
     /************
      * 6 GRAPHCIS_COMBINEDIMAGESAMPLER_DEPTHIMAGE

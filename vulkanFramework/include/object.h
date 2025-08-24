@@ -14,8 +14,10 @@ class CApplication;
 class CObject : public CEntity {
     int m_object_id = 0;
     std::vector<int> m_texture_ids;
+    std::vector<int> m_text_ids;
     int m_model_id = 0;
-    
+
+    bool b_isText = false;
     bool bUseMVP_VP = false;
 
     //bool bUseTextureSampler;
@@ -27,6 +29,7 @@ class CObject : public CEntity {
     std::vector<VkDescriptorSet> *p_descriptorSets_graphics_general;
     //VkPipelineLayout *p_graphicsPipelineLayout;
     CTextureManager *p_textureManager;
+    CTextManager *p_textManager;
 
     void CreateDescriptorSets_TextureImageSampler(
         VkDescriptorPool &descriptorPool, 
@@ -54,7 +57,7 @@ public:
     void Update(float deltaTime, int currentFrame, Camera &mainCamera);
 
     bool bRegistered = false;
-    void Register(CApplication *p_app, int object_id, std::vector<int> texture_ids, int model_id, int default_graphics_pipeline_id);
+    void Register(CApplication *p_app, int object_id, std::vector<int> texture_ids, std::vector<int> text_ids, int model_id, int default_graphics_pipeline_id);
 
     bool bVisible = true;
 

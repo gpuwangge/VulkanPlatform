@@ -60,11 +60,11 @@ Resources:
     - resource_texture_name: metal.jpg
       resource_texture_miplevels: 1
       resource_texture_cubmap: false
-      uniform_Sampler_id: 0
+      uniform_sampler_id: 0
     - resource_texture_name: repeat-pattern2.jpg
       resource_texture_miplevels: 9
       resource_texture_cubmap: false
-      uniform_Sampler_id: 1
+      uniform_sampler_id: 1
   - Pipelines:
     - resource_graphics_pipeline_name: pipeline_shadowmap
       resource_graphics_pipeline_vertexshader_name: SimpleShadowMap8Shadows/shadowmap.vert.spv

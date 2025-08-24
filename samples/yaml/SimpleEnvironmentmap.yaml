@@ -95,7 +95,7 @@ Resources:
     - resource_texture_name: skybox_interstellar.jpg
       resource_texture_miplevels: 1
       resource_texture_cubmap: true
-      uniform_Sampler_id: 0
+      uniform_sampler_id: 0
   - Pipelines:
     - resource_graphics_pipeline_name: pipeline
       resource_graphics_pipeline_vertexshader_name: simpleEnvironmentmap/environmentmap.vert.spv
