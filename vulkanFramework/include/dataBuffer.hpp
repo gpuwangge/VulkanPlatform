@@ -2,6 +2,7 @@
 #define H_DATABUFFER
 #include "common.h"
 #include "context.h"
+#include <map>
 
 
 //Uniform Naming Rule: PipelineType_DescriptorType_Purpose
@@ -406,5 +407,14 @@ struct ModelPushConstants{
 struct IntPushConstants{
     int value;
 };
+
+// Struct to hold glyph texture data
+struct GlyphTexture {
+    SDL_Rect rect; // The position and size of the glyph within the texture atlas
+    int advance;   // The horizontal distance to the next glyph
+
+    float u0,v0,u1,v1;
+};
+
 
 #endif

@@ -89,6 +89,10 @@ public:
     void run();
 #endif
 
+    // Map to store glyph texture data for a font
+    std::map<char, GlyphTexture> glyphMap;
+    const std::string ascII = "!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
+
     //for static class member. But can not define and init them in the header file!
     static Camera mainCamera; 
 

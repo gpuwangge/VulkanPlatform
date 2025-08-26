@@ -46,10 +46,10 @@ void CSDLManager::createSurface(std::unique_ptr<CInstance> &instance, VkSurfaceK
     }
 }
 
-void CSDLManager::createFonts(){
+void CSDLManager::createFonts(int fontSize){
     if (TTF_Init() == -1) 
        std::cout << "SDL_ttf could not initialize! SDL_Error: " << SDL_GetError() << std::endl;
-    m_font = TTF_OpenFont("NotoSansCJK-VF.otf.ttc", 24);
+    m_font = TTF_OpenFont("NotoSansCJK-VF.otf.ttc", fontSize);
     if (!m_font) 
         std::cout << "Failed to load font! SDL_Error: " << SDL_GetError() << std::endl;
 

@@ -16,6 +16,10 @@
 // #define GLM_ENABLE_EXPERIMENTAL
 //#include <glm/gtx/hash.hpp>
 
+#include <SDL3_ttf/SDL_ttf.h>
+#include <locale>
+#include <codecvt>
+
 #include <stdio.h>
 #include <iostream>
 #include <fstream>

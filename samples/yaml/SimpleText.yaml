@@ -18,21 +18,24 @@ Objects:
     object_velocity: [0,0,0]
     object_angular_velocity: [0,0,0]
     object_skybox: false
-    resource_model_id: 0
+    resource_model_id: 1
     resource_text_id_list: [0]
     resource_default_graphics_pipeline_id: 1
 
 Resources:
+  - Texts:
+    - resource_text_name: NumberEnglishChinese
+      resource_text_color: [255, 0, 0, 255]
+      resource_text_font_size: 50
+      uniform_sampler_id: 1
   - Models:
     - resource_model_name: CUSTOM3D0
+    - resource_model_name: CUSTOM3D1
   - Textures:
     - resource_texture_name: repeat-pattern.jpg #yellowcloth.jpg
       resource_texture_miplevels: 1
       resource_texture_cubmap: false
       uniform_sampler_id: 0
-  - Texts:
-    - resource_text_name: NumberEnglishChinese
-      uniform_sampler_id: 1
   - Pipelines:
     - resource_graphics_pipeline_name: backgroundPipeline
       resource_graphics_pipeline_vertexshader_name: simpleText/background.vert.spv
