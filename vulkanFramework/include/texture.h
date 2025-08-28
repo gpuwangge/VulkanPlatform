@@ -97,13 +97,13 @@ public:
 };
 
 
-class CTextManager{
+class CTextImageManager{
 public:
     std::vector<CTextureImage> textureImages;
     //CLogManager logManager;
     //unsigned int textureImageCount = 0;
-    CTextManager();
-    ~CTextManager();
+    CTextImageManager();
+    ~CTextImageManager();
     // void CreateTextureImage(const std::string texturePath, VkImageUsageFlags usage, VkCommandPool &commandPool, 
     //     int miplevel, int sampler_id, VkFormat imageFormat = VK_FORMAT_R8G8B8A8_SRGB, unsigned short bitPerTexelPerChannel = 8, bool bCubemap = false);
     void Destroy();

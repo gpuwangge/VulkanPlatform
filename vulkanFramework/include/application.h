@@ -15,6 +15,7 @@
 #include "texture.h" //this includes imageManager.h
 #include "modelManager.h"
 #include "object.h"
+#include "textManager.h"
 #include "light.h"
 #include "timer.h"
 
@@ -70,10 +71,12 @@ public:
     CRenderer renderer;
     CModelManager modelManager;
     CTextureManager textureManager;
+    CTextImageManager textImageManager;
     CTextManager textManager;
 
     //static int focusObjectId;
     static std::vector<CObject> objects;
+    //static std::vector<CTextBox> textBoxes;
     static std::vector<CLight> lights;
 
     void CleanUp();
@@ -88,10 +91,6 @@ public:
     #endif
     void run();
 #endif
-
-    // Map to store glyph texture data for a font
-    std::map<char, GlyphTexture> glyphMap;
-    const std::string ascII = "!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
 
     //for static class member. But can not define and init them in the header file!
     static Camera mainCamera; 

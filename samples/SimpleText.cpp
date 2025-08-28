@@ -32,8 +32,8 @@ public:
 		static int count = 0;
 		static int charIndex = 0;
 		count++;
-		char ch = ascII[charIndex % ascII.size()];
-		GlyphTexture &g = glyphMap[ch];
+		char ch = textManager.ascII[charIndex % textManager.ascII.size()];
+		GlyphTexture &g = textManager.glyphMap[ch];
 		float v0 = g.v0;
 		float v1 = g.v1;
 		float u0 = g.u0;

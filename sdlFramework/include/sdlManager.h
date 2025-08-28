@@ -29,7 +29,7 @@ public:
     int m_windowWidth, m_windowHeight;
     int m_windowCenterX, m_windowCenterY;
 
-    TTF_Font* m_font;
+    //TTF_Font* m_font;
 
     bool bStillRunning = true;
     bool bKeyDown = false;
@@ -45,7 +45,7 @@ public:
     void createWindow(int &windowWidth, int &windowHeight, std::string windowTitle);
     void queryRequiredInstanceExtensions(std::vector<const char*> &requiredInstanceExtensions);
     void createSurface(std::unique_ptr<CInstance> &instance, VkSurfaceKHR &surface);
-    void createFonts(int fontSize);
+    //void createFonts(int fontSize);
 
     void eventHandle();
 };

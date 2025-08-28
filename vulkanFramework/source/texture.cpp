@@ -74,17 +74,17 @@ void CTextureManager::Destroy(){
 *	Text Manager: to manage a vector of CTextureImages
 ********************/
 
-CTextManager::CTextManager(){
+CTextImageManager::CTextImageManager(){
 	//std::cout<<"CTextureManager::CTextureManager()"<<std::endl;
 	//textureImages.resize(1);
 // #ifndef ANDROID
 //     logManager.setLogFile("textureManager.log");
 // #endif	
 }
-CTextManager::~CTextManager(){
+CTextImageManager::~CTextImageManager(){
 	//std::cout<<"CTextureManager::~CTextureManager()"<<std::endl;
 }
-void CTextManager::Destroy(){
+void CTextImageManager::Destroy(){
 	//std::cout<<"CTextureManager::Destroy()"<<std::endl;
 	for(int i = 0; i < textureImages.size(); i++) textureImages[i].Destroy();
 }

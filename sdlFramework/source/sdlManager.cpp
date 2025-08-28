@@ -46,6 +46,7 @@ void CSDLManager::createSurface(std::unique_ptr<CInstance> &instance, VkSurfaceK
     }
 }
 
+/*
 void CSDLManager::createFonts(int fontSize){
     if (TTF_Init() == -1) 
        std::cout << "SDL_ttf could not initialize! SDL_Error: " << SDL_GetError() << std::endl;
@@ -65,18 +66,18 @@ void CSDLManager::createFonts(int fontSize){
     // int pitch = textSurface->pitch;
 
 
-    /* these code render the textSurface into the screen. Will conflict with Vulkan renderer. So don't use this
-    SDL_Renderer* renderer = SDL_CreateRenderer(window, NULL);
-    SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
-    SDL_FRect textRect = {20, 20, textSurface->w, textSurface->h};
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-    SDL_RenderClear(renderer);
-    SDL_RenderTexture(renderer, textTexture, NULL, &textRect);
-    SDL_RenderPresent(renderer);
-    TTF_CloseFont(m_font);
-    TTF_Quit();
-    */
-}
+    // these code render the textSurface into the screen. Will conflict with Vulkan renderer. So don't use this
+    // SDL_Renderer* renderer = SDL_CreateRenderer(window, NULL);
+    // SDL_Texture* textTexture = SDL_CreateTextureFromSurface(renderer, textSurface);
+    // SDL_FRect textRect = {20, 20, textSurface->w, textSurface->h};
+    // SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+    // SDL_RenderClear(renderer);
+    // SDL_RenderTexture(renderer, textTexture, NULL, &textRect);
+    // SDL_RenderPresent(renderer);
+    // TTF_CloseFont(m_font);
+    // TTF_Quit();
+    
+}*/
 
 void CSDLManager::eventHandle(){
     int ref_diff_x = 0, ref_diff_y = 0;  
