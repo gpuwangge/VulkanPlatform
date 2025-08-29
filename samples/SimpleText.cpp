@@ -29,6 +29,7 @@ public:
 	}
 
 	void update(){
+		/*
 		static int count = 0;
 		static int charIndex = 0;
 		count++;
@@ -47,13 +48,16 @@ public:
 
 		renderer.vertexDataBuffers[1].fill(modelManager.customModels3D[1].vertices.data());
 
-		if(count % 500 == 0) charIndex++;
+		if(count % 300 == 0) charIndex++;
+		*/
+	
 		CApplication::update();
 	}
 
 	void recordGraphicsCommandBuffer_renderpassMainscene(){
 		//objects[0].Draw();
 		for(int i = 0; i < objects.size(); i++) objects[i].Draw();
+		//textManager.Draw();
 	}	
 };
 

@@ -13,12 +13,12 @@ class CApplication;
 * TextBox
 *******************/
 
-class CTextBox : public CEntity {
-    std::string m_text = "";
-public:
-    CTextBox();
-    void SetText(std::string text){m_text = text;}
-};
+// class CTextBox : public CObject {
+//     std::string m_text = "";
+// public:
+//     CTextBox();
+//     void SetText(std::string text){m_text = text;}
+// };
 
 /******************
 * TextManager
@@ -27,8 +27,10 @@ public:
 class CTextManager {
     int m_samplerID = 0;
     glm::vec4 m_color = glm::vec4(255.0f);
-
+    
 public:
+    //std::vector<CTextBox> m_textBoxes;
+
     CRenderer *p_renderer;
     CTextImageManager *p_textImageManager;
     CModelManager *p_modelManager;
@@ -48,21 +50,18 @@ public:
     int m_fontSize = 20;
     void CreateTextFonts();
 
-    //void Initialize();
-    //void Update();
-    //void Render();
-
     void CreateTextImage();
-
     void CreateTextModel();
 
-    void AddTextBox(const CTextBox& textBox);
+    //void AddTextBox(const CTextBox& textBox);
     //void RemoveTextBox(const CTextBox& textBox);
 
     void CreateGlyphMap();
 
-private:
-    std::vector<CTextBox> m_textBoxes;
+    //void Initialize();
+    //void Update(float deltaTime, int currentFrame, Camera &mainCamera);
+    //void Draw();
+
 };
 
 #endif

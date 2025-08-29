@@ -178,7 +178,7 @@ void CApplication::initialize(){
             int object_id = obj["object_id"] ? obj["object_id"].as<int>() : 0;
             max_object_id = (object_id > max_object_id) ? object_id : max_object_id;
         }
-        objects.resize(((max_object_id+1) < config["Objects"].size())?(max_object_id+1):config["Objects"].size()); 
+        objects.resize(((max_object_id+1) < config["Objects"].size()) ? (max_object_id+1) : config["Objects"].size()); 
         std::cout<<"Object Size: "<<objects.size()<<std::endl;
     }
     if (config["Lights"]) {
@@ -402,6 +402,7 @@ void CApplication::update(){
     //lightCamera[1].update(deltaTime);
 
     for(int i = 0; i < objects.size(); i++) objects[i].Update(deltaTime, renderer.currentFrame, mainCamera); 
+    //textManager.Update(deltaTime, renderer.currentFrame, mainCamera);
     for(int i = 0; i < lights.size(); i++) lights[i].Update(deltaTime, renderer.currentFrame, mainCamera, lightCameras[i]);
 
     /*Calcuate FPS*/
@@ -753,17 +754,20 @@ void CApplication::ReadResources(){
                 textManager.p_modelManager = &modelManager;
                 textManager.CreateTextImage();
 
-                CTextBox textBox;
-                textBox.SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
-                textBox.SetText(name);
-                textManager.AddTextBox(textBox);
-                
+                // CTextBox textBox;
+                // textBox.SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+                // textBox.SetText(name);
+
                 // textBox.Register((CApplication*)this, //TODO
-                // 0, 
-                // std::vector<int>(),
-                // std::vector<int>(1, 0), 
-                // 1, 
-                // 1);
+                //     0, 
+                //     std::vector<int>(),
+                //     std::vector<int>(1, 0), 
+                //     1, 
+                //     1);
+
+                //textManager.AddTextBox(textBox);
+                
+  
                 
                 std::cout<<"text image created"<<std::endl;
 
@@ -795,6 +799,13 @@ void CApplication::ReadResources(){
                     modelManager.modelLengths.push_back(modelManager.customModels3D[1].length);
                     modelManager.modelLengthsMin.push_back(modelManager.customModels3D[1].lengthMin);
                     modelManager.modelLengthsMax.push_back(modelManager.customModels3D[1].lengthMax);
+                // }else if(name == "CUSTOM3D2"){
+                //     renderer.CreateVertexBuffer<Vertex3D>(modelManager.customModels3D[2].vertices); 
+                //     renderer.CreateIndexBuffer(modelManager.customModels3D[2].indices);
+
+                //     modelManager.modelLengths.push_back(modelManager.customModels3D[2].length);
+                //     modelManager.modelLengthsMin.push_back(modelManager.customModels3D[2].lengthMin);
+                //     modelManager.modelLengthsMax.push_back(modelManager.customModels3D[2].lengthMax);
                 }else if(name == "CUSTOM2D0"){
                     appInfo.VertexBufferType = VertexStructureTypes::TwoDimension;
                     renderer.CreateVertexBuffer<Vertex2D>(modelManager.customModels2D[0].vertices); 
@@ -1181,8 +1192,8 @@ void CApplication::ReadRegisterObjects(){
             bool isText = false;
             if(obj["resource_text_id_list"]) isText = true;
             int resource_default_graphics_pipeline_id = obj["resource_default_graphics_pipeline_id"] ? obj["resource_default_graphics_pipeline_id"].as<int>() : 0;
-            //int resource_graphics_pipeline_id1 = obj["resource_graphics_pipeline_id1"] ? obj["resource_graphics_pipeline_id1"].as<int>() : 0;
-            //int resource_graphics_pipeline_id2 = obj["resource_graphics_pipeline_id2"] ? obj["resource_graphics_pipeline_id2"].as<int>() : 0;
+
+
             //must load resources before object register
             objects[object_id].Register((CApplication*)this, 
                 object_id, 
@@ -1215,9 +1226,19 @@ void CApplication::ReadRegisterObjects(){
             objects[object_id].bSkybox = isSkybox;
             //if(graphics_pipeline_id == appInfo.Feature.GraphicsPipelineSkyboxID)  objectList[i].bSkybox = true;
 
+            std::string textContent = obj["object_text_content"] ? obj["object_text_content"].as<std::string>() : "";
+            objects[object_id].SetText(textContent);
+
             std::cout<<"ObjectId:("<<object_id<<") Name:("<<objects[object_id].Name<<") Length:("<<objects[object_id].Length.x<<","<<objects[object_id].Length.y<<","<<objects[object_id].Length.z<<")"
                 <<" Position:("<<objects[object_id].Position.x<<","<<objects[object_id].Position.y<<","<<objects[object_id].Position.z<<")"<<std::endl;
         }
+        // textManager.m_textBoxes[0].Register((CApplication*)this, //TODO
+        //     objects.size() - 1, 
+        //     std::vector<int>(),
+        //     std::vector<int>(1, 0), 
+        //     1, 
+        //     1);
+
         for(int i = 0; i < objects.size(); i++)
             if(!objects[i].bRegistered) std::cout<<"WARNING: Object id("<<i<<") is not registered!"<<std::endl;
     }

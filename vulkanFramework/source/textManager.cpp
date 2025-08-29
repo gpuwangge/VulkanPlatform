@@ -4,7 +4,7 @@
 /******************
 * TextBox
 *******************/
-CTextBox::CTextBox(){}
+//CTextBox::CTextBox(){}
 
 
 /******************
@@ -114,7 +114,7 @@ void CTextManager::CreateGlyphMap(){
 }
 
 void CTextManager::CreateTextModel(){
-    std::vector<Vertex3D> textQuadVertices;
+    
     int w = 51;
     int h = 73;
     float aspect = (float)w / (float)h; // 31/73 ≈ 0.4247
@@ -131,7 +131,6 @@ void CTextManager::CreateTextModel(){
     // float y_min = -0.5f;
     // float y_max =  0.5f;
 
-    
     char ch = 'w';
     GlyphTexture &g = glyphMap[ch];
     float v0 = g.v0;
@@ -139,20 +138,35 @@ void CTextManager::CreateTextModel(){
     float u0 = g.u0;
     float u1 = g.u1;
 
+    std::vector<uint32_t> indices3D = { 0, 1, 2, 2, 3, 0};
+
+    //for(int i = 0; i < 2; i++){
+    std::vector<Vertex3D> textQuadVertices;
     textQuadVertices.push_back({ {x_min, y_min, 0.0f}, {1,0,0}, {u1, v0} }); // left bottom
     textQuadVertices.push_back({ {x_max, y_min, 0.0f}, {1,0,0}, {u0, v0} }); // right bottom
     textQuadVertices.push_back({ {x_max, y_max, 0.0f}, {1,0,0}, {u0, v1} }); // right up
     textQuadVertices.push_back({ {x_min, y_max, 0.0f}, {1,0,0}, {u1, v1} }); // left up
-
-    std::vector<uint32_t> indices3D = { 0, 1, 2, 2, 3, 0};
     p_modelManager->CreateCustomModel3D(textQuadVertices, indices3D); //model for text
+    //}
 
     std::cout<<"text quad model created"<<std::endl;
 }
 
-void CTextManager::AddTextBox(const CTextBox& textBox) {
-    m_textBoxes.push_back(textBox);
-}
+// void CTextManager::AddTextBox(const CTextBox& textBox) {
+//     m_textBoxes.push_back(textBox);
+// }
+
+// void CTextManager::Update(float deltaTime, int currentFrame, Camera &mainCamera){
+//     for (int i = 0; i < m_textBoxes.size(); i++) {
+//         m_textBoxes[i].Update(deltaTime, currentFrame, mainCamera);
+//     }
+// }
+
+// void CTextManager::Draw(){
+//      for (int i = 0; i < m_textBoxes.size(); i++) {
+//         m_textBoxes[i].Draw();
+//      }
+// }
 
 
 

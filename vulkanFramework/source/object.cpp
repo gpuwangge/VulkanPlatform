@@ -246,37 +246,11 @@ void CObject::Register(CApplication *p_app, int object_id, std::vector<int> text
 void CObject::Draw(int graphicsPipelineId, uint32_t n){
     if(!bRegistered || !bVisible) return;
 
-    //std::cout<<"CObject::Draw, renderPassType="<<renderPassType<<", n="<<n<<std::endl;
-
-    // int graphicsPipelineId = m_graphics_pipeline_id_mainscene;
-    // switch(renderPassType){
-    //     case RenderPassTypes::MAINSCENE:
-    //         graphicsPipelineId = m_graphics_pipeline_id_mainscene;
-    //         break;
-    //     case RenderPassTypes::MAINSCENE2:
-    //         graphicsPipelineId = m_graphics_pipeline_id_mainscene2;
-    //         break;
-    //     case RenderPassTypes::SHADOWMAP:
-    //         graphicsPipelineId = m_graphics_pipeline_id_shadowmap;
-    //         break;
-    //     default:
-    //         graphicsPipelineId = m_graphics_pipeline_id_mainscene; //default to mainscene
-    // }
-
     int current_graphics_pipeline_id = (graphicsPipelineId == -1) ? m_default_graphics_pipeline_id : graphicsPipelineId;
 
     VkPipelineLayout *p_graphicsPipelineLayout = &(p_renderProcess->graphicsPipelineLayouts[current_graphics_pipeline_id]);
     p_renderer->BindPipeline(p_renderProcess->graphicsPipelines[current_graphics_pipeline_id], VK_PIPELINE_BIND_POINT_GRAPHICS, p_renderer->graphicsCmdId);
 
-    //if(bSetDepthbias){
-        //std::cout<<"Set DepthBias for object:"<<m_object_id<<", graphicsPipelineId:"<<current_graphics_pipeline_id<<std::endl;
-        //vkCmdSetDepthBias( p_renderer->commandBuffers[ p_renderer->graphicsCmdId][ p_renderer->currentFrame], 1.25f, 0.0f, 1.75f);
-       // vkCmdSetDepthBias( p_renderer->commandBuffers[ p_renderer->graphicsCmdId][ p_renderer->currentFrame], 1.25f-0.49f, 0.0f, 1.75f);
-        //vkCmdSetDepthBias( p_renderer->commandBuffers[ p_renderer->graphicsCmdId][ p_renderer->currentFrame], 180.0f, 0.0f, 40.0f);
-    //}
-
-    //std::cout<<"test2. p_graphicsDescriptorSets->size()="<<p_graphicsDescriptorSets->size()<<std::endl;
-    //std::cout<<"test2. m_texture_ids.size()="<<m_texture_ids.size()<<std::endl;
 
     std::vector<std::vector<VkDescriptorSet>> dsSets; 
     //set = 0 is for general uniform; set = 1 is for texture sampler uniform
@@ -302,7 +276,7 @@ void CObject::Draw(int graphicsPipelineId, uint32_t n){
         p_renderer->BindIndexBuffer(m_model_id);
         p_renderer->DrawIndexed(m_model_id);
     }
-   //std::cout<<"test6."<<std::endl;
+
 }
 
 

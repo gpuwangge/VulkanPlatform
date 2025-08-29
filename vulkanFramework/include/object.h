@@ -18,6 +18,9 @@ class CObject : public CEntity {
     int m_model_id = 0;
 
     bool b_isText = false;
+    std::string m_text = ""; //not used yet
+
+
     bool bUseMVP_VP = false;
 
     //These will be used when recording draw cmd
@@ -52,6 +55,8 @@ public:
     int GetObjectID(){return m_object_id;}
     std::vector<int> GetTextureID(){return m_texture_ids;}
     int GetModelID(){return m_model_id;}
+
+    void SetText(const std::string& text) { m_text = text; }
 
     bool bUpdate = true;
     void Update(float deltaTime, int currentFrame, Camera &mainCamera);
