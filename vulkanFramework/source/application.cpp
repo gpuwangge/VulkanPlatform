@@ -754,22 +754,11 @@ void CApplication::ReadResources(){
                 textManager.p_modelManager = &modelManager;
                 textManager.CreateTextImage();
 
-                // CTextBox textBox;
-                // textBox.SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
-                // textBox.SetText(name);
-
-                // textBox.Register((CApplication*)this, //TODO
-                //     0, 
-                //     std::vector<int>(),
-                //     std::vector<int>(1, 0), 
-                //     1, 
-                //     1);
-
-                //textManager.AddTextBox(textBox);
+                
                 
   
                 
-                std::cout<<"text image created"<<std::endl;
+                //std::cout<<"text image created"<<std::endl;
 
                 textManager.CreateGlyphMap();
 
@@ -1002,7 +991,7 @@ void CApplication::ReadSubpasses(){
 
 void CApplication::CreateUniformDescriptors(bool b_uniform_graphics, bool b_uniform_compute){
     //UNIFORM STEP 1/3 (Pool)
-    CGraphicsDescriptorManager::createDescriptorPool(objects.size()); 
+    CGraphicsDescriptorManager::createDescriptorPool(objects.size()+2);//TODO: hack, need add textbox char size 
     CComputeDescriptorManager::createDescriptorPool(); 
 
     //UNIFORM STEP 2/3 (Layer)
@@ -1238,6 +1227,21 @@ void CApplication::ReadRegisterObjects(){
         //     std::vector<int>(1, 0), 
         //     1, 
         //     1);
+
+        //hack
+        CTextBox textBox;
+        textBox.SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
+        textBox.SetText("nameabc");
+        textBox.m_characters.resize(2);
+
+        // textBox.Register((CApplication*)this, //TODO
+        //     0, 
+        //     std::vector<int>(),
+        //     std::vector<int>(1, 0), 
+        //     1, 
+        //     1);
+        if(textManager.p_renderer) textBox.Register((CApplication*)this);
+        textManager.AddTextBox(textBox);
 
         for(int i = 0; i < objects.size(); i++)
             if(!objects[i].bRegistered) std::cout<<"WARNING: Object id("<<i<<") is not registered!"<<std::endl;

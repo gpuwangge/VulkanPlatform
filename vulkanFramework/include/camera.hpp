@@ -60,7 +60,6 @@ public:
 
 	void setOrthographic(float left, float right, float bottom, float top, float znear, float zfar){
 		matrices.projection = glm::ortho(left, right, bottom, top, znear, zfar);
-		//matrices.perspective = glm::ortho(-4.0f, 4.0f, -4.0f, 4.0f, -6.0f, -1.5f);//hack
 		
 		// std::cout<<"matrices.perspective="<<std::endl;
 		// std::cout<<matrices.perspective[0][0]<<","<<matrices.perspective[0][1]<<","<<matrices.perspective[0][2]<<","<<matrices.perspective[0][3]<<std::endl;
@@ -93,82 +92,8 @@ public:
 
 		CEntity::Update(deltaTime); //update TranslateMatrix RotationMatrix ScaleMatrix
 
-		//hack
-		/*
-		if(bEnableOrthographic){
-			// DirectionFront = glm::vec3(0,1,0);
-
-			// std::cout<<"Position="<<Position.x<<","<<Position.y<<","<<Position.z<<std::endl;
-			// std::cout<<"DirectionFront="<<DirectionFront.x<<","<<DirectionFront.y<<","<<DirectionFront.z<<std::endl;
-			// std::cout<<"DirectionUp="<<DirectionUp.x<<","<<DirectionUp.y<<","<<DirectionUp.z<<std::endl;
-
-			matrices.view = glm::lookAt(Position, Position + DirectionFront, DirectionUp);
-
-			//glm::vec3 lightPosition = glm::vec3(0.0f, 3.0f, 0.0f);
-			//glm::vec3 lightTarget = glm::vec3(0.0f, 2.0f, 0.0f);
-			//matrices.view = glm::lookAt(lightPosition, lightTarget, glm::vec3(0, 0, 1));
-		}else{
-			matrices.view = glm::lookAt(Position, Position + DirectionFront, DirectionUp);
-		}
-		*/
-
-		//hack
-		//if(bEnableOrthographic){
-			//DirectionUp = glm::vec3(1.0f, 0.0f, 0.0f); //TODO: remove this hack
-			//DirectionUp = glm::vec3(0.0f, 0.0f, -1.0f); //TODO: remove this hack
-		//}
-
 		glm::vec3 Target = Position + DirectionFront;
 		matrices.view = glm::lookAt(Position, Target, DirectionUp);
-
-		//print for debug
-		// if(bEnableOrthographic){
-		// 	std::cout<<"Position="<<Position.x<<","<<Position.y<<","<<Position.z<<std::endl;
-		// 	std::cout<<"Target="<<Target.x<<","<<Target.y<<","<<Target.z<<std::endl;
-		// 	std::cout<<"DirectionUp="<<DirectionUp.x<<","<<DirectionUp.y<<","<<DirectionUp.z<<std::endl;
-		// }
-
-
-
-		//legacy code
-		//if(cameraType == CameraType::FREE){ //FREE mode will focus on a place that is in front of the camera
-			// glm::vec3 cameraPos = Position;
-			// glm::vec3 cameraFront = DirectionFront;
-			// glm::vec3 cameraUp = DirectionUp;
-			// matrices.view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
-		//}
-		// else if(cameraType == CameraType::LOCK){//LOCK: target position will be set to a object
-		// 	glm::vec3 cameraPos = Position;
-		// 	glm::vec3 cameraUp = DirectionUp;
-		// 	matrices.view = glm::lookAt(cameraPos, TargetPosition, cameraUp);
-		// }
-
-		//matrices.view = TranslateMatrix * RotationMatrix;
-		//matrices.view =  RotationMatrix * TranslateMatrix;
-
-		//static unsigned count = 0;
-		//if(count % 3000 == 0){
-		//	std::cout<<"Camera Position="<<Position.x<<","<<Position.y<<","<<Position.z<<std::endl;
-			//std::cout<<"Camera Rotation="<<Rotation.x<<","<<Rotation.y<<","<<Rotation.z<<std::endl;
-		//}
-		//count++;
-
-		//std::cout<<"DirectionFront="<<DirectionFront.x<<","<<DirectionFront.y<<","<<DirectionFront.z<<std::endl;
-		//std::cout<<"DirectionLeft="<<DirectionLeft.x<<","<<DirectionLeft.y<<","<<DirectionLeft.z<<std::endl;
-		//std::cout<<"DirectionUp="<<DirectionUp.x<<","<<DirectionUp.y<<","<<DirectionUp.z<<std::endl;
-
-		//std::cout<<"Velocity="<<Velocity.x<<","<<Velocity.y<<","<<Velocity.z<<std::endl;
-
-		//glm::vec3 r = DirectionLeft * TempVelocity[LEFT].x;
-		//std::cout<<"r="<<r.x<<","<<r.y<<","<<r.z<<std::endl;
-		//std::cout<<"TempVelocity[LEFT].w="<<TempVelocity[LEFT].w<<std::endl;
-
-		
-		//glm::vec3 r;
-		//r.x = RotationMatrix[0][0] * Position[0] +  RotationMatrix[0][1] * Position[1] +  RotationMatrix[0][2] * Position[2]; 
-		//r.y = RotationMatrix[1][0] * Position[0] +  RotationMatrix[1][1] * Position[1] +  RotationMatrix[1][2] * Position[2]; 
-		//r.z = RotationMatrix[2][0] * Position[0] +  RotationMatrix[2][1] * Position[1] +  RotationMatrix[2][2] * Position[2]; 
-		//std::cout<<"r="<<r.x<<","<<r.y<<","<<r.z<<std::endl;
 
 	};
 

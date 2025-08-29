@@ -9,16 +9,46 @@
 //We want application to include object.h instead
 class CApplication;
 
+
+/*************
+* Character
+**************/
+
+class CCharacter{
+public:
+    CRenderer *p_renderer;
+    CRenderProcess *p_renderProcess;
+    std::vector<VkDescriptorSet> *p_descriptorSets_graphics_general;
+    std::vector<VkDescriptorSet> descriptorSets_graphics_texture_image_sampler;
+    CTextImageManager *p_textImageManager;
+
+    CCharacter(){}
+    ~CCharacter(){}
+
+    void CreateDescriptorSets_TextureImageSampler(VkDescriptorPool &descriptorPool, VkDescriptorSetLayout &descriptorSetLayout, std::vector<VkSampler> &samplers, std::vector<VkImageView> *swapchainImageViews = NULL);
+
+    void Draw();
+};
+
 /******************
 * TextBox
 *******************/
 
-// class CTextBox : public CObject {
-//     std::string m_text = "";
-// public:
-//     CTextBox();
-//     void SetText(std::string text){m_text = text;}
-// };
+class CTextBox : public CEntity {
+    std::string m_text = "";
+
+public:
+    std::vector<CCharacter> m_characters;
+
+    CTextBox(){}
+    void SetText(std::string text){m_text = text;}
+    void Register(CApplication *p_app);
+    void Draw(){ 
+        for(auto& ch : m_characters){ 
+            ch.Draw(); 
+        }
+    }
+};
 
 /******************
 * TextManager
@@ -29,11 +59,11 @@ class CTextManager {
     glm::vec4 m_color = glm::vec4(255.0f);
     
 public:
-    //std::vector<CTextBox> m_textBoxes;
+    std::vector<CTextBox> m_textBoxes;
 
-    CRenderer *p_renderer;
-    CTextImageManager *p_textImageManager;
-    CModelManager *p_modelManager;
+    CRenderer *p_renderer = NULL;
+    CTextImageManager *p_textImageManager = NULL;
+    CModelManager *p_modelManager = NULL;
 
     const std::string ascII = "!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
     // Map to store glyph texture data for a font
@@ -53,14 +83,14 @@ public:
     void CreateTextImage();
     void CreateTextModel();
 
-    //void AddTextBox(const CTextBox& textBox);
+    void AddTextBox(const CTextBox& textBox){ m_textBoxes.push_back(textBox); }
     //void RemoveTextBox(const CTextBox& textBox);
 
     void CreateGlyphMap();
 
     //void Initialize();
     //void Update(float deltaTime, int currentFrame, Camera &mainCamera);
-    //void Draw();
+    void Draw(){for(auto& textBox : m_textBoxes){textBox.Draw();}};
 
 };
 

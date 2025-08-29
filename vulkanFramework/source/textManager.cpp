@@ -1,11 +1,133 @@
 #include "../include/textManager.h"
 #include "../include/application.h"
 
+/*************
+* Character
+**************/
+
+void CCharacter::CreateDescriptorSets_TextureImageSampler(VkDescriptorPool &descriptorPool, VkDescriptorSetLayout &descriptorSetLayout, std::vector<VkSampler> &samplers, std::vector<VkImageView> *swapchainImageViews){
+    //std::cout<<"TextureDescriptor::createDescriptorSets."<<std::endl;
+    if(samplers.size() < 1) return;
+    
+    int descriptorSize = samplers.size();//getDescriptorSize();
+    //std::cout<<"createTextureDescriptorSets::samplers.size(): "<<samplers.size()<<std::endl;
+    //std::cout<<"Object Set(Sampler) size = "<<descriptorSize<<std::endl;
+
+    VkResult result = VK_SUCCESS;
+
+    std::vector<VkDescriptorSetLayout> layouts(MAX_FRAMES_IN_FLIGHT, descriptorSetLayout);///!!!
+    VkDescriptorSetAllocateInfo allocInfo{};
+    allocInfo.sType = VK_STRUCTURE_TYPE_DESCRIPTOR_SET_ALLOCATE_INFO;
+    allocInfo.descriptorPool = descriptorPool;
+    allocInfo.descriptorSetCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);///!!!
+    allocInfo.pSetLayouts = layouts.data();
+
+    descriptorSets_graphics_texture_image_sampler.resize(MAX_FRAMES_IN_FLIGHT);///!!!
+    //Step 3
+    result = vkAllocateDescriptorSets(CContext::GetHandle().GetLogicalDevice(), &allocInfo, descriptorSets_graphics_texture_image_sampler.data());
+    if (result != VK_SUCCESS) throw std::runtime_error("failed to allocate descriptor sets!");
+
+    for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+        std::vector<VkWriteDescriptorSet> descriptorWrites;
+
+        descriptorWrites.resize(descriptorSize);
+        //int counter = 0;
+
+        VkDescriptorBufferInfo customBufferInfo{}; //for custom uniform
+
+        std::vector<VkDescriptorImageInfo> imageInfo{}; //for texture sampler
+        //if(uniformBufferUsageFlags & UNIFORM_BUFFER_SAMPLER_BIT){
+        imageInfo.resize(samplers.size());
+        for(int j = 0; j < samplers.size(); j++){
+            //std::cout<<"CreateTextureDescriptorSets::samplers:"<<j<<std::endl;
+            imageInfo[j].imageLayout = VK_IMAGE_LAYOUT_GENERAL; //test compute storage image: ?need figure this out. VK_IMAGE_LAYOUT_GENERAL, VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
+            //imageInfo[j].imageView = textureImages[j].m_textureImageBuffer.view;
+            //imageInfo[j].sampler = samplers[j];
+
+            //if(b_isText){
+                //if(j < m_text_ids.size()){
+                    imageInfo[j].imageView = p_textImageManager->textureImages[0].m_textureImageBuffer.view; //hack, m_text_ids[j]
+                    imageInfo[j].sampler = samplers[p_textImageManager->textureImages[0].m_sampler_id]; 
+                //}else{ //There are more samplers than textures for this object, so use the first texture to fill other samplers
+                //    imageInfo[j].imageView = p_textImageManager->textureImages[m_text_ids[0]].m_textureImageBuffer.view;
+                //    imageInfo[j].sampler = samplers[p_textImageManager->textureImages[m_text_ids[0]].m_sampler_id]; 
+                //}
+            // }else{
+            //     if(j < m_texture_ids.size()){
+            //         imageInfo[j].imageView = p_textureManager->textureImages[m_texture_ids[j]].m_textureImageBuffer.view;
+            //         imageInfo[j].sampler = samplers[p_textureManager->textureImages[m_texture_ids[j]].m_sampler_id]; 
+            //     }else{ //There are more samplers than textures for this object, so use the first texture to fill other samplers
+            //         imageInfo[j].imageView = p_textureManager->textureImages[m_texture_ids[0]].m_textureImageBuffer.view;
+            //         imageInfo[j].sampler = samplers[p_textureManager->textureImages[m_texture_ids[0]].m_sampler_id]; 
+            //     }
+            // }
+
+
+            descriptorWrites[j].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+            descriptorWrites[j].dstSet = descriptorSets_graphics_texture_image_sampler[i];
+            descriptorWrites[j].dstBinding = j;
+            descriptorWrites[j].dstArrayElement = 0;
+            descriptorWrites[j].descriptorType = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
+            descriptorWrites[j].descriptorCount = 1;
+            descriptorWrites[j].pImageInfo = &imageInfo[j];
+            //counter++;
+        }
+        //}
+
+        //Step 4
+        vkUpdateDescriptorSets(CContext::GetHandle().GetLogicalDevice(), static_cast<uint32_t>(descriptorWrites.size()), descriptorWrites.data(), 0, nullptr);
+    }
+
+    //std::cout<<"Done set descriptor. "<<std::endl;
+}
+
+void CCharacter::Draw(){
+    //std::cout<<"Draw character"<<std::endl;
+
+    int current_graphics_pipeline_id = 1;//hack, (graphicsPipelineId == -1) ? m_default_graphics_pipeline_id : graphicsPipelineId;
+
+    VkPipelineLayout *p_graphicsPipelineLayout = &(p_renderProcess->graphicsPipelineLayouts[current_graphics_pipeline_id]);
+    p_renderer->BindPipeline(p_renderProcess->graphicsPipelines[current_graphics_pipeline_id], VK_PIPELINE_BIND_POINT_GRAPHICS, p_renderer->graphicsCmdId);
+
+    std::vector<std::vector<VkDescriptorSet>> dsSets; 
+    //set = 0 is for general uniform; set = 1 is for texture sampler uniform
+    if(CGraphicsDescriptorManager::getSetSize_General() > 0) dsSets.push_back(*p_descriptorSets_graphics_general); 
+    if(CGraphicsDescriptorManager::textureImageSamplers.size() > 0) dsSets.push_back(descriptorSets_graphics_texture_image_sampler); 
+
+    bool bUseMVP_VP = true; //hack
+    int m_object_id = 0;//hack
+    if(dsSets.size() > 0){
+        int dynamicOffsetIndex = -1; //-1 means not use dynamic offset (no MVP/VP used)
+        if(bUseMVP_VP) dynamicOffsetIndex = m_object_id; //assume descriptor uniform(MVP/VP) offset is m_id
+        p_renderer->BindGraphicsDescriptorSets(*p_graphicsPipelineLayout, dsSets, dynamicOffsetIndex);
+    }
+
+    int m_model_id = 1;//hack
+    p_renderer->BindVertexBuffer(m_model_id);
+    p_renderer->BindIndexBuffer(m_model_id);
+    p_renderer->DrawIndexed(m_model_id);
+
+}
+
+
 /******************
 * TextBox
 *******************/
 //CTextBox::CTextBox(){}
-
+void CTextBox::Register(CApplication *p_app){
+    for(auto& ch : m_characters){
+        ch.p_renderer = &(p_app->renderer);
+        ch.p_renderProcess = &(p_app->renderProcess);
+        ch.p_descriptorSets_graphics_general = &(p_app->graphicsDescriptorManager.descriptorSets_general);
+        //ch.descriptorSets_graphics_texture_image_sampler;
+        ch.p_textImageManager = &(p_app->textImageManager);
+        ch.CreateDescriptorSets_TextureImageSampler(
+            CGraphicsDescriptorManager::graphicsDescriptorPool,
+            CGraphicsDescriptorManager::descriptorSetLayout_textureImageSampler,
+            CGraphicsDescriptorManager::textureImageSamplers
+        );
+    }
+}
 
 /******************
 * TextManager
@@ -149,7 +271,7 @@ void CTextManager::CreateTextModel(){
     p_modelManager->CreateCustomModel3D(textQuadVertices, indices3D); //model for text
     //}
 
-    std::cout<<"text quad model created"<<std::endl;
+    //std::cout<<"text quad model created"<<std::endl;
 }
 
 // void CTextManager::AddTextBox(const CTextBox& textBox) {
