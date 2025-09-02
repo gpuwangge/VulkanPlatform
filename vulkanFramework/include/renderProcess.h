@@ -148,12 +148,12 @@ public:
     //this function is for samples that are NOT using vertex shader
     void createGraphicsPipeline(VkPrimitiveTopology topology, VkShaderModule &vertShaderModule, VkShaderModule &fragShaderModule, int graphcisPipeline_id, 
         int subpass_id, bool bEnableDepthBias, VkRenderPass renderPass){
-        createGraphicsPipeline<DummyVertex>(topology, vertShaderModule, fragShaderModule, false, graphcisPipeline_id, subpass_id, bEnableDepthBias, renderPass); //DummyVertex doesn't really matter here, because no vertex attributes used
+        createGraphicsPipeline<DummyVertex>(topology, vertShaderModule, fragShaderModule, false, false, graphcisPipeline_id, subpass_id, bEnableDepthBias, renderPass); //DummyVertex doesn't really matter here, because no vertex attributes used
     }
 
     //this function is for samples that are  using vertex shader
     template <typename T>
-    void createGraphicsPipeline(VkPrimitiveTopology topology, VkShaderModule &vertShaderModule, VkShaderModule &fragShaderModule, bool bUseVertexBuffer, 
+    void createGraphicsPipeline(VkPrimitiveTopology topology, VkShaderModule &vertShaderModule, VkShaderModule &fragShaderModule, bool bUseVertexBuffer, bool bUseInstanceBuffer,
         int graphcisPipeline_id, int subpass_id, bool bEnableDepthBias, VkRenderPass renderPass){
         //HERE_I_AM("CreateGraphicsPipeline");
         bCreateGraphicsPipeline = true;
@@ -185,7 +185,26 @@ public:
         VkPipelineVertexInputStateCreateInfo vertexInputInfo{};
         auto bindingDescription = T::getBindingDescription();
         auto attributeDescriptions = T::getAttributeDescriptions();
-        if(bUseVertexBuffer){     
+
+        if(bUseInstanceBuffer){
+            //Combine two bindings
+            auto bindingDescriptions = std::array{
+                TextQuadVertex::getBindingDescription(),
+                TextInstanceData::getBindingDescription()
+            };
+            auto vertexAttributes = TextQuadVertex::getAttributeDescriptions();
+            auto instanceAttributes = TextInstanceData::getAttributeDescriptions();
+            std::vector<VkVertexInputAttributeDescription> attributeDescriptions;
+            attributeDescriptions.insert(attributeDescriptions.end(), vertexAttributes.begin(), vertexAttributes.end());
+            attributeDescriptions.insert(attributeDescriptions.end(), instanceAttributes.begin(), instanceAttributes.end());
+
+            //vertexInputInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_VERTEX_INPUT_STATE_CREATE_INFO;
+            vertexInputInfo.vertexBindingDescriptionCount = static_cast<uint32_t>(bindingDescriptions.size());
+            vertexInputInfo.pVertexBindingDescriptions = bindingDescriptions.data();
+            vertexInputInfo.vertexAttributeDescriptionCount = static_cast<uint32_t>(attributeDescriptions.size());
+            vertexInputInfo.pVertexAttributeDescriptions = attributeDescriptions.data();
+
+        }else if(bUseVertexBuffer){     
             //NTODO: particle and vertex3d
             // if (pt == PIPELINE_COMPUTE) {
             // 	auto bindingDescription = Particle::getBindingDescription();

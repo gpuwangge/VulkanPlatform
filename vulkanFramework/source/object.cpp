@@ -186,15 +186,15 @@ void CObject::Register(CApplication *p_app, int object_id, std::vector<int> text
     //m_graphics_pipeline_id2 = graphics_pipeline_id2; 
     bUseMVP_VP = CGraphicsDescriptorManager::CheckMVP();
 
-    if(p_app->appInfo.VertexBufferType == VertexStructureTypes::TwoDimension || p_app->appInfo.VertexBufferType == VertexStructureTypes::ThreeDimension){
-        Length_original = p_app->modelManager.modelLengths[model_id];
-        LengthMin_original = p_app->modelManager.modelLengthsMin[model_id];
-        LengthMax_original = p_app->modelManager.modelLengthsMax[model_id];
-    }else{
-        Length_original = glm::vec3();
-        LengthMin_original = glm::vec3();
-        LengthMax_original = glm::vec3();        
-    }
+    //if(p_app->appInfo.VertexBufferType == VertexStructureTypes::TwoDimension || p_app->appInfo.VertexBufferType == VertexStructureTypes::ThreeDimension){
+    Length_original = p_app->modelManager.modelLengths.size() > model_id ? p_app->modelManager.modelLengths[model_id] : glm::vec3();
+    LengthMin_original = p_app->modelManager.modelLengthsMin.size() > model_id ? p_app->modelManager.modelLengthsMin[model_id] : glm::vec3();
+    LengthMax_original = p_app->modelManager.modelLengthsMax.size() > model_id ? p_app->modelManager.modelLengthsMax[model_id] : glm::vec3();
+    // }else{ 
+    //     Length_original = glm::vec3(); //put to initialization
+    //     LengthMin_original = glm::vec3();
+    //     LengthMax_original = glm::vec3();        
+    // }
     Length = Length_original;
     //std::cout<<"Length = "<<Length.x<<", "<<Length.y<<", "<<Length.z<<std::endl;
     //std::cout<<"LengthMin = "<<LengthMin.x<<", "<<LengthMin.y<<", "<<LengthMin.z<<std::endl;

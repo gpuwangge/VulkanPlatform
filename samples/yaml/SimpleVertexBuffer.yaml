@@ -9,6 +9,7 @@ Resources:
     - resource_graphics_pipeline_name: pipeline
       resource_graphics_pipeline_vertexshader_name: simpleVertexBuffer/shader.vert.spv
       resource_graphics_pipeline_fragmentshader_name: simpleVertexBuffer/shader.frag.spv
+      resource_graphics_pipeline_vertexdatatype: 1  #NoType,TwoDimension,ThreeDimension,ParticleType,TextQuad
 
 Features:
   feature_graphics_48pbt: false

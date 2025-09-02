@@ -77,14 +77,15 @@ enum VertexStructureTypes{
     NoType,
     TwoDimension,
     ThreeDimension,
-    ParticleType
+    ParticleType,
+    TextQuad
 };
 
 
 struct Vertex3D {
-	glm::vec3 pos;
-	glm::vec3 color;
-	glm::vec2 texCoord;
+    glm::vec3 pos;
+    glm::vec3 color;
+    glm::vec2 texCoord;
     glm::vec3 normal;
 
 	static VkVertexInputBindingDescription getBindingDescription() {
@@ -133,6 +134,72 @@ struct Vertex3D {
 // 		}
 // 	};
 // }
+
+struct TextQuadVertex {
+    glm::vec2 pos;
+    glm::vec2 uv;
+
+    static VkVertexInputBindingDescription getBindingDescription() {
+		VkVertexInputBindingDescription bindingDescription{};
+		bindingDescription.binding = 0; 
+		bindingDescription.stride = sizeof(TextQuadVertex);
+		bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_VERTEX;
+
+		return bindingDescription;
+	}
+
+	static std::array<VkVertexInputAttributeDescription, 2> getAttributeDescriptions() {
+		std::array<VkVertexInputAttributeDescription, 2> attributeDescriptions{};
+
+		attributeDescriptions[0].binding = 0;
+		attributeDescriptions[0].location = 0;
+		attributeDescriptions[0].format = VK_FORMAT_R32G32_SFLOAT;
+		attributeDescriptions[0].offset = offsetof(TextQuadVertex, pos);
+
+		attributeDescriptions[1].binding = 0;
+		attributeDescriptions[1].location = 1;
+		attributeDescriptions[1].format = VK_FORMAT_R32G32_SFLOAT;
+		attributeDescriptions[1].offset = offsetof(TextQuadVertex, uv);
+		return attributeDescriptions;
+	}
+
+	bool operator==(const TextQuadVertex& other) const {
+		return pos == other.pos && uv == other.uv;
+	}    
+};
+
+struct TextInstanceData{
+    glm::vec2 offset;
+    glm::vec3 color;
+
+    static VkVertexInputBindingDescription getBindingDescription() {
+		VkVertexInputBindingDescription bindingDescription{};
+		bindingDescription.binding = 1; 
+		bindingDescription.stride = sizeof(TextInstanceData);
+		bindingDescription.inputRate = VK_VERTEX_INPUT_RATE_INSTANCE;
+
+		return bindingDescription;
+	}
+
+	static std::array<VkVertexInputAttributeDescription, 2> getAttributeDescriptions() {
+		std::array<VkVertexInputAttributeDescription, 2> attributeDescriptions{};
+
+		attributeDescriptions[0].binding = 1; //here use 1 instead of 0, because binding0 is for per vertex data; binding1 is for per instance data
+		attributeDescriptions[0].location = 2;
+		attributeDescriptions[0].format = VK_FORMAT_R32G32_SFLOAT;
+		attributeDescriptions[0].offset = offsetof(TextInstanceData, offset);
+
+		attributeDescriptions[1].binding = 1;
+		attributeDescriptions[1].location = 3;
+		attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
+		attributeDescriptions[1].offset = offsetof(TextInstanceData, color);
+		return attributeDescriptions;
+	}
+
+	bool operator==(const TextInstanceData& other) const {
+		return offset == other.offset && color == other.color;
+	}    
+};
 
 namespace std {
 	//Custom hash function operator() for Vertex3D

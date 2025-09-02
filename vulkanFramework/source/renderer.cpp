@@ -34,6 +34,19 @@ void CRenderer::CreateIndexBuffer(std::vector<uint32_t> &indices3D){
     indices3Ds.push_back(indices3D);
 }
 
+void CRenderer::CreateInstanceBuffer(std::vector<TextInstanceData> &instanceData){
+    CWxjBuffer instanceDataBuffer;
+
+    VkDeviceSize bufferSize = sizeof(instanceData[0]) * instanceData.size();
+
+    VkResult result = instanceDataBuffer.init(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
+
+    instanceDataBuffer.fill((void *)(instanceData.data()));
+
+    instanceDataBuffers.push_back(instanceDataBuffer);
+}
+
+
 /**************************
  * 
  * Command Buffer Functions
@@ -486,9 +499,17 @@ void CRenderer::SetScissor(VkExtent2D &extent){
 void CRenderer::BindVertexBuffer(int objectId){
     //std::cout<<"objectId="<<objectId<<", vertexDataBuffers.size()="<<vertexDataBuffers.size()<<std::endl;
     if(vertexDataBuffers.size() <= 0) return;
-	VkBuffer vertexBuffers[] = {vertexDataBuffers[objectId].buffer };
+	VkBuffer vertexBuffers[] = {vertexDataBuffers[objectId].buffer};
 	VkDeviceSize offsets[] = { 0 };
 	vkCmdBindVertexBuffers(commandBuffers[graphicsCmdId][currentFrame], 0, 1, vertexBuffers, offsets);
+}
+void CRenderer::BindVertexInstanceBuffer(int objectId){
+    //std::cout<<"objectId="<<objectId<<", vertexDataBuffers.size()="<<vertexDataBuffers.size()<<", instanceDataBuffers.size()="<<instanceDataBuffers.size()<<std::endl;
+    if(vertexDataBuffers.size() <= 0) return;
+	VkBuffer vertexBuffers[] = {vertexDataBuffers[objectId].buffer, instanceDataBuffers[0].buffer}; //TODO: hack using index=0
+	//std::cout<<"BindVertexInstanceBuffer: objectId="<<objectId<<", vertexDataBuffers.size()="<<vertexDataBuffers.size()<<", instanceBuffers.size()="<<instanceDataBuffers.size()<<std::endl;
+    VkDeviceSize offsets[] = { 0, 0 };
+	vkCmdBindVertexBuffers(commandBuffers[graphicsCmdId][currentFrame], 0, 2, vertexBuffers, offsets); //vertexBuffers here contains both vertex and instance buffer
 }
 void CRenderer::BindIndexBuffer(int objectId){
 	vkCmdBindIndexBuffer(commandBuffers[graphicsCmdId][currentFrame], indexDataBuffers[objectId].buffer, 0, VK_INDEX_TYPE_UINT32);
@@ -555,6 +576,9 @@ void CRenderer::DrawIndexed(int model_id){
 }
 void CRenderer::Draw(uint32_t n){
 	vkCmdDraw(commandBuffers[graphicsCmdId][currentFrame], n, 1, 0, 0);
+}
+void CRenderer::DrawInstanceIndexed(int model_id, int instanceCount){
+    vkCmdDrawIndexed(commandBuffers[graphicsCmdId][currentFrame], static_cast<uint32_t>(indices3Ds[model_id].size()), instanceCount, 0, 0, 0);
 }
 void CRenderer::EndRenderPass(){
 	vkCmdEndRenderPass(commandBuffers[graphicsCmdId][currentFrame]);
@@ -709,12 +733,10 @@ void CRenderer::Dispatch(int numWorkGroupsX, int numWorkGroupsY, int numWorkGrou
  * ***********************/
 
 void CRenderer::Destroy(){
-    int size = vertexDataBuffers.size();
-    for(size_t i = 0; i < size; i++)  vertexDataBuffers[i].DestroyAndFree();
+    for(size_t i = 0; i < vertexDataBuffers.size(); i++)  vertexDataBuffers[i].DestroyAndFree();
+    for(size_t i = 0; i < indexDataBuffers.size(); i++) indexDataBuffers[i].DestroyAndFree();
+    for(size_t i = 0; i < instanceDataBuffers.size(); i++) instanceDataBuffers[i].DestroyAndFree();
 
-    size = indexDataBuffers.size();
-    for(size_t i = 0; i < size; i++) indexDataBuffers[i].DestroyAndFree();
-   
     for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
         vkDestroySemaphore(CContext::GetHandle().GetLogicalDevice(), renderFinishedSemaphores[i], nullptr);
         vkDestroySemaphore(CContext::GetHandle().GetLogicalDevice(), imageAvailableSemaphores[i], nullptr);

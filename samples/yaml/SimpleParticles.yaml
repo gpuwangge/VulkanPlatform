@@ -7,6 +7,7 @@ Resources:
     - resource_graphics_pipeline_name: pipeline
       resource_graphics_pipeline_vertexshader_name: simpleParticles/shader.vert.spv
       resource_graphics_pipeline_fragmentshader_name: simpleParticles/shader.frag.spv
+      resource_graphics_pipeline_vertexdatatype: 3  #NoType,TwoDimension,ThreeDimension,ParticleType,TextQuad
   - ComputeShaders:
     - resource_computeshader_name: simpleParticles/shader.comp.spv
 

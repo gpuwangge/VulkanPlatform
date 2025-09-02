@@ -84,7 +84,7 @@ void CCharacter::CreateDescriptorSets_TextureImageSampler(VkDescriptorPool &desc
 void CCharacter::Draw(){
     //std::cout<<"Draw character"<<std::endl;
 
-    int current_graphics_pipeline_id = 1;//hack, (graphicsPipelineId == -1) ? m_default_graphics_pipeline_id : graphicsPipelineId;
+    int current_graphics_pipeline_id = 2;//hack, (graphicsPipelineId == -1) ? m_default_graphics_pipeline_id : graphicsPipelineId;
 
     VkPipelineLayout *p_graphicsPipelineLayout = &(p_renderProcess->graphicsPipelineLayouts[current_graphics_pipeline_id]);
     p_renderer->BindPipeline(p_renderProcess->graphicsPipelines[current_graphics_pipeline_id], VK_PIPELINE_BIND_POINT_GRAPHICS, p_renderer->graphicsCmdId);
@@ -95,17 +95,21 @@ void CCharacter::Draw(){
     if(CGraphicsDescriptorManager::textureImageSamplers.size() > 0) dsSets.push_back(descriptorSets_graphics_texture_image_sampler); 
 
     bool bUseMVP_VP = true; //hack
-    int m_object_id = 0;//hack
+    int m_object_id = 2;//hack
     if(dsSets.size() > 0){
         int dynamicOffsetIndex = -1; //-1 means not use dynamic offset (no MVP/VP used)
         if(bUseMVP_VP) dynamicOffsetIndex = m_object_id; //assume descriptor uniform(MVP/VP) offset is m_id
         p_renderer->BindGraphicsDescriptorSets(*p_graphicsPipelineLayout, dsSets, dynamicOffsetIndex);
     }
 
-    int m_model_id = 1;//hack
-    p_renderer->BindVertexBuffer(m_model_id);
+    int m_model_id = 2;//hack
+    // p_renderer->BindVertexBuffer(m_model_id);
+    // p_renderer->BindIndexBuffer(m_model_id);
+    // p_renderer->DrawIndexed(m_model_id);
+    //p_renderer->BindVertexBuffer(m_model_id);
+    p_renderer->BindVertexInstanceBuffer(m_model_id);
     p_renderer->BindIndexBuffer(m_model_id);
-    p_renderer->DrawIndexed(m_model_id);
+    p_renderer->DrawInstanceIndexed(m_model_id, m_instanceCount);
 
 }
 
@@ -114,8 +118,16 @@ void CCharacter::Draw(){
 * TextBox
 *******************/
 //CTextBox::CTextBox(){}
-void CTextBox::Register(CApplication *p_app){
+//CApplication *p_app, int object_id, std::vector<int> texture_ids, std::vector<int> text_ids, int model_id, int default_graphics_pipeline_id
+void CTextBox::Register(CApplication *p_app, int textbox_id, std::vector<int> text_ids, std::string content){
+    bRegistered = true;
+
+    m_characters.resize(1);//TODO: change later
+
+    m_instanceCount = p_app->textManager.GetInstanceCount();
+
     for(auto& ch : m_characters){
+        ch.SetInstanceCount(m_instanceCount);
         ch.p_renderer = &(p_app->renderer);
         ch.p_renderProcess = &(p_app->renderProcess);
         ch.p_descriptorSets_graphics_general = &(p_app->graphicsDescriptorManager.descriptorSets_general);
@@ -235,23 +247,20 @@ void CTextManager::CreateGlyphMap(){
     }
 }
 
-void CTextManager::CreateTextModel(){
+/*There are two resources: quad pos/uv and instance offset/color*/
+void CTextManager::CreateTextResource(){
     
     int w = 51;
     int h = 73;
     float aspect = (float)w / (float)h; // 31/73 ≈ 0.4247
 
-    float half_h = 0.15f;         // 高度固定 1.0（y=-0.5~0.5）
-    float half_w = half_h * aspect; // 宽度按比例缩放
+    float half_h = 0.15f;         // height fixed to 1.0（y=-0.5~0.5）
+    float half_w = half_h * aspect; // width scaled proportionally
 
-    float x_min = -half_w;
-    float x_max =  half_w;
-    float y_min = -half_h;
-    float y_max =  half_h;
-    // float x_min = -0.5f;
-    // float x_max =  0.5f;
-    // float y_min = -0.5f;
-    // float y_max =  0.5f;
+    float x_min = -half_w; //-0.5f;
+    float x_max =  half_w; //0.5f;
+    float y_min = -half_h; //-0.5f;
+    float y_max =  half_h; //0.5f;
 
     char ch = 'w';
     GlyphTexture &g = glyphMap[ch];
@@ -262,15 +271,31 @@ void CTextManager::CreateTextModel(){
 
     std::vector<uint32_t> indices3D = { 0, 1, 2, 2, 3, 0};
 
-    //for(int i = 0; i < 2; i++){
     std::vector<Vertex3D> textQuadVertices;
     textQuadVertices.push_back({ {x_min, y_min, 0.0f}, {1,0,0}, {u1, v0} }); // left bottom
     textQuadVertices.push_back({ {x_max, y_min, 0.0f}, {1,0,0}, {u0, v0} }); // right bottom
     textQuadVertices.push_back({ {x_max, y_max, 0.0f}, {1,0,0}, {u0, v1} }); // right up
     textQuadVertices.push_back({ {x_min, y_max, 0.0f}, {1,0,0}, {u1, v1} }); // left up
     p_modelManager->CreateCustomModel3D(textQuadVertices, indices3D); //model for text
-    //}
 
+
+    std::vector<TextQuadVertex> textQuadVertices2D;
+    textQuadVertices2D.push_back({ {x_min, y_min}, {u1, v0} }); // left bottom
+    textQuadVertices2D.push_back({ {x_max, y_min}, {u0, v0} }); // right bottom
+    textQuadVertices2D.push_back({ {x_max, y_max}, {u0, v1} }); // right up
+    textQuadVertices2D.push_back({ {x_min, y_max}, {u1, v1} }); // left up
+
+    std::vector<TextInstanceData> textInstanceData;
+    textInstanceData.push_back({ {0.0f, 0.0f}, {1.0f, 0.0f, 0.0f} }); // red
+    textInstanceData.push_back({ {0.5f, 0.0f}, {0.0f, 1.0f, 0.0f} }); // green
+    textInstanceData.push_back({ {0.0f, 0.5f}, {0.0f, 0.0f, 1.0f} }); // blue
+    textInstanceData.push_back({ {0.5f, 0.5f}, {1.0f, 0.0f, 1.0f} });
+
+    p_modelManager->CreateTextModel(textQuadVertices2D, textInstanceData, indices3D);
+    std::cout<<"text model created in modelManager.textModel, size = "<<p_modelManager->textModels.size()<<std::endl;
+
+
+    m_instanceCount = textInstanceData.size();
     //std::cout<<"text quad model created"<<std::endl;
 }
 

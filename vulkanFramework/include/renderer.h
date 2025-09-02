@@ -58,6 +58,7 @@ public:
     void SetViewport(VkExtent2D &extent);
     void SetScissor(VkExtent2D &extent);
     void BindVertexBuffer(int objectId);
+    void BindVertexInstanceBuffer(int objectId);
     void BindIndexBuffer(int objectId);
     void BindExternalBuffer(std::vector<CWxjBuffer> &buffer);
     void BindDescriptorSets(VkPipelineLayout &pipelineLayout, std::vector<std::vector<VkDescriptorSet>> &descriptorSets, VkPipelineBindPoint pipelineBindPoint, uint32_t commandBufferIndex, uint32_t dynamicOffsetCount);
@@ -71,6 +72,7 @@ public:
     }
     void DrawIndexed(int model_id);//std::vector<uint32_t> &indices3D
     void Draw(uint32_t n);
+    void DrawInstanceIndexed(int model_id, int instanceCount);
 
     //End()
     void EndRenderPass();
@@ -119,6 +121,7 @@ public:
         vertexDataBuffers.push_back(vertexDataBuffer);
     }
     void CreateIndexBuffer(std::vector<uint32_t> &indices3D);
+    void CreateInstanceBuffer(std::vector<TextInstanceData> &instanceData);
 
     int graphicsCmdId;
     int computeCmdId;
@@ -136,7 +139,8 @@ public:
     void Update(); //update currentFrame
 
     std::vector<CWxjBuffer> vertexDataBuffers;  //each buffer object is for one model object, the index in this vector is object.id
-	std::vector<CWxjBuffer> indexDataBuffers; 
+	std::vector<CWxjBuffer> indexDataBuffers;
+    std::vector<CWxjBuffer> instanceDataBuffers;
     std::vector<std::vector<uint32_t>> indices3Ds;
     std::vector<std::vector<VkCommandBuffer>> commandBuffers;  //commandBuffers[Size][MAX_FRAMES_IN_FLIGHT or currentFrame]
     VkCommandPool commandPool;

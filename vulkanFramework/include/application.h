@@ -142,6 +142,7 @@ public:
     void CreateUniformDescriptors(bool b_uniform_graphics, bool b_uniform_compute);
     void CreatePipelines();
     void ReadRegisterObjects();
+    void ReadRegisterTextboxes();
     void ReadLightings();
     void ReadCameras();
     void Dispatch(int numWorkGroupsX, int numWorkGroupsY, int numWorkGroupsZ);  
@@ -203,9 +204,10 @@ public:
         //std::unique_ptr<std::vector<bool>> EnableDepthBias;
         std::unique_ptr<std::vector<bool>> RenderPassShadowmap;
         std::unique_ptr<std::vector<int>> Subpass;
+        std::unique_ptr<std::vector<int>> VertexDatatype;
         std::unique_ptr<std::vector<std::string>> ComputeShader;
         CRenderer::RenderModes RenderMode = CRenderer::GRAPHICS;
-        VertexStructureTypes VertexBufferType = (VertexStructureTypes)NULL;
+        //VertexStructureTypes VertexBufferType = (VertexStructureTypes)NULL;
     }appInfo;
 };
 

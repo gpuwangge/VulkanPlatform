@@ -15,12 +15,15 @@ class CApplication;
 **************/
 
 class CCharacter{
+    int m_instanceCount = 0;
 public:
     CRenderer *p_renderer;
     CRenderProcess *p_renderProcess;
     std::vector<VkDescriptorSet> *p_descriptorSets_graphics_general;
     std::vector<VkDescriptorSet> descriptorSets_graphics_texture_image_sampler;
     CTextImageManager *p_textImageManager;
+
+    void SetInstanceCount(int count) { m_instanceCount = count; }
 
     CCharacter(){}
     ~CCharacter(){}
@@ -36,13 +39,19 @@ public:
 
 class CTextBox : public CEntity {
     std::string m_text = "";
-
+    int m_instanceCount = 0;
 public:
+    bool bRegistered = false;
+    glm::vec4 m_boxColor = glm::vec4(255.0f);
+    glm::vec4 m_textColor = glm::vec4(0.0f);
     std::vector<CCharacter> m_characters;
+
 
     CTextBox(){}
     void SetText(std::string text){m_text = text;}
-    void Register(CApplication *p_app);
+    void SetBoxColor(glm::vec4 color){m_boxColor = color;}
+    void SetTextColor(glm::vec4 color){m_textColor = color;}
+    void Register(CApplication *p_app, int textbox_id, std::vector<int> text_ids, std::string content);
     void Draw(){ 
         for(auto& ch : m_characters){ 
             ch.Draw(); 
@@ -56,6 +65,7 @@ public:
 
 class CTextManager {
     int m_samplerID = 0;
+    int m_instanceCount = 0;
     glm::vec4 m_color = glm::vec4(255.0f);
     
 public:
@@ -76,14 +86,16 @@ public:
     void SetSamplerID(int samplerID){m_samplerID = samplerID;}
     void SetColor(glm::vec4 color){m_color = color;}
 
+    int GetInstanceCount() const { return m_instanceCount; }
+
     TTF_Font* m_font = nullptr;
     int m_fontSize = 20;
     void CreateTextFonts();
 
     void CreateTextImage();
-    void CreateTextModel();
+    void CreateTextResource();
 
-    void AddTextBox(const CTextBox& textBox){ m_textBoxes.push_back(textBox); }
+    //void AddTextBox(const CTextBox& textBox){ m_textBoxes.push_back(textBox); }
     //void RemoveTextBox(const CTextBox& textBox);
 
     void CreateGlyphMap();

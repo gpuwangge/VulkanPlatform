@@ -9,7 +9,6 @@
  #endif
 
 class CModelManager final{
-
 public:
     CModelManager();
     ~CModelManager();
@@ -35,6 +34,15 @@ public:
     };
     std::vector<CCustomModel2D> customModels2D; //use custom 2d id
     void CreateCustomModel2D(std::vector<Vertex2D> &vertices2D);
+
+    class CTextModel{
+    public:
+        std::vector<TextQuadVertex> vertices;
+        std::vector<TextInstanceData> instanceData;
+        std::vector<uint32_t> indices;
+    };
+    std::vector<CTextModel> textModels;
+    void CreateTextModel(std::vector<TextQuadVertex> &vertices, std::vector<TextInstanceData> &instanceData, std::vector<uint32_t> &indices);
 
     std::vector<glm::vec3> modelLengths; //use global model id
     std::vector<glm::vec3> modelLengthsMax;

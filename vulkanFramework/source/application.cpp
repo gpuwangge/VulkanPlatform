@@ -181,6 +181,16 @@ void CApplication::initialize(){
         objects.resize(((max_object_id+1) < config["Objects"].size()) ? (max_object_id+1) : config["Objects"].size()); 
         std::cout<<"Object Size: "<<objects.size()<<std::endl;
     }
+    if (config["Textboxes"]) {
+        int max_textbox_id = 0;
+        for (const auto& tb : config["Textboxes"]) {
+            int textbox_id = tb["textbox_id"] ? tb["textbox_id"].as<int>() : 0;
+            max_textbox_id = (textbox_id > max_textbox_id) ? textbox_id : max_textbox_id;
+            max_textbox_id = (textbox_id > max_textbox_id) ? textbox_id : max_textbox_id;
+        }
+        textManager.m_textBoxes.resize(((max_textbox_id+1) < config["Textboxes"].size()) ? (max_textbox_id+1) : config["Textboxes"].size());
+        std::cout<<"Textbox Size: "<<textManager.m_textBoxes.size()<<std::endl;
+    }
     if (config["Lights"]) {
         int max_light_d = 0;
         for (const auto& light : config["Lights"]) {
@@ -321,14 +331,25 @@ void CApplication::initialize(){
     }
 
     /****************************
-    * 8 Read Lightings
+    * 8 Read and Register Textboxes
     ****************************/
-    ReadLightings();
+    ReadRegisterTextboxes();
 
     TimePoint T10 = now();
     if(bVerboseInitialization){
-        printElapsed("Application: Initialize time for reading lightings", T9, T10);
+        printElapsed("Application: Initialize time for reading register textboxes", T9, T10);
         //printElapsed("Application: Total initialize elapsed time", T0, T10);
+    }
+
+    /****************************
+    * 9 Read Lightings
+    ****************************/
+    ReadLightings();
+
+    TimePoint T11 = now();
+    if(bVerboseInitialization){
+        printElapsed("Application: Initialize time for reading lightings", T10, T11);
+        //printElapsed("Application: Total initialize elapsed time", T0, T11);
     }
     
     /****************************
@@ -336,10 +357,10 @@ void CApplication::initialize(){
     ****************************/
     ReadCameras();
 
-    TimePoint T11 = now();
+    TimePoint T12 = now();
     if(bVerboseInitialization){
-        printElapsed("Application: Initialize time for reading cameras", T10, T11);
-        //printElapsed("Application: Total initialize elapsed time", T0, T11);
+        printElapsed("Application: Initialize time for reading cameras", T11, T12);
+        //printElapsed("Application: Total initialize elapsed time", T0, T12);
     }
 
     /****************************
@@ -348,9 +369,9 @@ void CApplication::initialize(){
     renderer.CreateSyncObjects(swapchain.swapchainImageSize);
     shaderManager.Destroy();
 
-    TimePoint T12 = now();
+    TimePoint T13 = now();
     if(bVerboseInitialization){
-        printElapsed("Application: Initialize time for creating sync objects and destroy shaders", T11, T12);
+        printElapsed("Application: Initialize time for creating sync objects and destroy shaders", T12, T13);
         //printElapsed("Application: Total initialize elapsed time", T0, T12);
     }
 
@@ -753,16 +774,12 @@ void CApplication::ReadResources(){
                 textManager.p_textImageManager = &textImageManager;
                 textManager.p_modelManager = &modelManager;
                 textManager.CreateTextImage();
-
-                
-                
-  
                 
                 //std::cout<<"text image created"<<std::endl;
 
                 textManager.CreateGlyphMap();
 
-                textManager.CreateTextModel();
+                textManager.CreateTextResource();
             }
         }
 
@@ -773,37 +790,44 @@ void CApplication::ReadResources(){
                 //id is not really useful here, because the model id must be in order
                 int id = model["resource_model_id"] ? model["resource_model_id"].as<int>() : 0;
 
-                appInfo.VertexBufferType = VertexStructureTypes::ThreeDimension;
+                //appInfo.VertexBufferType = VertexStructureTypes::ThreeDimension;
                 if(name == "CUSTOM3D0"){
-                    renderer.CreateVertexBuffer<Vertex3D>(modelManager.customModels3D[0].vertices); 
+                    renderer.CreateVertexBuffer<Vertex3D>(modelManager.customModels3D[0].vertices);
                     renderer.CreateIndexBuffer(modelManager.customModels3D[0].indices);
                     
                     modelManager.modelLengths.push_back(modelManager.customModels3D[0].length);
                     modelManager.modelLengthsMin.push_back(modelManager.customModels3D[0].lengthMin);
                     modelManager.modelLengthsMax.push_back(modelManager.customModels3D[0].lengthMax);
                 }else if(name == "CUSTOM3D1"){
-                    renderer.CreateVertexBuffer<Vertex3D>(modelManager.customModels3D[1].vertices); 
+                    renderer.CreateVertexBuffer<Vertex3D>(modelManager.customModels3D[1].vertices);
                     renderer.CreateIndexBuffer(modelManager.customModels3D[1].indices);
 
                     modelManager.modelLengths.push_back(modelManager.customModels3D[1].length);
                     modelManager.modelLengthsMin.push_back(modelManager.customModels3D[1].lengthMin);
                     modelManager.modelLengthsMax.push_back(modelManager.customModels3D[1].lengthMax);
-                // }else if(name == "CUSTOM3D2"){
-                //     renderer.CreateVertexBuffer<Vertex3D>(modelManager.customModels3D[2].vertices); 
-                //     renderer.CreateIndexBuffer(modelManager.customModels3D[2].indices);
+                }else if(name == "CUSTOM3D2"){ //TODO: vertexBuffer and indexBuffer has the same index# of CUSTOM3D#, but instance buffer is 0
+                    //appInfo.VertexBufferType = VertexStructureTypes::TextQuad;
+                    //std::cout<<"Application: Load CUSTOM3D2"<<std::endl;
+                    renderer.CreateVertexBuffer<TextQuadVertex>(modelManager.textModels[0].vertices);
+                    renderer.CreateInstanceBuffer(modelManager.textModels[0].instanceData);
+                    renderer.CreateIndexBuffer(modelManager.textModels[0].indices);
 
-                //     modelManager.modelLengths.push_back(modelManager.customModels3D[2].length);
-                //     modelManager.modelLengthsMin.push_back(modelManager.customModels3D[2].lengthMin);
-                //     modelManager.modelLengthsMax.push_back(modelManager.customModels3D[2].lengthMax);
+                    //std::cout<<"Application: Created VertexBuffer, size = "<<renderer.vertexDataBuffers.size()<<std::endl;
+                    //std::cout<<"Application: Created InstanceBuffer, size = "<<renderer.instanceDataBuffers.size()<<std::endl;
+                    //std::cout<<"Application: Created IndexBuffer, size = "<<renderer.indexDataBuffers.size()<<std::endl;
+
+                    modelManager.modelLengths.push_back(modelManager.customModels3D[1].length);
+                    modelManager.modelLengthsMin.push_back(modelManager.customModels3D[1].lengthMin);
+                    modelManager.modelLengthsMax.push_back(modelManager.customModels3D[1].lengthMax);
                 }else if(name == "CUSTOM2D0"){
-                    appInfo.VertexBufferType = VertexStructureTypes::TwoDimension;
+                    //appInfo.VertexBufferType = VertexStructureTypes::TwoDimension;
                     renderer.CreateVertexBuffer<Vertex2D>(modelManager.customModels2D[0].vertices); 
 
                     modelManager.modelLengths.push_back(modelManager.customModels2D[0].length);
                     modelManager.modelLengthsMin.push_back(modelManager.customModels2D[0].lengthMin);
                     modelManager.modelLengthsMax.push_back(modelManager.customModels2D[0].lengthMax);
                 }else{
-                    appInfo.VertexBufferType = VertexStructureTypes::ThreeDimension;
+                    //appInfo.VertexBufferType = VertexStructureTypes::ThreeDimension;
                     std::vector<Vertex3D> modelVertices3D;
                     std::vector<uint32_t> modelIndices3D;
                     modelManager.LoadObjModel(name, modelVertices3D, modelIndices3D);
@@ -812,6 +836,8 @@ void CApplication::ReadResources(){
                 }
             }
         }
+
+        //std::cout<<"Application: Total Texture Images before creating new ones: "<<textureManager.textureImages.size()<<std::endl;
 
         if (resource["Textures"]) {
             //texture id is allocated by engine, instead of user, in order
@@ -853,16 +879,21 @@ void CApplication::ReadResources(){
             }
         }
 
+        //std::cout<<"Application: Total Texture Images after creating new ones: "<<textureManager.textureImages.size()<<std::endl;
+
         //shaders id is allocated by engine, not user, in order
         if (resource["Pipelines"]) {
+            //Must initialize smart pointers, otherwise will crash
             appInfo.VertexShader =  std::make_unique<std::vector<std::string>>(std::vector<std::string>());
             appInfo.FragmentShader =  std::make_unique<std::vector<std::string>>(std::vector<std::string>());
             //appInfo.EnableSamplerCountOne =  std::make_unique<std::vector<bool>>(std::vector<bool>());
             //appInfo.EnableDepthBias =  std::make_unique<std::vector<bool>>(std::vector<bool>());
             appInfo.RenderPassShadowmap = std::make_unique<std::vector<bool>>(std::vector<bool>());
             appInfo.Subpass =  std::make_unique<std::vector<int>>(std::vector<int>());
+            appInfo.VertexDatatype = std::make_unique<std::vector<int>>(std::vector<int>());
 
             for (const auto& pipeline : resource["Pipelines"]) {
+                //std::cout<<"Application: Read Pipeline."<<std::endl;
                 std::string name = pipeline["resource_graphics_pipeline_name"].as<std::string>();
                 std::string vertexShaderName = pipeline["resource_graphics_pipeline_vertexshader_name"].as<std::string>();
                 std::string fragmentShaderName = pipeline["resource_graphics_pipeline_fragmentshader_name"].as<std::string>();
@@ -870,6 +901,7 @@ void CApplication::ReadResources(){
                 //bool bEnableDepthBias = pipeline["resource_graphics_pipeline_enable_depth_bias"] ? pipeline["resource_graphics_pipeline_enable_depth_bias"].as<bool>() : false;
                 bool bRenderPassShadowmap = pipeline["renderpasses_shadowmap"] ? pipeline["renderpasses_shadowmap"].as<bool>() : false;
                 int subpassId = pipeline["subpasses_subpass_id"] ? pipeline["subpasses_subpass_id"].as<int>() : 0;
+                int vertexDatatype = pipeline["resource_graphics_pipeline_vertexdatatype"] ? pipeline["resource_graphics_pipeline_vertexdatatype"].as<int>() : 2; //2 is normal 3d vertex
 
                 //std::cout<<"Pipeline Name: "<<name<<std::endl;
                 appInfo.VertexShader->push_back(vertexShaderName);
@@ -878,6 +910,7 @@ void CApplication::ReadResources(){
                // appInfo.EnableDepthBias->push_back(bEnableDepthBias);
                 appInfo.RenderPassShadowmap->push_back(bRenderPassShadowmap);
                 appInfo.Subpass->push_back(subpassId);
+                appInfo.VertexDatatype->push_back(vertexDatatype);
             }
 
             // if (resource["VertexShaders"]) {
@@ -1025,14 +1058,14 @@ void CApplication::CreateUniformDescriptors(bool b_uniform_graphics, bool b_unif
 }
 
 void CApplication::CreatePipelines(){
-    bool bVerbose = false;
+    bool bPipelineVerbose = false;
 
     /****************************
     * Command Buffer
     ****************************/
     if(appInfo.VertexShader != NULL) renderer.CreateGraphicsCommandBuffer();
     if(appInfo.ComputeShader != NULL) renderer.CreateComputeCommandBuffer();
-    if(bVerbose) std::cout<<"CreatePipeline: Done Command Buffer"<<std::endl;
+    if(bPipelineVerbose) std::cout<<"CreatePipeline: Done Command Buffer"<<std::endl;
 
     /****************************
     * Frame Buffer (legacy)
@@ -1069,7 +1102,7 @@ void CApplication::CreatePipelines(){
     if(appInfo.ComputeShader != NULL)
         for(int i = 0; i < appInfo.ComputeShader->size(); i++)
             shaderManager.CreateShader((*appInfo.ComputeShader)[i], shaderManager.COMP);
-    if(bVerbose) std::cout<<"CreatePipeline: Done Create Shaders"<<std::endl;
+    if(bPipelineVerbose) std::cout<<"CreatePipeline: Done Create Shaders"<<std::endl;
 
     /****************************
     * Create Pipelines
@@ -1081,12 +1114,12 @@ void CApplication::CreatePipelines(){
             (CGraphicsDescriptorManager::graphicsUniformTypes & GRAPHCIS_UNIFORMBUFFER_LIGHTING) || 
             (CGraphicsDescriptorManager::graphicsUniformTypes & GRAPHCIS_UNIFORMBUFFER_MVP) ||
             (CGraphicsDescriptorManager::graphicsUniformTypes & GRAPHCIS_UNIFORMBUFFER_VP)){
-            if(bVerbose) std::cout<<"CreatePipeline: Add layout set0: graphics general layout"<<std::endl;
+            if(bPipelineVerbose) std::cout<<"CreatePipeline: Add layout set0: graphics general layout"<<std::endl;
             dsLayouts.push_back(CGraphicsDescriptorManager::descriptorSetLayout_general); //set = 0
         }
 
         if(CGraphicsDescriptorManager::graphicsUniformTypes & GRAPHCIS_COMBINEDIMAGESAMPLER_TEXTUREIMAGE) {
-            if(bVerbose) std::cout<<"CreatePipeline: Add layout set1: sampler(texture) layout"<<std::endl;
+            if(bPipelineVerbose) std::cout<<"CreatePipeline: Add layout set1: sampler(texture) layout"<<std::endl;
             dsLayouts.push_back(CGraphicsDescriptorManager::descriptorSetLayout_textureImageSampler); //set = 1
         }
 
@@ -1105,14 +1138,17 @@ void CApplication::CreatePipelines(){
             //std::cout<<"test create pipeline"<<std::endl;
             //! All graphics pipelines use the same dsLayouts
             if(shaderManager.bEnablePushConstant){
-                if(bVerbose) std::cout<<"CreatePipeline: Try Create Push Constant Layout"<<std::endl;
+                if(bPipelineVerbose) std::cout<<"CreatePipeline: Try Create Push Constant Layout"<<std::endl;
                 renderProcess.createGraphicsPipelineLayout(dsLayouts,  shaderManager.pushConstantRange, true, i);
-                if(bVerbose) std::cout<<"CreatePipeline: Done Create Push Constant Layout"<<std::endl;
+                if(bPipelineVerbose) std::cout<<"CreatePipeline: Done Create Push Constant Layout"<<std::endl;
             }
             else renderProcess.createGraphicsPipelineLayout(dsLayouts, i);
 
-            if(bVerbose) std::cout<<"CreatePipeline: Try Create graphics pipeline: "<<i<<", VertexStructureType="<<appInfo.VertexBufferType<<std::endl;
-            switch(appInfo.VertexBufferType){
+            
+            int vertexDatatype = appInfo.VertexDatatype ? (*appInfo.VertexDatatype)[i] : 0;
+            if(bPipelineVerbose) std::cout<<"CreatePipeline: Try Create graphics pipeline: "<<i<<", VertexStructureType="<<vertexDatatype<<std::endl;
+
+            switch(vertexDatatype){
                 case VertexStructureTypes::NoType:
                     renderProcess.createGraphicsPipeline(
                         VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
@@ -1126,29 +1162,38 @@ void CApplication::CreatePipelines(){
                         renderProcess.createGraphicsPipeline<Vertex3D>(
                             VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
                             shaderManager.vertShaderModules[i], 
-                            shaderManager.fragShaderModules[i], true, i,
+                            shaderManager.fragShaderModules[i], true, false, i,
                             (*appInfo.Subpass)[i], (*appInfo.RenderPassShadowmap)[i], renderProcess.renderPass_shadowmap);
                     }else{
                         renderProcess.createGraphicsPipeline<Vertex3D>(
                             VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
                             shaderManager.vertShaderModules[i], 
-                            shaderManager.fragShaderModules[i], true, i,
+                            shaderManager.fragShaderModules[i], true, false, i,
                             (*appInfo.Subpass)[i], (*appInfo.RenderPassShadowmap)[i], renderProcess.renderPass_mainscene);  
-                    }
+                    }   
                 break;
                 case VertexStructureTypes::TwoDimension:
+                    std::cout<<"CreatePipeline: Create 2D pipeline"<<std::endl;
                     renderProcess.createGraphicsPipeline<Vertex2D>(
                         VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
                         shaderManager.vertShaderModules[i], 
-                        shaderManager.fragShaderModules[i], true, i,
+                        shaderManager.fragShaderModules[i], true, false, i,
                         (*appInfo.Subpass)[i], false, renderProcess.renderPass_mainscene);
+                    std::cout<<"CreatePipeline: Done Create 2D pipeline"<<std::endl;
                 break;
                 case VertexStructureTypes::ParticleType:
                     renderProcess.createGraphicsPipeline<Particle>(
                         VK_PRIMITIVE_TOPOLOGY_POINT_LIST, 
                         shaderManager.vertShaderModules[i], 
-                        shaderManager.fragShaderModules[i], true, i,
+                        shaderManager.fragShaderModules[i], true, false, i,
                         (*appInfo.Subpass)[i], false, renderProcess.renderPass_mainscene);
+                break;
+                case VertexStructureTypes::TextQuad:
+                    renderProcess.createGraphicsPipeline<TextQuadVertex>(
+                        VK_PRIMITIVE_TOPOLOGY_TRIANGLE_LIST, 
+                        shaderManager.vertShaderModules[i], 
+                        shaderManager.fragShaderModules[i], true, true, i,
+                        (*appInfo.Subpass)[i], (*appInfo.RenderPassShadowmap)[i], renderProcess.renderPass_mainscene); 
                 break;
                 default:
                 break;
@@ -1161,7 +1206,7 @@ void CApplication::CreatePipelines(){
         renderProcess.createComputePipelineLayout(CComputeDescriptorManager::descriptorSetLayout);
         renderProcess.createComputePipeline(shaderManager.compShaderModules[0]);
     }
-    if(bVerbose) std::cout<<"CreatePipeline: Done Create Pipelines"<<std::endl;
+    if(bPipelineVerbose) std::cout<<"CreatePipeline: Done Create Pipelines"<<std::endl;
 }
 
 void CApplication::ReadRegisterObjects(){
@@ -1174,7 +1219,7 @@ void CApplication::ReadRegisterObjects(){
                 continue;
             }
 
-            //std::cout<<"before register Object id("<<object_id<<")!"<<std::endl;
+            std::cout<<"before register Object id("<<object_id<<")!"<<std::endl;
             int resource_model_id = obj["resource_model_id"] ? obj["resource_model_id"].as<int>() : 0;
             auto resource_texture_id_list = obj["resource_texture_id_list"] ? obj["resource_texture_id_list"].as<std::vector<int>>() : std::vector<int>(1, 0);
             auto resource_text_id_list = obj["resource_text_id_list"] ? obj["resource_text_id_list"].as<std::vector<int>>() : std::vector<int>(1, 0);
@@ -1221,32 +1266,55 @@ void CApplication::ReadRegisterObjects(){
             std::cout<<"ObjectId:("<<object_id<<") Name:("<<objects[object_id].Name<<") Length:("<<objects[object_id].Length.x<<","<<objects[object_id].Length.y<<","<<objects[object_id].Length.z<<")"
                 <<" Position:("<<objects[object_id].Position.x<<","<<objects[object_id].Position.y<<","<<objects[object_id].Position.z<<")"<<std::endl;
         }
-        // textManager.m_textBoxes[0].Register((CApplication*)this, //TODO
-        //     objects.size() - 1, 
-        //     std::vector<int>(),
-        //     std::vector<int>(1, 0), 
-        //     1, 
-        //     1);
-
-        //hack
-        CTextBox textBox;
-        textBox.SetPosition(glm::vec3(0.0f, 0.0f, 0.0f));
-        textBox.SetText("nameabc");
-        textBox.m_characters.resize(2);
-
-        // textBox.Register((CApplication*)this, //TODO
-        //     0, 
-        //     std::vector<int>(),
-        //     std::vector<int>(1, 0), 
-        //     1, 
-        //     1);
-        if(textManager.p_renderer) textBox.Register((CApplication*)this);
-        textManager.AddTextBox(textBox);
 
         for(int i = 0; i < objects.size(); i++)
             if(!objects[i].bRegistered) std::cout<<"WARNING: Object id("<<i<<") is not registered!"<<std::endl;
     }
 
+}
+
+void CApplication::ReadRegisterTextboxes(){
+    //std::cout<<"Begin Read Textboxes"<<std::endl;
+    if (config["Textboxes"]) {
+        for (const auto& tb : config["Textboxes"]) {
+            int id = tb["textbox_id"] ? tb["textbox_id"].as<int>() : 0;
+            if(textManager.m_textBoxes[id].bRegistered) {
+                std::cout<<"WARNING: Trying to register a registered Textbox id("<<id<<")!"<<std::endl;
+                continue;
+            }
+            //std::cout<<"Register Textbox id("<<id<<")!"<<std::endl;
+
+            std::string name = tb["textbox_name"] ? tb["textbox_name"].as<std::string>() : "Default";
+
+            auto position = tb["textbox_position"] ? tb["textbox_position"].as<std::vector<float>>(): std::vector<float>(3,0);
+            glm::vec3 glm_position(position[0], position[1], position[2]);
+            textManager.m_textBoxes[id].SetPosition(glm_position);
+
+            auto scale = tb["textbox_scale"] ? tb["textbox_scale"].as<float>() : 1.0f;
+            textManager.m_textBoxes[id].SetScale(scale);
+
+            auto color = tb["textbox_color"] ? tb["textbox_color"].as<std::vector<float>>(): std::vector<float>(4,1.0f);
+            glm::vec4 glm_boxColor(color[0], color[1], color[2], color[3]);
+            textManager.m_textBoxes[id].SetBoxColor(glm_boxColor);
+
+            auto resource_text_id_list = tb["resource_text_id_list"] ? tb["resource_text_id_list"].as<std::vector<int>>() : std::vector<int>(1, 0);
+
+            std::string text_content = tb["textbox_text_content"] ? tb["textbox_text_content"].as<std::string>() : "";
+            
+            auto text_color = tb["textbox_text_color"] ? tb["textbox_text_color"].as<std::vector<float>>() : std::vector<float>(4,1.0f);
+            glm::vec4 glm_textColor(text_color[0], text_color[1], text_color[2], text_color[3]);
+            textManager.m_textBoxes[id].SetTextColor(glm_textColor);
+
+            int resource_default_graphics_pipeline_id = tb["resource_default_graphics_pipeline_id"] ? tb["resource_default_graphics_pipeline_id"].as<int>() : 0;
+
+            //textBoxes[id].Register(name, id, glm_position, scale, glm_boxColor, resource_text_id_list, text_content, glm_textColor);
+            textManager.m_textBoxes[id].Register((CApplication*)this, id, resource_text_id_list, text_content);
+
+            //std::cout<<"TextboxId:("<<id<<") Name:("<<textBoxes[id].GetName()<<") Position:("<<textBoxes[id].GetPosition().x<<","<<textBoxes[id].GetPosition().y<<","<<textBoxes[id].GetPosition().z<<")"<<std::endl;
+        }
+        for(int i = 0; i < textManager.m_textBoxes.size(); i++)
+            if(!textManager.m_textBoxes[i].bRegistered) std::cout<<"WARNING: Textbox id("<<i<<") is not registered!"<<std::endl;
+    }
 }
 
 void CApplication::ReadLightings(){

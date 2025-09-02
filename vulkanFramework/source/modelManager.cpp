@@ -47,6 +47,15 @@ void CModelManager::CreateCustomModel2D(std::vector<Vertex2D> &vertices2D){
 	customModels2D.push_back(model);
 }
 
+void CModelManager::CreateTextModel(std::vector<TextQuadVertex> &vertices, std::vector<TextInstanceData> &instanceData, std::vector<uint32_t> &indices){
+	CTextModel model;
+	model.vertices = vertices;
+	model.instanceData = instanceData;
+	model.indices = indices;
+
+	textModels.push_back(model);
+}
+
 void CModelManager::LoadObjModel(IN const std::string modelName, OUT std::vector<Vertex3D> &vertices3D, OUT std::vector<uint32_t> &indices3D) {
 	tinyobj::attrib_t attrib;
 	std::vector<tinyobj::shape_t> shapes;
