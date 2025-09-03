@@ -14,49 +14,58 @@ class CApplication;
 * Character
 **************/
 
-class CCharacter{
-    int m_instanceCount = 0;
-public:
-    CRenderer *p_renderer;
-    CRenderProcess *p_renderProcess;
-    std::vector<VkDescriptorSet> *p_descriptorSets_graphics_general;
-    std::vector<VkDescriptorSet> descriptorSets_graphics_texture_image_sampler;
-    CTextImageManager *p_textImageManager;
+// class CCharacter{
+//     int m_instanceCount = 0;
+// public:
+//     CRenderer *p_renderer;
+//     CRenderProcess *p_renderProcess;
+//     std::vector<VkDescriptorSet> *p_descriptorSets_graphics_general;
+//     std::vector<VkDescriptorSet> descriptorSets_graphics_texture_image_sampler;
+//     CTextImageManager *p_textImageManager;
 
-    void SetInstanceCount(int count) { m_instanceCount = count; }
+//     void SetInstanceCount(int count) { m_instanceCount = count; }
 
-    CCharacter(){}
-    ~CCharacter(){}
+//     CCharacter(){}
+//     ~CCharacter(){}
 
-    void CreateDescriptorSets_TextureImageSampler(VkDescriptorPool &descriptorPool, VkDescriptorSetLayout &descriptorSetLayout, std::vector<VkSampler> &samplers, std::vector<VkImageView> *swapchainImageViews = NULL);
+//     void CreateDescriptorSets_TextureImageSampler(VkDescriptorPool &descriptorPool, VkDescriptorSetLayout &descriptorSetLayout, std::vector<VkSampler> &samplers, std::vector<VkImageView> *swapchainImageViews = NULL);
 
-    void Draw();
-};
+//     void Draw();
+// };
 
 /******************
 * TextBox
 *******************/
 
 class CTextBox : public CEntity {
+    int m_textBoxID = 0;
     std::string m_text = "";
     int m_instanceCount = 0;
+
+    CRenderer *p_renderer;
+    CRenderProcess *p_renderProcess;
+    std::vector<VkDescriptorSet> *p_descriptorSets_graphics_general;
+    std::vector<VkDescriptorSet> descriptorSets_graphics_texture_image_sampler;
+    CTextImageManager *p_textImageManager;
 public:
+
     bool bRegistered = false;
     glm::vec4 m_boxColor = glm::vec4(255.0f);
     glm::vec4 m_textColor = glm::vec4(0.0f);
-    std::vector<CCharacter> m_characters;
-
+    //std::vector<CCharacter> m_characters;
+    void CreateDescriptorSets_TextureImageSampler(VkDescriptorPool &descriptorPool, VkDescriptorSetLayout &descriptorSetLayout, std::vector<VkSampler> &samplers, std::vector<VkImageView> *swapchainImageViews = NULL);
 
     CTextBox(){}
     void SetText(std::string text){m_text = text;}
     void SetBoxColor(glm::vec4 color){m_boxColor = color;}
     void SetTextColor(glm::vec4 color){m_textColor = color;}
     void Register(CApplication *p_app, int textbox_id, std::vector<int> text_ids, std::string content);
-    void Draw(){ 
-        for(auto& ch : m_characters){ 
-            ch.Draw(); 
-        }
-    }
+    void Update(float deltaTime, int currentFrame, Camera &mainCamera);
+    void Draw();
+    //     for(auto& ch : m_characters){ 
+    //         ch.Draw(); 
+    //     }
+    // }
 };
 
 /******************
@@ -101,7 +110,7 @@ public:
     void CreateGlyphMap();
 
     //void Initialize();
-    //void Update(float deltaTime, int currentFrame, Camera &mainCamera);
+    void Update(float deltaTime, int currentFrame, Camera &mainCamera);
     void Draw(){for(auto& textBox : m_textBoxes){textBox.Draw();}};
 
 };

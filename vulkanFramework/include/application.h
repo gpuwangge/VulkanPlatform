@@ -171,6 +171,7 @@ public:
     struct UniformInfo{
         bool b_uniform_graphics_custom = false;
         bool b_uniform_graphics_mvp = false;
+        bool b_uniform_graphics_text_mvp = false;
         bool b_uniform_graphics_vp = false;
         bool b_uniform_graphics_lighting = false;
         bool b_uniform_graphics_depth_image_sampler = false;

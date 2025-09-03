@@ -2,10 +2,10 @@
 #include "../include/application.h"
 
 /*************
-* Character
+* Change from CCharacter(no use) to CTextBox
 **************/
 
-void CCharacter::CreateDescriptorSets_TextureImageSampler(VkDescriptorPool &descriptorPool, VkDescriptorSetLayout &descriptorSetLayout, std::vector<VkSampler> &samplers, std::vector<VkImageView> *swapchainImageViews){
+void CTextBox::CreateDescriptorSets_TextureImageSampler(VkDescriptorPool &descriptorPool, VkDescriptorSetLayout &descriptorSetLayout, std::vector<VkSampler> &samplers, std::vector<VkImageView> *swapchainImageViews){
     //std::cout<<"TextureDescriptor::createDescriptorSets."<<std::endl;
     if(samplers.size() < 1) return;
     
@@ -81,7 +81,7 @@ void CCharacter::CreateDescriptorSets_TextureImageSampler(VkDescriptorPool &desc
     //std::cout<<"Done set descriptor. "<<std::endl;
 }
 
-void CCharacter::Draw(){
+void CTextBox::Draw(){
     //std::cout<<"Draw character"<<std::endl;
 
     int current_graphics_pipeline_id = 2;//hack, (graphicsPipelineId == -1) ? m_default_graphics_pipeline_id : graphicsPipelineId;
@@ -94,12 +94,12 @@ void CCharacter::Draw(){
     if(CGraphicsDescriptorManager::getSetSize_General() > 0) dsSets.push_back(*p_descriptorSets_graphics_general); 
     if(CGraphicsDescriptorManager::textureImageSamplers.size() > 0) dsSets.push_back(descriptorSets_graphics_texture_image_sampler); 
 
-    bool bUseMVP_VP = true; //hack
-    int m_object_id = 2;//hack
+    //bool bUseMVP_VP = true; //hack
+    //int m_object_id = 2;//hack
     if(dsSets.size() > 0){
-        int dynamicOffsetIndex = -1; //-1 means not use dynamic offset (no MVP/VP used)
-        if(bUseMVP_VP) dynamicOffsetIndex = m_object_id; //assume descriptor uniform(MVP/VP) offset is m_id
-        p_renderer->BindGraphicsDescriptorSets(*p_graphicsPipelineLayout, dsSets, dynamicOffsetIndex);
+        //int dynamicObjectMVPOffset = -1; //-1 means not use dynamic offset (no MVP/VP used)
+        int dynamicTextboxMVPOffset = m_textBoxID; //use offset for textboxID=0
+        p_renderer->BindGraphicsDescriptorSets(*p_graphicsPipelineLayout, dsSets, 0, dynamicTextboxMVPOffset);
     }
 
     int m_model_id = 2;//hack
@@ -121,24 +121,54 @@ void CCharacter::Draw(){
 //CApplication *p_app, int object_id, std::vector<int> texture_ids, std::vector<int> text_ids, int model_id, int default_graphics_pipeline_id
 void CTextBox::Register(CApplication *p_app, int textbox_id, std::vector<int> text_ids, std::string content){
     bRegistered = true;
+    m_textBoxID = textbox_id;
 
-    m_characters.resize(1);//TODO: change later
+    //m_characters.resize(1);//TODO: change later
 
     m_instanceCount = p_app->textManager.GetInstanceCount();
 
-    for(auto& ch : m_characters){
-        ch.SetInstanceCount(m_instanceCount);
-        ch.p_renderer = &(p_app->renderer);
-        ch.p_renderProcess = &(p_app->renderProcess);
-        ch.p_descriptorSets_graphics_general = &(p_app->graphicsDescriptorManager.descriptorSets_general);
-        //ch.descriptorSets_graphics_texture_image_sampler;
-        ch.p_textImageManager = &(p_app->textImageManager);
-        ch.CreateDescriptorSets_TextureImageSampler(
-            CGraphicsDescriptorManager::graphicsDescriptorPool,
-            CGraphicsDescriptorManager::descriptorSetLayout_textureImageSampler,
-            CGraphicsDescriptorManager::textureImageSamplers
-        );
-    }
+    //for(auto& ch : m_characters){
+    //ch.SetInstanceCount(m_instanceCount);
+    p_renderer = &(p_app->renderer);
+    p_renderProcess = &(p_app->renderProcess);
+    p_descriptorSets_graphics_general = &(p_app->graphicsDescriptorManager.descriptorSets_general);
+    //ch.descriptorSets_graphics_texture_image_sampler;
+    p_textImageManager = &(p_app->textImageManager);
+    CreateDescriptorSets_TextureImageSampler(
+        CGraphicsDescriptorManager::graphicsDescriptorPool,
+        CGraphicsDescriptorManager::descriptorSetLayout_textureImageSampler,
+        CGraphicsDescriptorManager::textureImageSamplers
+    );
+    //}
+}
+
+void CTextBox::Update(float deltaTime, int currentFrame, Camera &mainCamera){
+    if(!bRegistered) return;
+    CEntity::Update(deltaTime); //update translateMatrix, RotationMatrix and ScaleMatrix
+    /********************************
+    * Calculate model matrix based on Translation, Rotation and Scale
+    ********************************/
+   if(CGraphicsDescriptorManager::graphicsUniformTypes & GRAPHCIS_UNIFORMBUFFER_TEXT_MVP){
+        CGraphicsDescriptorManager::textMVPUBO.mvpData[m_textBoxID].model = TranslateMatrix * RotationMatrix * ScaleMatrix;
+
+        //std::cout<< "TextBox ID: " << m_textBoxID << " Model Matrix: " << glm::to_string(CGraphicsDescriptorManager::textMVPUBO.mvpData[m_textBoxID].model) << std::endl;
+        // std::cout<< "TextBox ID: " << m_textBoxID << " TranslateMatrix: " << glm::to_string(TranslateMatrix) << std::endl;
+        // std::cout<< "TextBox ID: " << m_textBoxID << " RotateMatrix: " << glm::to_string(RotationMatrix) << std::endl;
+        // std::cout<< "TextBox ID: " << m_textBoxID << " ScaleMatrix: " << glm::to_string(ScaleMatrix) << std::endl;
+        // std::cout<< "TextBox ID: " << m_textBoxID << " Velocity: " << glm::to_string(Velocity) << std::endl;
+        // std::cout<< "TextBox ID: " << m_textBoxID << " AngularVelocity: " << glm::to_string(AngularVelocity) << std::endl;
+        // std::cout<< "TextBox ID: " << m_textBoxID << " TempVelocity: " << glm::to_string(TempVelocity[0]) << std::endl;
+        // std::cout<< "TextBox ID: " << m_textBoxID << " TempAngularVelocity: " << glm::to_string(TempAngularVelocity[0]) << std::endl;
+        // std::cout<< "TextBox ID: " << m_textBoxID << " TempMoveAngularVelocity: " << glm::to_string(TempMoveAngularVelocity) << std::endl;
+        //std::cout<< "Delta Time: " << deltaTime << std::endl;
+
+        CGraphicsDescriptorManager::textMVPUBO.mvpData[m_textBoxID].mainCameraProj = mainCamera.matrices.projection;
+        CGraphicsDescriptorManager::textMVPUBO.mvpData[m_textBoxID].mainCameraView = mainCamera.matrices.view;
+        memcpy(CGraphicsDescriptorManager::textMVPUniformBuffersMapped[currentFrame], &CGraphicsDescriptorManager::textMVPUBO, sizeof(CGraphicsDescriptorManager::textMVPUBO));
+   }
+    //for(auto& ch : m_characters){ 
+        //ch.Update();
+    //}
 }
 
 /******************
@@ -280,16 +310,16 @@ void CTextManager::CreateTextResource(){
 
 
     std::vector<TextQuadVertex> textQuadVertices2D;
-    textQuadVertices2D.push_back({ {x_min, y_min}, {u1, v0} }); // left bottom
-    textQuadVertices2D.push_back({ {x_max, y_min}, {u0, v0} }); // right bottom
-    textQuadVertices2D.push_back({ {x_max, y_max}, {u0, v1} }); // right up
-    textQuadVertices2D.push_back({ {x_min, y_max}, {u1, v1} }); // left up
+    textQuadVertices2D.push_back({ {x_min, y_min}, {u1, v1} }); // left bottom
+    textQuadVertices2D.push_back({ {x_max, y_min}, {u0, v1} }); // right bottom
+    textQuadVertices2D.push_back({ {x_max, y_max}, {u0, v0} }); // right up
+    textQuadVertices2D.push_back({ {x_min, y_max}, {u1, v0} }); // left up
 
     std::vector<TextInstanceData> textInstanceData;
     textInstanceData.push_back({ {0.0f, 0.0f}, {1.0f, 0.0f, 0.0f} }); // red
-    textInstanceData.push_back({ {0.5f, 0.0f}, {0.0f, 1.0f, 0.0f} }); // green
-    textInstanceData.push_back({ {0.0f, 0.5f}, {0.0f, 0.0f, 1.0f} }); // blue
-    textInstanceData.push_back({ {0.5f, 0.5f}, {1.0f, 0.0f, 1.0f} });
+    textInstanceData.push_back({ {0.2f, 0.0f}, {0.0f, 1.0f, 0.0f} }); // green
+    textInstanceData.push_back({ {0.4f, 0.0f}, {0.0f, 0.0f, 1.0f} }); // blue
+    textInstanceData.push_back({ {0.6f, 0.0f}, {1.0f, 0.0f, 1.0f} });
 
     p_modelManager->CreateTextModel(textQuadVertices2D, textInstanceData, indices3D);
     std::cout<<"text model created in modelManager.textModel, size = "<<p_modelManager->textModels.size()<<std::endl;
@@ -303,11 +333,11 @@ void CTextManager::CreateTextResource(){
 //     m_textBoxes.push_back(textBox);
 // }
 
-// void CTextManager::Update(float deltaTime, int currentFrame, Camera &mainCamera){
-//     for (int i = 0; i < m_textBoxes.size(); i++) {
-//         m_textBoxes[i].Update(deltaTime, currentFrame, mainCamera);
-//     }
-// }
+void CTextManager::Update(float deltaTime, int currentFrame, Camera &mainCamera){
+    for (int i = 0; i < m_textBoxes.size(); i++) {
+        m_textBoxes[i].Update(deltaTime, currentFrame, mainCamera);
+    }
+}
 
 // void CTextManager::Draw(){
 //      for (int i = 0; i < m_textBoxes.size(); i++) {

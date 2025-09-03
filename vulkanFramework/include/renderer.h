@@ -28,6 +28,9 @@ public:
     //void RecordCompute();
     //void RecordGraphics();
 
+    bool bUseObjectMVP = false;
+    bool bUseTextboxMVP = false;
+
     void AquireSwapchainImage(CSwapchain &swapchain);
     void WaitForComputeFence();
     void SubmitCompute();
@@ -61,9 +64,9 @@ public:
     void BindVertexInstanceBuffer(int objectId);
     void BindIndexBuffer(int objectId);
     void BindExternalBuffer(std::vector<CWxjBuffer> &buffer);
-    void BindDescriptorSets(VkPipelineLayout &pipelineLayout, std::vector<std::vector<VkDescriptorSet>> &descriptorSets, VkPipelineBindPoint pipelineBindPoint, uint32_t commandBufferIndex, uint32_t dynamicOffsetCount);
-    void BindGraphicsDescriptorSets(VkPipelineLayout &pipelineLayout, std::vector<std::vector<VkDescriptorSet>> &descriptorSets, int dynamicOffsetCount);
-    void BindComputeDescriptorSets(VkPipelineLayout &pipelineLayout,  std::vector<std::vector<VkDescriptorSet>> &descriptorSets, int dynamicOffsetCount);
+    void BindDescriptorSets(VkPipelineLayout &pipelineLayout, std::vector<std::vector<VkDescriptorSet>> &descriptorSets, VkPipelineBindPoint pipelineBindPoint, uint32_t commandBufferIndex, uint32_t dynamicObjectMVPOffset = -1, uint32_t dynamicTextboxMVPOffset = -1);
+    void BindGraphicsDescriptorSets(VkPipelineLayout &pipelineLayout, std::vector<std::vector<VkDescriptorSet>> &descriptorSets, uint32_t dynamicObjectMVPOffset = -1, uint32_t dynamicTextboxMVPOffset = -1);
+    void BindComputeDescriptorSets(VkPipelineLayout &pipelineLayout,  std::vector<std::vector<VkDescriptorSet>> &descriptorSets);
 
     //Draw
     template <typename T>

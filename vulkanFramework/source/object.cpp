@@ -4,41 +4,13 @@
 /******************
 * Object
 *******************/
-CObject::CObject(){
-    Length_original = glm::vec3();
-    LengthMin_original = glm::vec3();
-    LengthMax_original = glm::vec3();
-    Length = glm::vec3();
-
-    Position = glm::vec3();
-    Rotation = glm::vec3();
-    Scale = glm::vec3(1.0f, 1.0f, 1.0f);
-
-    Velocity = glm::vec3();
-    AngularVelocity = glm::vec3();
-
-    for(int i = 0; i < 6; i++) TempVelocity[i] = glm::vec4();
-    for(int i = 0; i < 6; i++) TempAngularVelocity[i] = glm::vec4();
-
-    RotationMatrix = glm::mat4();
-    ScaleMatrix = glm::mat4();
-    DirectionFront = glm::vec3();
-    DirectionUp = glm::vec3();
-    DirectionLeft = glm::vec3();
-
-    TempMoveVelocity = glm::vec4();
-    TempMoveAngularVelocity = glm::vec4();
-}
-
- void CObject::Update(float deltaTime, int currentFrame, Camera &mainCamera){
-    if(!bRegistered)  return;
+void CObject::Update(float deltaTime, int currentFrame, Camera &mainCamera){
+    if(!bRegistered) return;
     if(!bUpdate) return;
-
     CEntity::Update(deltaTime); //update translateMatrix, RotationMatrix and ScaleMatrix
-
-    /**********
+    /********************************
     * Calculate model matrix based on Translation, Rotation and Scale
-    **********/
+    ********************************/
     if(CGraphicsDescriptorManager::graphicsUniformTypes & GRAPHCIS_UNIFORMBUFFER_MVP){
         //update model matrix to ubo
         CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].model = TranslateMatrix * RotationMatrix * ScaleMatrix;
@@ -89,7 +61,7 @@ CObject::CObject(){
         CGraphicsDescriptorManager::vpUBO.proj = mainCamera.matrices.projection;
         memcpy(CGraphicsDescriptorManager::vpUniformBuffersMapped[currentFrame], &CGraphicsDescriptorManager::vpUBO, sizeof(CGraphicsDescriptorManager::vpUBO));
     }
- }
+}
 
 // float CObject::ComputeDifference(glm::vec3 v1, glm::vec3 v2){
 //     return glm::sqrt((v1.x - v2.x)*(v1.x - v2.x) + (v1.y - v2.y)*(v1.y - v2.y) + (v1.z - v2.z)*(v1.z - v2.z));
@@ -184,7 +156,7 @@ void CObject::Register(CApplication *p_app, int object_id, std::vector<int> text
     m_model_id = model_id; 
     m_default_graphics_pipeline_id = default_graphics_pipeline_id; 
     //m_graphics_pipeline_id2 = graphics_pipeline_id2; 
-    bUseMVP_VP = CGraphicsDescriptorManager::CheckMVP();
+    //bUseMVP_VP = CGraphicsDescriptorManager::CheckMVP();
 
     //if(p_app->appInfo.VertexBufferType == VertexStructureTypes::TwoDimension || p_app->appInfo.VertexBufferType == VertexStructureTypes::ThreeDimension){
     Length_original = p_app->modelManager.modelLengths.size() > model_id ? p_app->modelManager.modelLengths[model_id] : glm::vec3();
@@ -242,9 +214,10 @@ void CObject::Draw(int graphicsPipelineId, uint32_t n){
     //std::cout<<"test3.dsSets.size()="<<dsSets.size()<<std::endl;
     
     if(dsSets.size() > 0){
-        int dynamicOffsetIndex = -1; //-1 means not use dynamic offset (no MVP/VP used)
-        if(bUseMVP_VP) dynamicOffsetIndex = m_object_id; //assume descriptor uniform(MVP/VP) offset is m_id
-        p_renderer->BindGraphicsDescriptorSets(*p_graphicsPipelineLayout, dsSets, dynamicOffsetIndex);
+        //int dynamicObjectMVPOffset = -1; //-1 means not use dynamic offset (no MVP/VP used)
+        //if(bUseMVP_VP) 
+        int dynamicObjectMVPOffset = m_object_id; //assume descriptor uniform(MVP/VP) offset is m_id
+        p_renderer->BindGraphicsDescriptorSets(*p_graphicsPipelineLayout, dsSets, dynamicObjectMVPOffset, 0);
     }//else std::cout<<"No Descritpor is used."<<std::endl;
     //std::cout<<"test4."<<std::endl;
     //if(!vertices3D.empty() || !vertices2D.empty()){

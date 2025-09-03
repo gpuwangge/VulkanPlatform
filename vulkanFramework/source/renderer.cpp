@@ -424,17 +424,10 @@ void CRenderer::CreateSyncObjects(int swapchainSize) {
 void CRenderer::StartRecordGraphicsCommandBuffer(VkRenderPass &renderPass, 
         std::vector<VkFramebuffer> &swapChainFramebuffers, VkExtent2D &extent,
         std::vector<VkClearValue> &clearValues){
-    //std::cout<<"start record start"<<std::endl;
     BeginCommandBuffer(graphicsCmdId);
-    //std::cout<<"BeginCommandBuffer done"<<std::endl;
     BeginRenderPass(renderPass, swapChainFramebuffers, extent, clearValues, false);
-    //std::cout<<"BeginRenderPass done"<<std::endl;
-    //BindPipeline(pipeline, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsCmdId);
-    //std::cout<<"BindPipeline done"<<std::endl;
     SetViewport(extent);
     SetScissor(extent);
-    //BindDescriptorSets(pipelineLayout, descriptorSets, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsCmdId, 0);
-    //std::cout<<"start record done"<<std::endl;
 }
 void CRenderer::EndRecordGraphicsCommandBuffer(){
 	EndRenderPass();
@@ -519,7 +512,9 @@ void CRenderer::BindExternalBuffer(std::vector<CWxjBuffer> &buffer){
 	vkCmdBindVertexBuffers(commandBuffers[graphicsCmdId][currentFrame], 0, 1, &buffer[currentFrame].buffer, offsets);
 
 }
-void CRenderer::BindDescriptorSets(VkPipelineLayout &pipelineLayout, std::vector<std::vector<VkDescriptorSet>> &descriptorSets, VkPipelineBindPoint pipelineBindPoint, uint32_t commandBufferIndex, uint32_t offsetIndex){
+void CRenderer::BindDescriptorSets(VkPipelineLayout &pipelineLayout, std::vector<std::vector<VkDescriptorSet>> &descriptorSets, 
+        VkPipelineBindPoint pipelineBindPoint, uint32_t commandBufferIndex, 
+        uint32_t dynamicObjectMVPOffset, uint32_t dynamicTextboxMVPOffset){
     //you can bind many descriptor sets for one mesh, they are identified in shader by set index
     //also, each descriptor set can have multiple writes, they are identified in shader by binding index
     //unsigned int setCount = 1;
@@ -532,6 +527,37 @@ void CRenderer::BindDescriptorSets(VkPipelineLayout &pipelineLayout, std::vector
     for(unsigned int i = 0; i < setCount; i++){
         sets[i] = descriptorSets[i][currentFrame];
     }
+
+    if(bUseObjectMVP && bUseTextboxMVP){
+        uint32_t offsets[2] ={512 * dynamicObjectMVPOffset, 512 * dynamicTextboxMVPOffset};
+        vkCmdBindDescriptorSets(commandBuffers[commandBufferIndex][currentFrame], pipelineBindPoint, pipelineLayout, 0, 
+            setCount, sets,  
+            2, //dynamicOffsetCount. # means there is (exact)# uniforms in the descriptor sets that are set to be dynamic 
+            offsets 
+        );
+    }else if (bUseObjectMVP){
+        uint32_t offsets[1] ={512 * dynamicObjectMVPOffset}; 
+        vkCmdBindDescriptorSets(commandBuffers[commandBufferIndex][currentFrame], pipelineBindPoint, pipelineLayout, 0, 
+            setCount, sets,  
+            1,
+            offsets 
+        );
+    }else if (bUseTextboxMVP){
+        uint32_t offsets[1] ={512 * dynamicTextboxMVPOffset}; 
+        vkCmdBindDescriptorSets(commandBuffers[commandBufferIndex][currentFrame], pipelineBindPoint, pipelineLayout, 0, 
+            setCount, sets,  
+            1,
+            offsets 
+        );
+    }else{
+        vkCmdBindDescriptorSets(commandBuffers[commandBufferIndex][currentFrame], pipelineBindPoint, pipelineLayout, 0, 
+            setCount, sets, 
+            0, 
+            nullptr
+        );
+    }
+    
+
 
     //Issue here: there are 2 descriptor sets. say [0]] is mvp, [1] is texture
     //If set offset to a positive number, both mvp and texture will have offset value
@@ -547,27 +573,12 @@ void CRenderer::BindDescriptorSets(VkPipelineLayout &pipelineLayout, std::vector
     //second solution is to can set a bool variable bDisableModelMat. for multiCubes, bDisableModelMat=false; for furMark, bDisableModelMat=true
     //all objects must have texture, so must create texture descriptor set
 
-    //if use mvp, need enable dynamic offset; otherwise disable it
-    if(offsetIndex == 0xffffffff){
-        vkCmdBindDescriptorSets(commandBuffers[commandBufferIndex][currentFrame], pipelineBindPoint, pipelineLayout, 0, 
-                setCount, sets, 
-                0, 
-                nullptr
-            );
-    }else{//assume the uniform is mvp
-        uint32_t offsets[1] ={512 * offsetIndex};
-            vkCmdBindDescriptorSets(commandBuffers[commandBufferIndex][currentFrame], pipelineBindPoint, pipelineLayout, 0, 
-                setCount, sets,  
-                1, //dynamicOffsetCount. # means there is (exact)# uniform in the descriptor sets that are set to be dynamic 
-                offsets 
-        );
-    }
 }
-void CRenderer::BindGraphicsDescriptorSets(VkPipelineLayout &pipelineLayout, std::vector<std::vector<VkDescriptorSet>> &descriptorSets, int offsetIndex){
-    BindDescriptorSets(pipelineLayout, descriptorSets, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsCmdId, offsetIndex);
+void CRenderer::BindGraphicsDescriptorSets(VkPipelineLayout &pipelineLayout, std::vector<std::vector<VkDescriptorSet>> &descriptorSets, uint32_t dynamicObjectMVPOffset, uint32_t dynamicTextboxMVPOffset){
+    BindDescriptorSets(pipelineLayout, descriptorSets, VK_PIPELINE_BIND_POINT_GRAPHICS, graphicsCmdId, dynamicObjectMVPOffset, dynamicTextboxMVPOffset);
 }
-void CRenderer::BindComputeDescriptorSets(VkPipelineLayout &pipelineLayout, std::vector<std::vector<VkDescriptorSet>> &descriptorSets, int offsetIndex){
-    BindDescriptorSets(pipelineLayout, descriptorSets, VK_PIPELINE_BIND_POINT_COMPUTE, computeCmdId, offsetIndex);
+void CRenderer::BindComputeDescriptorSets(VkPipelineLayout &pipelineLayout, std::vector<std::vector<VkDescriptorSet>> &descriptorSets){
+    BindDescriptorSets(pipelineLayout, descriptorSets, VK_PIPELINE_BIND_POINT_COMPUTE, computeCmdId);
 }
 
 void CRenderer::DrawIndexed(int model_id){
@@ -710,11 +721,7 @@ void CRenderer::postRecordComputeCommandBuffer(CSwapchain &swapchain){
 
 void CRenderer::StartRecordComputeCommandBuffer(VkPipeline &pipeline, VkPipelineLayout &pipelineLayout){
     BeginCommandBuffer(computeCmdId);
-    //BeginRenderPass(renderPass, swapChainFramebuffers, extent, clearValues);
     BindPipeline(pipeline, VK_PIPELINE_BIND_POINT_COMPUTE, computeCmdId);
-    //SetViewport(extent);
-    //SetScissor(extent);
-    //BindDescriptorSets(pipelineLayout, descriptorSets, VK_PIPELINE_BIND_POINT_COMPUTE, computeCmdId, 0);
 }
 void CRenderer::EndRecordComputeCommandBuffer(){
 	//EndRenderPass();

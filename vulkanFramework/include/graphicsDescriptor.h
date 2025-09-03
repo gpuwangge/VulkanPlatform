@@ -66,42 +66,50 @@ public:
     static MVPUniformBufferObject mvpUBO;
 
     /************
-     * 4 GRAPHCIS_UNIFORMBUFFER_VP
+     * 4 GRAPHCIS_UNIFORMBUFFER_TEXT_MVP
+     ************/
+    static std::vector<CWxjBuffer> textMVPUniformBuffers; //need one mvp buffer for each host resource: MAX_FRAMES_IN_FLIGHT
+	static std::vector<void*> textMVPUniformBuffersMapped;
+    static void addTextMVPUniformBuffer();
+    static TextMVPUniformBufferObject textMVPUBO;
+
+    /************
+     * 5 GRAPHCIS_UNIFORMBUFFER_VP
      ************/
     static std::vector<CWxjBuffer> vpUniformBuffers; 
 	static std::vector<void*> vpUniformBuffersMapped;
     static void addVPUniformBuffer();
     static VPUniformBufferObject vpUBO;
-    static bool CheckMVP(); //to check if all objects associate this graphcis descriptor use MVP/VP or not. If return true, means it will use dynamic descriptor offset
+    //static bool CheckMVP(); //to check if all objects associate this graphcis descriptor use MVP/VP or not. If return true, means it will use dynamic descriptor offset
 
     /************
-     * 5 GRAPHCIS_COMBINEDIMAGESAMPLER_TEXTUREIMAGE
+     * 6 GRAPHCIS_COMBINEDIMAGESAMPLER_TEXTUREIMAGE
      ************/
     static unsigned int textureImageSamplerSize;
     static std::vector<VkSampler> textureImageSamplers;
     static void addTextureImageSamplerUniformBuffer(std::vector<int> mipLevels, std::vector<std::vector<bool>> UVWRepeats);
 
     /************
-     * 6 GRAPHCIS_COMBINEDIMAGESAMPLER_DEPTHIMAGE
+     * 7 GRAPHCIS_COMBINEDIMAGESAMPLER_DEPTHIMAGE
      ************/
     static VkSampler depthImageSampler;
     static void addDepthImageSamplerUniformBuffer();
     
     /************
-     * 7 GRAPHCIS_COMBINEDIMAGESAMPLER_LIGHTDEPTHIMAGE
+     * 8 GRAPHCIS_COMBINEDIMAGESAMPLER_LIGHTDEPTHIMAGE
      ************/
     static VkSampler lightDepthImageSampler;
     static void addLightDepthImageSamplerUniformBuffer();
 
     /************
-     * 8 GRAPHCIS_COMBINEDIMAGESAMPLER_LIGHTDEPTHIMAGE_HARDWAREDEPTHBIAS
+     * 9 GRAPHCIS_COMBINEDIMAGESAMPLER_LIGHTDEPTHIMAGE_HARDWAREDEPTHBIAS
      ************/
     static VkSampler lightDepthImageSampler_hardwareDepthBias;
     static void addLightDepthImageSamplerUniformBuffer_hardwareDepthBias();
 
 
     /************
-     * 9 GRAPHCIS_COMBINEDIMAGESAMPLER_LIGHTDEPTHIMAGE_HARDWAREDEPTHBIAS2
+     * 10 GRAPHCIS_COMBINEDIMAGESAMPLER_LIGHTDEPTHIMAGE_HARDWAREDEPTHBIAS2
      * Test: WIP
      ************/
     //static VkSampler lightDepthImageSampler_hardwareDepthBias2;

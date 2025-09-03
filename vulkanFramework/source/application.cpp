@@ -298,7 +298,7 @@ void CApplication::initialize(){
     /****************************
     * 5 Create Uniform Descriptors
     ****************************/
-    bool b_uniform_graphics = appInfo.Uniform.b_uniform_graphics_custom || appInfo.Uniform.b_uniform_graphics_mvp || appInfo.Uniform.b_uniform_graphics_vp;
+    bool b_uniform_graphics = appInfo.Uniform.b_uniform_graphics_custom || appInfo.Uniform.b_uniform_graphics_mvp || appInfo.Uniform.b_uniform_graphics_text_mvp || appInfo.Uniform.b_uniform_graphics_vp;
     bool b_uniform_compute = appInfo.Uniform.b_uniform_compute_custom || appInfo.Uniform.b_uniform_compute_storage || appInfo.Uniform.b_uniform_compute_swapchain_storage || appInfo.Uniform.b_uniform_compute_texture_storage;
     CreateUniformDescriptors(b_uniform_graphics, b_uniform_compute);
 
@@ -423,7 +423,7 @@ void CApplication::update(){
     //lightCamera[1].update(deltaTime);
 
     for(int i = 0; i < objects.size(); i++) objects[i].Update(deltaTime, renderer.currentFrame, mainCamera); 
-    //textManager.Update(deltaTime, renderer.currentFrame, mainCamera);
+    textManager.Update(deltaTime, renderer.currentFrame, mainCamera);
     for(int i = 0; i < lights.size(); i++) lights[i].Update(deltaTime, renderer.currentFrame, mainCamera, lightCameras[i]);
 
     /*Calcuate FPS*/
@@ -678,6 +678,7 @@ void CApplication::ReadUniforms(){
                 std::string name = graphicsUniform["uniform_graphics_name"] ? graphicsUniform["uniform_graphics_name"].as<std::string>() : "Default";
                 appInfo.Uniform.b_uniform_graphics_custom = graphicsUniform["uniform_graphics_custom"] ? graphicsUniform["uniform_graphics_custom"].as<bool>() : false;
                 appInfo.Uniform.b_uniform_graphics_mvp = graphicsUniform["uniform_graphics_mvp"] ? graphicsUniform["uniform_graphics_mvp"].as<bool>() : false;
+                appInfo.Uniform.b_uniform_graphics_text_mvp = graphicsUniform["uniform_graphics_text_mvp"] ? graphicsUniform["uniform_graphics_text_mvp"].as<bool>() : false;
                 appInfo.Uniform.b_uniform_graphics_vp = graphicsUniform["uniform_graphics_vp"] ? graphicsUniform["uniform_graphics_vp"].as<bool>() : false;
                 appInfo.Uniform.b_uniform_graphics_lighting = graphicsUniform["uniform_graphics_lighting"] ? graphicsUniform["uniform_graphics_lighting"].as<bool>() : false;
                 appInfo.Uniform.b_uniform_graphics_depth_image_sampler = graphicsUniform["uniform_graphics_depth_image_sampler"] ? graphicsUniform["uniform_graphics_depth_image_sampler"].as<bool>() : false;
@@ -685,20 +686,25 @@ void CApplication::ReadUniforms(){
                 appInfo.Uniform.b_uniform_graphics_lightdepth_image_sampler_hardware = graphicsUniform["uniform_graphics_lightdepth_image_sampler_hardware"] ? graphicsUniform["uniform_graphics_lightdepth_image_sampler_hardware"].as<bool>() : false;
   
                 if(appInfo.Uniform.b_uniform_graphics_custom)
-                    //CGraphicsDescriptorManager::graphicsUniformTypes |= GRAPHCIS_UNIFORMBUFFER_CUSTOM;
                     CGraphicsDescriptorManager::addCustomUniformBuffer(appInfo.Uniform.GraphicsCustom.Size);
 
                 if(appInfo.Uniform.b_uniform_graphics_lighting)
-                    //CGraphicsDescriptorManager::graphicsUniformTypes |= GRAPHCIS_UNIFORMBUFFER_LIGHTING;
                     CGraphicsDescriptorManager::addLightingUniformBuffer();
 
-                if(appInfo.Uniform.b_uniform_graphics_mvp)
-                    //CGraphicsDescriptorManager::graphicsUniformTypes |= GRAPHCIS_UNIFORMBUFFER_MVP;
+                if(appInfo.Uniform.b_uniform_graphics_mvp){
                     CGraphicsDescriptorManager::addMVPUniformBuffer();
+                    renderer.bUseObjectMVP = true;
+                }
 
-                if(appInfo.Uniform.b_uniform_graphics_vp)
-                    //CGraphicsDescriptorManager::graphicsUniformTypes |= GRAPHCIS_UNIFORMBUFFER_VP;
+                if(appInfo.Uniform.b_uniform_graphics_text_mvp){
+                    CGraphicsDescriptorManager::addTextMVPUniformBuffer();
+                    renderer.bUseTextboxMVP = true;
+                }   
+
+                if(appInfo.Uniform.b_uniform_graphics_vp){
                     CGraphicsDescriptorManager::addVPUniformBuffer();
+                    renderer.bUseObjectMVP = true; //reuse MVP bool
+                }
 
                 if(appInfo.Uniform.b_uniform_graphics_depth_image_sampler)
                     CGraphicsDescriptorManager::addDepthImageSamplerUniformBuffer();
@@ -1219,7 +1225,7 @@ void CApplication::ReadRegisterObjects(){
                 continue;
             }
 
-            std::cout<<"before register Object id("<<object_id<<")!"<<std::endl;
+            //std::cout<<"before register Object id("<<object_id<<")!"<<std::endl;
             int resource_model_id = obj["resource_model_id"] ? obj["resource_model_id"].as<int>() : 0;
             auto resource_texture_id_list = obj["resource_texture_id_list"] ? obj["resource_texture_id_list"].as<std::vector<int>>() : std::vector<int>(1, 0);
             auto resource_text_id_list = obj["resource_text_id_list"] ? obj["resource_text_id_list"].as<std::vector<int>>() : std::vector<int>(1, 0);
@@ -1277,9 +1283,9 @@ void CApplication::ReadRegisterTextboxes(){
     //std::cout<<"Begin Read Textboxes"<<std::endl;
     if (config["Textboxes"]) {
         for (const auto& tb : config["Textboxes"]) {
-            int id = tb["textbox_id"] ? tb["textbox_id"].as<int>() : 0;
-            if(textManager.m_textBoxes[id].bRegistered) {
-                std::cout<<"WARNING: Trying to register a registered Textbox id("<<id<<")!"<<std::endl;
+            int textbox_id = tb["textbox_id"] ? tb["textbox_id"].as<int>() : 0;
+            if(textManager.m_textBoxes[textbox_id].bRegistered) {
+                std::cout<<"WARNING: Trying to register a registered Textbox id("<<textbox_id<<")!"<<std::endl;
                 continue;
             }
             //std::cout<<"Register Textbox id("<<id<<")!"<<std::endl;
@@ -1288,14 +1294,14 @@ void CApplication::ReadRegisterTextboxes(){
 
             auto position = tb["textbox_position"] ? tb["textbox_position"].as<std::vector<float>>(): std::vector<float>(3,0);
             glm::vec3 glm_position(position[0], position[1], position[2]);
-            textManager.m_textBoxes[id].SetPosition(glm_position);
+            textManager.m_textBoxes[textbox_id].SetPosition(glm_position);
 
             auto scale = tb["textbox_scale"] ? tb["textbox_scale"].as<float>() : 1.0f;
-            textManager.m_textBoxes[id].SetScale(scale);
+            textManager.m_textBoxes[textbox_id].SetScale(scale);
 
             auto color = tb["textbox_color"] ? tb["textbox_color"].as<std::vector<float>>(): std::vector<float>(4,1.0f);
             glm::vec4 glm_boxColor(color[0], color[1], color[2], color[3]);
-            textManager.m_textBoxes[id].SetBoxColor(glm_boxColor);
+            textManager.m_textBoxes[textbox_id].SetBoxColor(glm_boxColor);
 
             auto resource_text_id_list = tb["resource_text_id_list"] ? tb["resource_text_id_list"].as<std::vector<int>>() : std::vector<int>(1, 0);
 
@@ -1303,12 +1309,12 @@ void CApplication::ReadRegisterTextboxes(){
             
             auto text_color = tb["textbox_text_color"] ? tb["textbox_text_color"].as<std::vector<float>>() : std::vector<float>(4,1.0f);
             glm::vec4 glm_textColor(text_color[0], text_color[1], text_color[2], text_color[3]);
-            textManager.m_textBoxes[id].SetTextColor(glm_textColor);
+            textManager.m_textBoxes[textbox_id].SetTextColor(glm_textColor);
 
             int resource_default_graphics_pipeline_id = tb["resource_default_graphics_pipeline_id"] ? tb["resource_default_graphics_pipeline_id"].as<int>() : 0;
 
-            //textBoxes[id].Register(name, id, glm_position, scale, glm_boxColor, resource_text_id_list, text_content, glm_textColor);
-            textManager.m_textBoxes[id].Register((CApplication*)this, id, resource_text_id_list, text_content);
+            //textBoxes[textbox_id].Register(name, textbox_id, glm_position, scale, glm_boxColor, resource_text_id_list, text_content, glm_textColor);
+            textManager.m_textBoxes[textbox_id].Register((CApplication*)this, textbox_id, resource_text_id_list, text_content);
 
             //std::cout<<"TextboxId:("<<id<<") Name:("<<textBoxes[id].GetName()<<") Position:("<<textBoxes[id].GetPosition().x<<","<<textBoxes[id].GetPosition().y<<","<<textBoxes[id].GetPosition().z<<")"<<std::endl;
         }
@@ -1450,7 +1456,7 @@ void CApplication::Dispatch(int numWorkGroupsX, int numWorkGroupsY, int numWorkG
     std::vector<std::vector<VkDescriptorSet>> dsSets; 
     dsSets.push_back(computeDescriptorManager.descriptorSets);
 
-    renderer.BindComputeDescriptorSets(renderProcess.computePipelineLayout, dsSets, -1); //-1 to offset means no dynamic offset
+    renderer.BindComputeDescriptorSets(renderProcess.computePipelineLayout, dsSets);
 
     //std::cout<<"Record Compute command buffer. "<<std::endl;
     renderer.Dispatch(numWorkGroupsX, numWorkGroupsY, numWorkGroupsZ);

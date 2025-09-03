@@ -21,7 +21,7 @@ class CObject : public CEntity {
     std::string m_text = ""; //not used yet
 
 
-    bool bUseMVP_VP = false;
+    //bool bUseMVP_VP = false;
 
     //These will be used when recording draw cmd
     CRenderer *p_renderer;
@@ -43,7 +43,7 @@ class CObject : public CEntity {
     void CleanUp();
 
 public:
-    CObject();
+    CObject(){};
 
     int m_default_graphics_pipeline_id = 0;
     //int m_graphics_pipeline_id1 = 0;

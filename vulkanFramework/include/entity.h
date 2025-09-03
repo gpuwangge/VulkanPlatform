@@ -7,45 +7,36 @@
 
 class CEntity{
 public:
-    CEntity(){
-        DirectionLeft = glm::vec3(1, 0, 0);
-        DirectionUp = glm::vec3(0, 1, 0);
-        DirectionFront = glm::vec3(0, 0, 1);
-    }
-
-    ~CEntity(){
-
-    }
+    CEntity(){}
+    ~CEntity(){}
 
     std::string Name;
 
     enum EntityType { general, camera }; //for first persion type the roll should be ignored
 	EntityType entityType = EntityType::general;
 
-    glm::vec3 Length_original; //original is the value before scale
-    glm::vec3 LengthMin_original;
-    glm::vec3 LengthMax_original;
-    glm::vec3 Length; //length after scale, the true "length"
+    glm::vec3 Length_original = glm::vec3(); //original is the value before scale
+    glm::vec3 LengthMin_original = glm::vec3();
+    glm::vec3 LengthMax_original = glm::vec3();
+    glm::vec3 Length = glm::vec3(); //length after scale, the true "length"
 
     /******************
     * Tranformation
     *******************/
-    glm::vec3 Position; //absolute position coordinate
-    glm::vec3 Rotation; //Pitch, Yaw, Roll
-    glm::vec3 Scale;
+    glm::vec3 Position = glm::vec3(0.0f); //absolute position coordinate
+    glm::vec3 Rotation = glm::vec3(0.0f); //Pitch, Yaw, Roll
+    glm::vec3 Scale = glm::vec3(1.0f);
 
-    glm::mat4 RotationMatrix; //16*4=64 bytes
+    glm::mat4 TranslateMatrix = glm::mat4(1.0f);; //16*4=64 bytes
+    glm::mat4 RotationMatrix = glm::mat4(1.0f);; 
+    glm::mat4 ScaleMatrix = glm::mat4(1.0f);;
 
-    glm::mat4 ScaleMatrix;
+    glm::vec3 DirectionFront = glm::vec3(0, 0, 1);
+    glm::vec3 DirectionUp = glm::vec3(0, 1, 0);
+    glm::vec3 DirectionLeft = glm::vec3(1, 0, 0);
 
-    glm::mat4 TranslateMatrix;
-
-    glm::vec3 DirectionFront;
-    glm::vec3 DirectionUp;
-    glm::vec3 DirectionLeft;
-
-    glm::vec3 Velocity;
-    glm::vec3 AngularVelocity; //RotationSpeed for x, y and z axis
+    glm::vec3 Velocity = glm::vec3(0.0f);
+    glm::vec3 AngularVelocity = glm::vec3(0.0f); //RotationSpeed for x, y and z axis
 
     enum TranslateDirections {
         FORWARD,
@@ -55,7 +46,8 @@ public:
         UP,
         DOWN
     };
-    glm::vec4 TempVelocity[6];
+    //glm::vec4 TempVelocity[6];
+    std::array<glm::vec4, 6> TempVelocity{ glm::vec4(0.0f) };
     enum RotationDirections {
         PITCHUP,
         PITCHDOWN,
@@ -64,7 +56,8 @@ public:
         ROLLLEFT,
         ROLLRIGHT
     };
-    glm::vec4 TempAngularVelocity[6];
+    //glm::vec4 TempAngularVelocity[6];
+    std::array<glm::vec4, 6> TempAngularVelocity{ glm::vec4(0.0f) };
 
 
     void MoveForward(float distance, float speed);
@@ -86,9 +79,9 @@ public:
     void SetRotation(float pitch, float yaw, float roll);
     void SetRotation(glm::vec3 v);
 
-    glm::vec4 TempMoveVelocity;
+    glm::vec4 TempMoveVelocity = glm::vec4(0.0f);
     void MoveToPosition(float x, float y, float z, float t);
-    glm::vec4 TempMoveAngularVelocity;
+    glm::vec4 TempMoveAngularVelocity = glm::vec4(0.0f);
     void MoveToRotation(float pitch, float yaw, float roll, float t);
 
     void SetVelocity(float vx, float vy, float vz);

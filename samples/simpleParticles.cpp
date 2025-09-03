@@ -108,7 +108,7 @@ public:
 	}
 
 	void recordGraphicsCommandBuffer_renderpassMainscene(){
-		//this sample doesn't need BindDescriptorSets
+		//this sample doesn't need Bind DescriptorSets
 		//std::cout<<"renderer.graphicsCmdId="<<renderer.graphicsCmdId<<std::endl;
 		objects[0].Draw(computeDescriptorManager.storageBuffers, 0, PARTICLE_COUNT);
 	}
