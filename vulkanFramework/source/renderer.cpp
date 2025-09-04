@@ -489,23 +489,23 @@ void CRenderer::SetScissor(VkExtent2D &extent){
     scissor.extent = extent; //swapchain.swapChainExtent;
     vkCmdSetScissor(commandBuffers[graphicsCmdId][currentFrame], 0, 1, &scissor);
 }
-void CRenderer::BindVertexBuffer(int objectId){
+void CRenderer::BindVertexBuffer(int modelId){
     //std::cout<<"objectId="<<objectId<<", vertexDataBuffers.size()="<<vertexDataBuffers.size()<<std::endl;
     if(vertexDataBuffers.size() <= 0) return;
-	VkBuffer vertexBuffers[] = {vertexDataBuffers[objectId].buffer};
+	VkBuffer vertexBuffers[] = {vertexDataBuffers[modelId].buffer};
 	VkDeviceSize offsets[] = { 0 };
 	vkCmdBindVertexBuffers(commandBuffers[graphicsCmdId][currentFrame], 0, 1, vertexBuffers, offsets);
 }
-void CRenderer::BindVertexInstanceBuffer(int objectId){
+void CRenderer::BindVertexInstanceBuffer(int modelId, int textboxId){
     //std::cout<<"objectId="<<objectId<<", vertexDataBuffers.size()="<<vertexDataBuffers.size()<<", instanceDataBuffers.size()="<<instanceDataBuffers.size()<<std::endl;
     if(vertexDataBuffers.size() <= 0) return;
-	VkBuffer vertexBuffers[] = {vertexDataBuffers[objectId].buffer, instanceDataBuffers[0].buffer}; //TODO: hack using index=0
+	VkBuffer vertexBuffers[] = {vertexDataBuffers[modelId].buffer, instanceDataBuffers[textboxId].buffer};
 	//std::cout<<"BindVertexInstanceBuffer: objectId="<<objectId<<", vertexDataBuffers.size()="<<vertexDataBuffers.size()<<", instanceBuffers.size()="<<instanceDataBuffers.size()<<std::endl;
     VkDeviceSize offsets[] = { 0, 0 };
 	vkCmdBindVertexBuffers(commandBuffers[graphicsCmdId][currentFrame], 0, 2, vertexBuffers, offsets); //vertexBuffers here contains both vertex and instance buffer
 }
-void CRenderer::BindIndexBuffer(int objectId){
-	vkCmdBindIndexBuffer(commandBuffers[graphicsCmdId][currentFrame], indexDataBuffers[objectId].buffer, 0, VK_INDEX_TYPE_UINT32);
+void CRenderer::BindIndexBuffer(int modelId){
+	vkCmdBindIndexBuffer(commandBuffers[graphicsCmdId][currentFrame], indexDataBuffers[modelId].buffer, 0, VK_INDEX_TYPE_UINT32);
 }
 void CRenderer::BindExternalBuffer(std::vector<CWxjBuffer> &buffer){
     VkDeviceSize offsets[] = { 0 };

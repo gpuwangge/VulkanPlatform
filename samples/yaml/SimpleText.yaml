@@ -10,29 +10,29 @@ Objects:
     resource_model_id: 0
     resource_texture_id_list: [0]
     resource_default_graphics_pipeline_id: 0
-  - object_name: QuadText
-    object_id: 1
-    object_scale: 2
-    object_position: [0,0,0]
-    object_rotation: [0,0,180]
-    object_velocity: [0,0,0]
-    object_angular_velocity: [0,0,0]
-    object_skybox: false
-    object_text_content: Hello World
-    resource_model_id: 1
-    resource_text_id_list: [0]
-    resource_default_graphics_pipeline_id: 1
-  - object_name: QuadText
-    object_id: 2
-    object_scale: 2
-    object_position: [0,0,0]
-    object_rotation: [0,0,0]
-    object_velocity: [0,0,0]
-    object_angular_velocity: [0,0,0]
-    object_skybox: false
-    object_text_content: Hello World
-    resource_model_id: 2
-    resource_text_id_list: [0]
+  #- object_name: QuadText
+  #  object_id: 1
+  #  object_scale: 2
+  #  object_position: [0,0,0]
+  #  object_rotation: [0,0,180]
+  #  object_velocity: [0,0,0]
+  #  object_angular_velocity: [0,0,0]
+  #  object_skybox: false
+  #  object_text_content: Hello World
+  #  resource_model_id: 1
+  #  resource_text_id_list: [0]
+  #  resource_default_graphics_pipeline_id: 1
+  #- object_name: QuadText
+  #  object_id: 2
+  #  object_scale: 2
+  #  object_position: [0,0,0]
+  #  object_rotation: [0,0,0]
+  #  object_velocity: [0,0,0]
+  #  object_angular_velocity: [0,0,0]
+  #  object_skybox: false
+  #  object_text_content: Hello World
+  #  resource_model_id: 2
+  #  resource_text_id_list: [0]
     
 
 Textboxes:
@@ -41,10 +41,11 @@ Textboxes:
     textbox_position: [0, 0, 0]
     textbox_scale: 1
     textbox_color: [0, 0, 0, 128]
-    resource_text_id_list: [0]
     textbox_text_content: Hello World
     textbox_text_color: [255, 255, 0, 255]
-    resource_default_graphics_pipeline_id: 2
+    resource_model_id: 1
+    resource_text_id_list: [0]
+    resource_default_graphics_pipeline_id: 1
 
     #textbox_size: [300, 100]
     #textbox_border_color: [255, 255, 255, 255]
@@ -59,14 +60,13 @@ Textboxes:
 
 Resources:
   - Texts:
-    - resource_text_name: NumberEnglishChinese
+    - resource_text_name: AscII
       resource_text_color: [255, 255, 255, 255]
       resource_text_font_size: 50
       uniform_sampler_id: 1
   - Models:
     - resource_model_name: CUSTOM3D0
-    - resource_model_name: CUSTOM3D1
-    - resource_model_name: CUSTOM3D2
+    - resource_model_name: VERTEXTEXTQUAD
   - Textures:
     - resource_texture_name: repeat-pattern.jpg #yellowcloth.jpg
       resource_texture_miplevels: 1
@@ -76,10 +76,6 @@ Resources:
     - resource_graphics_pipeline_name: backgroundPipeline
       resource_graphics_pipeline_vertexshader_name: simpleText/background.vert.spv
       resource_graphics_pipeline_fragmentshader_name: simpleText/background.frag.spv
-      resource_graphics_pipeline_vertexdatatype: 2  #NoType,TwoDimension,ThreeDimension,ParticleType,TextQuad
-    - resource_graphics_pipeline_name: nonInstanceText
-      resource_graphics_pipeline_vertexshader_name: simpleText/noninstance.vert.spv
-      resource_graphics_pipeline_fragmentshader_name: simpleText/noninstance.frag.spv
       resource_graphics_pipeline_vertexdatatype: 2  #NoType,TwoDimension,ThreeDimension,ParticleType,TextQuad
     - resource_graphics_pipeline_name: textPipeline
       resource_graphics_pipeline_vertexshader_name: simpleText/text.vert.spv

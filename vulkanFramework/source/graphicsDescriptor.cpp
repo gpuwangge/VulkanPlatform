@@ -8,7 +8,7 @@ int CGraphicsDescriptorManager::graphicsUniformTypes;
 VkDescriptorPool CGraphicsDescriptorManager::graphicsDescriptorPool;
 std::vector<VkDescriptorPoolSize> CGraphicsDescriptorManager::graphicsDescriptorPoolSizes;
 unsigned int CGraphicsDescriptorManager::textureImageSamplerSize;
-void CGraphicsDescriptorManager::createDescriptorPool(unsigned int object_count){
+void CGraphicsDescriptorManager::createDescriptorPool(unsigned int object_textbox_count){
     //Descriptor Step 1/3
     //objectCount = object_count;
 
@@ -45,7 +45,7 @@ void CGraphicsDescriptorManager::createDescriptorPool(unsigned int object_count)
         //std::cout<<": Sampler("<<samplerCount<<")";
         for(int i = 0; i < textureImageSamplerSize; i++){
             graphicsDescriptorPoolSizes[counter].type = VK_DESCRIPTOR_TYPE_COMBINED_IMAGE_SAMPLER;
-	 	    graphicsDescriptorPoolSizes[counter].descriptorCount = object_count*static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);//each object has a sampler
+	 	    graphicsDescriptorPoolSizes[counter].descriptorCount = object_textbox_count*static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);//each object has a sampler
 		    counter++;
         }
     }

@@ -16,7 +16,7 @@ public:
     static int graphicsUniformTypes;
     static VkDescriptorPool graphicsDescriptorPool;
     static std::vector<VkDescriptorPoolSize> graphicsDescriptorPoolSizes;
-    static void createDescriptorPool(unsigned int object_count = 0);
+    static void createDescriptorPool(unsigned int object_textbox_count = 0);
     
     /************
      * Layout

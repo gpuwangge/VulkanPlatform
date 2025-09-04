@@ -60,9 +60,9 @@ public:
     void BindPipeline(VkPipeline &pipeline, VkPipelineBindPoint pipelineBindPoint, int commandBufferIndex);
     void SetViewport(VkExtent2D &extent);
     void SetScissor(VkExtent2D &extent);
-    void BindVertexBuffer(int objectId);
-    void BindVertexInstanceBuffer(int objectId);
-    void BindIndexBuffer(int objectId);
+    void BindVertexBuffer(int modelId);
+    void BindVertexInstanceBuffer(int modelId, int textboxId);
+    void BindIndexBuffer(int modelId);
     void BindExternalBuffer(std::vector<CWxjBuffer> &buffer);
     void BindDescriptorSets(VkPipelineLayout &pipelineLayout, std::vector<std::vector<VkDescriptorSet>> &descriptorSets, VkPipelineBindPoint pipelineBindPoint, uint32_t commandBufferIndex, uint32_t dynamicObjectMVPOffset = -1, uint32_t dynamicTextboxMVPOffset = -1);
     void BindGraphicsDescriptorSets(VkPipelineLayout &pipelineLayout, std::vector<std::vector<VkDescriptorSet>> &descriptorSets, uint32_t dynamicObjectMVPOffset = -1, uint32_t dynamicTextboxMVPOffset = -1);

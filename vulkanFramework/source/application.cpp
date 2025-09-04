@@ -804,16 +804,16 @@ void CApplication::ReadResources(){
                     modelManager.modelLengths.push_back(modelManager.customModels3D[0].length);
                     modelManager.modelLengthsMin.push_back(modelManager.customModels3D[0].lengthMin);
                     modelManager.modelLengthsMax.push_back(modelManager.customModels3D[0].lengthMax);
-                }else if(name == "CUSTOM3D1"){
-                    renderer.CreateVertexBuffer<Vertex3D>(modelManager.customModels3D[1].vertices);
-                    renderer.CreateIndexBuffer(modelManager.customModels3D[1].indices);
+                // }else if(name == "CUSTOM3D1"){
+                //     renderer.CreateVertexBuffer<Vertex3D>(modelManager.customModels3D[1].vertices);
+                //     renderer.CreateIndexBuffer(modelManager.customModels3D[1].indices);
 
-                    modelManager.modelLengths.push_back(modelManager.customModels3D[1].length);
-                    modelManager.modelLengthsMin.push_back(modelManager.customModels3D[1].lengthMin);
-                    modelManager.modelLengthsMax.push_back(modelManager.customModels3D[1].lengthMax);
-                }else if(name == "CUSTOM3D2"){ //TODO: vertexBuffer and indexBuffer has the same index# of CUSTOM3D#, but instance buffer is 0
+                //     modelManager.modelLengths.push_back(modelManager.customModels3D[1].length);
+                //     modelManager.modelLengthsMin.push_back(modelManager.customModels3D[1].lengthMin);
+                //     modelManager.modelLengthsMax.push_back(modelManager.customModels3D[1].lengthMax);
+                }else if(name == "VERTEXTEXTQUAD"){ //TODO: vertexBuffer and indexBuffer has the same index# of CUSTOM3D#, but instance buffer is 0
                     //appInfo.VertexBufferType = VertexStructureTypes::TextQuad;
-                    //std::cout<<"Application: Load CUSTOM3D2"<<std::endl;
+                    //std::cout<<"Application: Load "<<std::endl;
                     renderer.CreateVertexBuffer<TextQuadVertex>(modelManager.textModels[0].vertices);
                     renderer.CreateInstanceBuffer(modelManager.textModels[0].instanceData);
                     renderer.CreateIndexBuffer(modelManager.textModels[0].indices);
@@ -1030,8 +1030,8 @@ void CApplication::ReadSubpasses(){
 
 void CApplication::CreateUniformDescriptors(bool b_uniform_graphics, bool b_uniform_compute){
     //UNIFORM STEP 1/3 (Pool)
-    CGraphicsDescriptorManager::createDescriptorPool(objects.size()+2);//TODO: hack, need add textbox char size 
-    CComputeDescriptorManager::createDescriptorPool(); 
+    CGraphicsDescriptorManager::createDescriptorPool(objects.size()+textManager.m_textBoxes.size());//need size of both objects and textboxes, because each need a sampler
+    CComputeDescriptorManager::createDescriptorPool();
 
     //UNIFORM STEP 2/3 (Layer)
     if(b_uniform_graphics){
@@ -1303,6 +1303,8 @@ void CApplication::ReadRegisterTextboxes(){
             glm::vec4 glm_boxColor(color[0], color[1], color[2], color[3]);
             textManager.m_textBoxes[textbox_id].SetBoxColor(glm_boxColor);
 
+            int resource_model_id = tb["resource_model_id"] ? tb["resource_model_id"].as<int>() : 0;
+
             auto resource_text_id_list = tb["resource_text_id_list"] ? tb["resource_text_id_list"].as<std::vector<int>>() : std::vector<int>(1, 0);
 
             std::string text_content = tb["textbox_text_content"] ? tb["textbox_text_content"].as<std::string>() : "";
@@ -1314,7 +1316,7 @@ void CApplication::ReadRegisterTextboxes(){
             int resource_default_graphics_pipeline_id = tb["resource_default_graphics_pipeline_id"] ? tb["resource_default_graphics_pipeline_id"].as<int>() : 0;
 
             //textBoxes[textbox_id].Register(name, textbox_id, glm_position, scale, glm_boxColor, resource_text_id_list, text_content, glm_textColor);
-            textManager.m_textBoxes[textbox_id].Register((CApplication*)this, textbox_id, resource_text_id_list, text_content);
+            textManager.m_textBoxes[textbox_id].Register((CApplication*)this, textbox_id, resource_text_id_list, text_content, resource_model_id, resource_default_graphics_pipeline_id);
 
             //std::cout<<"TextboxId:("<<id<<") Name:("<<textBoxes[id].GetName()<<") Position:("<<textBoxes[id].GetPosition().x<<","<<textBoxes[id].GetPosition().y<<","<<textBoxes[id].GetPosition().z<<")"<<std::endl;
         }

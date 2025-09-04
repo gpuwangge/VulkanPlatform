@@ -46,7 +46,7 @@ void CTextBox::CreateDescriptorSets_TextureImageSampler(VkDescriptorPool &descri
 
             //if(b_isText){
                 //if(j < m_text_ids.size()){
-                    imageInfo[j].imageView = p_textImageManager->textureImages[0].m_textureImageBuffer.view; //hack, m_text_ids[j]
+                    imageInfo[j].imageView = p_textImageManager->textureImages[0].m_textureImageBuffer.view; //TODO: now we have only one text image(ascII), maybe add more later
                     imageInfo[j].sampler = samplers[p_textImageManager->textureImages[0].m_sampler_id]; 
                 //}else{ //There are more samplers than textures for this object, so use the first texture to fill other samplers
                 //    imageInfo[j].imageView = p_textImageManager->textureImages[m_text_ids[0]].m_textureImageBuffer.view;
@@ -82,32 +82,20 @@ void CTextBox::CreateDescriptorSets_TextureImageSampler(VkDescriptorPool &descri
 }
 
 void CTextBox::Draw(){
-    //std::cout<<"Draw character"<<std::endl;
-
-    int current_graphics_pipeline_id = 2;//hack, (graphicsPipelineId == -1) ? m_default_graphics_pipeline_id : graphicsPipelineId;
-
-    VkPipelineLayout *p_graphicsPipelineLayout = &(p_renderProcess->graphicsPipelineLayouts[current_graphics_pipeline_id]);
-    p_renderer->BindPipeline(p_renderProcess->graphicsPipelines[current_graphics_pipeline_id], VK_PIPELINE_BIND_POINT_GRAPHICS, p_renderer->graphicsCmdId);
+    VkPipelineLayout *p_graphicsPipelineLayout = &(p_renderProcess->graphicsPipelineLayouts[m_default_graphics_pipeline_id]);
+    p_renderer->BindPipeline(p_renderProcess->graphicsPipelines[m_default_graphics_pipeline_id], VK_PIPELINE_BIND_POINT_GRAPHICS, p_renderer->graphicsCmdId);
 
     std::vector<std::vector<VkDescriptorSet>> dsSets; 
     //set = 0 is for general uniform; set = 1 is for texture sampler uniform
     if(CGraphicsDescriptorManager::getSetSize_General() > 0) dsSets.push_back(*p_descriptorSets_graphics_general); 
     if(CGraphicsDescriptorManager::textureImageSamplers.size() > 0) dsSets.push_back(descriptorSets_graphics_texture_image_sampler); 
 
-    //bool bUseMVP_VP = true; //hack
-    //int m_object_id = 2;//hack
     if(dsSets.size() > 0){
-        //int dynamicObjectMVPOffset = -1; //-1 means not use dynamic offset (no MVP/VP used)
         int dynamicTextboxMVPOffset = m_textBoxID; //use offset for textboxID=0
         p_renderer->BindGraphicsDescriptorSets(*p_graphicsPipelineLayout, dsSets, 0, dynamicTextboxMVPOffset);
     }
 
-    int m_model_id = 2;//hack
-    // p_renderer->BindVertexBuffer(m_model_id);
-    // p_renderer->BindIndexBuffer(m_model_id);
-    // p_renderer->DrawIndexed(m_model_id);
-    //p_renderer->BindVertexBuffer(m_model_id);
-    p_renderer->BindVertexInstanceBuffer(m_model_id);
+    p_renderer->BindVertexInstanceBuffer(m_model_id, m_textBoxID);
     p_renderer->BindIndexBuffer(m_model_id);
     p_renderer->DrawInstanceIndexed(m_model_id, m_instanceCount);
 
@@ -119,12 +107,14 @@ void CTextBox::Draw(){
 *******************/
 //CTextBox::CTextBox(){}
 //CApplication *p_app, int object_id, std::vector<int> texture_ids, std::vector<int> text_ids, int model_id, int default_graphics_pipeline_id
-void CTextBox::Register(CApplication *p_app, int textbox_id, std::vector<int> text_ids, std::string content){
+void CTextBox::Register(CApplication *p_app, int textbox_id, std::vector<int> text_ids, std::string content, int model_id, int default_graphics_pipeline_id){
     bRegistered = true;
     m_textBoxID = textbox_id;
 
-    //m_characters.resize(1);//TODO: change later
+    //m_characters.resize(1);
 
+    m_model_id = model_id;
+    m_default_graphics_pipeline_id = default_graphics_pipeline_id;
     m_instanceCount = p_app->textManager.GetInstanceCount();
 
     //for(auto& ch : m_characters){

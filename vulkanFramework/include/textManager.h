@@ -47,6 +47,9 @@ class CTextBox : public CEntity {
     std::vector<VkDescriptorSet> *p_descriptorSets_graphics_general;
     std::vector<VkDescriptorSet> descriptorSets_graphics_texture_image_sampler;
     CTextImageManager *p_textImageManager;
+
+    int m_default_graphics_pipeline_id = 0;
+    int m_model_id = 0;
 public:
 
     bool bRegistered = false;
@@ -59,7 +62,7 @@ public:
     void SetText(std::string text){m_text = text;}
     void SetBoxColor(glm::vec4 color){m_boxColor = color;}
     void SetTextColor(glm::vec4 color){m_textColor = color;}
-    void Register(CApplication *p_app, int textbox_id, std::vector<int> text_ids, std::string content);
+    void Register(CApplication *p_app, int textbox_id, std::vector<int> text_ids, std::string content, int model_id, int default_graphics_pipeline_id);
     void Update(float deltaTime, int currentFrame, Camera &mainCamera);
     void Draw();
     //     for(auto& ch : m_characters){ 
