@@ -146,7 +146,7 @@ void CApplication::run(){ //Entrance Function
 #endif
 
 void CApplication::initialize(){
-    bool bVerboseInitialization = false;
+    bool bVerboseInitialization = true;
     TimePoint T0 = now();
 
     // static auto startInitTime = std::chrono::high_resolution_clock::now();
@@ -843,7 +843,7 @@ void CApplication::ReadResources(){
             }
         }
 
-        //std::cout<<"Application: Total Texture Images before creating new ones: "<<textureManager.textureImages.size()<<std::endl;
+        std::cout<<"Application: Total Texture Images before creating new ones: "<<textureManager.textureImages.size()<<std::endl;
 
         if (resource["Textures"]) {
             //texture id is allocated by engine, instead of user, in order
@@ -885,7 +885,7 @@ void CApplication::ReadResources(){
             }
         }
 
-        //std::cout<<"Application: Total Texture Images after creating new ones: "<<textureManager.textureImages.size()<<std::endl;
+        std::cout<<"Application: Total Texture Images after creating new ones: "<<textureManager.textureImages.size()<<std::endl;
 
         //shaders id is allocated by engine, not user, in order
         if (resource["Pipelines"]) {
@@ -899,7 +899,7 @@ void CApplication::ReadResources(){
             appInfo.VertexDatatype = std::make_unique<std::vector<int>>(std::vector<int>());
 
             for (const auto& pipeline : resource["Pipelines"]) {
-                //std::cout<<"Application: Read Pipeline."<<std::endl;
+                std::cout<<"Application: Read Pipeline."<<std::endl;
                 std::string name = pipeline["resource_graphics_pipeline_name"].as<std::string>();
                 std::string vertexShaderName = pipeline["resource_graphics_pipeline_vertexshader_name"].as<std::string>();
                 std::string fragmentShaderName = pipeline["resource_graphics_pipeline_fragmentshader_name"].as<std::string>();
@@ -945,7 +945,7 @@ void CApplication::ReadResources(){
         }
     }
 
-    //std::cout<<"Application: Read Resources Done."<<std::endl;
+    std::cout<<"Application: Read Resources Done."<<std::endl;
 }
 
 void CApplication::ReadAttachments(){
@@ -1064,7 +1064,7 @@ void CApplication::CreateUniformDescriptors(bool b_uniform_graphics, bool b_unif
 }
 
 void CApplication::CreatePipelines(){
-    bool bPipelineVerbose = false;
+    bool bPipelineVerbose = true;
 
     /****************************
     * Command Buffer

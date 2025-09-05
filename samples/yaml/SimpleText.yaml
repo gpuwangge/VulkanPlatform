@@ -41,7 +41,7 @@ Textboxes:
     textbox_position: [0, 0, 0]
     textbox_scale: 1
     textbox_color: [0, 0, 0, 128]
-    textbox_text_content: Hello World
+    textbox_text_content: Hello
     textbox_text_color: [255, 255, 0, 255]
     resource_model_id: 1
     resource_text_id_list: [0]

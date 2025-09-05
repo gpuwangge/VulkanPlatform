@@ -172,6 +172,7 @@ struct TextQuadVertex {
 struct TextInstanceData{
     glm::vec2 offset;
     glm::vec3 color;
+    glm::vec4 uvRect; //uv range of a specific char in  atlas
 
     static VkVertexInputBindingDescription getBindingDescription() {
 		VkVertexInputBindingDescription bindingDescription{};
@@ -182,8 +183,8 @@ struct TextInstanceData{
 		return bindingDescription;
 	}
 
-	static std::array<VkVertexInputAttributeDescription, 2> getAttributeDescriptions() {
-		std::array<VkVertexInputAttributeDescription, 2> attributeDescriptions{};
+	static std::array<VkVertexInputAttributeDescription, 3> getAttributeDescriptions() {
+		std::array<VkVertexInputAttributeDescription, 3> attributeDescriptions{};
 
 		attributeDescriptions[0].binding = 1; //here use 1 instead of 0, because binding0 is for per vertex data; binding1 is for per instance data
 		attributeDescriptions[0].location = 2;
@@ -194,11 +195,16 @@ struct TextInstanceData{
 		attributeDescriptions[1].location = 3;
 		attributeDescriptions[1].format = VK_FORMAT_R32G32B32_SFLOAT;
 		attributeDescriptions[1].offset = offsetof(TextInstanceData, color);
+
+		attributeDescriptions[2].binding = 1;
+		attributeDescriptions[2].location = 4;
+		attributeDescriptions[2].format = VK_FORMAT_R32G32B32_SFLOAT;
+		attributeDescriptions[2].offset = offsetof(TextInstanceData, uvRect);
 		return attributeDescriptions;
 	}
 
 	bool operator==(const TextInstanceData& other) const {
-		return offset == other.offset && color == other.color;
+		return offset == other.offset && color == other.color && uvRect == other.uvRect;
 	}    
 };
 
@@ -489,9 +495,10 @@ struct IntPushConstants{
 // Struct to hold glyph texture data
 struct GlyphTexture {
     SDL_Rect rect; // The position and size of the glyph within the texture atlas
-    int advance;   // The horizontal distance to the next glyph
-
-    float u0,v0,u1,v1;
+    int bearingX;      // 左边距
+    int bearingY;      // 顶边距
+    int advance;   // The horizontal distance to the next glyph, 光标前进距离
+    float u0,v0,u1,v1; // 归一化 UV 坐标
 };
 
 
