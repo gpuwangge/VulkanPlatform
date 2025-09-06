@@ -156,33 +156,13 @@ void CTextBox::CreateTextInstanceData(CTextManager *p_textManager){
             1.0f - (penY - (glyph.rect.h - glyph.bearingY)) / (WINDOW_HEIGHT / 2.0f)
         );
 
-        // UV 矩形（用 xywh 表示，方便 shader 里计算）
-        // glm::vec4 uvRect(
-        //     glyph.u0,
-        //     glyph.v0,
-        //     glyph.u1 - glyph.u0,
-        //     glyph.v1 - glyph.v0
-        // );
-
-        glm::vec4 uvRect(
-            glyph.u0,
-            glyph.v0,
-            glyph.u1,
-            glyph.v1
-        );
+        glm::vec4 uvRect(glyph.u0, glyph.v0, glyph.u1, glyph.v1);
         //glm::vec4 uvRect((1070.0+4)/2600, 0, (33.0)/2600, 1);
         //glm::vec4 uvRect((88.0+2)/2600, 0, (42.0+2)/2600, 1);
+        //glm::vec4 uvRect((1916.0+0)/2494, 0, (16.0+0)/2494, 1); //f
+        //glm::vec4 uvRect((1997.0-3+1)/2494, 0, (11.0+3)/2494, 1); //j
 
 
-        //glm::vec4 uvRect(0.323875+0.001, 0, 0.0129712, 1);
-        //glm::vec4 uvRect(0, 0, 0.00538461538, 1); //!
-        //glm::vec4 uvRect(0.00576923076, 0, 0.00692307692, 1); //"
-       // glm::vec4 uvRect(0.51307692307, 0, 0.01269230769, 1); //P
-        //glm::vec4 uvRect((1334.0+5)/2600, 0, 33.0/2600, 1);
-        //glm::vec4 uvRect(0.51423076923, 0, 0.01115384615, 1);
-        //glm::vec4 uvRect((1334.0+3)/2600, 0, (33.0)/2600, 1);
-
-        // 添加实例数据
         //std::cout<<ch<<" offset: "<<offset.x<<","<<offset.y<<", pen: "<<penX<<","<<penY<<" bearing: "<<glyph.bearingX<<","<<glyph.bearingY<<" rect: "<<glyph.rect.x<<","<<glyph.rect.y<<","<<glyph.rect.w<<","<<glyph.rect.h<<std::endl;
         //std::cout<<ch<<" penX: "<<penX<<", rect.x: "<<glyph.rect.x<<", rect.w: "<<glyph.rect.w<<", advance: "<<glyph.advance<<std::endl;
         //std::cout<<ch<<" "<<uvRect.x<<","<<uvRect.y<<","<<uvRect.z<<","<<uvRect.w<<std::endl;
@@ -193,7 +173,6 @@ void CTextBox::CreateTextInstanceData(CTextManager *p_textManager){
             uvRect
         });
 
-        // 光标前进
         penX += glyph.advance+1;
         i++;
     }
@@ -238,8 +217,8 @@ CTextManager::CTextManager(){
 
 void CTextManager::CreateTextFonts(){
     if (TTF_Init() == -1) std::cout << "SDL_ttf could not initialize! SDL_Error: " << SDL_GetError() << std::endl;
-    //m_font = TTF_OpenFont("NotoSansCJK-VF.otf.ttc", m_fontSize);
-    m_font = TTF_OpenFont("arial.ttf", m_fontSize);
+    m_font = TTF_OpenFont("NotoSansCJK-VF.otf.ttc", m_fontSize);
+    //m_font = TTF_OpenFont("arial.ttf", m_fontSize);
     if (!m_font) std::cout << "Failed to load font! SDL_Error: " << SDL_GetError() << std::endl;
 
     TTF_SetFontStyle(m_font, TTF_STYLE_NORMAL);
@@ -329,11 +308,8 @@ void CTextManager::CreateGlyphMap() {
     }
     atlasHeight = maxRowHeight;
 
-    //atlasWidth -= 3;
-
     //std::cout << "Creating Glyph Map with atlas size: " << atlasWidth << "x" << atlasHeight << std::endl;
 
-    // 现在生成 glyph 信息
     penX = 0;
     for (char ch : ascII) {
         //std::cout << "Processing character: '" << ch << "' (ASCII " << (int)ch << ")" << std::endl;
@@ -357,15 +333,15 @@ void CTextManager::CreateGlyphMap() {
         glyph.bearingY = maxy;
         glyph.advance = advance;
 
-        // 归一化 UV，注意 v 翻转
-        // glyph.u0 = (float)(glyph.rect.x + minx) / atlasWidth;
-        // glyph.u1 = (float)(glyph.rect.x + maxx) / atlasWidth;
-        //glyph.u1 = (float)(glyph.rect.x + minx + glyph.rect.w) / atlasWidth;
-        glyph.u0 = (float)(penX + minx) / atlasWidth;
-        glyph.u1 = (float)(maxx - minx) / atlasWidth;
+
+        glyph.u0 = (float)(penX + minx+1) / atlasWidth;
+        glyph.u1 = (float)(advance - minx-1) / atlasWidth; //or maxx-minx
 
         glyph.v0 = 1.0f - (float)(glyph.rect.y + glyph.rect.h) / atlasHeight;
         glyph.v1 = 1.0f - (float)glyph.rect.y / atlasHeight;
+
+        //glyph.v0 = 1.0f - (float)(penY + glyphSurface->h) / atlasHeight;
+        //glyph.v1 = 1.0f - (float)penY / atlasHeight;
 
         // std::cout << "Char '" << ch << "' Rect: (" << glyph.rect.x << "," << glyph.rect.y << "," << glyph.rect.w << "," << glyph.rect.h 
         //           << ") Bearing: (" << glyph.bearingX << "," << glyph.bearingY << ") Advance: " << glyph.advance 
@@ -373,9 +349,7 @@ void CTextManager::CreateGlyphMap() {
 
         glyphMap[ch] = glyph;
 
-        //penX += glyphSurface->w + 1;
         penX += advance;
-        //penX += glyphSurface->w;
         std::cout << "Next penX: " << penX << std::endl;
         SDL_DestroySurface(glyphSurface);
     }
