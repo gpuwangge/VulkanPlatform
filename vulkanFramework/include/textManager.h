@@ -41,6 +41,7 @@ class CTextBox : public CEntity {
     int m_textBoxID = 0;
     
     int m_instanceCount = 0;
+    int m_maxCharPerRow = 30;
 
     CRenderer *p_renderer;
     CRenderProcess *p_renderProcess;

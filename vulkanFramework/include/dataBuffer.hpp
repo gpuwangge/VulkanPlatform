@@ -173,6 +173,7 @@ struct TextInstanceData{
     glm::vec2 offset;
     glm::vec3 color;
     glm::vec4 uvRect; //uv range of a specific char in  atlas
+    glm::vec2 scale;
 
     static VkVertexInputBindingDescription getBindingDescription() {
 		VkVertexInputBindingDescription bindingDescription{};
@@ -183,8 +184,8 @@ struct TextInstanceData{
 		return bindingDescription;
 	}
 
-	static std::array<VkVertexInputAttributeDescription, 3> getAttributeDescriptions() {
-		std::array<VkVertexInputAttributeDescription, 3> attributeDescriptions{};
+	static std::array<VkVertexInputAttributeDescription, 4> getAttributeDescriptions() {
+		std::array<VkVertexInputAttributeDescription, 4> attributeDescriptions{};
 
 		attributeDescriptions[0].binding = 1; //here use 1 instead of 0, because binding0 is for per vertex data; binding1 is for per instance data
 		attributeDescriptions[0].location = 2;
@@ -200,11 +201,16 @@ struct TextInstanceData{
 		attributeDescriptions[2].location = 4;
 		attributeDescriptions[2].format = VK_FORMAT_R32G32B32_SFLOAT;
 		attributeDescriptions[2].offset = offsetof(TextInstanceData, uvRect);
+
+        attributeDescriptions[3].binding = 1;
+		attributeDescriptions[3].location = 5;
+		attributeDescriptions[3].format = VK_FORMAT_R32G32_SFLOAT;
+		attributeDescriptions[3].offset = offsetof(TextInstanceData, scale);
 		return attributeDescriptions;
 	}
 
 	bool operator==(const TextInstanceData& other) const {
-		return offset == other.offset && color == other.color && uvRect == other.uvRect;
+		return offset == other.offset && color == other.color && uvRect == other.uvRect && scale == other.scale;
 	}    
 };
 
@@ -494,11 +500,15 @@ struct IntPushConstants{
 
 // Struct to hold glyph texture data
 struct GlyphTexture {
-    SDL_Rect rect; // The position and size of the glyph within the texture atlas
-    int bearingX;      // 左边距
-    int bearingY;      // 顶边距
-    int advance;   // The horizontal distance to the next glyph, 光标前进距离
-    float u0,v0,u1,v1; // 归一化 UV 坐标
+    //glm::vec2 pos;
+    //glm::vec2 advance_size; //large
+    //glm::vec2 real_size; //small
+    glm::vec2 size;
+    //SDL_Rect texelRect; // The position and size of the glyph within the texture atlas
+    glm::vec4 uvRect; // normalized UV coordinates
+    //int bearingX;      // Left bearing
+    //int bearingY;      // Top bearing
+    int advance;   // The horizontal distance to the next glyph
 };
 
 

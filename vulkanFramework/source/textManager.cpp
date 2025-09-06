@@ -137,44 +137,53 @@ void CTextBox::Register(CApplication *p_app, int textbox_id, std::vector<int> te
 void CTextBox::CreateTextInstanceData(CTextManager *p_textManager){
     //std::string text = "Hello123abcdABCD";
     float penX = 0.0f;
-    float penY = 0.0f;  // baseline 在 y=0
+    float penY = 0.0f;
 
     m_text_content = p_textManager->ascII;//"!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
-    std::cout<<"Creating text instance data for text: "<<m_text_content<<std::endl;
-    int i = 0;
+    //std::cout<<"Creating text instance data for text: "<<m_text_content<<std::endl;
+    int charCount = 0;
     for (char ch : m_text_content) {
         GlyphTexture &glyph = p_textManager->glyphMap[ch];
 
-        // Quad 的偏移位置（光标位置 + bearingX）
-        // glm::vec2 offset(
-        //     penX + glyph.bearingX,
-        //     penY - (glyph.rect.h - glyph.bearingY) // baseline 对齐
-        // );
-
+        float sx = 2.0f / WINDOW_WIDTH; // scale to NDC
+        float sy = 2.0f / WINDOW_HEIGHT;
         glm::vec2 offset(
-            ((penX + glyph.bearingX) / (WINDOW_WIDTH  / 2.0f) - 1.0f),
-            1.0f - (penY - (glyph.rect.h - glyph.bearingY)) / (WINDOW_HEIGHT / 2.0f)
+            //(penX + glyph.bearingX) * sx - 1.0f,
+            //0 //1.0f - (penY + glyph.bearingY) * sy
+            //(penY + glyph.bearingY) * sy
+            penX * sx,
+            penY * sy
         );
+        //std::cout<<"Char: "<<ch<<" penX: "<<penX<<", penY: "<<penY<<" glyph.advance: "<<glyph.advance<<" glyph.size.x: "<<glyph.size.x<<", glyph.size.y: "<<glyph.size.y<<std::endl;
 
-        glm::vec4 uvRect(glyph.u0, glyph.v0, glyph.u1, glyph.v1);
-        //glm::vec4 uvRect((1070.0+4)/2600, 0, (33.0)/2600, 1);
-        //glm::vec4 uvRect((88.0+2)/2600, 0, (42.0+2)/2600, 1);
-        //glm::vec4 uvRect((1916.0+0)/2494, 0, (16.0+0)/2494, 1); //f
-        //glm::vec4 uvRect((1997.0-3+1)/2494, 0, (11.0+3)/2494, 1); //j
-
+        //glm::vec4 uvRect(glyph.u0, glyph.v0, glyph.u1, glyph.v1);
 
         //std::cout<<ch<<" offset: "<<offset.x<<","<<offset.y<<", pen: "<<penX<<","<<penY<<" bearing: "<<glyph.bearingX<<","<<glyph.bearingY<<" rect: "<<glyph.rect.x<<","<<glyph.rect.y<<","<<glyph.rect.w<<","<<glyph.rect.h<<std::endl;
         //std::cout<<ch<<" penX: "<<penX<<", rect.x: "<<glyph.rect.x<<", rect.w: "<<glyph.rect.w<<", advance: "<<glyph.advance<<std::endl;
         //std::cout<<ch<<" "<<uvRect.x<<","<<uvRect.y<<","<<uvRect.z<<","<<uvRect.w<<std::endl;
+
+        glm::vec2 scale(glyph.size.x/glyph.size.y, 1.0f);
+        //glm::vec2 scale((float)glyph.texelRect.w/glyph.texelRect.y, 1.0f);
+        //std::cout<<ch<<" rect: "<<glyph.rect.x<<","<<glyph.rect.y<<","<<glyph.rect.w<<","<<glyph.rect.h<<std::endl;
+        //std::cout<<ch<<" scale: "<<scale.x<<","<<scale.y<<std::endl;
+
         textInstanceData.push_back({
-            //offset,
-            glm::vec2(i*0.3f-3,0),
+            offset,
+            //glm::vec2(i*0.3f-3,0),
             {1.0f, 0.0f, 1.0f},
-            uvRect
+            glyph.uvRect,
+            scale
         });
 
-        penX += glyph.advance+1;
-        i++;
+        
+        //penX += std::max((float)glyph.advance, glyph.size.x);
+        penX += glyph.advance;
+        charCount++;
+        if (charCount >= m_maxCharPerRow) { //move to next line
+            penX = 0;
+            penY -= glyph.size.y;
+            charCount = 0;
+        }
     }
 
     m_instanceCount = textInstanceData.size();
@@ -282,7 +291,6 @@ void CTextManager::CreateTextImage(){
 
 
 void CTextManager::CreateGlyphMap() {
-    // 假设: atlas 全部 ASCII 32~126
     //std::string asciiChars;
     //for (int i = 32; i < 127; i++) asciiChars.push_back((char)i);
 
@@ -291,7 +299,7 @@ void CTextManager::CreateGlyphMap() {
     int maxRowHeight = 0;
     int atlasWidth = 0, atlasHeight = 0;
 
-    // 先算 atlas 宽高（把所有 glyph 放在一行）
+    int charCount = 0;
     for (char ch : ascII) {
         glyphSurface = TTF_RenderGlyph_Blended(m_font, ch, {255, 255, 255, 255});
         if (!glyphSurface) continue;
@@ -299,24 +307,25 @@ void CTextManager::CreateGlyphMap() {
         int minx, maxx, miny, maxy, advance;
         TTF_GetGlyphMetrics(m_font, ch, &minx, &maxx, &miny, &maxy, &advance);
 
-        //atlasWidth += glyphSurface->w + 0; // 1 像素间隔，避免采样溢出
         atlasWidth += advance;
         
         if (glyphSurface->h > maxRowHeight) maxRowHeight = glyphSurface->h;
 
         SDL_DestroySurface(glyphSurface);
+
+        charCount++;
     }
     atlasHeight = maxRowHeight;
+    float averageAdvance = static_cast<float>(atlasWidth) / charCount;
+    //std::cout<<"averageAdvance: "<<averageAdvance<<std::endl;
 
     //std::cout << "Creating Glyph Map with atlas size: " << atlasWidth << "x" << atlasHeight << std::endl;
 
     penX = 0;
     for (char ch : ascII) {
-        //std::cout << "Processing character: '" << ch << "' (ASCII " << (int)ch << ")" << std::endl;
         glyphSurface = TTF_RenderGlyph_Blended(m_font, ch, {255, 255, 255, 255});
         if (!glyphSurface) continue;
 
-        //std::cout << "  Glyph size: " << glyphSurface->w << "x" << glyphSurface->h << std::endl;
         int minx, maxx, miny, maxy, advance;
         if (TTF_GetGlyphMetrics(m_font, ch, &minx, &maxx, &miny, &maxy, &advance) == 0) {
             std::cout << "Failed to get glyph metrics for '" << ch << "'" << std::endl;
@@ -324,33 +333,32 @@ void CTextManager::CreateGlyphMap() {
             continue;
         }
 
-        std::cout << "Char '" << ch << "' Metrics: minx=" << minx << ", maxx=" << maxx 
-                  << ", miny=" << miny << ", maxy=" << maxy << ", advance=" << advance 
-                  << ", glyphSurface->w=" << glyphSurface->w << ", glyphSurface->h=" << glyphSurface->h << ", ";
+        // std::cout << "Char '" << ch << "' Metrics: minx=" << minx << ", maxx=" << maxx 
+        //           << ", miny=" << miny << ", maxy=" << maxy << ", advance=" << advance 
+        //           << ", glyphSurface->w=" << glyphSurface->w << ", glyphSurface->h=" << glyphSurface->h << ", ";
+        
         GlyphTexture glyph;
-        glyph.rect = { penX, penY, glyphSurface->w, glyphSurface->h };
-        glyph.bearingX = minx;
-        glyph.bearingY = maxy;
-        glyph.advance = advance;
-
-
-        glyph.u0 = (float)(penX + minx+1) / atlasWidth;
-        glyph.u1 = (float)(advance - minx-1) / atlasWidth; //or maxx-minx
-
-        glyph.v0 = 1.0f - (float)(glyph.rect.y + glyph.rect.h) / atlasHeight;
-        glyph.v1 = 1.0f - (float)glyph.rect.y / atlasHeight;
-
-        //glyph.v0 = 1.0f - (float)(penY + glyphSurface->h) / atlasHeight;
-        //glyph.v1 = 1.0f - (float)penY / atlasHeight;
-
-        // std::cout << "Char '" << ch << "' Rect: (" << glyph.rect.x << "," << glyph.rect.y << "," << glyph.rect.w << "," << glyph.rect.h 
-        //           << ") Bearing: (" << glyph.bearingX << "," << glyph.bearingY << ") Advance: " << glyph.advance 
-        //           << " UV: (" << glyph.u0 << "," << glyph.v0 << ") to (" << glyph.u1 << "," << glyph.v1 << ")" << std::endl;
+        //glyph.pos = { penX + minx + 1, penY};
+        glyph.size = { maxx - minx + 1, glyphSurface->h };
+        glm::vec4 texelRect = {
+            penX + minx + 1, 
+            penY + glyphSurface->h,
+            std::min(maxx - minx + 1, advance), 
+            penY
+        };
+        glyph.uvRect = {
+            texelRect.x / atlasWidth,
+            1.0f - texelRect.y / atlasHeight,
+            texelRect.z / atlasWidth,
+            1.0f - texelRect.w / atlasHeight
+        };
+        glyph.advance = std::max(advance, (int)(averageAdvance*1.3f));
 
         glyphMap[ch] = glyph;
 
+        //std::cout << "advance: " << advance << " size: " << glyph.size.x << ", " << glyph.size.y << std::endl;
         penX += advance;
-        std::cout << "Next penX: " << penX << std::endl;
+        //std::cout << "Next penX: " << penX << std::endl;
         SDL_DestroySurface(glyphSurface);
     }
 
@@ -360,42 +368,22 @@ void CTextManager::CreateGlyphMap() {
 /*There are two resources: quad pos/uv and instance offset/color*/
 void CTextManager::CreateTextResource(){
     
-    int w = 51;
+    int w = 51; //font character size
     int h = 73;
     float aspect = (float)w / (float)h; // 31/73 ≈ 0.4247
 
-    float half_h = 0.15f;         // height fixed to 1.0（y=-0.5~0.5）
+    float half_h = 0.15f;         //expected quad height
     float half_w = half_h * aspect; // width scaled proportionally
 
-    float x_min = -half_w; 
+    float x_min = -half_w;  //quad size
     float x_max =  half_w; 
     float y_min = -half_h; 
     float y_max =  half_h; 
 
-    // char ch = 'w';
-    // GlyphTexture &g = glyphMap[ch];
-    // float v0 = g.v0;
-    // float v1 = g.v1;
-    // float u0 = g.u0;
-    // float u1 = g.u1+0.02; //shows xw
-
-    
-
-    //std::vector<TextQuadVertex> textQuadVertices2D;
-    // textQuadVertices2D.push_back({ {x_min, y_min}, {u1, v1} }); // left bottom
-    // textQuadVertices2D.push_back({ {x_max, y_min}, {u0, v1} }); // right bottom
-    // textQuadVertices2D.push_back({ {x_max, y_max}, {u0, v0} }); // right up
-    // textQuadVertices2D.push_back({ {x_min, y_max}, {u1, v0} }); // left up
     textQuadVertices.push_back({ {x_min, y_min}, {0.0f, 1.0f} }); // left bottom
     textQuadVertices.push_back({ {x_max, y_min}, {1.0f, 1.0f} }); // right bottom
     textQuadVertices.push_back({ {x_max, y_max}, {1.0f, 0.0f} }); // right up
     textQuadVertices.push_back({ {x_min, y_max}, {0.0f, 0.0f} }); // left up
-
-    // auto makeUvRect = [&](char c){
-    //     GlyphTexture& g = glyphMap[c];
-    //     return glm::vec4(g.u0, g.v0, g.u1 - g.u0, g.v1 - g.v0); // (u0,v0, width, height)
-    // };
-
 
     m_textBoxes[0].CreateTextInstanceData(this);
 
