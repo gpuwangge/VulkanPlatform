@@ -38,10 +38,10 @@ Objects:
 Textboxes:
   - textbox_name: Textbox0
     textbox_id: 0
-    textbox_position: [-1, -1, 0]
+    textbox_position: [1.6, 2.4, 0]
     textbox_scale: 1
     textbox_color: [0, 0, 0, 128]
-    textbox_text_content: Hello
+    textbox_text_content: "FPS: 0"
     textbox_text_color: [255, 255, 0, 255]
     resource_model_id: 1
     resource_text_id_list: [0]
@@ -51,7 +51,7 @@ Textboxes:
     textbox_position: [0, 0, 0]
     textbox_scale: 1
     textbox_color: [0, 0, 0, 128]
-    textbox_text_content: Hello
+    textbox_text_content: testbox test
     textbox_text_color: [255, 255, 0, 255]
     resource_model_id: 1
     resource_text_id_list: [0]

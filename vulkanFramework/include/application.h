@@ -113,6 +113,8 @@ public:
     double elapseTime = 0;
     double deltaTime = 0;
 
+    int frameCount = 0;
+
     std::string m_sampleName;
     YAML::Node config;
 

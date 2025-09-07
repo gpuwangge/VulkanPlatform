@@ -12,28 +12,6 @@ class CRenderer;
 class CTextImageManager;
 class CModelManager;
 
-/*************
-* Character
-**************/
-
-// class CCharacter{
-//     int m_instanceCount = 0;
-// public:
-//     CRenderer *p_renderer;
-//     CRenderProcess *p_renderProcess;
-//     std::vector<VkDescriptorSet> *p_descriptorSets_graphics_general;
-//     std::vector<VkDescriptorSet> descriptorSets_graphics_texture_image_sampler;
-//     CTextImageManager *p_textImageManager;
-
-//     void SetInstanceCount(int count) { m_instanceCount = count; }
-
-//     CCharacter(){}
-//     ~CCharacter(){}
-
-//     void CreateDescriptorSets_TextureImageSampler(VkDescriptorPool &descriptorPool, VkDescriptorSetLayout &descriptorSetLayout, std::vector<VkSampler> &samplers, std::vector<VkImageView> *swapchainImageViews = NULL);
-
-//     void Draw();
-// };
 
 /******************
 * TextBox
@@ -60,6 +38,8 @@ public:
     CTextManager *p_textManager;
 
     int m_maxCharPerRow = 30;
+    int m_maxCharperTextbox = 200;
+    int m_currentCharCount = 0;
 
     bool bRegistered = false;
     bool bInitialized = false;
@@ -79,10 +59,6 @@ public:
     void Register(CApplication *p_app, int textbox_id, std::vector<int> text_ids, std::string text_content, int model_id, int default_graphics_pipeline_id);
     void Update(float deltaTime, int currentFrame, Camera &mainCamera);
     void Draw();
-    //     for(auto& ch : m_characters){ 
-    //         ch.Draw(); 
-    //     }
-    // }
 };
 
 /******************
@@ -124,9 +100,6 @@ public:
 
     void CreateTextImage();
     void CreateTextResource();
-
-    //void AddTextBox(const CTextBox& textBox){ m_textBoxes.push_back(textBox); }
-    //void RemoveTextBox(const CTextBox& textBox);
 
     void CreateGlyphMap();
 

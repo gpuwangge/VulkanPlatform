@@ -112,7 +112,8 @@ void CTextBox::Draw(){
     //std::cout<<"TextBox ID: "<<m_textBoxID<<", binding index buffer and drawing."<<std::endl;
     p_renderer->BindIndexBuffer(m_model_id);
     //std::cout<<"TextBox ID: "<<m_textBoxID<<", drawing indexed."<<std::endl;
-    p_renderer->DrawInstanceIndexed(m_model_id, instanceData.size());
+    //p_renderer->DrawInstanceIndexed(m_model_id, instanceData.size());
+    p_renderer->DrawInstanceIndexed(m_model_id, m_currentCharCount);
     //std::cout<<"TextBox ID: "<<m_textBoxID<<" drawn."<<std::endl;
 }
 
@@ -153,6 +154,8 @@ void CTextBox::Register(CApplication *p_app, int textbox_id, std::vector<int> te
     //std::cout<<"TextBox ID: "<<m_textBoxID<<" instance data created."<<std::endl;
     //p_app->modelManager.CreateTextModel( p_app->textManager.textQuadVertices, textInstanceData, p_app->textManager.indices3D);
     //std::cout<<"TextBox ID: "<<m_textBoxID<<" model created."<<std::endl;
+
+    SetTextContent(text_content);
 }
 
 void CTextBox::SetTextContent(std::string text_content){
@@ -164,10 +167,11 @@ void CTextBox::SetTextContent(std::string text_content){
     float sx = 2.0f / WINDOW_WIDTH; // scale to NDC
     float sy = 2.0f / WINDOW_HEIGHT;
 
-    if(!bInitialized) instanceData.resize(100);
+    if(!bInitialized) instanceData.resize(m_maxCharperTextbox);
         //m_text_content = p_textManager->ascII;//"!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
     
     m_text_content = text_content;
+    m_currentCharCount = m_text_content.size();
 
     //std::cout<<"Creating text instance data for text: "<<m_text_content<<std::endl;
     int rowCharCount = 0;
@@ -400,8 +404,7 @@ void CTextManager::CreateTextResource(){
 
     p_modelManager->CreateTextModel( textQuadVertices, indices3D);
 
-    for(int i = 0; i < m_textBoxes.size(); i++)
-        m_textBoxes[i].SetTextContent(ascII);
+    //for(int i = 0; i < m_textBoxes.size(); i++) m_textBoxes[i].SetTextContent(ascII);
     
 }
 

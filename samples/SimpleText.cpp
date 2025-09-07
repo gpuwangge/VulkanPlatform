@@ -14,23 +14,14 @@ public:
 	};
 	std::vector<uint32_t> indices3D = { 0, 1, 2, 2, 3, 0};
 
-	// struct GlyphInfo {
-	// 	float u0, v0, u1, v1; // UV 
-	// 	int width, height;     // size
-	// 	int bearingX, bearingY;// baseline
-	// 	int advance;           // cursor advance for next
-	// };
-	// std::unordered_map<char32_t, GlyphInfo> glyphTable;
-
-
 	void initialize(){
 		modelManager.CreateCustomModel3D(vertices3D, indices3D); //model for background
 		CApplication::initialize();
 	}
 
 	void update(){
-		textManager.m_textBoxes[0].SetTextContent("Textbox0: Hello, World!");
-		textManager.m_textBoxes[1].SetTextContent("Textbox1: Hello, World!");
+		if(frameCount % 500 == 499) textManager.m_textBoxes[0].SetTextContent("FPS:" + std::to_string((int)(1.0f/deltaTime)));
+		//textManager.m_textBoxes[1].SetTextContent("Textbox1: Hello, World!");
 
 		CApplication::update();
 	}

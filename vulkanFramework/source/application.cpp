@@ -430,16 +430,17 @@ void CApplication::update(){
     for(int i = 0; i < lights.size(); i++) lights[i].Update(deltaTime, renderer.currentFrame, mainCamera, lightCameras[i]);
 
     /*Calcuate FPS*/
-    static int frameCount = 0;
+    static int tempCount = 0;
     static TimePoint intervalStartTimePoint = now();
     if(PrintFPS){
         double intervalElapseTime = millisecondsBetween(intervalStartTimePoint, currentTimePoint);
         if(intervalElapseTime > 1000){
-            std::cout<<"FPS: "<<frameCount<<" interval: "<<intervalElapseTime<<" milliseconds"<<std::endl;
-            frameCount = 0;
+            std::cout<<"FPS: "<<tempCount<<" interval: "<<intervalElapseTime<<" milliseconds"<<std::endl;
+            tempCount = 0;
             intervalStartTimePoint = now();
-        }else frameCount++;
+        }else tempCount++;
     }
+    frameCount++;
 
 
     // static auto intervalStartTime = std::chrono::high_resolution_clock::now();
