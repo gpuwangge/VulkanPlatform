@@ -5,6 +5,9 @@
 #include "context.h"
 #include "dataBuffer.hpp"
 #include "swapchain.h"
+#include "textManager.h"
+
+class CTextBox;
 
 class CRenderer final{
 public:
@@ -61,7 +64,7 @@ public:
     void SetViewport(VkExtent2D &extent);
     void SetScissor(VkExtent2D &extent);
     void BindVertexBuffer(int modelId);
-    void BindVertexInstanceBuffer(int modelId, int textboxId);
+    void BindVertexInstanceBuffer(int modelId, CTextBox &textbox);
     void BindIndexBuffer(int modelId);
     void BindExternalBuffer(std::vector<CWxjBuffer> &buffer);
     void BindDescriptorSets(VkPipelineLayout &pipelineLayout, std::vector<std::vector<VkDescriptorSet>> &descriptorSets, VkPipelineBindPoint pipelineBindPoint, uint32_t commandBufferIndex, uint32_t dynamicObjectMVPOffset = -1, uint32_t dynamicTextboxMVPOffset = -1);
@@ -124,7 +127,7 @@ public:
         vertexDataBuffers.push_back(vertexDataBuffer);
     }
     void CreateIndexBuffer(std::vector<uint32_t> &indices3D);
-    void CreateInstanceBuffer(std::vector<TextInstanceData> &instanceData);
+    //void CreateInstanceBuffer(std::vector<TextInstanceData> &instanceData);
 
     int graphicsCmdId;
     int computeCmdId;
@@ -143,7 +146,7 @@ public:
 
     std::vector<CWxjBuffer> vertexDataBuffers;  //each buffer object is for one model object, the index in this vector is object.id
 	std::vector<CWxjBuffer> indexDataBuffers;
-    std::vector<CWxjBuffer> instanceDataBuffers;
+    //std::vector<CWxjBuffer> instanceDataBuffers;
     std::vector<std::vector<uint32_t>> indices3Ds;
     std::vector<std::vector<VkCommandBuffer>> commandBuffers;  //commandBuffers[Size][MAX_FRAMES_IN_FLIGHT or currentFrame]
     VkCommandPool commandPool;

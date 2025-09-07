@@ -38,11 +38,11 @@ public:
     class CTextModel{
     public:
         std::vector<TextQuadVertex> vertices;
-        std::vector<TextInstanceData> instanceData;
+        //std::vector<TextInstanceData> instanceData;
         std::vector<uint32_t> indices;
     };
     std::vector<CTextModel> textModels;
-    void CreateTextModel(std::vector<TextQuadVertex> &vertices, std::vector<TextInstanceData> &instanceData, std::vector<uint32_t> &indices);
+    void CreateTextModel(std::vector<TextQuadVertex> &vertices, std::vector<uint32_t> &indices);
 
     std::vector<glm::vec3> modelLengths; //use global model id
     std::vector<glm::vec3> modelLengthsMax;

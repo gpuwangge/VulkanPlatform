@@ -47,10 +47,10 @@ void CModelManager::CreateCustomModel2D(std::vector<Vertex2D> &vertices2D){
 	customModels2D.push_back(model);
 }
 
-void CModelManager::CreateTextModel(std::vector<TextQuadVertex> &vertices, std::vector<TextInstanceData> &instanceData, std::vector<uint32_t> &indices){
+void CModelManager::CreateTextModel(std::vector<TextQuadVertex> &vertices, std::vector<uint32_t> &indices){
 	CTextModel model;
 	model.vertices = vertices;
-	model.instanceData = instanceData;
+	//model.instanceData = instanceData;
 	model.indices = indices;
 
 	textModels.push_back(model);

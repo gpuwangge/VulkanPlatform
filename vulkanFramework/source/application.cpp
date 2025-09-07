@@ -189,6 +189,8 @@ void CApplication::initialize(){
             max_textbox_id = (textbox_id > max_textbox_id) ? textbox_id : max_textbox_id;
         }
         textManager.m_textBoxes.resize(((max_textbox_id+1) < config["Textboxes"].size()) ? (max_textbox_id+1) : config["Textboxes"].size());
+        for(int i = 0; i < textManager.m_textBoxes.size(); i++)
+            textManager.m_textBoxes[i].p_textManager = &textManager;
         std::cout<<"Textbox Size: "<<textManager.m_textBoxes.size()<<std::endl;
     }
     if (config["Lights"]) {
@@ -622,6 +624,7 @@ void CApplication::CleanUp(){
     //std::cout<<"Application: textureManager.Destroy()"<<std::endl;
     textureManager.Destroy();
     textImageManager.Destroy();
+    textManager.Destroy();
     //std::cout<<"Application: renderer.Destroy()"<<std::endl;
     renderer.Destroy();
 
@@ -814,7 +817,7 @@ void CApplication::ReadResources(){
                     //appInfo.VertexBufferType = VertexStructureTypes::TextQuad;
                     //std::cout<<"Application: Load "<<std::endl;
                     renderer.CreateVertexBuffer<TextQuadVertex>(modelManager.textModels[0].vertices);
-                    renderer.CreateInstanceBuffer(modelManager.textModels[0].instanceData);
+                    //renderer.CreateInstanceBuffer(modelManager.textModels[0].instanceData);
                     renderer.CreateIndexBuffer(modelManager.textModels[0].indices);
 
                     //std::cout<<"Application: Created VertexBuffer, size = "<<renderer.vertexDataBuffers.size()<<std::endl;

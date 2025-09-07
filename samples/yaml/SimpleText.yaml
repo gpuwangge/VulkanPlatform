@@ -38,7 +38,7 @@ Objects:
 Textboxes:
   - textbox_name: Textbox0
     textbox_id: 0
-    textbox_position: [0, 0, 0]
+    textbox_position: [-1, -1, 0]
     textbox_scale: 1
     textbox_color: [0, 0, 0, 128]
     textbox_text_content: Hello
@@ -48,7 +48,7 @@ Textboxes:
     resource_default_graphics_pipeline_id: 1
   - textbox_name: Textbox1
     textbox_id: 1
-    textbox_position: [0, 1, 0]
+    textbox_position: [0, 0, 0]
     textbox_scale: 1
     textbox_color: [0, 0, 0, 128]
     textbox_text_content: Hello

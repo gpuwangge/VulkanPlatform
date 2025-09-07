@@ -105,14 +105,14 @@ void CTextBox::Draw(){
     //std::cout<<"TextBox ID: "<<m_textBoxID<<", binding vertex and index buffer."<<"modelID: "<<m_model_id<<std::endl;
     //std::cout<<"vertex size:"<<p_renderer->vertexDataBuffers.size()<<" instance size: "<<p_renderer->instanceDataBuffers.size()<<std::endl;
     //p_renderer->BindVertexInstanceBuffer(m_model_id, m_textBoxID);
-    p_renderer->BindVertexInstanceBuffer(m_model_id, 0);
+    p_renderer->BindVertexInstanceBuffer(m_model_id, *this);
       //hack
     //if(m_textBoxID != 0) return;
 
     //std::cout<<"TextBox ID: "<<m_textBoxID<<", binding index buffer and drawing."<<std::endl;
     p_renderer->BindIndexBuffer(m_model_id);
     //std::cout<<"TextBox ID: "<<m_textBoxID<<", drawing indexed."<<std::endl;
-    p_renderer->DrawInstanceIndexed(m_model_id, m_instanceCount);
+    p_renderer->DrawInstanceIndexed(m_model_id, instanceData.size());
     //std::cout<<"TextBox ID: "<<m_textBoxID<<" drawn."<<std::endl;
 }
 
@@ -140,6 +140,8 @@ void CTextBox::Register(CApplication *p_app, int textbox_id, std::vector<int> te
     p_descriptorSets_graphics_general = &(p_app->graphicsDescriptorManager.descriptorSets_general);
     //ch.descriptorSets_graphics_texture_image_sampler;
     p_textImageManager = &(p_app->textImageManager);
+    //p_textManager = &(p_app->textManager); //set this outside register function
+
     CreateDescriptorSets_TextureImageSampler(
         CGraphicsDescriptorManager::graphicsDescriptorPool,
         CGraphicsDescriptorManager::descriptorSetLayout_textureImageSampler,
@@ -153,59 +155,51 @@ void CTextBox::Register(CApplication *p_app, int textbox_id, std::vector<int> te
     //std::cout<<"TextBox ID: "<<m_textBoxID<<" model created."<<std::endl;
 }
 
-void CTextBox::CreateTextInstanceData(CTextManager *p_textManager){
+void CTextBox::SetTextContent(std::string text_content){
     //std::string text = "Hello123abcdABCD";
     float penX = 0.0f;
     float penY = 0.0f;
 
-    m_text_content = p_textManager->ascII;//"!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
+    glm::vec3 color = glm::vec3(0.0f, 0.0f, 1.0f);
+    float sx = 2.0f / WINDOW_WIDTH; // scale to NDC
+    float sy = 2.0f / WINDOW_HEIGHT;
+
+    if(!bInitialized) instanceData.resize(100);
+        //m_text_content = p_textManager->ascII;//"!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
+    
+    m_text_content = text_content;
+
     //std::cout<<"Creating text instance data for text: "<<m_text_content<<std::endl;
-    int charCount = 0;
-    for (char ch : m_text_content) {
+    int rowCharCount = 0;
+    for (int i = 0; i < m_text_content.size(); i++) {
+        char ch = m_text_content[i];
         GlyphTexture &glyph = p_textManager->glyphMap[ch];
 
-        float sx = 2.0f / WINDOW_WIDTH; // scale to NDC
-        float sy = 2.0f / WINDOW_HEIGHT;
-        glm::vec2 offset(
-            //(penX + glyph.bearingX) * sx - 1.0f,
-            //0 //1.0f - (penY + glyph.bearingY) * sy
-            //(penY + glyph.bearingY) * sy
-            penX * sx,
-            penY * sy
-        );
-        //std::cout<<"Char: "<<ch<<" penX: "<<penX<<", penY: "<<penY<<" glyph.advance: "<<glyph.advance<<" glyph.size.x: "<<glyph.size.x<<", glyph.size.y: "<<glyph.size.y<<std::endl;
-
-        //glm::vec4 uvRect(glyph.u0, glyph.v0, glyph.u1, glyph.v1);
-
-        //std::cout<<ch<<" offset: "<<offset.x<<","<<offset.y<<", pen: "<<penX<<","<<penY<<" bearing: "<<glyph.bearingX<<","<<glyph.bearingY<<" rect: "<<glyph.rect.x<<","<<glyph.rect.y<<","<<glyph.rect.w<<","<<glyph.rect.h<<std::endl;
-        //std::cout<<ch<<" penX: "<<penX<<", rect.x: "<<glyph.rect.x<<", rect.w: "<<glyph.rect.w<<", advance: "<<glyph.advance<<std::endl;
-        //std::cout<<ch<<" "<<uvRect.x<<","<<uvRect.y<<","<<uvRect.z<<","<<uvRect.w<<std::endl;
-
+        glm::vec2 offset(penX * sx, penY * sy);
         glm::vec2 scale(glyph.size.x/glyph.size.y, 1.0f);
-        //glm::vec2 scale((float)glyph.texelRect.w/glyph.texelRect.y, 1.0f);
-        //std::cout<<ch<<" rect: "<<glyph.rect.x<<","<<glyph.rect.y<<","<<glyph.rect.w<<","<<glyph.rect.h<<std::endl;
-        //std::cout<<ch<<" scale: "<<scale.x<<","<<scale.y<<std::endl;
 
-        textInstanceData.push_back({
-            offset,
-            //glm::vec2(i*0.3f-3,0),
-            {1.0f, 0.0f, 1.0f},
-            glyph.uvRect,
-            scale
-        });
-
+        instanceData[i].offset = offset;
+        instanceData[i].color = color;
+        instanceData[i].uvRect = glyph.uvRect;
+        instanceData[i].scale = scale;
         
-        //penX += std::max((float)glyph.advance, glyph.size.x);
         penX += glyph.advance;
-        charCount++;
-        if (charCount >= m_maxCharPerRow) { //move to next line
+        rowCharCount++;
+        if (rowCharCount >= m_maxCharPerRow) { //move to next line
             penX = 0;
             penY -= glyph.size.y;
-            charCount = 0;
+            rowCharCount = 0;
         }
     }
+    
+    if(!bInitialized) {
+        VkDeviceSize bufferSize = sizeof(instanceData[0]) * instanceData.size();
+        VkResult result = instanceDataBuffer.init(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
+    }
 
-    m_instanceCount = textInstanceData.size();
+    instanceDataBuffer.fill((void *)(instanceData.data()));
+    
+    bInitialized = true;
 }
 
 void CTextBox::Update(float deltaTime, int currentFrame, Camera &mainCamera){
@@ -404,10 +398,10 @@ void CTextManager::CreateTextResource(){
     textQuadVertices.push_back({ {x_max, y_max}, {1.0f, 0.0f} }); // right up
     textQuadVertices.push_back({ {x_min, y_max}, {0.0f, 0.0f} }); // left up
 
-    for(int i = 0; i < m_textBoxes.size(); i++){
-        m_textBoxes[i].CreateTextInstanceData(this);
-        p_modelManager->CreateTextModel( textQuadVertices, m_textBoxes[i].textInstanceData, indices3D);
-    }
+    p_modelManager->CreateTextModel( textQuadVertices, indices3D);
+
+    for(int i = 0; i < m_textBoxes.size(); i++)
+        m_textBoxes[i].SetTextContent(ascII);
     
 }
 

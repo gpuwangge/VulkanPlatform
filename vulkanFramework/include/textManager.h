@@ -1,14 +1,16 @@
 #ifndef H_TEXTMANAGER
 #define H_TEXTMANAGER
 
-#include "object.h"
-#include "modelManager.h"
+#include "renderProcess.h"
+#include "camera.hpp"
 
 //forward declaration. 
 //Because we dont want to include application.h here, but we want to use CApplciation.
 //We want application to include object.h instead
 class CApplication;
-
+class CRenderer;
+class CTextImageManager;
+class CModelManager;
 
 /*************
 * Character
@@ -40,7 +42,7 @@ class CTextManager;
 class CTextBox : public CEntity {
     int m_textBoxID = 0;
     
-    int m_instanceCount = 0;
+    //int m_instanceCount = 0;
 
     CRenderer *p_renderer;
     CRenderProcess *p_renderProcess;
@@ -52,21 +54,28 @@ class CTextBox : public CEntity {
     int m_model_id = 0;
 public:
     std::string m_text_content = "";
-    std::vector<TextInstanceData> textInstanceData;
+    std::vector<TextInstanceData> instanceData;
+    CWxjBuffer instanceDataBuffer;
+
+    CTextManager *p_textManager;
 
     int m_maxCharPerRow = 30;
 
     bool bRegistered = false;
+    bool bInitialized = false;
     glm::vec4 m_boxColor = glm::vec4(255.0f);
     glm::vec4 m_textColor = glm::vec4(0.0f);
     //std::vector<CCharacter> m_characters;
     void CreateDescriptorSets_TextureImageSampler(VkDescriptorPool &descriptorPool, VkDescriptorSetLayout &descriptorSetLayout, std::vector<VkSampler> &samplers, std::vector<VkImageView> *swapchainImageViews = NULL);
 
     CTextBox(){}
+    //~CTextBox(){}
+    void Destroy(){instanceDataBuffer.DestroyAndFree();}
+
     void SetText(std::string text_content){m_text_content = text_content;}
     void SetBoxColor(glm::vec4 color){m_boxColor = color;}
     void SetTextColor(glm::vec4 color){m_textColor = color;}
-    void CreateTextInstanceData(CTextManager *p_textManager);
+    void SetTextContent(std::string text_content);
     void Register(CApplication *p_app, int textbox_id, std::vector<int> text_ids, std::string text_content, int model_id, int default_graphics_pipeline_id);
     void Update(float deltaTime, int currentFrame, Camera &mainCamera);
     void Draw();
@@ -97,6 +106,9 @@ public:
 
     CTextManager();
     //~CTextManager();
+    void Destroy(){
+        for(int i = 0; i < m_textBoxes.size(); i++) m_textBoxes[i].Destroy();
+    }
 
     void SetFontSize(int fontSize){m_fontSize = fontSize;}
     void SetSamplerID(int samplerID){m_samplerID = samplerID;}
