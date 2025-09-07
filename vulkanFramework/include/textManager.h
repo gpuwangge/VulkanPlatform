@@ -41,7 +41,6 @@ class CTextBox : public CEntity {
     int m_textBoxID = 0;
     
     int m_instanceCount = 0;
-    int m_maxCharPerRow = 30;
 
     CRenderer *p_renderer;
     CRenderProcess *p_renderProcess;
@@ -54,6 +53,8 @@ class CTextBox : public CEntity {
 public:
     std::string m_text_content = "";
     std::vector<TextInstanceData> textInstanceData;
+
+    int m_maxCharPerRow = 30;
 
     bool bRegistered = false;
     glm::vec4 m_boxColor = glm::vec4(255.0f);
@@ -81,7 +82,6 @@ public:
 
 class CTextManager {
     int m_samplerID = 0;
-    //int m_instanceCount = 0;
     glm::vec4 m_color = glm::vec4(255.0f);
     
 public:
@@ -91,7 +91,7 @@ public:
     CTextImageManager *p_textImageManager = NULL;
     CModelManager *p_modelManager = NULL;
 
-    const std::string ascII = "!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
+    const std::string ascII = " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
     // Map to store glyph texture data for a font
     std::map<char, GlyphTexture> glyphMap;
 
@@ -104,6 +104,7 @@ public:
 
     //int GetInstanceCount() const { return m_instanceCount; }
     std::vector<TextQuadVertex> textQuadVertices;
+    std::vector<uint32_t> indices3D = { 0, 1, 2, 2, 3, 0};
 
     TTF_Font* m_font = nullptr;
     int m_fontSize = 20;
@@ -119,7 +120,10 @@ public:
 
     //void Initialize();
     void Update(float deltaTime, int currentFrame, Camera &mainCamera);
-    void Draw(){for(auto& textBox : m_textBoxes){textBox.Draw();}};
+    void Draw(){
+        //m_textBoxes[0].Draw();
+        for(auto& textBox : m_textBoxes){textBox.Draw();}
+    };
 
 };
 

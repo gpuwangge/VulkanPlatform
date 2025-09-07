@@ -46,6 +46,16 @@ Textboxes:
     resource_model_id: 1
     resource_text_id_list: [0]
     resource_default_graphics_pipeline_id: 1
+  - textbox_name: Textbox1
+    textbox_id: 1
+    textbox_position: [0, 1, 0]
+    textbox_scale: 1
+    textbox_color: [0, 0, 0, 128]
+    textbox_text_content: Hello
+    textbox_text_color: [255, 255, 0, 255]
+    resource_model_id: 1
+    resource_text_id_list: [0]
+    resource_default_graphics_pipeline_id: 1
 
     #textbox_size: [300, 100]
     #textbox_border_color: [255, 255, 255, 255]
@@ -59,10 +69,10 @@ Textboxes:
     #textbox_background_image_uv_offset: [0, 0]
 
 Resources:
-  - Texts:
-    - resource_text_name: AscII
-      resource_text_color: [255, 255, 255, 255]
-      resource_text_font_size: 50
+  - Fonts:
+    - resource_font_name: AscII
+      resource_font_color: [255, 255, 255, 255]
+      resource_font_size: 50
       uniform_sampler_id: 1
   - Models:
     - resource_model_name: CUSTOM3D0

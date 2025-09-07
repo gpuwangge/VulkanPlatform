@@ -82,23 +82,38 @@ void CTextBox::CreateDescriptorSets_TextureImageSampler(VkDescriptorPool &descri
 }
 
 void CTextBox::Draw(){
+    //std::cout<<"Drawing TextBox ID: "<<m_textBoxID<<", text: "<<m_text_content<<std::endl;
     VkPipelineLayout *p_graphicsPipelineLayout = &(p_renderProcess->graphicsPipelineLayouts[m_default_graphics_pipeline_id]);
     p_renderer->BindPipeline(p_renderProcess->graphicsPipelines[m_default_graphics_pipeline_id], VK_PIPELINE_BIND_POINT_GRAPHICS, p_renderer->graphicsCmdId);
+
+    //std::cout<<"TextBox ID: "<<m_textBoxID<<", instanceCount: "<<m_instanceCount<<std::endl;
 
     std::vector<std::vector<VkDescriptorSet>> dsSets; 
     //set = 0 is for general uniform; set = 1 is for texture sampler uniform
     if(CGraphicsDescriptorManager::getSetSize_General() > 0) dsSets.push_back(*p_descriptorSets_graphics_general); 
     if(CGraphicsDescriptorManager::textureImageSamplers.size() > 0) dsSets.push_back(descriptorSets_graphics_texture_image_sampler); 
 
+    //std::cout<<"TextBox ID: "<<m_textBoxID<<", descriptorSets size: "<<dsSets.size()<<std::endl;
+
     if(dsSets.size() > 0){
         int dynamicTextboxMVPOffset = m_textBoxID; //use offset for textboxID=0
         p_renderer->BindGraphicsDescriptorSets(*p_graphicsPipelineLayout, dsSets, 0, dynamicTextboxMVPOffset);
     }
 
-    p_renderer->BindVertexInstanceBuffer(m_model_id, m_textBoxID);
-    p_renderer->BindIndexBuffer(m_model_id);
-    p_renderer->DrawInstanceIndexed(m_model_id, m_instanceCount);
+  
 
+    //std::cout<<"TextBox ID: "<<m_textBoxID<<", binding vertex and index buffer."<<"modelID: "<<m_model_id<<std::endl;
+    //std::cout<<"vertex size:"<<p_renderer->vertexDataBuffers.size()<<" instance size: "<<p_renderer->instanceDataBuffers.size()<<std::endl;
+    //p_renderer->BindVertexInstanceBuffer(m_model_id, m_textBoxID);
+    p_renderer->BindVertexInstanceBuffer(m_model_id, 0);
+      //hack
+    //if(m_textBoxID != 0) return;
+
+    //std::cout<<"TextBox ID: "<<m_textBoxID<<", binding index buffer and drawing."<<std::endl;
+    p_renderer->BindIndexBuffer(m_model_id);
+    //std::cout<<"TextBox ID: "<<m_textBoxID<<", drawing indexed."<<std::endl;
+    p_renderer->DrawInstanceIndexed(m_model_id, m_instanceCount);
+    //std::cout<<"TextBox ID: "<<m_textBoxID<<" drawn."<<std::endl;
 }
 
 
@@ -131,7 +146,11 @@ void CTextBox::Register(CApplication *p_app, int textbox_id, std::vector<int> te
         CGraphicsDescriptorManager::textureImageSamplers
     );
     //}
-
+    //std::cout<<"TextBox ID: "<<m_textBoxID<<" registered."<<std::endl;
+    //CreateTextInstanceData(&(p_app->textManager));
+    //std::cout<<"TextBox ID: "<<m_textBoxID<<" instance data created."<<std::endl;
+    //p_app->modelManager.CreateTextModel( p_app->textManager.textQuadVertices, textInstanceData, p_app->textManager.indices3D);
+    //std::cout<<"TextBox ID: "<<m_textBoxID<<" model created."<<std::endl;
 }
 
 void CTextBox::CreateTextInstanceData(CTextManager *p_textManager){
@@ -230,7 +249,7 @@ void CTextManager::CreateTextFonts(){
     //m_font = TTF_OpenFont("arial.ttf", m_fontSize);
     if (!m_font) std::cout << "Failed to load font! SDL_Error: " << SDL_GetError() << std::endl;
 
-    TTF_SetFontStyle(m_font, TTF_STYLE_NORMAL);
+    TTF_SetFontStyle(m_font, TTF_STYLE_BOLD);
 }
 
 void CTextManager::CreateTextImage(){
@@ -362,7 +381,7 @@ void CTextManager::CreateGlyphMap() {
         SDL_DestroySurface(glyphSurface);
     }
 
-    std::cout << "Atlas size: " << atlasWidth << "x" << atlasHeight << std::endl;
+    //std::cout << "Atlas size: " << atlasWidth << "x" << atlasHeight << std::endl;
 }
 
 /*There are two resources: quad pos/uv and instance offset/color*/
@@ -385,14 +404,11 @@ void CTextManager::CreateTextResource(){
     textQuadVertices.push_back({ {x_max, y_max}, {1.0f, 0.0f} }); // right up
     textQuadVertices.push_back({ {x_min, y_max}, {0.0f, 0.0f} }); // left up
 
-    m_textBoxes[0].CreateTextInstanceData(this);
-
-    std::vector<uint32_t> indices3D = { 0, 1, 2, 2, 3, 0};
-    p_modelManager->CreateTextModel( textQuadVertices, m_textBoxes[0].textInstanceData, indices3D);
-    //std::cout<<"text model created in modelManager.textModel, size = "<< p_app->modelManager.textModels.size()<<std::endl;
-
-    //m_instanceCount = textInstanceData.size();
-    std::cout<<"text quad model created"<<std::endl;
+    for(int i = 0; i < m_textBoxes.size(); i++){
+        m_textBoxes[i].CreateTextInstanceData(this);
+        p_modelManager->CreateTextModel( textQuadVertices, m_textBoxes[i].textInstanceData, indices3D);
+    }
+    
 }
 
 // void CTextManager::AddTextBox(const CTextBox& textBox) {

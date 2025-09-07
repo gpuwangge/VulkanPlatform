@@ -334,6 +334,7 @@ void CApplication::initialize(){
     * 8 Read and Register Textboxes
     ****************************/
     ReadRegisterTextboxes();
+    
 
     TimePoint T10 = now();
     if(bVerboseInitialization){
@@ -765,27 +766,25 @@ void CApplication::ReadUniforms(){
 
 void CApplication::ReadResources(){
     for (const auto& resource : config["Resources"]) {
-        if (resource["Texts"]) {
-            for (const auto& text : resource["Texts"]) {
-                std::string name = text["resource_text_name"].as<std::string>();
-                int samplerid = text["uniform_sampler_id"].as<int>();
+        if (resource["Fonts"]) {
+            for (const auto& font : resource["Fonts"]) {
+                std::string name = font["resource_font_name"].as<std::string>();
+                int samplerid = font["uniform_sampler_id"].as<int>();
                 //std::vector<bool> uvwRepeat = samplerUniform["uniform_graphics_texture_image_sampler_uvwrepeat"] ? samplerUniform["uniform_graphics_texture_image_sampler_uvwrepeat"].as<std::vector<bool>>() : std::vector<bool>{true, true, true};
-                std::vector<int> color = text["resource_text_color"] ? text["resource_text_color"].as<std::vector<int>>() : std::vector<int>{255, 255, 255, 255};
-                int fontSize = text["resource_text_font_size"] ? text["resource_text_font_size"].as<int>() : 20;
-
+                std::vector<int> color = font["resource_font_color"] ? font["resource_font_color"].as<std::vector<int>>() : std::vector<int>{255, 255, 255, 255};
+                int fontSize = font["resource_font_size"] ? font["resource_font_size"].as<int>() : 20;
+                //std::cout<<"Font name: "<<name<<std::endl;
                 textManager.SetFontSize(fontSize);
                 textManager.SetSamplerID(samplerid);
                 textManager.SetColor(glm::vec4(color[0], color[1], color[2], color[3]));
                 textManager.p_renderer = &renderer;
                 textManager.p_textImageManager = &textImageManager;
                 textManager.p_modelManager = &modelManager;
-                textManager.CreateTextImage();
-                
-                //std::cout<<"text image created"<<std::endl;
 
-                textManager.CreateGlyphMap();
-
-                textManager.CreateTextResource();
+                textManager.CreateTextImage(); //create text atlas image and push to textImageManager
+                textManager.CreateGlyphMap(); //create glyph map
+                textManager.CreateTextResource(); //loop every textbox[i], create instance data, and create model based on instance data
+                //std::cout<<"Font "<<name<<" loaded."<<std::endl;
             }
         }
 
