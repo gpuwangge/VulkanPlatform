@@ -163,7 +163,7 @@ void CTextBox::SetTextContent(std::string text_content){
     float penX = 0.0f;
     float penY = 0.0f;
 
-    glm::vec3 color = glm::vec3(0.0f, 0.0f, 1.0f);
+    //glm::vec3 color = m_textColor;
     float sx = 2.0f / WINDOW_WIDTH; // scale to NDC
     float sy = 2.0f / WINDOW_HEIGHT;
 
@@ -183,7 +183,7 @@ void CTextBox::SetTextContent(std::string text_content){
         glm::vec2 scale(glyph.size.x/glyph.size.y, 1.0f);
 
         instanceData[i].offset = offset;
-        instanceData[i].color = color;
+        instanceData[i].color = m_textColor;
         instanceData[i].uvRect = glyph.uvRect;
         instanceData[i].scale = scale;
         
@@ -254,22 +254,35 @@ void CTextManager::CreateTextImage(){
     //Step 1: Create Text Resources
     CreateTextFonts();
 
-    // SDL_Color sdlColor = { 
-    //     static_cast<Uint8>(m_color.size() > 0 ? color[0] : 255),
-    //     static_cast<Uint8>(color.size() > 1 ? color[1] : 255),
-    //     static_cast<Uint8>(color.size() > 2 ? color[2] : 255),
-    //     static_cast<Uint8>(color.size() > 3 ? color[3] : 255)
-    // };
-    SDL_Color sdlColor = { 
-        static_cast<Uint8>(m_color.r),
-        static_cast<Uint8>(m_color.g),
-        static_cast<Uint8>(m_color.b),
-        static_cast<Uint8>(m_color.a)
+    SDL_Color outlineColor = { 
+        static_cast<Uint8>(m_outlinecolor.r),
+        static_cast<Uint8>(m_outlinecolor.g),
+        static_cast<Uint8>(m_outlinecolor.b),
+        static_cast<Uint8>(m_outlinecolor.a)
     };
-    //SDL_Surface* textSurface = TTF_RenderText_Blended(sdlManager.m_font, "1234567890hello你好ABC王小军", 0, sdlColor); //textSurface->pixels is RGBA
-    SDL_Surface* textSurface = TTF_RenderText_Blended(m_font, ascII.c_str(), 0, sdlColor);
+    SDL_Color textColor = { 
+        static_cast<Uint8>(m_textcolor.r),
+        static_cast<Uint8>(m_textcolor.g),
+        static_cast<Uint8>(m_textcolor.b),
+        static_cast<Uint8>(m_textcolor.a)
+    };
 
-    SDL_Surface* conv = SDL_ConvertSurface(textSurface, SDL_PIXELFORMAT_RGBA32);
+    TTF_SetFontOutline(m_font, 1);
+    SDL_Surface* outlineSurface = TTF_RenderText_Blended(m_font, ascII.c_str(), 0, outlineColor);
+    //SDL_Surface* textSurface = TTF_RenderText_Shaded(m_font, ascII.c_str(), 0, sdlColor, sdlColor);
+    TTF_SetFontOutline(m_font, 0);
+    SDL_Surface* textSurface = TTF_RenderText_Blended(m_font, ascII.c_str(), 0, textColor);
+    SDL_Rect dst;
+    dst.x = (outlineSurface->w - textSurface->w) / 2;
+    dst.y = (outlineSurface->h - textSurface->h) / 2;
+    SDL_BlitSurface(
+        textSurface, //src
+        NULL, //srcRect: NULL = whole surface
+        outlineSurface, //dst
+        &dst //destRect: copy to the center
+    );
+
+    SDL_Surface* conv = SDL_ConvertSurface(outlineSurface, SDL_PIXELFORMAT_RGBA32);
     if (!conv) {
         std::cerr << "SDL_ConvertSurfaceFormat failed: " << SDL_GetError() << std::endl;
     }
@@ -358,9 +371,9 @@ void CTextManager::CreateGlyphMap() {
         //glyph.pos = { penX + minx + 1, penY};
         glyph.size = { maxx - minx + 1, glyphSurface->h };
         glm::vec4 texelRect = {
-            penX + minx + 1, 
+            penX + minx + 1,
             penY + glyphSurface->h,
-            std::min(maxx - minx + 1, advance), 
+            std::min(maxx - minx + 1, advance),
             penY
         };
         glyph.uvRect = {
@@ -403,9 +416,6 @@ void CTextManager::CreateTextResource(){
     textQuadVertices.push_back({ {x_min, y_max}, {0.0f, 0.0f} }); // left up
 
     p_modelManager->CreateTextModel( textQuadVertices, indices3D);
-
-    //for(int i = 0; i < m_textBoxes.size(); i++) m_textBoxes[i].SetTextContent(ascII);
-    
 }
 
 // void CTextManager::AddTextBox(const CTextBox& textBox) {

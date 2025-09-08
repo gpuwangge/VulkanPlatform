@@ -67,7 +67,8 @@ public:
 
 class CTextManager {
     int m_samplerID = 0;
-    glm::vec4 m_color = glm::vec4(255.0f);
+    glm::vec4 m_outlinecolor = glm::vec4(255.0f);
+    glm::vec4 m_textcolor = glm::vec4(0.0f);
     
 public:
     std::vector<CTextBox> m_textBoxes;
@@ -88,7 +89,8 @@ public:
 
     void SetFontSize(int fontSize){m_fontSize = fontSize;}
     void SetSamplerID(int samplerID){m_samplerID = samplerID;}
-    void SetColor(glm::vec4 color){m_color = color;}
+    void SetOutlineColor(glm::vec4 color){m_outlinecolor = color;}
+    void SetTextColor(glm::vec4 color){m_textcolor = color;}
 
     //int GetInstanceCount() const { return m_instanceCount; }
     std::vector<TextQuadVertex> textQuadVertices;

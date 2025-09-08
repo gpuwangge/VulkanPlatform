@@ -38,21 +38,21 @@ Objects:
 Textboxes:
   - textbox_name: Textbox0
     textbox_id: 0
-    textbox_position: [1.6, 2.4, 0]
+    textbox_position: [1.8, 2.4, 0]
     textbox_scale: 1
     textbox_color: [0, 0, 0, 128]
-    textbox_text_content: "FPS: 0"
-    textbox_text_color: [255, 255, 0, 255]
+    textbox_text_content: "FPS:0"
+    textbox_text_color: [0, 0, 0, 255]
     resource_model_id: 1
     resource_text_id_list: [0]
     resource_default_graphics_pipeline_id: 1
   - textbox_name: Textbox1
     textbox_id: 1
-    textbox_position: [0, 0, 0]
+    textbox_position: [0.6, 2.2, 0]
     textbox_scale: 1
     textbox_color: [0, 0, 0, 128]
-    textbox_text_content: testbox test
-    textbox_text_color: [255, 255, 0, 255]
+    textbox_text_content: "ElapseTime:0"
+    textbox_text_color: [255, 255, 255, 255]
     resource_model_id: 1
     resource_text_id_list: [0]
     resource_default_graphics_pipeline_id: 1
@@ -71,7 +71,8 @@ Textboxes:
 Resources:
   - Fonts:
     - resource_font_name: AscII
-      resource_font_color: [255, 255, 255, 255]
+      resource_font_outlinecolor: [0, 0, 0, 255]
+      resource_font_textcolor: [255, 255, 0, 255]
       resource_font_size: 50
       uniform_sampler_id: 1
   - Models:

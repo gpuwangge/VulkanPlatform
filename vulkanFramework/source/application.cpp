@@ -775,12 +775,14 @@ void CApplication::ReadResources(){
                 std::string name = font["resource_font_name"].as<std::string>();
                 int samplerid = font["uniform_sampler_id"].as<int>();
                 //std::vector<bool> uvwRepeat = samplerUniform["uniform_graphics_texture_image_sampler_uvwrepeat"] ? samplerUniform["uniform_graphics_texture_image_sampler_uvwrepeat"].as<std::vector<bool>>() : std::vector<bool>{true, true, true};
-                std::vector<int> color = font["resource_font_color"] ? font["resource_font_color"].as<std::vector<int>>() : std::vector<int>{255, 255, 255, 255};
+                std::vector<int> outlineColor = font["resource_font_outlinecolor"] ? font["resource_font_outlinecolor"].as<std::vector<int>>() : std::vector<int>{255, 255, 255, 255};
+                std::vector<int> textColor = font["resource_font_textcolor"] ? font["resource_font_textcolor"].as<std::vector<int>>() : std::vector<int>{0, 0, 0, 255};
                 int fontSize = font["resource_font_size"] ? font["resource_font_size"].as<int>() : 20;
                 //std::cout<<"Font name: "<<name<<std::endl;
                 textManager.SetFontSize(fontSize);
                 textManager.SetSamplerID(samplerid);
-                textManager.SetColor(glm::vec4(color[0], color[1], color[2], color[3]));
+                textManager.SetOutlineColor(glm::vec4(outlineColor[0], outlineColor[1], outlineColor[2], outlineColor[3]));
+                textManager.SetTextColor(glm::vec4(textColor[0], textColor[1], textColor[2], textColor[3]));
                 textManager.p_renderer = &renderer;
                 textManager.p_textImageManager = &textImageManager;
                 textManager.p_modelManager = &modelManager;

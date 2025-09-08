@@ -20,8 +20,13 @@ public:
 	}
 
 	void update(){
-		if(frameCount % 500 == 499) textManager.m_textBoxes[0].SetTextContent("FPS:" + std::to_string((int)(1.0f/deltaTime)));
-		//textManager.m_textBoxes[1].SetTextContent("Textbox1: Hello, World!");
+		static int lastTrigger = 0;
+		int currentTrigger = (double)elapseTime / 0.2f;
+		if(currentTrigger!=lastTrigger) {
+			textManager.m_textBoxes[0].SetTextContent("FPS:" + std::to_string((int)(1.0f/deltaTime)));
+			lastTrigger = currentTrigger;
+		}
+		textManager.m_textBoxes[1].SetTextContent("ElapseTime:" + std::to_string((double)elapseTime));
 
 		CApplication::update();
 	}
