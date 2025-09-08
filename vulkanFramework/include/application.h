@@ -149,7 +149,16 @@ public:
     void ReadCameras();
     void Dispatch(int numWorkGroupsX, int numWorkGroupsY, int numWorkGroupsZ);  
     
-    
+
+     /******************
+    * Utility Functions
+    ******************/
+    std::string to_string_prec(double value, int prec = 1) {
+        std::ostringstream oss;
+        oss << std::fixed << std::setprecision(prec) << value;
+        return oss.str();
+    }
+        
     /*************
      * APP INFO
      *******/

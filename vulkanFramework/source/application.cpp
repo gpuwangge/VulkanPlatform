@@ -1301,6 +1301,13 @@ void CApplication::ReadRegisterTextboxes(){
             glm::vec3 glm_position(position[0], position[1], position[2]);
             textManager.m_textBoxes[textbox_id].SetPosition(glm_position);
 
+            auto rotation = tb["textbox_rotation"] ? tb["textbox_rotation"] .as<std::vector<float>>(): std::vector<float>(3,0);
+            glm::vec3 glm_rotation(rotation[0],rotation[1],rotation[2]);
+            textManager.m_textBoxes[textbox_id].SetRotation(glm_rotation);
+
+            bool bSticker = tb["textbox_sticker"] ? tb["textbox_sticker"].as<bool>() : false;
+            textManager.m_textBoxes[textbox_id].bSticker = bSticker;
+
             auto scale = tb["textbox_scale"] ? tb["textbox_scale"].as<float>() : 1.0f;
             textManager.m_textBoxes[textbox_id].SetScale(scale);
 

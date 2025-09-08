@@ -226,8 +226,14 @@ void CTextBox::Update(float deltaTime, int currentFrame, Camera &mainCamera){
         // std::cout<< "TextBox ID: " << m_textBoxID << " TempMoveAngularVelocity: " << glm::to_string(TempMoveAngularVelocity) << std::endl;
         //std::cout<< "Delta Time: " << deltaTime << std::endl;
 
-        CGraphicsDescriptorManager::textMVPUBO.mvpData[m_textBoxID].mainCameraProj = mainCamera.matrices.projection;
-        CGraphicsDescriptorManager::textMVPUBO.mvpData[m_textBoxID].mainCameraView = mainCamera.matrices.view;
+        if(!bSticker){
+            CGraphicsDescriptorManager::textMVPUBO.mvpData[m_textBoxID].mainCameraProj = mainCamera.matrices.projection;
+            CGraphicsDescriptorManager::textMVPUBO.mvpData[m_textBoxID].mainCameraView = mainCamera.matrices.view;
+        }else{
+            CGraphicsDescriptorManager::textMVPUBO.mvpData[m_textBoxID].mainCameraProj = glm::mat4(1.0f);
+            CGraphicsDescriptorManager::textMVPUBO.mvpData[m_textBoxID].mainCameraView = glm::mat4(1.0f);
+        }
+
         memcpy(CGraphicsDescriptorManager::textMVPUniformBuffersMapped[currentFrame], &CGraphicsDescriptorManager::textMVPUBO, sizeof(CGraphicsDescriptorManager::textMVPUBO));
    }
     //for(auto& ch : m_characters){ 
@@ -410,10 +416,15 @@ void CTextManager::CreateTextResource(){
     float y_min = -half_h; 
     float y_max =  half_h; 
 
-    textQuadVertices.push_back({ {x_min, y_min}, {0.0f, 1.0f} }); // left bottom
-    textQuadVertices.push_back({ {x_max, y_min}, {1.0f, 1.0f} }); // right bottom
-    textQuadVertices.push_back({ {x_max, y_max}, {1.0f, 0.0f} }); // right up
-    textQuadVertices.push_back({ {x_min, y_max}, {0.0f, 0.0f} }); // left up
+    // textQuadVertices.push_back({ {x_min, y_min}, {0.0f, 1.0f} }); // left bottom
+    // textQuadVertices.push_back({ {x_max, y_min}, {1.0f, 1.0f} }); // right bottom
+    // textQuadVertices.push_back({ {x_max, y_max}, {1.0f, 0.0f} }); // right up
+    // textQuadVertices.push_back({ {x_min, y_max}, {0.0f, 0.0f} }); // left up
+
+    textQuadVertices.push_back({ {x_min, y_min}, {0.0f, 0.0f} }); // left bottom
+    textQuadVertices.push_back({ {x_max, y_min}, {1.0f, 0.0f} }); // right bottom
+    textQuadVertices.push_back({ {x_max, y_max}, {1.0f, 1.0f} }); // right up
+    textQuadVertices.push_back({ {x_min, y_max}, {0.0f, 1.0f} }); // left up
 
     p_modelManager->CreateTextModel( textQuadVertices, indices3D);
 }

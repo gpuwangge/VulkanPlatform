@@ -36,27 +36,42 @@ Objects:
     
 
 Textboxes:
-  - textbox_name: Textbox0
+  - textbox_name: Textbox_FPS
     textbox_id: 0
-    textbox_position: [1.8, 2.4, 0]
-    textbox_scale: 1
+    textbox_sticker: true
+    textbox_position: [0.6, -0.95, 0]
+    textbox_rotation: [0,0,0]
+    textbox_scale: 0.5
     textbox_color: [0, 0, 0, 128]
     textbox_text_content: "FPS:0"
     textbox_text_color: [0, 0, 0, 255]
     resource_model_id: 1
     resource_text_id_list: [0]
     resource_default_graphics_pipeline_id: 1
-  - textbox_name: Textbox1
+  - textbox_name: Textbox_ElapsTime
     textbox_id: 1
-    textbox_position: [0.6, 2.2, 0]
-    textbox_scale: 1
+    textbox_sticker: true
+    textbox_position: [0.55, -0.85, 0]
+    textbox_rotation: [0,0,0]
+    textbox_scale: 0.5
     textbox_color: [0, 0, 0, 128]
-    textbox_text_content: "ElapseTime:0"
+    textbox_text_content: "Time:0"
     textbox_text_color: [255, 255, 255, 255]
     resource_model_id: 1
     resource_text_id_list: [0]
     resource_default_graphics_pipeline_id: 1
-
+  - textbox_name: Textbox_Normal
+    textbox_id: 2
+    textbox_sticker: false
+    textbox_position: [-2.0, 2.0, 0]
+    textbox_rotation: [180,0,0]
+    textbox_scale: 1
+    textbox_color: [0, 0, 0, 128]
+    textbox_text_content: "abcdefghijklmn1234567890"
+    textbox_text_color: [255, 255, 255, 255]
+    resource_model_id: 1
+    resource_text_id_list: [0]
+    resource_default_graphics_pipeline_id: 1
     #textbox_size: [300, 100]
     #textbox_border_color: [255, 255, 255, 255]
     #textbox_border_size: 2

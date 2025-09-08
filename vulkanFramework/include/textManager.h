@@ -36,6 +36,8 @@ public:
     CWxjBuffer instanceDataBuffer;
 
     CTextManager *p_textManager;
+    
+    bool bSticker = false; //if true, the text box will not be affected by camera view and projection matrix
 
     int m_maxCharPerRow = 30;
     int m_maxCharperTextbox = 200;
