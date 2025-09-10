@@ -114,6 +114,7 @@ public:
     double deltaTime = 0;
 
     int frameCount = 0;
+    double totalInitTime = 0;
 
     std::string m_sampleName;
     YAML::Node config;

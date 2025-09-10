@@ -1,6 +1,7 @@
 Objects:
   - object_name: UI
     object_id: 0
+    object_sticker: true
     object_scale: 1
     object_position: [0,0,0]
     object_rotation: [0,0,0]
@@ -34,6 +35,7 @@ Objects:
     resource_default_graphics_pipeline_id: 0
   - object_name: UI
     object_id: 3
+    object_sticker: true
     object_scale: 1
     object_position: [0,0,0]
     object_rotation: [0,0,0]

@@ -21,13 +21,16 @@ public:
 
 	void update(){
 		static int lastTrigger = 0;
-		int currentTrigger = (double)elapseTime / 0.2f;
+		int currentTrigger = (double)elapseTime / 0.1f;
 		if(currentTrigger!=lastTrigger) {
 			textManager.m_textBoxes[0].SetTextContent("FPS:" + std::to_string((int)(1.0f/deltaTime)));
+			textManager.m_textBoxes[1].SetTextContent("Time:" + to_string_prec(elapseTime) + "s");
+			textManager.m_textBoxes[2].SetTextContent("Frame:" + std::to_string(frameCount));
+			textManager.m_textBoxes[3].SetTextContent("Init:" + to_string_prec(totalInitTime) + " ms");
+			//for(int i = 0; i < textManager.m_textBoxes.size(); i++) textManager.m_textBoxes[i].IncHighlightedChar();
 			lastTrigger = currentTrigger;
 		}
-		textManager.m_textBoxes[1].SetTextContent("Time:" + to_string_prec(elapseTime) + "s");
-		if(textManager.m_textBoxes.size() > 2) textManager.m_textBoxes[2].SetTextContent("Frame:" + std::to_string(frameCount));
+		
 
 		CApplication::update();
 	}

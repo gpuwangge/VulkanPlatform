@@ -183,7 +183,8 @@ void CTextBox::SetTextContent(std::string text_content){
         glm::vec2 scale(glyph.size.x/glyph.size.y, 1.0f);
 
         instanceData[i].offset = offset;
-        instanceData[i].color = m_textColor;
+        if(i == m_highlightedIndex) instanceData[i].color = glm::vec4(255,255,255,255);
+        else instanceData[i].color = m_textColor;
         instanceData[i].uvRect = glyph.uvRect;
         instanceData[i].scale = scale;
         
@@ -204,6 +205,7 @@ void CTextBox::SetTextContent(std::string text_content){
     instanceDataBuffer.fill((void *)(instanceData.data()));
     
     bInitialized = true;
+    IncHighlightedChar();
 }
 
 void CTextBox::Update(float deltaTime, int currentFrame, Camera &mainCamera){
@@ -273,20 +275,23 @@ void CTextManager::CreateTextImage(){
         static_cast<Uint8>(m_textcolor.a)
     };
 
-    TTF_SetFontOutline(m_font, 1);
+    TTF_SetFontOutline(m_font, 0);
     SDL_Surface* outlineSurface = TTF_RenderText_Blended(m_font, ascII.c_str(), 0, outlineColor);
-    //SDL_Surface* textSurface = TTF_RenderText_Shaded(m_font, ascII.c_str(), 0, sdlColor, sdlColor);
     TTF_SetFontOutline(m_font, 0);
     SDL_Surface* textSurface = TTF_RenderText_Blended(m_font, ascII.c_str(), 0, textColor);
     SDL_Rect dst;
     dst.x = (outlineSurface->w - textSurface->w) / 2;
     dst.y = (outlineSurface->h - textSurface->h) / 2;
+    /* Disable outline blit for now
     SDL_BlitSurface(
         textSurface, //src
         NULL, //srcRect: NULL = whole surface
         outlineSurface, //dst
         &dst //destRect: copy to the center
     );
+    */
+
+    //SDL_Surface* textSurface = TTF_RenderText_Shaded(m_font, ascII.c_str(), 0, sdlColor, sdlColor);
 
     SDL_Surface* conv = SDL_ConvertSurface(outlineSurface, SDL_PIXELFORMAT_RGBA32);
     if (!conv) {

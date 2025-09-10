@@ -1,5 +1,5 @@
 Objects:
-  - object_name: QuadTexture
+  - object_name: ScreenBackground
     object_id: 0
     object_scale: 5
     object_position: [0,0,0]
@@ -10,6 +10,18 @@ Objects:
     resource_model_id: 0
     resource_texture_id_list: [0]
     resource_default_graphics_pipeline_id: 0
+  - object_name: TextBackground
+    object_id: 1
+    object_sticker: true
+    object_scale_3: [0.38,0.8,0.5]
+    object_position: [0.8,-0.6,0]
+    object_rotation: [0,0,0]
+    object_velocity: [0,0,0]
+    object_angular_velocity: [0,0,0]
+    object_skybox: false
+    resource_model_id: 0
+    resource_texture_id_list: [1]
+    resource_default_graphics_pipeline_id: 1
   #- object_name: QuadText
   #  object_id: 1
   #  object_scale: 2
@@ -39,51 +51,51 @@ Textboxes:
   - textbox_name: Textbox_FPS
     textbox_id: 0
     textbox_sticker: true
-    textbox_position: [0.55, -0.95, 0]
+    textbox_position: [0.70, -0.96, 0]
     textbox_rotation: [0,0,0]
-    textbox_scale: 0.3
-    textbox_color: [0, 0, 0, 128]
+    textbox_scale: 0.2
+    textbox_color: [0, 0, 0, 0]
     textbox_text_content: "FPS:0"
-    textbox_text_color: [0, 0, 0, 255]
+    textbox_text_color: [0.2, 0.7, 1, 1]
     resource_model_id: 1
     resource_text_id_list: [0]
-    resource_default_graphics_pipeline_id: 1
+    resource_default_graphics_pipeline_id: 2
   - textbox_name: Textbox_ElapsTime
     textbox_id: 1
     textbox_sticker: true
-    textbox_position: [0.55, -0.88, 0]
+    textbox_position: [0.70, -0.91, 0]
     textbox_rotation: [0,0,0]
-    textbox_scale: 0.3
-    textbox_color: [0, 0, 0, 128]
+    textbox_scale: 0.2
+    textbox_color: [0, 0, 0, 0]
     textbox_text_content: "Time:0"
-    textbox_text_color: [255, 255, 255, 255]
+    textbox_text_color: [0.2, 0.7, 1, 1]
     resource_model_id: 1
     resource_text_id_list: [0]
-    resource_default_graphics_pipeline_id: 1
+    resource_default_graphics_pipeline_id: 2
   - textbox_name: Frame_Number
     textbox_id: 2
     textbox_sticker: true
-    textbox_position: [0.55, -0.81, 0]
+    textbox_position: [0.70, -0.86, 0]
     textbox_rotation: [0,0,0]
-    textbox_scale: 0.3
-    textbox_color: [0, 0, 0, 128]
+    textbox_scale: 0.2
+    textbox_color: [0, 0, 0, 0]
     textbox_text_content: "Frame:0"
-    textbox_text_color: [255, 255, 255, 255]
+    textbox_text_color: [0.2, 0.7, 1, 1]
     resource_model_id: 1
     resource_text_id_list: [0]
-    resource_default_graphics_pipeline_id: 1
+    resource_default_graphics_pipeline_id: 2
   - textbox_name: Textbox_InitializationTime
     textbox_id: 3
     textbox_sticker: true
-    textbox_position: [0.55, -0.74, 0]
+    textbox_position: [0.70, -0.81, 0]
     textbox_rotation: [0,0,0]
-    textbox_scale: 0.3
-    textbox_color: [0, 0, 0, 128]
+    textbox_scale: 0.2
+    textbox_color: [0, 0, 0, 0]
     textbox_text_content: "Init:0"
-    textbox_text_color: [255, 255, 255, 255]
+    textbox_text_color: [0.2, 0.7, 1, 1]
     resource_model_id: 1
     resource_text_id_list: [0]
-    resource_default_graphics_pipeline_id: 1
+    resource_default_graphics_pipeline_id: 2
   - textbox_name: Textbox_Normal
     textbox_id: 4
     textbox_sticker: false
@@ -95,7 +107,7 @@ Textboxes:
     textbox_text_color: [255, 255, 255, 255]
     resource_model_id: 1
     resource_text_id_list: [0]
-    resource_default_graphics_pipeline_id: 1
+    resource_default_graphics_pipeline_id: 2
     #textbox_size: [300, 100]
     #textbox_border_color: [255, 255, 255, 255]
     #textbox_border_size: 2
@@ -110,22 +122,30 @@ Textboxes:
 Resources:
   - Fonts:
     - resource_font_name: AscII
-      resource_font_outlinecolor: [0, 0, 0, 255]
-      resource_font_textcolor: [255, 255, 0, 255]
+      resource_font_outlinecolor: [255, 0, 0, 255]
+      resource_font_textcolor: [255, 255, 255, 255]
       resource_font_size: 50
       uniform_sampler_id: 1
   - Models:
     - resource_model_name: CUSTOM3D0
     - resource_model_name: VERTEXTEXTQUAD
   - Textures:
-    - resource_texture_name: repeat-pattern.jpg #yellowcloth.jpg
+    - resource_texture_name: WoodTexture.jpg #yellowcloth.jpg
       resource_texture_miplevels: 1
       resource_texture_cubmap: false
       uniform_sampler_id: 0
+    - resource_texture_name: cybor_background.png
+      resource_texture_miplevels: 1
+      resource_texture_cubmap: false
+      uniform_sampler_id: 0      
   - Pipelines:
-    - resource_graphics_pipeline_name: backgroundPipeline
-      resource_graphics_pipeline_vertexshader_name: simpleText/background.vert.spv
-      resource_graphics_pipeline_fragmentshader_name: simpleText/background.frag.spv
+    - resource_graphics_pipeline_name: tabletopPipeline
+      resource_graphics_pipeline_vertexshader_name: simpleText/tabletop.vert.spv
+      resource_graphics_pipeline_fragmentshader_name: simpleText/tabletop.frag.spv
+      resource_graphics_pipeline_vertexdatatype: 2  #NoType,TwoDimension,ThreeDimension,ParticleType,TextQuad
+    - resource_graphics_pipeline_name: textBackgroundPipeline
+      resource_graphics_pipeline_vertexshader_name: simpleText/textBackground.vert.spv
+      resource_graphics_pipeline_fragmentshader_name: simpleText/textBackground.frag.spv
       resource_graphics_pipeline_vertexdatatype: 2  #NoType,TwoDimension,ThreeDimension,ParticleType,TextQuad
     - resource_graphics_pipeline_name: textPipeline
       resource_graphics_pipeline_vertexshader_name: simpleText/text.vert.spv

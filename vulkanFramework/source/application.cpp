@@ -111,8 +111,8 @@ void CApplication::run(){ //Entrance Function
     TimePoint T0 = now();
     initialize();
     TimePoint T1 = now();
-    double totalInitTime = printElapsed("Application: Total Initialization cost", T0, T1);
-    if(textManager.m_textBoxes.size() > 3) textManager.m_textBoxes[3].SetTextContent("Init:" + to_string_prec(totalInitTime) + "ms");
+    totalInitTime = printElapsed("Application: Total Initialization cost", T0, T1);
+    //if(textManager.m_textBoxes.size() > 3) textManager.m_textBoxes[3].SetTextContent("Init:" + to_string_prec(totalInitTime) + " ms");
 
     //auto endInitializeTime = std::chrono::high_resolution_clock::now();
     //auto durationInitializationTime = std::chrono::duration<float, std::chrono::seconds::period>(endInitializeTime - startInitialzeTime).count() * 1000;
@@ -1252,9 +1252,13 @@ void CApplication::ReadRegisterObjects(){
             std::string name = obj["object_name"] ? obj["object_name"].as<std::string>() : "Default";
             objects[object_id].Name = name;
 
+            bool bSticker = obj["object_sticker"] ? obj["object_sticker"].as<bool>() : false;
+            objects[object_id].bSticker = bSticker;
+
             //set scale after model is registered, otherwise the length will not be computed correctly
             float object_scale = obj["object_scale"] ? obj["object_scale"].as<float>() : 1.0f;
-            objects[object_id].SetScale(object_scale);
+            auto object_scale_3 = obj["object_scale_3"] ? obj["object_scale_3"].as<std::vector<float>>() : std::vector<float>(3, object_scale);
+            objects[object_id].SetScale(object_scale_3[0], object_scale_3[1], object_scale_3[2]);
 
             auto position = obj["object_position"] ? obj["object_position"].as<std::vector<float>>(): std::vector<float>(3, 0);
             objects[object_id].SetPosition(position[0], position[1], position[2]);

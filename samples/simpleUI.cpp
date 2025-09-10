@@ -28,14 +28,11 @@ public:
 		modelManager.CreateCustomModel3D(vertices3D, indices3D); //create the 0th custom model 3D (CUSTOM3D0)
 		CApplication::initialize();
 
-		objects[0].bSticker = true;
 		//objectList[0].SetPosition(-0.5,-0.5,0.0);
 		//objectList[0].SetScale(1, 2, 1);
 		//objectList[0].SetScaleRectangleXY(0, 0, 1, 1);
 		objects[0].SetScaleRectangleXY(-1, -1, 0, 0);
 		//objectList[0].SetPosition(-1, -1,0.1);
-
-		objects[3].bSticker = true;
 		objects[3].SetScaleRectangleXY(0.5, 0.5, 1, 1);
 	}
 

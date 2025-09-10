@@ -26,6 +26,7 @@ Objects:
     object_scale: 0.01
   - object_name: Screen
     object_id: 3
+    object_sticker: true
     object_scale: 10
     object_position: [0,3,5]
     object_rotation: [0,0,0]
