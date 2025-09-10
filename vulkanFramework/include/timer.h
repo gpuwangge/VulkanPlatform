@@ -58,9 +58,10 @@ inline double millisecondsSince(TimePoint start) {
 }
 
 // between two TimePoints, and print the message
-inline void printElapsed(const char* message, TimePoint start, TimePoint end) {
+inline double printElapsed(const char* message, TimePoint start, TimePoint end) {
     double millisecond = millisecondsBetween(start, end);
     std::cout << message << ": " << millisecond << " milliseconds" << std::endl;
+    return millisecond;
 }
 
 // between TimePoint and now, and print the message

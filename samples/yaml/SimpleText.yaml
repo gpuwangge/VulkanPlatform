@@ -39,9 +39,9 @@ Textboxes:
   - textbox_name: Textbox_FPS
     textbox_id: 0
     textbox_sticker: true
-    textbox_position: [0.6, -0.95, 0]
+    textbox_position: [0.55, -0.95, 0]
     textbox_rotation: [0,0,0]
-    textbox_scale: 0.5
+    textbox_scale: 0.3
     textbox_color: [0, 0, 0, 128]
     textbox_text_content: "FPS:0"
     textbox_text_color: [0, 0, 0, 255]
@@ -51,17 +51,41 @@ Textboxes:
   - textbox_name: Textbox_ElapsTime
     textbox_id: 1
     textbox_sticker: true
-    textbox_position: [0.55, -0.85, 0]
+    textbox_position: [0.55, -0.88, 0]
     textbox_rotation: [0,0,0]
-    textbox_scale: 0.5
+    textbox_scale: 0.3
     textbox_color: [0, 0, 0, 128]
     textbox_text_content: "Time:0"
     textbox_text_color: [255, 255, 255, 255]
     resource_model_id: 1
     resource_text_id_list: [0]
     resource_default_graphics_pipeline_id: 1
-  - textbox_name: Textbox_Normal
+  - textbox_name: Frame_Number
     textbox_id: 2
+    textbox_sticker: true
+    textbox_position: [0.55, -0.81, 0]
+    textbox_rotation: [0,0,0]
+    textbox_scale: 0.3
+    textbox_color: [0, 0, 0, 128]
+    textbox_text_content: "Frame:0"
+    textbox_text_color: [255, 255, 255, 255]
+    resource_model_id: 1
+    resource_text_id_list: [0]
+    resource_default_graphics_pipeline_id: 1
+  - textbox_name: Textbox_InitializationTime
+    textbox_id: 3
+    textbox_sticker: true
+    textbox_position: [0.55, -0.74, 0]
+    textbox_rotation: [0,0,0]
+    textbox_scale: 0.3
+    textbox_color: [0, 0, 0, 128]
+    textbox_text_content: "Init:0"
+    textbox_text_color: [255, 255, 255, 255]
+    resource_model_id: 1
+    resource_text_id_list: [0]
+    resource_default_graphics_pipeline_id: 1
+  - textbox_name: Textbox_Normal
+    textbox_id: 4
     textbox_sticker: false
     textbox_position: [-2.0, 2.0, 0]
     textbox_rotation: [180,0,0]

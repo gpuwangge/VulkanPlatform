@@ -54,7 +54,7 @@ public:
     //~CTextBox(){}
     void Destroy(){instanceDataBuffer.DestroyAndFree();}
 
-    void SetText(std::string text_content){m_text_content = text_content;}
+    //void SetText(std::string text_content){m_text_content = text_content;}
     void SetBoxColor(glm::vec4 color){m_boxColor = color;}
     void SetTextColor(glm::vec4 color){m_textColor = color;}
     void SetTextContent(std::string text_content);

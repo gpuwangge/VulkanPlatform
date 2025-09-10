@@ -26,7 +26,8 @@ public:
 			textManager.m_textBoxes[0].SetTextContent("FPS:" + std::to_string((int)(1.0f/deltaTime)));
 			lastTrigger = currentTrigger;
 		}
-		textManager.m_textBoxes[1].SetTextContent("Time:" + to_string_prec((double)elapseTime));
+		textManager.m_textBoxes[1].SetTextContent("Time:" + to_string_prec(elapseTime) + "s");
+		if(textManager.m_textBoxes.size() > 2) textManager.m_textBoxes[2].SetTextContent("Frame:" + std::to_string(frameCount));
 
 		CApplication::update();
 	}

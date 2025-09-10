@@ -111,7 +111,8 @@ void CApplication::run(){ //Entrance Function
     TimePoint T0 = now();
     initialize();
     TimePoint T1 = now();
-    printElapsed("Application: Total Initialization cost", T0, T1);
+    double totalInitTime = printElapsed("Application: Total Initialization cost", T0, T1);
+    if(textManager.m_textBoxes.size() > 3) textManager.m_textBoxes[3].SetTextContent("Init:" + to_string_prec(totalInitTime) + "ms");
 
     //auto endInitializeTime = std::chrono::high_resolution_clock::now();
     //auto durationInitializationTime = std::chrono::duration<float, std::chrono::seconds::period>(endInitializeTime - startInitialzeTime).count() * 1000;
