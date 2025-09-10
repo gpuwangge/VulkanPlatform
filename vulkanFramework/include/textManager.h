@@ -32,6 +32,7 @@ class CTextBox : public CEntity {
     int m_model_id = 0;
 
     int m_highlightedIndex = -1;
+    bool b_reverseHighlight = false;
 public:
     std::string m_text_content = "";
     std::vector<TextInstanceData> instanceData;
@@ -60,8 +61,8 @@ public:
     void SetBoxColor(glm::vec4 color){m_boxColor = color;}
     void SetTextColor(glm::vec4 color){m_textColor = color;}
     void SetTextContent(std::string text_content);
-    void SetHighlightedChar(int index){m_highlightedIndex = index;}
-    void IncHighlightedChar(){m_highlightedIndex++; if(m_highlightedIndex >= m_currentCharCount) m_highlightedIndex = 0;}
+    //void SetHighlightedChar(int index){m_highlightedIndex = index;}
+    void AdvanceHighlightedChar();
     void Register(CApplication *p_app, int textbox_id, std::vector<int> text_ids, std::string text_content, int model_id, int default_graphics_pipeline_id);
     void Update(float deltaTime, int currentFrame, Camera &mainCamera);
     void Draw();

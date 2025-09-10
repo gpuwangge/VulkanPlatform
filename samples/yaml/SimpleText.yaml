@@ -13,8 +13,32 @@ Objects:
   - object_name: TextBackground
     object_id: 1
     object_sticker: true
-    object_scale_3: [0.38,0.8,0.5]
-    object_position: [0.8,-0.6,0]
+    object_scale_3: [0.48,0.5,0.5]
+    object_position: [0.75,-0.75,0]
+    object_rotation: [0,0,0]
+    object_velocity: [0,0,0]
+    object_angular_velocity: [0,0,0]
+    object_skybox: false
+    resource_model_id: 0
+    resource_texture_id_list: [1]
+    resource_default_graphics_pipeline_id: 1
+  - object_name: TextBackground
+    object_id: 2
+    object_sticker: true
+    object_scale_3: [0.48,0.5,0.5]
+    object_position: [0.75,-0.25,0]
+    object_rotation: [0,0,0]
+    object_velocity: [0,0,0]
+    object_angular_velocity: [0,0,0]
+    object_skybox: false
+    resource_model_id: 0
+    resource_texture_id_list: [1]
+    resource_default_graphics_pipeline_id: 1
+  - object_name: TextBackground
+    object_id: 3
+    object_sticker: true
+    object_scale_3: [0.48,0.5,0.5]
+    object_position: [0.75,0.25,0]
     object_rotation: [0,0,0]
     object_velocity: [0,0,0]
     object_angular_velocity: [0,0,0]
@@ -51,7 +75,7 @@ Textboxes:
   - textbox_name: Textbox_FPS
     textbox_id: 0
     textbox_sticker: true
-    textbox_position: [0.70, -0.96, 0]
+    textbox_position: [0.65, -0.96, 0]
     textbox_rotation: [0,0,0]
     textbox_scale: 0.2
     textbox_color: [0, 0, 0, 0]
@@ -63,7 +87,7 @@ Textboxes:
   - textbox_name: Textbox_ElapsTime
     textbox_id: 1
     textbox_sticker: true
-    textbox_position: [0.70, -0.91, 0]
+    textbox_position: [0.65, -0.91, 0]
     textbox_rotation: [0,0,0]
     textbox_scale: 0.2
     textbox_color: [0, 0, 0, 0]
@@ -75,7 +99,7 @@ Textboxes:
   - textbox_name: Frame_Number
     textbox_id: 2
     textbox_sticker: true
-    textbox_position: [0.70, -0.86, 0]
+    textbox_position: [0.65, -0.86, 0]
     textbox_rotation: [0,0,0]
     textbox_scale: 0.2
     textbox_color: [0, 0, 0, 0]
@@ -87,17 +111,127 @@ Textboxes:
   - textbox_name: Textbox_InitializationTime
     textbox_id: 3
     textbox_sticker: true
-    textbox_position: [0.70, -0.81, 0]
-    textbox_rotation: [0,0,0]
+    textbox_position: [0.65, -0.81, 0]
     textbox_scale: 0.2
-    textbox_color: [0, 0, 0, 0]
     textbox_text_content: "Init:0"
     textbox_text_color: [0.2, 0.7, 1, 1]
     resource_model_id: 1
     resource_text_id_list: [0]
     resource_default_graphics_pipeline_id: 2
-  - textbox_name: Textbox_Normal
+  - textbox_name: Textbox_object
     textbox_id: 4
+    textbox_sticker: true
+    textbox_position: [0.65, -0.76, 0]
+    textbox_scale: 0.2
+    textbox_text_content: "Init:0"
+    textbox_text_color: [0.2, 0.7, 1, 1]
+    resource_model_id: 1
+    resource_text_id_list: [0]
+    resource_default_graphics_pipeline_id: 2
+  - textbox_name: Textbox_textbox
+    textbox_id: 5
+    textbox_sticker: true
+    textbox_position: [0.65, -0.71, 0]
+    textbox_scale: 0.2
+    textbox_text_content: "Init:0"
+    textbox_text_color: [0.2, 0.7, 1, 1]
+    resource_model_id: 1
+    resource_text_id_list: [0]
+    resource_default_graphics_pipeline_id: 2
+  - textbox_name: Textbox_lights
+    textbox_id: 6
+    textbox_sticker: true
+    textbox_position: [0.65, -0.66, 0]
+    textbox_scale: 0.2
+    textbox_text_content: "Init:0"
+    textbox_text_color: [0.2, 0.7, 1, 1]
+    resource_model_id: 1
+    resource_text_id_list: [0]
+    resource_default_graphics_pipeline_id: 2
+  - textbox_name: Textbox_Attachment_Title
+    textbox_id: 7
+    textbox_sticker: true
+    textbox_position: [0.58, -0.47, 0]
+    textbox_scale: 0.2
+    textbox_text_content: "Attachment"
+    textbox_text_color: [1, 1, 1, 1]
+    resource_model_id: 1
+    resource_text_id_list: [0]
+    resource_default_graphics_pipeline_id: 2  
+  - textbox_name: Textbox_Shadowmap_Title
+    textbox_id: 8
+    textbox_sticker: true
+    textbox_position: [0.58, -0.42, 0]
+    textbox_scale: 0.2
+    textbox_text_content: "Renderpass:Shadowmap"
+    textbox_text_color: [1, 1, 1, 1]
+    resource_model_id: 1
+    resource_text_id_list: [0]
+    resource_default_graphics_pipeline_id: 2
+  - textbox_name: Textbox_Shadowmap_Attachment
+    textbox_id: 9
+    textbox_sticker: true
+    textbox_position: [0.58, -0.37, 0]
+    textbox_scale: 0.2
+    textbox_text_content: "Light Depth"
+    textbox_text_color: [0.2, 1, 1, 1]
+    resource_model_id: 1
+    resource_text_id_list: [0]
+    resource_default_graphics_pipeline_id: 2
+  - textbox_name: Textbox_Mainscene_Title
+    textbox_id: 10
+    textbox_sticker: true
+    textbox_position: [0.58, -0.32, 0]
+    textbox_scale: 0.2
+    textbox_text_content: "Renderpass:Mainscene"
+    textbox_text_color: [1, 1, 1, 1]
+    resource_model_id: 1
+    resource_text_id_list: [0]
+    resource_default_graphics_pipeline_id: 2
+  - textbox_name: Textbox_Mainscene_Attachment
+    textbox_id: 11
+    textbox_sticker: true
+    textbox_position: [0.58, -0.27, 0]
+    textbox_scale: 0.2
+    textbox_text_content: ""
+    textbox_text_color: [0.2, 1, 1, 1]
+    resource_model_id: 1
+    resource_text_id_list: [0]
+    resource_default_graphics_pipeline_id: 2
+  - textbox_name: Textbox_Mainscene_Attachment
+    textbox_id: 12
+    textbox_sticker: true
+    textbox_position: [0.58, -0.22, 0]
+    textbox_scale: 0.2
+    textbox_text_content: ""
+    textbox_text_color: [0.2, 1, 1, 1]
+    resource_model_id: 1
+    resource_text_id_list: [0]
+    resource_default_graphics_pipeline_id: 2
+  - textbox_name: Textbox_Mainscene_Attachment
+    textbox_id: 13
+    textbox_sticker: true
+    textbox_position: [0.58, -0.17, 0]
+    textbox_scale: 0.2
+    textbox_text_content: ""
+    textbox_text_color: [0.2, 1, 1, 1]
+    resource_model_id: 1
+    resource_text_id_list: [0]
+    resource_default_graphics_pipeline_id: 2
+  - textbox_name: Textbox_Mainscene_Attachment
+    textbox_id: 14
+    textbox_sticker: true
+    textbox_position: [0.58, -0.12, 0]
+    textbox_scale: 0.2
+    textbox_text_content: ""
+    textbox_text_color: [0.2, 1, 1, 1]
+    resource_model_id: 1
+    resource_text_id_list: [0]
+    resource_default_graphics_pipeline_id: 2
+
+
+  - textbox_name: Textbox_Normal
+    textbox_id: 15
     textbox_sticker: false
     textbox_position: [-2.0, 2.0, 0]
     textbox_rotation: [180,0,0]

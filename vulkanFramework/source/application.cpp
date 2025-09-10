@@ -180,7 +180,7 @@ void CApplication::initialize(){
             max_object_id = (object_id > max_object_id) ? object_id : max_object_id;
         }
         objects.resize(((max_object_id+1) < config["Objects"].size()) ? (max_object_id+1) : config["Objects"].size()); 
-        std::cout<<"Object Size: "<<objects.size()<<std::endl;
+        //std::cout<<"Object Size: "<<objects.size()<<std::endl;
     }
     if (config["Textboxes"]) {
         int max_textbox_id = 0;
@@ -192,7 +192,7 @@ void CApplication::initialize(){
         textManager.m_textBoxes.resize(((max_textbox_id+1) < config["Textboxes"].size()) ? (max_textbox_id+1) : config["Textboxes"].size());
         for(int i = 0; i < textManager.m_textBoxes.size(); i++)
             textManager.m_textBoxes[i].p_textManager = &textManager;
-        std::cout<<"Textbox Size: "<<textManager.m_textBoxes.size()<<std::endl;
+        //std::cout<<"Textbox Size: "<<textManager.m_textBoxes.size()<<std::endl;
     }
     if (config["Lights"]) {
         int max_light_d = 0;
@@ -201,13 +201,13 @@ void CApplication::initialize(){
             max_light_d = (light_id > max_light_d) ? light_id : max_light_d;
         }
         lights.resize(((max_light_d+1) < config["Lights"].size())?(max_light_d+1):config["Lights"].size()); 
-        std::cout<<"Light Size: "<<lights.size()<<std::endl;
+        //std::cout<<"Light Size: "<<lights.size()<<std::endl;
 
         swapchain.buffer_depthlight.resize(lights.size());
         swapchain.framebuffers_shadowmap.resize(lights.size());
     }
     //update light number to ubo
-    std::cout<<"CGraphicsDescriptorManager::m_lightingUBO.lightNum = "<<lights.size()<<std::endl;
+    //std::cout<<"CGraphicsDescriptorManager::m_lightingUBO.lightNum = "<<lights.size()<<std::endl;
     CGraphicsDescriptorManager::m_lightingUBO.lightNum = lights.size();
 
     // if(bVerboseInitialization){
@@ -431,16 +431,16 @@ void CApplication::update(){
     for(int i = 0; i < lights.size(); i++) lights[i].Update(deltaTime, renderer.currentFrame, mainCamera, lightCameras[i]);
 
     /*Calcuate FPS*/
-    static int tempCount = 0;
-    static TimePoint intervalStartTimePoint = now();
-    if(PrintFPS){
-        double intervalElapseTime = millisecondsBetween(intervalStartTimePoint, currentTimePoint);
-        if(intervalElapseTime > 1000){
-            std::cout<<"FPS: "<<tempCount<<" interval: "<<intervalElapseTime<<" milliseconds"<<std::endl;
-            tempCount = 0;
-            intervalStartTimePoint = now();
-        }else tempCount++;
-    }
+    //static int tempCount = 0;
+    //static TimePoint intervalStartTimePoint = now();
+    // if(PrintFPS){
+    //     double intervalElapseTime = millisecondsBetween(intervalStartTimePoint, currentTimePoint);
+    //     if(intervalElapseTime > 1000){
+    //         std::cout<<"FPS: "<<tempCount<<" interval: "<<intervalElapseTime<<" milliseconds"<<std::endl;
+    //         tempCount = 0;
+    //         intervalStartTimePoint = now();
+    //     }else tempCount++;
+    // }
     frameCount++;
 
 

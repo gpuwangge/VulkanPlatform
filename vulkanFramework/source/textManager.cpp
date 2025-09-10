@@ -158,6 +158,16 @@ void CTextBox::Register(CApplication *p_app, int textbox_id, std::vector<int> te
     SetTextContent(text_content);
 }
 
+void CTextBox::AdvanceHighlightedChar(){
+    if(!b_reverseHighlight){
+        m_highlightedIndex++;
+        if(m_highlightedIndex >= (m_currentCharCount-1)) b_reverseHighlight = true;
+    }else{
+        m_highlightedIndex--;
+        if(m_highlightedIndex <= 0) b_reverseHighlight = false;
+    }
+}
+
 void CTextBox::SetTextContent(std::string text_content){
     //std::string text = "Hello123abcdABCD";
     float penX = 0.0f;
@@ -205,7 +215,7 @@ void CTextBox::SetTextContent(std::string text_content){
     instanceDataBuffer.fill((void *)(instanceData.data()));
     
     bInitialized = true;
-    IncHighlightedChar();
+    AdvanceHighlightedChar();
 }
 
 void CTextBox::Update(float deltaTime, int currentFrame, Camera &mainCamera){
