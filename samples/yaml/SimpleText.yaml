@@ -80,7 +80,7 @@ Textboxes:
     textbox_scale: 0.2
     textbox_color: [0, 0, 0, 0]
     textbox_text_content: "FPS:0"
-    textbox_text_color: [0.2, 0.7, 1, 1]
+    textbox_text_color: [0.2, 0.0, 0.0, 1]
     resource_model_id: 1
     resource_text_id_list: [0]
     resource_default_graphics_pipeline_id: 2
@@ -92,7 +92,7 @@ Textboxes:
     textbox_scale: 0.2
     textbox_color: [0, 0, 0, 0]
     textbox_text_content: "Time:0"
-    textbox_text_color: [0.2, 0.7, 1, 1]
+    textbox_text_color: [0.2, 0.0, 0.0, 1]
     resource_model_id: 1
     resource_text_id_list: [0]
     resource_default_graphics_pipeline_id: 2
@@ -104,7 +104,7 @@ Textboxes:
     textbox_scale: 0.2
     textbox_color: [0, 0, 0, 0]
     textbox_text_content: "Frame:0"
-    textbox_text_color: [0.2, 0.7, 1, 1]
+    textbox_text_color: [0.2, 0.0, 0.0, 1]
     resource_model_id: 1
     resource_text_id_list: [0]
     resource_default_graphics_pipeline_id: 2
@@ -114,7 +114,7 @@ Textboxes:
     textbox_position: [0.65, -0.81, 0]
     textbox_scale: 0.2
     textbox_text_content: "Init:0"
-    textbox_text_color: [0.2, 0.7, 1, 1]
+    textbox_text_color: [0.2, 0.0, 0.0, 1]
     resource_model_id: 1
     resource_text_id_list: [0]
     resource_default_graphics_pipeline_id: 2
@@ -124,7 +124,7 @@ Textboxes:
     textbox_position: [0.65, -0.76, 0]
     textbox_scale: 0.2
     textbox_text_content: "Init:0"
-    textbox_text_color: [0.2, 0.7, 1, 1]
+    textbox_text_color: [0.2, 0.0, 0.0, 1]
     resource_model_id: 1
     resource_text_id_list: [0]
     resource_default_graphics_pipeline_id: 2
@@ -134,7 +134,7 @@ Textboxes:
     textbox_position: [0.65, -0.71, 0]
     textbox_scale: 0.2
     textbox_text_content: "Init:0"
-    textbox_text_color: [0.2, 0.7, 1, 1]
+    textbox_text_color: [0.2, 0.0, 0.0, 1]
     resource_model_id: 1
     resource_text_id_list: [0]
     resource_default_graphics_pipeline_id: 2
@@ -144,7 +144,7 @@ Textboxes:
     textbox_position: [0.65, -0.66, 0]
     textbox_scale: 0.2
     textbox_text_content: "Init:0"
-    textbox_text_color: [0.2, 0.7, 1, 1]
+    textbox_text_color: [0.2, 0.0, 0.0, 1]
     resource_model_id: 1
     resource_text_id_list: [0]
     resource_default_graphics_pipeline_id: 2
@@ -154,7 +154,7 @@ Textboxes:
     textbox_position: [0.58, -0.47, 0]
     textbox_scale: 0.2
     textbox_text_content: "Attachment"
-    textbox_text_color: [1, 1, 1, 1]
+    textbox_text_color: [0.2, 0.7, 1.0, 1]
     resource_model_id: 1
     resource_text_id_list: [0]
     resource_default_graphics_pipeline_id: 2  
@@ -164,7 +164,7 @@ Textboxes:
     textbox_position: [0.58, -0.42, 0]
     textbox_scale: 0.2
     textbox_text_content: "Renderpass:Shadowmap"
-    textbox_text_color: [1, 1, 1, 1]
+    textbox_text_color: [0.2, 0.7, 1.0, 1]
     resource_model_id: 1
     resource_text_id_list: [0]
     resource_default_graphics_pipeline_id: 2
@@ -174,7 +174,7 @@ Textboxes:
     textbox_position: [0.58, -0.37, 0]
     textbox_scale: 0.2
     textbox_text_content: "Light Depth"
-    textbox_text_color: [0.2, 1, 1, 1]
+    textbox_text_color: [0.2, 0.0, 0.0, 1]
     resource_model_id: 1
     resource_text_id_list: [0]
     resource_default_graphics_pipeline_id: 2
@@ -184,7 +184,7 @@ Textboxes:
     textbox_position: [0.58, -0.32, 0]
     textbox_scale: 0.2
     textbox_text_content: "Renderpass:Mainscene"
-    textbox_text_color: [1, 1, 1, 1]
+    textbox_text_color: [0.2, 0.7, 1.0, 1]
     resource_model_id: 1
     resource_text_id_list: [0]
     resource_default_graphics_pipeline_id: 2
@@ -194,7 +194,7 @@ Textboxes:
     textbox_position: [0.58, -0.27, 0]
     textbox_scale: 0.2
     textbox_text_content: ""
-    textbox_text_color: [0.2, 1, 1, 1]
+    textbox_text_color: [0.2, 0.0, 0.0, 1]
     resource_model_id: 1
     resource_text_id_list: [0]
     resource_default_graphics_pipeline_id: 2
@@ -204,7 +204,7 @@ Textboxes:
     textbox_position: [0.58, -0.22, 0]
     textbox_scale: 0.2
     textbox_text_content: ""
-    textbox_text_color: [0.2, 1, 1, 1]
+    textbox_text_color: [0.2, 0.0, 0.0, 1]
     resource_model_id: 1
     resource_text_id_list: [0]
     resource_default_graphics_pipeline_id: 2
@@ -214,7 +214,7 @@ Textboxes:
     textbox_position: [0.58, -0.17, 0]
     textbox_scale: 0.2
     textbox_text_content: ""
-    textbox_text_color: [0.2, 1, 1, 1]
+    textbox_text_color: [0.2, 0.0, 0.0, 1]
     resource_model_id: 1
     resource_text_id_list: [0]
     resource_default_graphics_pipeline_id: 2
@@ -224,14 +224,85 @@ Textboxes:
     textbox_position: [0.58, -0.12, 0]
     textbox_scale: 0.2
     textbox_text_content: ""
-    textbox_text_color: [0.2, 1, 1, 1]
+    textbox_text_color: [0.2, 0.0, 0.0, 1]
+    resource_model_id: 1
+    resource_text_id_list: [0]
+    resource_default_graphics_pipeline_id: 2
+
+  - textbox_name: Textbox_Graphcis_Uniform_Title
+    textbox_id: 15
+    textbox_sticker: true
+    textbox_position: [0.58, 0.05, 0]
+    textbox_scale: 0.2
+    textbox_text_content: "Graphics Uniform"
+    textbox_text_color: [0.2, 0.7, 1.0, 1]
+    resource_model_id: 1
+    resource_text_id_list: [0]
+    resource_default_graphics_pipeline_id: 2
+  - textbox_name: Textbox_Graphcis_Uniform
+    textbox_id: 16
+    textbox_sticker: true
+    textbox_position: [0.58, 0.1, 0]
+    textbox_scale: 0.2
+    textbox_text_content: ""
+    textbox_text_color: [0.2, 0.0, 0.0, 1]
+    resource_model_id: 1
+    resource_text_id_list: [0]
+    resource_default_graphics_pipeline_id: 2
+  - textbox_name: Textbox_Graphcis_Uniform
+    textbox_id: 17
+    textbox_sticker: true
+    textbox_position: [0.58, 0.15, 0]
+    textbox_scale: 0.2
+    textbox_text_content: ""
+    textbox_text_color: [0.2, 0.0, 0.0, 1]
+    resource_model_id: 1
+    resource_text_id_list: [0]
+    resource_default_graphics_pipeline_id: 2
+  - textbox_name: Textbox_Graphcis_Uniform
+    textbox_id: 18
+    textbox_sticker: true
+    textbox_position: [0.58, 0.2, 0]
+    textbox_scale: 0.2
+    textbox_text_content: ""
+    textbox_text_color: [0.2, 0.0, 0.0, 1]
+    resource_model_id: 1
+    resource_text_id_list: [0]
+    resource_default_graphics_pipeline_id: 2
+  - textbox_name: Textbox_Graphcis_Uniform
+    textbox_id: 19
+    textbox_sticker: true
+    textbox_position: [0.58, 0.25, 0]
+    textbox_scale: 0.2
+    textbox_text_content: ""
+    textbox_text_color: [0.2, 0.0, 0.0, 1]
+    resource_model_id: 1
+    resource_text_id_list: [0]
+    resource_default_graphics_pipeline_id: 2
+  - textbox_name: Textbox_Graphcis_Uniform
+    textbox_id: 20
+    textbox_sticker: true
+    textbox_position: [0.58, 0.3, 0]
+    textbox_scale: 0.2
+    textbox_text_content: ""
+    textbox_text_color: [0.2, 0.0, 0.0, 1]
+    resource_model_id: 1
+    resource_text_id_list: [0]
+    resource_default_graphics_pipeline_id: 2
+  - textbox_name: Textbox_Graphcis_Uniform
+    textbox_id: 21
+    textbox_sticker: true
+    textbox_position: [0.58, 0.35, 0]
+    textbox_scale: 0.2
+    textbox_text_content: ""
+    textbox_text_color: [0.2, 0.0, 0.0, 1]
     resource_model_id: 1
     resource_text_id_list: [0]
     resource_default_graphics_pipeline_id: 2
 
 
   - textbox_name: Textbox_Normal
-    textbox_id: 15
+    textbox_id: 22
     textbox_sticker: false
     textbox_position: [-2.0, 2.0, 0]
     textbox_rotation: [180,0,0]
@@ -256,7 +327,7 @@ Textboxes:
 Resources:
   - Fonts:
     - resource_font_name: AscII
-      resource_font_outlinecolor: [255, 0, 0, 255]
+      resource_font_outlinecolor: [255, 255, 255, 255]
       resource_font_textcolor: [255, 255, 255, 255]
       resource_font_size: 50
       uniform_sampler_id: 1

@@ -31,7 +31,7 @@ class CTextBox : public CEntity {
     int m_default_graphics_pipeline_id = 0;
     int m_model_id = 0;
 
-    int m_highlightedIndex = -1;
+    std::vector<int> m_highlightedIndex = std::vector<int>(10, -1);
     bool b_reverseHighlight = false;
 public:
     std::string m_text_content = "";

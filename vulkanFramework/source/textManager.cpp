@@ -159,12 +159,15 @@ void CTextBox::Register(CApplication *p_app, int textbox_id, std::vector<int> te
 }
 
 void CTextBox::AdvanceHighlightedChar(){
+    for(int i = m_highlightedIndex.size()-1; i > 0; i--)
+        m_highlightedIndex[i] = m_highlightedIndex[i-1];
     if(!b_reverseHighlight){
-        m_highlightedIndex++;
-        if(m_highlightedIndex >= (m_currentCharCount-1)) b_reverseHighlight = true;
+        m_highlightedIndex[0]++;
+        if(m_highlightedIndex[0] >= (m_currentCharCount-1)) b_reverseHighlight = true;
+        
     }else{
-        m_highlightedIndex--;
-        if(m_highlightedIndex <= 0) b_reverseHighlight = false;
+        m_highlightedIndex[0]--;
+        if(m_highlightedIndex[0] <= 0) b_reverseHighlight = false;
     }
 }
 
@@ -193,8 +196,18 @@ void CTextBox::SetTextContent(std::string text_content){
         glm::vec2 scale(glyph.size.x/glyph.size.y, 1.0f);
 
         instanceData[i].offset = offset;
-        if(i == m_highlightedIndex) instanceData[i].color = glm::vec4(255,255,255,255);
-        else instanceData[i].color = m_textColor;
+
+        float coff = 0;
+        for(int j = 0; j < m_highlightedIndex.size(); j++) {
+            if(i == m_highlightedIndex[j]){
+                coff = 1.0f - 0.07f * j;
+                break;
+            }
+        }
+        if(coff == 0) instanceData[i].color = m_textColor;
+        else instanceData[i].color = glm::vec4(coff, 0, 0, 1);
+        
+
         instanceData[i].uvRect = glyph.uvRect;
         instanceData[i].scale = scale;
         

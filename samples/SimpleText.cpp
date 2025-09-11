@@ -30,6 +30,7 @@ public:
 			textManager.m_textBoxes[4].SetTextContent("Object:" + std::to_string(objects.size()));
 			textManager.m_textBoxes[5].SetTextContent("Textbox:" + std::to_string(textManager.m_textBoxes.size()));
 			textManager.m_textBoxes[6].SetTextContent("Light:" + std::to_string(lights.size()));
+			
 			std::string r = "false";
 			if(renderProcess.iShadowmapAttachmentDepthLight>=0) r = "true"; else r= "false";
 			textManager.m_textBoxes[9].SetTextContent("Depth(Light):" + r);
@@ -41,6 +42,20 @@ public:
 			textManager.m_textBoxes[13].SetTextContent("Color(Resolve):" + r);
 			if(renderProcess.iMainSceneAttachmentColorPresent>=0) r = "true"; else r= "false";
 			textManager.m_textBoxes[14].SetTextContent("Color(Present):" + r);
+
+			if(appInfo.Uniform.b_uniform_graphics_lighting) r = "true"; else r= "false";
+			textManager.m_textBoxes[16].SetTextContent("Lighting:" + r);
+			if(appInfo.Uniform.b_uniform_graphics_mvp) r = "true"; else r= "false";
+			textManager.m_textBoxes[17].SetTextContent("MVP:" + r);
+			if(appInfo.Uniform.b_uniform_graphics_text_mvp) r = "true"; else r= "false";
+			textManager.m_textBoxes[18].SetTextContent("Text MVP:" + r);
+			if(appInfo.Uniform.b_uniform_graphics_vp) r = "true"; else r= "false";
+			textManager.m_textBoxes[19].SetTextContent("VP:" + r);
+			if(appInfo.Uniform.b_uniform_graphics_depth_image_sampler) r = "true"; else r= "false";
+			textManager.m_textBoxes[20].SetTextContent("Depth Image Sampler:" + r);
+			if(appInfo.Uniform.b_uniform_graphics_lightdepth_image_sampler) r = "true"; else r= "false";
+			textManager.m_textBoxes[21].SetTextContent("Lightdepth Image Sampler:" + r);
+
 			//for(int i = 0; i < textManager.m_textBoxes.size(); i++) textManager.m_textBoxes[i].IncHighlightedChar();
 			lastTrigger = currentTrigger;
 		}
