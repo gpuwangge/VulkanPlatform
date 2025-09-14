@@ -7,7 +7,7 @@
 #include "swapchain.h"
 #include "textManager.h"
 
-class CTextBox;
+class CTextbox;
 
 class CRenderer final{
 public:
@@ -64,7 +64,7 @@ public:
     void SetViewport(VkExtent2D &extent);
     void SetScissor(VkExtent2D &extent);
     void BindVertexBuffer(int modelId);
-    void BindVertexInstanceBuffer(int modelId, CTextBox &textbox);
+    void BindVertexInstanceBuffer(int modelId, CTextbox &textbox);
     void BindIndexBuffer(int modelId);
     void BindExternalBuffer(std::vector<CWxjBuffer> &buffer);
     void BindDescriptorSets(VkPipelineLayout &pipelineLayout, std::vector<std::vector<VkDescriptorSet>> &descriptorSets, VkPipelineBindPoint pipelineBindPoint, uint32_t commandBufferIndex, uint32_t dynamicObjectMVPOffset = -1, uint32_t dynamicTextboxMVPOffset = -1);

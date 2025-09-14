@@ -171,15 +171,30 @@ void CApplication::initialize(){
     }
 
     /****************************
+    * ? ControlNode
+    ****************************/
+    //pControlNodes.push_back(&perfMetric);
+
+    /****************************
     * 1 Initialize ObjectList and LightList
     ****************************/
+    int control_object_count = 0;
+    int control_textbox_count = 0;
+    int control_light_count = 0;
+    
+    //int control_object_count = perfMetric.m_object_count;
+    //int control_textbox_count = perfMetric.m_textbox_count;
+    //int control_light_count = perfMetric.m_light_count;
+
     if (config["Objects"]) {
         int max_object_id = 0;
         for (const auto& obj : config["Objects"]) {
             int object_id = obj["object_id"] ? obj["object_id"].as<int>() : 0;
             max_object_id = (object_id > max_object_id) ? object_id : max_object_id;
         }
-        objects.resize(((max_object_id+1) < config["Objects"].size()) ? (max_object_id+1) : config["Objects"].size()); 
+        int object_size = ((max_object_id+1) < config["Objects"].size()) ? (max_object_id+1) : config["Objects"].size();
+        object_size += control_object_count;
+        objects.resize(object_size); 
         //std::cout<<"Object Size: "<<objects.size()<<std::endl;
     }
     if (config["Textboxes"]) {
@@ -189,7 +204,9 @@ void CApplication::initialize(){
             max_textbox_id = (textbox_id > max_textbox_id) ? textbox_id : max_textbox_id;
             max_textbox_id = (textbox_id > max_textbox_id) ? textbox_id : max_textbox_id;
         }
-        textManager.m_textBoxes.resize(((max_textbox_id+1) < config["Textboxes"].size()) ? (max_textbox_id+1) : config["Textboxes"].size());
+        int textbox_size = ((max_textbox_id+1) < config["Textboxes"].size()) ? (max_textbox_id+1) : config["Textboxes"].size();
+        textbox_size += control_textbox_count;
+        textManager.m_textBoxes.resize(textbox_size);
         for(int i = 0; i < textManager.m_textBoxes.size(); i++)
             textManager.m_textBoxes[i].p_textManager = &textManager;
         //std::cout<<"Textbox Size: "<<textManager.m_textBoxes.size()<<std::endl;
@@ -200,7 +217,9 @@ void CApplication::initialize(){
             int light_id = light["light_id"] ? light["light_id"].as<int>() : 0;
             max_light_d = (light_id > max_light_d) ? light_id : max_light_d;
         }
-        lights.resize(((max_light_d+1) < config["Lights"].size())?(max_light_d+1):config["Lights"].size()); 
+        int light_size = ((max_light_d+1) < config["Lights"].size())?(max_light_d+1):config["Lights"].size();
+        light_size += control_light_count;
+        lights.resize(light_size);
         //std::cout<<"Light Size: "<<lights.size()<<std::endl;
 
         swapchain.buffer_depthlight.resize(lights.size());
@@ -429,6 +448,7 @@ void CApplication::update(){
     for(int i = 0; i < objects.size(); i++) objects[i].Update(deltaTime, renderer.currentFrame, mainCamera); 
     textManager.Update(deltaTime, renderer.currentFrame, mainCamera);
     for(int i = 0; i < lights.size(); i++) lights[i].Update(deltaTime, renderer.currentFrame, mainCamera, lightCameras[i]);
+    perfMetric.Update(deltaTime);
 
     /*Calcuate FPS*/
     //static int tempCount = 0;
@@ -1283,6 +1303,10 @@ void CApplication::ReadRegisterObjects(){
                 <<" Position:("<<objects[object_id].Position.x<<","<<objects[object_id].Position.y<<","<<objects[object_id].Position.z<<")"<<std::endl;
         }
 
+        //register for controls
+        if(appInfo.Feature.b_feature_graphics_fps)
+            perfMetric.RegisterObject((CApplication*)this, &objects[objects.size() - 1]);
+
         for(int i = 0; i < objects.size(); i++)
             if(!objects[i].bRegistered) std::cout<<"WARNING: Object id("<<i<<") is not registered!"<<std::endl;
     }
@@ -1337,6 +1361,11 @@ void CApplication::ReadRegisterTextboxes(){
 
             //std::cout<<"TextboxId:("<<id<<") Name:("<<textBoxes[id].GetName()<<") Position:("<<textBoxes[id].GetPosition().x<<","<<textBoxes[id].GetPosition().y<<","<<textBoxes[id].GetPosition().z<<")"<<std::endl;
         }
+
+        //register for controls
+        if(appInfo.Feature.b_feature_graphics_fps)
+            perfMetric.RegisterTextbox(this, & textManager.m_textBoxes[textManager.m_textBoxes.size() - 1]);
+
         for(int i = 0; i < textManager.m_textBoxes.size(); i++)
             if(!textManager.m_textBoxes[i].bRegistered) std::cout<<"WARNING: Textbox id("<<i<<") is not registered!"<<std::endl;
     }

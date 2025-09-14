@@ -5,7 +5,7 @@
 * Change from CCharacter(no use) to CTextBox
 **************/
 
-void CTextBox::CreateDescriptorSets_TextureImageSampler(VkDescriptorPool &descriptorPool, VkDescriptorSetLayout &descriptorSetLayout, std::vector<VkSampler> &samplers, std::vector<VkImageView> *swapchainImageViews){
+void CTextbox::CreateDescriptorSets_TextureImageSampler(VkDescriptorPool &descriptorPool, VkDescriptorSetLayout &descriptorSetLayout, std::vector<VkSampler> &samplers, std::vector<VkImageView> *swapchainImageViews){
     //std::cout<<"TextureDescriptor::createDescriptorSets."<<std::endl;
     if(samplers.size() < 1) return;
     
@@ -81,7 +81,7 @@ void CTextBox::CreateDescriptorSets_TextureImageSampler(VkDescriptorPool &descri
     //std::cout<<"Done set descriptor. "<<std::endl;
 }
 
-void CTextBox::Draw(){
+void CTextbox::Draw(){
     //std::cout<<"Drawing TextBox ID: "<<m_textBoxID<<", text: "<<m_text_content<<std::endl;
     VkPipelineLayout *p_graphicsPipelineLayout = &(p_renderProcess->graphicsPipelineLayouts[m_default_graphics_pipeline_id]);
     p_renderer->BindPipeline(p_renderProcess->graphicsPipelines[m_default_graphics_pipeline_id], VK_PIPELINE_BIND_POINT_GRAPHICS, p_renderer->graphicsCmdId);
@@ -123,7 +123,7 @@ void CTextBox::Draw(){
 *******************/
 //CTextBox::CTextBox(){}
 //CApplication *p_app, int object_id, std::vector<int> texture_ids, std::vector<int> text_ids, int model_id, int default_graphics_pipeline_id
-void CTextBox::Register(CApplication *p_app, int textbox_id, std::vector<int> text_ids, std::string text_content, int model_id, int default_graphics_pipeline_id){
+void CTextbox::Register(CApplication *p_app, int textbox_id, std::vector<int> text_ids, std::string text_content, int model_id, int default_graphics_pipeline_id){
     bRegistered = true;
     m_textBoxID = textbox_id;
     m_text_content = text_content;
@@ -158,7 +158,7 @@ void CTextBox::Register(CApplication *p_app, int textbox_id, std::vector<int> te
     SetTextContent(text_content);
 }
 
-void CTextBox::AdvanceHighlightedChar(){
+void CTextbox::AdvanceHighlightedChar(){
     for(int i = m_highlightedIndex.size()-1; i > 0; i--)
         m_highlightedIndex[i] = m_highlightedIndex[i-1];
     if(!b_reverseHighlight){
@@ -171,7 +171,7 @@ void CTextBox::AdvanceHighlightedChar(){
     }
 }
 
-void CTextBox::SetTextContent(std::string text_content){
+void CTextbox::SetTextContent(std::string text_content){
     //std::string text = "Hello123abcdABCD";
     float penX = 0.0f;
     float penY = 0.0f;
@@ -231,14 +231,19 @@ void CTextBox::SetTextContent(std::string text_content){
     AdvanceHighlightedChar();
 }
 
-void CTextBox::Update(float deltaTime, int currentFrame, Camera &mainCamera){
+void CTextbox::Update(float deltaTime, int currentFrame, Camera &mainCamera){
     if(!bRegistered) return;
     CEntity::Update(deltaTime); //update translateMatrix, RotationMatrix and ScaleMatrix
     /********************************
     * Calculate model matrix based on Translation, Rotation and Scale
     ********************************/
    if(CGraphicsDescriptorManager::graphicsUniformTypes & GRAPHCIS_UNIFORMBUFFER_TEXT_MVP){
-        CGraphicsDescriptorManager::textMVPUBO.mvpData[m_textBoxID].model = TranslateMatrix * RotationMatrix * ScaleMatrix;
+        if(p_controlNode == NULL)  CGraphicsDescriptorManager::textMVPUBO.mvpData[m_textBoxID].model = TranslateMatrix * RotationMatrix * ScaleMatrix;
+        else {
+            glm::mat4 control_model = p_controlNode->TranslateMatrix * p_controlNode->RotationMatrix * p_controlNode->ScaleMatrix;
+            CGraphicsDescriptorManager::textMVPUBO.mvpData[m_textBoxID].model = control_model * TranslateMatrix * RotationMatrix * ScaleMatrix;
+        }
+
 
         //std::cout<< "TextBox ID: " << m_textBoxID << " Model Matrix: " << glm::to_string(CGraphicsDescriptorManager::textMVPUBO.mvpData[m_textBoxID].model) << std::endl;
         // std::cout<< "TextBox ID: " << m_textBoxID << " TranslateMatrix: " << glm::to_string(TranslateMatrix) << std::endl;

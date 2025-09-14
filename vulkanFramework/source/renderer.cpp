@@ -492,7 +492,7 @@ void CRenderer::BindVertexBuffer(int modelId){
 	VkDeviceSize offsets[] = { 0 };
 	vkCmdBindVertexBuffers(commandBuffers[graphicsCmdId][currentFrame], 0, 1, vertexBuffers, offsets);
 }
-void CRenderer::BindVertexInstanceBuffer(int modelId, CTextBox &textbox){
+void CRenderer::BindVertexInstanceBuffer(int modelId, CTextbox &textbox){
     //std::cout<<"objectId="<<objectId<<", vertexDataBuffers.size()="<<vertexDataBuffers.size()<<", instanceDataBuffers.size()="<<instanceDataBuffers.size()<<std::endl;
     if(vertexDataBuffers.size() <= 0) return;
 	VkBuffer vertexBuffers[] = {vertexDataBuffers[modelId].buffer, textbox.instanceDataBuffer.buffer};

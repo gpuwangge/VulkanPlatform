@@ -56,6 +56,9 @@ public:
 			if(appInfo.Uniform.b_uniform_graphics_lightdepth_image_sampler) r = "true"; else r= "false";
 			textManager.m_textBoxes[21].SetTextContent("Lightdepth Image Sampler:" + r);
 
+			//textManager.m_textBoxes[23].SetTextContent("ControlNode: PerfMetric");
+			perfMetric.m_pTextbox0->SetTextContent("ControlNode: PerfMetric");
+
 			//for(int i = 0; i < textManager.m_textBoxes.size(); i++) textManager.m_textBoxes[i].IncHighlightedChar();
 			lastTrigger = currentTrigger;
 		}

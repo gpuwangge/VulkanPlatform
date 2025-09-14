@@ -18,6 +18,7 @@
 #include "textManager.h"
 #include "light.h"
 #include "timer.h"
+#include "controlNode.h"
 
 //Macro to convert the macro value to a string
 #define STRINGIFY(x) #x
@@ -118,6 +119,12 @@ public:
 
     std::string m_sampleName;
     YAML::Node config;
+
+    // int control_object_count = 0;
+    // int control_textbox_count = 0;
+    // int control_light_count = 0;
+    //std::vector<CControlNode*> pControlNodes;
+    CPerfMetric perfMetric;
 
     /******************
     * Core Functions

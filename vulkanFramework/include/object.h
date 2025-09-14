@@ -10,6 +10,7 @@
 //Because we dont want to include application.h here, but we want to use CApplciation.
 //We want application to include object.h instead
 class CApplication;
+class CControlNode;
 
 class CObject : public CEntity {
     int m_object_id = 0;
@@ -19,7 +20,6 @@ class CObject : public CEntity {
 
     bool b_isText = false;
     std::string m_text = ""; //not used yet
-
 
     //bool bUseMVP_VP = false;
 
@@ -48,6 +48,8 @@ public:
     int m_default_graphics_pipeline_id = 0;
     //int m_graphics_pipeline_id1 = 0;
     //int m_graphics_pipeline_id2 = 0;
+    //int m_controlNode_id = -1;
+    CControlNode *p_controlNode = NULL;
 
     bool bSticker = false;
     bool bSkybox = false;

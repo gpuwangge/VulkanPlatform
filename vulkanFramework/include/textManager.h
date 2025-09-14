@@ -11,13 +11,13 @@ class CApplication;
 class CRenderer;
 class CTextImageManager;
 class CModelManager;
-
+class CControlNode;
 
 /******************
 * TextBox
 *******************/
 class CTextManager;
-class CTextBox : public CEntity {
+class CTextbox : public CEntity {
     int m_textBoxID = 0;
     
     //int m_instanceCount = 0;
@@ -39,6 +39,8 @@ public:
     CWxjBuffer instanceDataBuffer;
 
     CTextManager *p_textManager;
+
+    CControlNode *p_controlNode = NULL;
     
     bool bSticker = false; //if true, the text box will not be affected by camera view and projection matrix
 
@@ -53,8 +55,8 @@ public:
     //std::vector<CCharacter> m_characters;
     void CreateDescriptorSets_TextureImageSampler(VkDescriptorPool &descriptorPool, VkDescriptorSetLayout &descriptorSetLayout, std::vector<VkSampler> &samplers, std::vector<VkImageView> *swapchainImageViews = NULL);
 
-    CTextBox(){}
-    //~CTextBox(){}
+    CTextbox(){}
+    //~CTextbox(){}
     void Destroy(){instanceDataBuffer.DestroyAndFree();}
 
     //void SetText(std::string text_content){m_text_content = text_content;}
@@ -78,7 +80,7 @@ class CTextManager {
     glm::vec4 m_textcolor = glm::vec4(0.0f);
     
 public:
-    std::vector<CTextBox> m_textBoxes;
+    std::vector<CTextbox> m_textBoxes;
 
     CRenderer *p_renderer = NULL;
     CTextImageManager *p_textImageManager = NULL;
