@@ -13,11 +13,8 @@ void CObject::Update(float deltaTime, int currentFrame, Camera &mainCamera){
     ********************************/
     if(CGraphicsDescriptorManager::graphicsUniformTypes & GRAPHCIS_UNIFORMBUFFER_MVP){
         //update model matrix to ubo
-        if(p_controlNode == NULL) CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].model = TranslateMatrix * RotationMatrix * ScaleMatrix;
-        else {
-            glm::mat4 control_model = p_controlNode->TranslateMatrix * p_controlNode->RotationMatrix * p_controlNode->ScaleMatrix;
-            CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].model = control_model * TranslateMatrix * RotationMatrix * ScaleMatrix;
-        }
+        if(p_controlNode == NULL) CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].model = ModelMatrix;
+        else CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].model = p_controlNode->ModelMatrix * ModelMatrix;
 
         //update view and perspective matrices to ubo
         if(!bSticker){

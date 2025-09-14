@@ -160,5 +160,10 @@ void CEntity::Update(float deltaTime){
     ScaleMatrix[1][1] = Scale.y;
     ScaleMatrix[2][2] = Scale.z;
     ScaleMatrix[3][3] = 1;
+
+    /**********
+    * 4. Compute ModelMatrix
+    **********/
+    ModelMatrix = TranslateMatrix * RotationMatrix * ScaleMatrix;
 }
 

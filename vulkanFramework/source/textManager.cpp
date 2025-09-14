@@ -237,12 +237,8 @@ void CTextbox::Update(float deltaTime, int currentFrame, Camera &mainCamera){
     * Calculate model matrix based on Translation, Rotation and Scale
     ********************************/
    if(CGraphicsDescriptorManager::graphicsUniformTypes & GRAPHCIS_UNIFORMBUFFER_TEXT_MVP){
-        if(p_controlNode == NULL)  CGraphicsDescriptorManager::textMVPUBO.mvpData[m_textBoxID].model = TranslateMatrix * RotationMatrix * ScaleMatrix;
-        else {
-            glm::mat4 control_model = p_controlNode->TranslateMatrix * p_controlNode->RotationMatrix * p_controlNode->ScaleMatrix;
-            CGraphicsDescriptorManager::textMVPUBO.mvpData[m_textBoxID].model = control_model * TranslateMatrix * RotationMatrix * ScaleMatrix;
-        }
-
+        if(p_controlNode == NULL)  CGraphicsDescriptorManager::textMVPUBO.mvpData[m_textBoxID].model = ModelMatrix;
+        else CGraphicsDescriptorManager::textMVPUBO.mvpData[m_textBoxID].model = p_controlNode->ModelMatrix * ModelMatrix;
 
         //std::cout<< "TextBox ID: " << m_textBoxID << " Model Matrix: " << glm::to_string(CGraphicsDescriptorManager::textMVPUBO.mvpData[m_textBoxID].model) << std::endl;
         // std::cout<< "TextBox ID: " << m_textBoxID << " TranslateMatrix: " << glm::to_string(TranslateMatrix) << std::endl;

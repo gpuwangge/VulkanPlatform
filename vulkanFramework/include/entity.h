@@ -27,9 +27,10 @@ public:
     glm::vec3 Rotation = glm::vec3(0.0f); //Pitch, Yaw, Roll
     glm::vec3 Scale = glm::vec3(1.0f);
 
-    glm::mat4 TranslateMatrix = glm::mat4(1.0f);; //16*4=64 bytes
-    glm::mat4 RotationMatrix = glm::mat4(1.0f);; 
-    glm::mat4 ScaleMatrix = glm::mat4(1.0f);;
+    glm::mat4 TranslateMatrix = glm::mat4(1.0f); //16*4=64 bytes
+    glm::mat4 RotationMatrix = glm::mat4(1.0f); 
+    glm::mat4 ScaleMatrix = glm::mat4(1.0f);
+    glm::mat4 ModelMatrix = glm::mat4(1.0f);
 
     glm::vec3 DirectionFront = glm::vec3(0, 0, 1);
     glm::vec3 DirectionUp = glm::vec3(0, 1, 0);
