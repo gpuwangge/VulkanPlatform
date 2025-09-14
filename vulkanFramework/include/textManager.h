@@ -18,18 +18,11 @@ class CControlNode;
 *******************/
 class CTextManager;
 class CTextbox : public CEntity {
-    int m_textBoxID = 0;
-    
-    //int m_instanceCount = 0;
-
     CRenderer *p_renderer;
     CRenderProcess *p_renderProcess;
     std::vector<VkDescriptorSet> *p_descriptorSets_graphics_general;
     std::vector<VkDescriptorSet> descriptorSets_graphics_texture_image_sampler;
     CTextImageManager *p_textImageManager;
-
-    int m_default_graphics_pipeline_id = 0;
-    int m_model_id = 0;
 
     std::vector<int> m_highlightedIndex = std::vector<int>(10, -1);
     bool b_reverseHighlight = false;
@@ -41,6 +34,10 @@ public:
     CTextManager *p_textManager;
 
     CControlNode *p_controlNode = NULL;
+
+    int m_default_graphics_pipeline_id = 0;
+    int m_model_id = 0;
+    int m_textBoxID = 0;
     
     bool bSticker = false; //if true, the text box will not be affected by camera view and projection matrix
 
@@ -65,7 +62,7 @@ public:
     void SetTextContent(std::string text_content);
     //void SetHighlightedChar(int index){m_highlightedIndex = index;}
     void AdvanceHighlightedChar();
-    void Register(CApplication *p_app, int textbox_id, std::vector<int> text_ids, std::string text_content, int model_id, int default_graphics_pipeline_id);
+    void Register(CApplication *p_app);
     void Update(float deltaTime, int currentFrame, Camera &mainCamera);
     void Draw();
 };

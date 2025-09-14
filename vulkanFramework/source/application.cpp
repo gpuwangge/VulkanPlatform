@@ -176,15 +176,28 @@ void CApplication::initialize(){
     //pControlNodes.push_back(&perfMetric);
 
     /****************************
+    * 2 Read Features
+    ****************************/   
+    renderer.m_renderMode = appInfo.RenderMode;
+    ReadFeatures();
+
+    TimePoint T1 = now();
+    if(bVerboseInitialization){
+        printElapsed("Application: Initialize time for reading features", T0, T1);
+        //printElapsed("Application: Total initialize elapsed time", T0, T1);
+    }
+
+    /****************************
     * 1 Initialize ObjectList and LightList
     ****************************/
     int control_object_count = 0;
     int control_textbox_count = 0;
     int control_light_count = 0;
-    
-    //int control_object_count = perfMetric.m_object_count;
-    //int control_textbox_count = perfMetric.m_textbox_count;
-    //int control_light_count = perfMetric.m_light_count;
+    if(appInfo.Feature.b_feature_graphics_fps){
+        control_object_count = control_perfMetric.m_object_count;
+        control_textbox_count = control_perfMetric.m_textbox_count;
+        control_light_count = control_perfMetric.m_light_count;
+    }
 
     if (config["Objects"]) {
         int max_object_id = 0;
@@ -242,17 +255,6 @@ void CApplication::initialize(){
     //std::cout<<"Application: Initialize time for object and light List: "<<m_timer.elapsedSinceLastCheck()<<" milliseconds"<<std::endl;
     //std::cout<<"Application: Total initialize elapsed time: "<<m_timer.elapsedMilliseconds()<<" milliseconds"<<std::endl;
 
-    TimePoint T1 = now();
-    if(bVerboseInitialization){
-        printElapsed("Application: Initialize time for object and light List", T0, T1);
-        //printElapsed("Application: Total initialize elapsed time", T0, T1);
-    }
-
-    /****************************
-    * 2 Read Features
-    ****************************/   
-    renderer.m_renderMode = appInfo.RenderMode;
-    ReadFeatures();
 
     // if(bVerboseInitialization){
     //     currentInitTime = std::chrono::high_resolution_clock::now();
@@ -268,8 +270,8 @@ void CApplication::initialize(){
 
     TimePoint T2 = now();
     if(bVerboseInitialization){
-        printElapsed("Application: Initialize time for reading features", T1, T2);
-        //printElapsed("Application: Total initialize elapsed time", T0, T2);
+        printElapsed("Application: Initialize time for object and light List", T1, T2);
+        //printElapsed("Application: Total initialize elapsed time", T1, T2);
     }
 
     /****************************
@@ -448,7 +450,7 @@ void CApplication::update(){
     for(int i = 0; i < objects.size(); i++) objects[i].Update(deltaTime, renderer.currentFrame, mainCamera); 
     textManager.Update(deltaTime, renderer.currentFrame, mainCamera);
     for(int i = 0; i < lights.size(); i++) lights[i].Update(deltaTime, renderer.currentFrame, mainCamera, lightCameras[i]);
-    perfMetric.Update(deltaTime);
+    control_perfMetric.Update(deltaTime);
 
     /*Calcuate FPS*/
     //static int tempCount = 0;
@@ -1246,66 +1248,46 @@ void CApplication::ReadRegisterObjects(){
         //std::cerr << "No 'Objects' key found in the YAML file!" << std::endl;
         for (const auto& obj : config["Objects"]) {
             int object_id = obj["object_id"] ? obj["object_id"].as<int>() : 0;
+            int resource_model_id = obj["resource_model_id"] ? obj["resource_model_id"].as<int>() : 0;
+            auto resource_texture_id_list = obj["resource_texture_id_list"] ? obj["resource_texture_id_list"].as<std::vector<int>>() : std::vector<int>(1, 0);
+            int resource_default_graphics_pipeline_id = obj["resource_default_graphics_pipeline_id"] ? obj["resource_default_graphics_pipeline_id"].as<int>() : 0;
+            std::string name = obj["object_name"] ? obj["object_name"].as<std::string>() : "Default";
+            bool bSticker = obj["object_sticker"] ? obj["object_sticker"].as<bool>() : false;
+            float object_scale = obj["object_scale"] ? obj["object_scale"].as<float>() : 1.0f;
+            auto object_scale_3 = obj["object_scale_3"] ? obj["object_scale_3"].as<std::vector<float>>() : std::vector<float>(3, object_scale);
+            auto position = obj["object_position"] ? obj["object_position"].as<std::vector<float>>(): std::vector<float>(3, 0);
+            auto rotation = obj["object_rotation"] ? obj["object_rotation"].as<std::vector<float>>(): std::vector<float>(3, 0);
+            auto velocity = obj["object_velocity"] ? obj["object_velocity"].as<std::vector<float>>(): std::vector<float>(3, 0);
+            auto angular_velocity = obj["object_angular_velocity"] ? obj["object_angular_velocity"].as<std::vector<float>>(): std::vector<float>(3, 0);
+            bool isSkybox = obj["object_skybox"] ? obj["object_skybox"].as<bool>() : false;
+
+            objects[object_id].m_object_id = object_id;
+            objects[object_id].m_model_id = resource_model_id;
+            objects[object_id].m_texture_ids = resource_texture_id_list;
+            objects[object_id].m_default_graphics_pipeline_id = resource_default_graphics_pipeline_id;
+            objects[object_id].Name = name;
+            objects[object_id].bSticker = bSticker;
+            objects[object_id].SetPosition(position[0], position[1], position[2]);
+            objects[object_id].SetRotation(rotation[0], rotation[1], rotation[2]);
+            objects[object_id].SetVelocity(velocity[0], velocity[1], velocity[2]);
+            objects[object_id].SetAngularVelocity(angular_velocity[0], angular_velocity[1], angular_velocity[2]);
+            objects[object_id].bSkybox = isSkybox;
+
+            //must load resources before object register
             if(objects[object_id].bRegistered) {
                 std::cout<<"WARNING: Trying to register a registered Object id("<<object_id<<")!"<<std::endl;
                 continue;
             }
+            objects[object_id].Register((CApplication*)this);
+            objects[object_id].SetScale(object_scale_3[0], object_scale_3[1], object_scale_3[2]);//set scale after model is registered, otherwise the length will not be computed correctly
 
-            //std::cout<<"before register Object id("<<object_id<<")!"<<std::endl;
-            int resource_model_id = obj["resource_model_id"] ? obj["resource_model_id"].as<int>() : 0;
-            auto resource_texture_id_list = obj["resource_texture_id_list"] ? obj["resource_texture_id_list"].as<std::vector<int>>() : std::vector<int>(1, 0);
-            auto resource_text_id_list = obj["resource_text_id_list"] ? obj["resource_text_id_list"].as<std::vector<int>>() : std::vector<int>(1, 0);
-            bool isText = false;
-            if(obj["resource_text_id_list"]) isText = true;
-            int resource_default_graphics_pipeline_id = obj["resource_default_graphics_pipeline_id"] ? obj["resource_default_graphics_pipeline_id"].as<int>() : 0;
-
-
-            //must load resources before object register
-            objects[object_id].Register((CApplication*)this, 
-                object_id, 
-                resource_texture_id_list, 
-                isText ? resource_text_id_list : std::vector<int>(),
-                resource_model_id, 
-                resource_default_graphics_pipeline_id);
-            //std::cout<<"after register Object id("<<object_id<<")!"<<std::endl;
-
-            std::string name = obj["object_name"] ? obj["object_name"].as<std::string>() : "Default";
-            objects[object_id].Name = name;
-
-            bool bSticker = obj["object_sticker"] ? obj["object_sticker"].as<bool>() : false;
-            objects[object_id].bSticker = bSticker;
-
-            //set scale after model is registered, otherwise the length will not be computed correctly
-            float object_scale = obj["object_scale"] ? obj["object_scale"].as<float>() : 1.0f;
-            auto object_scale_3 = obj["object_scale_3"] ? obj["object_scale_3"].as<std::vector<float>>() : std::vector<float>(3, object_scale);
-            objects[object_id].SetScale(object_scale_3[0], object_scale_3[1], object_scale_3[2]);
-
-            auto position = obj["object_position"] ? obj["object_position"].as<std::vector<float>>(): std::vector<float>(3, 0);
-            objects[object_id].SetPosition(position[0], position[1], position[2]);
-
-            auto rotation = obj["object_rotation"] ? obj["object_rotation"].as<std::vector<float>>(): std::vector<float>(3, 0);
-            objects[object_id].SetRotation(rotation[0], rotation[1], rotation[2]);
-
-            auto velocity = obj["object_velocity"] ? obj["object_velocity"].as<std::vector<float>>(): std::vector<float>(3, 0);
-            objects[object_id].SetVelocity(velocity[0], velocity[1], velocity[2]);
-
-            auto angular_velocity = obj["object_angular_velocity"] ? obj["object_angular_velocity"].as<std::vector<float>>(): std::vector<float>(3, 0);
-            objects[object_id].SetAngularVelocity(angular_velocity[0], angular_velocity[1], angular_velocity[2]);
-
-            bool isSkybox = obj["object_skybox"] ? obj["object_skybox"].as<bool>() : false;
-            objects[object_id].bSkybox = isSkybox;
-            //if(graphics_pipeline_id == appInfo.Feature.GraphicsPipelineSkyboxID)  objectList[i].bSkybox = true;
-
-            std::string textContent = obj["object_text_content"] ? obj["object_text_content"].as<std::string>() : "";
-            objects[object_id].SetText(textContent);
-
-            std::cout<<"ObjectId:("<<object_id<<") Name:("<<objects[object_id].Name<<") Length:("<<objects[object_id].Length.x<<","<<objects[object_id].Length.y<<","<<objects[object_id].Length.z<<")"
-                <<" Position:("<<objects[object_id].Position.x<<","<<objects[object_id].Position.y<<","<<objects[object_id].Position.z<<")"<<std::endl;
+            //std::cout<<"ObjectId:("<<object_id<<") Name:("<<objects[object_id].Name<<") Length:("<<objects[object_id].Length.x<<","<<objects[object_id].Length.y<<","<<objects[object_id].Length.z<<")"
+            //    <<" Position:("<<objects[object_id].Position.x<<","<<objects[object_id].Position.y<<","<<objects[object_id].Position.z<<")"<<std::endl;
         }
 
         //register for controls
         if(appInfo.Feature.b_feature_graphics_fps)
-            perfMetric.RegisterObject((CApplication*)this, &objects[objects.size() - 1]);
+            control_perfMetric.RegisterObject((CApplication*)this, &objects[objects.size() - 1]);
 
         for(int i = 0; i < objects.size(); i++)
             if(!objects[i].bRegistered) std::cout<<"WARNING: Object id("<<i<<") is not registered!"<<std::endl;
@@ -1318,53 +1300,45 @@ void CApplication::ReadRegisterTextboxes(){
     if (config["Textboxes"]) {
         for (const auto& tb : config["Textboxes"]) {
             int textbox_id = tb["textbox_id"] ? tb["textbox_id"].as<int>() : 0;
+            std::string name = tb["textbox_name"] ? tb["textbox_name"].as<std::string>() : "Default";
+            auto position = tb["textbox_position"] ? tb["textbox_position"].as<std::vector<float>>(): std::vector<float>(3,0);
+            glm::vec3 glm_position(position[0], position[1], position[2]);
+            auto rotation = tb["textbox_rotation"] ? tb["textbox_rotation"] .as<std::vector<float>>(): std::vector<float>(3,0);
+            glm::vec3 glm_rotation(rotation[0],rotation[1],rotation[2]);
+            bool bSticker = tb["textbox_sticker"] ? tb["textbox_sticker"].as<bool>() : false;
+            auto scale = tb["textbox_scale"] ? tb["textbox_scale"].as<float>() : 1.0f;
+            auto color = tb["textbox_color"] ? tb["textbox_color"].as<std::vector<float>>(): std::vector<float>(4,1.0f);
+            glm::vec4 glm_boxColor(color[0], color[1], color[2], color[3]);
+            int resource_model_id = tb["resource_model_id"] ? tb["resource_model_id"].as<int>() : 0;
+            //auto resource_text_id_list = tb["resource_text_id_list"] ? tb["resource_text_id_list"].as<std::vector<int>>() : std::vector<int>(1, 0); //recover later
+            std::string text_content = tb["textbox_text_content"] ? tb["textbox_text_content"].as<std::string>() : "";
+            auto text_color = tb["textbox_text_color"] ? tb["textbox_text_color"].as<std::vector<float>>() : std::vector<float>(4,1.0f);
+            glm::vec4 glm_textColor(text_color[0], text_color[1], text_color[2], text_color[3]);
+            int resource_default_graphics_pipeline_id = tb["resource_default_graphics_pipeline_id"] ? tb["resource_default_graphics_pipeline_id"].as<int>() : 0;
+
+            textManager.m_textBoxes[textbox_id].m_textBoxID = textbox_id;
+            textManager.m_textBoxes[textbox_id].SetPosition(glm_position);
+            textManager.m_textBoxes[textbox_id].SetRotation(glm_rotation);
+            textManager.m_textBoxes[textbox_id].bSticker = bSticker;
+            textManager.m_textBoxes[textbox_id].SetScale(scale);
+            textManager.m_textBoxes[textbox_id].SetBoxColor(glm_boxColor);
+            textManager.m_textBoxes[textbox_id].m_model_id = resource_model_id;
+            textManager.m_textBoxes[textbox_id].m_text_content = text_content;
+            textManager.m_textBoxes[textbox_id].SetTextColor(glm_textColor);
+            textManager.m_textBoxes[textbox_id].m_default_graphics_pipeline_id = resource_default_graphics_pipeline_id;
+
             if(textManager.m_textBoxes[textbox_id].bRegistered) {
                 std::cout<<"WARNING: Trying to register a registered Textbox id("<<textbox_id<<")!"<<std::endl;
                 continue;
             }
-            //std::cout<<"Register Textbox id("<<id<<")!"<<std::endl;
-
-            std::string name = tb["textbox_name"] ? tb["textbox_name"].as<std::string>() : "Default";
-
-            auto position = tb["textbox_position"] ? tb["textbox_position"].as<std::vector<float>>(): std::vector<float>(3,0);
-            glm::vec3 glm_position(position[0], position[1], position[2]);
-            textManager.m_textBoxes[textbox_id].SetPosition(glm_position);
-
-            auto rotation = tb["textbox_rotation"] ? tb["textbox_rotation"] .as<std::vector<float>>(): std::vector<float>(3,0);
-            glm::vec3 glm_rotation(rotation[0],rotation[1],rotation[2]);
-            textManager.m_textBoxes[textbox_id].SetRotation(glm_rotation);
-
-            bool bSticker = tb["textbox_sticker"] ? tb["textbox_sticker"].as<bool>() : false;
-            textManager.m_textBoxes[textbox_id].bSticker = bSticker;
-
-            auto scale = tb["textbox_scale"] ? tb["textbox_scale"].as<float>() : 1.0f;
-            textManager.m_textBoxes[textbox_id].SetScale(scale);
-
-            auto color = tb["textbox_color"] ? tb["textbox_color"].as<std::vector<float>>(): std::vector<float>(4,1.0f);
-            glm::vec4 glm_boxColor(color[0], color[1], color[2], color[3]);
-            textManager.m_textBoxes[textbox_id].SetBoxColor(glm_boxColor);
-
-            int resource_model_id = tb["resource_model_id"] ? tb["resource_model_id"].as<int>() : 0;
-
-            auto resource_text_id_list = tb["resource_text_id_list"] ? tb["resource_text_id_list"].as<std::vector<int>>() : std::vector<int>(1, 0);
-
-            std::string text_content = tb["textbox_text_content"] ? tb["textbox_text_content"].as<std::string>() : "";
-            
-            auto text_color = tb["textbox_text_color"] ? tb["textbox_text_color"].as<std::vector<float>>() : std::vector<float>(4,1.0f);
-            glm::vec4 glm_textColor(text_color[0], text_color[1], text_color[2], text_color[3]);
-            textManager.m_textBoxes[textbox_id].SetTextColor(glm_textColor);
-
-            int resource_default_graphics_pipeline_id = tb["resource_default_graphics_pipeline_id"] ? tb["resource_default_graphics_pipeline_id"].as<int>() : 0;
-
-            //textBoxes[textbox_id].Register(name, textbox_id, glm_position, scale, glm_boxColor, resource_text_id_list, text_content, glm_textColor);
-            textManager.m_textBoxes[textbox_id].Register((CApplication*)this, textbox_id, resource_text_id_list, text_content, resource_model_id, resource_default_graphics_pipeline_id);
+            textManager.m_textBoxes[textbox_id].Register((CApplication*)this);
 
             //std::cout<<"TextboxId:("<<id<<") Name:("<<textBoxes[id].GetName()<<") Position:("<<textBoxes[id].GetPosition().x<<","<<textBoxes[id].GetPosition().y<<","<<textBoxes[id].GetPosition().z<<")"<<std::endl;
         }
 
         //register for controls
         if(appInfo.Feature.b_feature_graphics_fps)
-            perfMetric.RegisterTextbox(this, & textManager.m_textBoxes[textManager.m_textBoxes.size() - 1]);
+            control_perfMetric.RegisterTextbox(this, & textManager.m_textBoxes[textManager.m_textBoxes.size() - 1]);
 
         for(int i = 0; i < textManager.m_textBoxes.size(); i++)
             if(!textManager.m_textBoxes[i].bRegistered) std::cout<<"WARNING: Textbox id("<<i<<") is not registered!"<<std::endl;

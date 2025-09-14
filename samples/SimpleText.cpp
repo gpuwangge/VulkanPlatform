@@ -57,7 +57,7 @@ public:
 			textManager.m_textBoxes[21].SetTextContent("Lightdepth Image Sampler:" + r);
 
 			//textManager.m_textBoxes[23].SetTextContent("ControlNode: PerfMetric");
-			perfMetric.m_pTextbox0->SetTextContent("ControlNode: PerfMetric");
+			control_perfMetric.m_pTextbox0->SetTextContent("ControlNode: PerfMetric");
 
 			//for(int i = 0; i < textManager.m_textBoxes.size(); i++) textManager.m_textBoxes[i].IncHighlightedChar();
 			lastTrigger = currentTrigger;

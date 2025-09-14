@@ -13,13 +13,9 @@ class CApplication;
 class CControlNode;
 
 class CObject : public CEntity {
-    int m_object_id = 0;
-    std::vector<int> m_texture_ids;
-    std::vector<int> m_text_ids;
-    int m_model_id = 0;
-
-    bool b_isText = false;
-    std::string m_text = ""; //not used yet
+    //std::vector<int> m_text_ids;
+    //bool b_isText = false;
+    //std::string m_text = ""; //not used yet
 
     //bool bUseMVP_VP = false;
 
@@ -45,6 +41,9 @@ class CObject : public CEntity {
 public:
     CObject(){};
 
+    int m_object_id = 0;
+    std::vector<int> m_texture_ids;
+    int m_model_id = 0;
     int m_default_graphics_pipeline_id = 0;
     //int m_graphics_pipeline_id1 = 0;
     //int m_graphics_pipeline_id2 = 0;
@@ -58,13 +57,13 @@ public:
     std::vector<int> GetTextureID(){return m_texture_ids;}
     int GetModelID(){return m_model_id;}
 
-    void SetText(const std::string& text) { m_text = text; }
+    //void SetText(const std::string& text) { m_text = text; }
 
     bool bUpdate = true;
     void Update(float deltaTime, int currentFrame, Camera &mainCamera);
 
     bool bRegistered = false;
-    void Register(CApplication *p_app, int object_id, std::vector<int> texture_ids, std::vector<int> text_ids, int model_id, int default_graphics_pipeline_id);
+    void Register(CApplication *p_app);
 
     bool bVisible = true;
 

@@ -107,24 +107,23 @@ void CObject::CreateDescriptorSets_TextureImageSampler(VkDescriptorPool &descrip
             //imageInfo[j].imageView = textureImages[j].m_textureImageBuffer.view;
             //imageInfo[j].sampler = samplers[j];
 
-            if(b_isText){
-                if(j < m_text_ids.size()){
-                    imageInfo[j].imageView = p_textImageManager->textureImages[m_text_ids[j]].m_textureImageBuffer.view;
-                    imageInfo[j].sampler = samplers[p_textImageManager->textureImages[m_text_ids[j]].m_sampler_id]; 
-                }else{ //There are more samplers than textures for this object, so use the first texture to fill other samplers
-                    imageInfo[j].imageView = p_textImageManager->textureImages[m_text_ids[0]].m_textureImageBuffer.view;
-                    imageInfo[j].sampler = samplers[p_textImageManager->textureImages[m_text_ids[0]].m_sampler_id]; 
-                }
-            }else{
-                if(j < m_texture_ids.size()){
-                    imageInfo[j].imageView = p_textureManager->textureImages[m_texture_ids[j]].m_textureImageBuffer.view;
-                    imageInfo[j].sampler = samplers[p_textureManager->textureImages[m_texture_ids[j]].m_sampler_id]; 
-                }else{ //There are more samplers than textures for this object, so use the first texture to fill other samplers
-                    imageInfo[j].imageView = p_textureManager->textureImages[m_texture_ids[0]].m_textureImageBuffer.view;
-                    imageInfo[j].sampler = samplers[p_textureManager->textureImages[m_texture_ids[0]].m_sampler_id]; 
-                }
+            // if(b_isText){
+            //     if(j < m_text_ids.size()){
+            //         imageInfo[j].imageView = p_textImageManager->textureImages[m_text_ids[j]].m_textureImageBuffer.view;
+            //         imageInfo[j].sampler = samplers[p_textImageManager->textureImages[m_text_ids[j]].m_sampler_id]; 
+            //     }else{ //There are more samplers than textures for this object, so use the first texture to fill other samplers
+            //         imageInfo[j].imageView = p_textImageManager->textureImages[m_text_ids[0]].m_textureImageBuffer.view;
+            //         imageInfo[j].sampler = samplers[p_textImageManager->textureImages[m_text_ids[0]].m_sampler_id]; 
+            //     }
+            // }else{
+            if(j < m_texture_ids.size()){
+                imageInfo[j].imageView = p_textureManager->textureImages[m_texture_ids[j]].m_textureImageBuffer.view;
+                imageInfo[j].sampler = samplers[p_textureManager->textureImages[m_texture_ids[j]].m_sampler_id]; 
+            }else{ //There are more samplers than textures for this object, so use the first texture to fill other samplers
+                imageInfo[j].imageView = p_textureManager->textureImages[m_texture_ids[0]].m_textureImageBuffer.view;
+                imageInfo[j].sampler = samplers[p_textureManager->textureImages[m_texture_ids[0]].m_sampler_id]; 
             }
-
+            //}
 
             descriptorWrites[j].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
             descriptorWrites[j].dstSet = descriptorSets_graphics_texture_image_sampler[i];
@@ -144,20 +143,11 @@ void CObject::CreateDescriptorSets_TextureImageSampler(VkDescriptorPool &descrip
     //std::cout<<"Done set descriptor. "<<std::endl;
 }
 
-void CObject::Register(CApplication *p_app, int object_id, std::vector<int> texture_ids, std::vector<int> text_ids, int model_id, int default_graphics_pipeline_id){
-    m_object_id = object_id; 
-    m_texture_ids = texture_ids;
-    m_text_ids = text_ids;
-    if(text_ids.size() > 0) b_isText = true;
-    m_model_id = model_id; 
-    m_default_graphics_pipeline_id = default_graphics_pipeline_id; 
-    //m_graphics_pipeline_id2 = graphics_pipeline_id2; 
-    //bUseMVP_VP = CGraphicsDescriptorManager::CheckMVP();
-
+void CObject::Register(CApplication *p_app){
     //if(p_app->appInfo.VertexBufferType == VertexStructureTypes::TwoDimension || p_app->appInfo.VertexBufferType == VertexStructureTypes::ThreeDimension){
-    Length_original = p_app->modelManager.modelLengths.size() > model_id ? p_app->modelManager.modelLengths[model_id] : glm::vec3();
-    LengthMin_original = p_app->modelManager.modelLengthsMin.size() > model_id ? p_app->modelManager.modelLengthsMin[model_id] : glm::vec3();
-    LengthMax_original = p_app->modelManager.modelLengthsMax.size() > model_id ? p_app->modelManager.modelLengthsMax[model_id] : glm::vec3();
+    Length_original = p_app->modelManager.modelLengths.size() > m_model_id ? p_app->modelManager.modelLengths[m_model_id] : glm::vec3();
+    LengthMin_original = p_app->modelManager.modelLengthsMin.size() > m_model_id ? p_app->modelManager.modelLengthsMin[m_model_id] : glm::vec3();
+    LengthMax_original = p_app->modelManager.modelLengthsMax.size() > m_model_id ? p_app->modelManager.modelLengthsMax[m_model_id] : glm::vec3();
     // }else{ 
     //     Length_original = glm::vec3(); //put to initialization
     //     LengthMin_original = glm::vec3();
