@@ -144,6 +144,7 @@ public:
     /******************
     * Helper Functions
     ******************/
+    void ReadControls();
     void ReadFeatures();
     void ReadUniforms();
     void ReadAttachments();
@@ -214,20 +215,44 @@ public:
         }ComputeStorageBuffer;
     };
 
+
+    struct ControlUIContainerConfig {
+        std::vector<int> resource_texture_id_list_box;
+        int resource_model_id_box = 0;
+        int resource_default_graphics_pipeline_id_box = 0;
+        int resource_model_id_text = 0;
+        int resource_default_graphics_pipeline_id_text = 0;
+
+        void loadFromYaml(const YAML::Node& node) {
+            resource_texture_id_list_box = node["resource_texture_id_list_box"]
+                    ? node["resource_texture_id_list_box"].as<std::vector<int>>()
+                    : std::vector<int>{0};
+            resource_model_id_box = node["resource_model_id_box"]
+                    ? node["resource_model_id_box"].as<int>()
+                    : 0;
+            resource_default_graphics_pipeline_id_box = node["resource_default_graphics_pipeline_id_box"]
+                    ? node["resource_default_graphics_pipeline_id_box"].as<int>()
+                    : 0;
+            resource_model_id_text = node["resource_model_id_text"]
+                    ? node["resource_model_id_text"].as<int>()
+                    : 0;
+            resource_default_graphics_pipeline_id_text = node["resource_default_graphics_pipeline_id_text"]
+                    ? node["resource_default_graphics_pipeline_id_text"].as<int>()
+                    : 0;
+        }
+    };
+
     struct AppInfo{
         FeatureInfo Feature;
-        //AttachmentInfo Attachment;
         UniformInfo Uniform;
         std::unique_ptr<std::vector<std::string>> VertexShader;
         std::unique_ptr<std::vector<std::string>> FragmentShader;
-        //std::unique_ptr<std::vector<bool>> EnableSamplerCountOne; 
-        //std::unique_ptr<std::vector<bool>> EnableDepthBias;
         std::unique_ptr<std::vector<bool>> RenderPassShadowmap;
         std::unique_ptr<std::vector<int>> Subpass;
         std::unique_ptr<std::vector<int>> VertexDatatype;
         std::unique_ptr<std::vector<std::string>> ComputeShader;
         CRenderer::RenderModes RenderMode = CRenderer::GRAPHICS;
-        //VertexStructureTypes VertexBufferType = (VertexStructureTypes)NULL;
+        ControlUIContainerConfig ControlUIContainer;
     }appInfo;
 };
 

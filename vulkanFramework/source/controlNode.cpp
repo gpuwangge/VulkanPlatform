@@ -31,9 +31,9 @@ void CPerfMetric::RegisterObject(CApplication *p_app, CObject *object0){
     //objects[objects.size() - 1].m_controlNode_id = 0;
     object0->p_controlNode = this;
     object0->m_object_id = p_app->objects.size() - 1;
-    object0->m_texture_ids = std::vector<int>(1,1);
-    object0->m_model_id = 0;
-    object0->m_default_graphics_pipeline_id = 1;
+    object0->m_texture_ids = p_app->appInfo.ControlUIContainer.resource_texture_id_list_box;
+    object0->m_model_id = p_app->appInfo.ControlUIContainer.resource_model_id_box;
+    object0->m_default_graphics_pipeline_id = p_app->appInfo.ControlUIContainer.resource_default_graphics_pipeline_id_box;
 
     object0->Register(p_app);
 
@@ -50,8 +50,8 @@ void CPerfMetric::RegisterTextbox(CApplication *p_app, CTextbox *textbox0){
     textbox0->p_controlNode = this;
     textbox0->m_textBoxID = p_app->textManager.m_textBoxes.size() - 1;
     textbox0->SetTextContent("text_content");
-    textbox0->m_model_id = 1;
-    textbox0->m_default_graphics_pipeline_id = 2;
+    textbox0->m_model_id = p_app->appInfo.ControlUIContainer.resource_model_id_text;
+    textbox0->m_default_graphics_pipeline_id = p_app->appInfo.ControlUIContainer.resource_default_graphics_pipeline_id_text;
 
     textbox0->Register(p_app);
 

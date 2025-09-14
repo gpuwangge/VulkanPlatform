@@ -176,10 +176,11 @@ void CApplication::initialize(){
     //pControlNodes.push_back(&perfMetric);
 
     /****************************
-    * 2 Read Features
+    * 1 Read Features and Controls
     ****************************/   
     renderer.m_renderMode = appInfo.RenderMode;
     ReadFeatures();
+    ReadControls();
 
     TimePoint T1 = now();
     if(bVerboseInitialization){
@@ -188,7 +189,7 @@ void CApplication::initialize(){
     }
 
     /****************************
-    * 1 Initialize ObjectList and LightList
+    * 2 Initialize ObjectList and LightList
     ****************************/
     int control_object_count = 0;
     int control_textbox_count = 0;
@@ -675,6 +676,20 @@ CApplication::~CApplication(){
 /*************
  * Helper Functions
  *******/
+
+ 
+void CApplication::ReadControls(){
+    for (const auto& control : config["Controls"])
+        if (control["UIContainer"]) appInfo.ControlUIContainer.loadFromYaml(control["UIContainer"]);
+
+    // for(int i = 0; i < appInfo.ControlUIContainer.resource_texture_id_list_box.size(); i++)
+    //     std::cout<<"resource_texture_id_list_box: "<< appInfo.ControlUIContainer.resource_texture_id_list_box[i]<<" ";
+    // std::cout<<std::endl;
+    // std::cout << "resource_model_id_box: " << appInfo.ControlUIContainer.resource_model_id_box << std::endl;
+    // std::cout << "resource_default_graphics_pipeline_id_box: " << appInfo.ControlUIContainer.resource_default_graphics_pipeline_id_box << std::endl;
+    // std::cout << "resource_model_id_text: " << appInfo.ControlUIContainer.resource_model_id_text << std::endl;
+    // std::cout << "resource_default_graphics_pipeline_id_text: " << appInfo.ControlUIContainer.resource_default_graphics_pipeline_id_text << std::endl;
+}
 
 void CApplication::ReadFeatures(){
     //appInfo.Feature.b_feature_graphics_depth_test = config["Features"]["feature_graphics_depth_test"] ? config["Features"]["feature_graphics_depth_test"].as<bool>() : false;
