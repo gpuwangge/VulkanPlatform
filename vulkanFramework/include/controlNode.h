@@ -35,14 +35,15 @@ public:
     int m_light_count = 0;
 
     CObject* m_pObject0;
-    CTextbox *m_pTextbox0;
-    //std::vector<CTextbox> m_textBoxes;
+    //CTextbox *m_pTextbox0;
+    //CTextbox *m_pTextbox1;
+    std::vector<CTextbox*> m_pTextboxes;
 
     CPerfMetric();
     ~CPerfMetric(){}
 
     void RegisterObject(CApplication *p_app, CObject *object0);
-    void RegisterTextbox(CApplication *p_app, CTextbox *textbox0);
+    void RegisterTextbox(CApplication *p_app, std::vector<CTextbox> *pTextBoxes, int startIndex);
     void Update(float deltaTime);
     //void Draw();
 };
