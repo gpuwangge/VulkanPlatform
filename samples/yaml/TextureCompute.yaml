@@ -8,12 +8,12 @@ Resources:
     - resource_computeshader_name: textureCompute/shader.comp.spv
 
 Uniforms:
-  - Compute:
-    - uniform_compute_name: Compute
-      uniform_compute_custom: false
-      uniform_compute_storage: false
-      uniform_compute_texture_storage: true
-      uniform_compute_swapchain_storage: true
+  Compute:
+    uniform_compute_name: Compute
+    uniform_compute_custom: false
+    uniform_compute_storage: false
+    uniform_compute_texture_storage: true
+    uniform_compute_swapchain_storage: true
 
 Features:
   feature_graphics_48pbt: false

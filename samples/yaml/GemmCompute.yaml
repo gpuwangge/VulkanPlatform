@@ -3,12 +3,12 @@ Resources:
     - resource_computeshader_name: gemmCompute/shader.comp.spv
 
 Uniforms:
-  - Compute:
-    - uniform_compute_name: Compute
-      uniform_compute_custom: false
-      uniform_compute_storage: true
-      uniform_compute_texture_storage: false
-      uniform_compute_swapchain_storage: false
+  Compute:
+    uniform_compute_name: Compute
+    uniform_compute_custom: false
+    uniform_compute_storage: true
+    uniform_compute_texture_storage: false
+    uniform_compute_swapchain_storage: false
 
 Features:
   feature_graphics_48pbt: false

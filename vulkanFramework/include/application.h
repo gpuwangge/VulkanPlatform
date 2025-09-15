@@ -50,6 +50,14 @@
 //#define START_COMPUTE_RECORD(descriptorIdx) renderer.StartRecordComputeCommandBuffer(renderProcess.computePipeline, renderProcess.computePipelineLayout, descriptors[descriptorIdx].descriptorSets);
 //#define END_COMPUTE_RECORD renderer.EndRecordComputeCommandBuffer();
 
+template <typename T>
+T getOrDefault(const YAML::Node& node, const std::string& key, const T& defaultValue) {
+    if (node[key]) {
+        return node[key].as<T>();
+    }
+    return defaultValue;
+}
+
 class CApplication{
 public:
     CApplication();
@@ -171,9 +179,10 @@ public:
     /*************
      * APP INFO
      *******/
-    struct FeatureInfo{
-        //bool b_feature_graphics_depth_test = false;
-        //bool b_feature_graphics_msaa = false;
+
+    
+
+    struct FeatureConfig {
         bool b_feature_graphics_48pbt = false;
         bool b_feature_graphics_push_constant = false;
         bool b_feature_graphics_blend = false;
@@ -181,14 +190,52 @@ public:
         int feature_graphics_pipeline_skybox_id = -1;
         int feature_graphics_observe_attachment_id = -1;
         bool b_feature_graphics_fps = false;
+
+        void loadFromYaml(const YAML::Node& node) {
+            b_feature_graphics_48pbt              = getOrDefault(node, "feature_graphics_48pbt", false);
+            b_feature_graphics_push_constant      = getOrDefault(node, "feature_graphics_push_constant", false);
+            b_feature_graphics_blend              = getOrDefault(node, "feature_graphics_blend", false);
+            b_feature_graphics_rainbow_mipmap     = getOrDefault(node, "feature_graphics_rainbow_mipmap", false);
+            feature_graphics_pipeline_skybox_id   = getOrDefault(node, "feature_graphics_pipeline_skybox_id", -1);
+            feature_graphics_observe_attachment_id= getOrDefault(node, "feature_graphics_observe_attachment_id", -1);
+            b_feature_graphics_fps                = getOrDefault(node, "feature_graphics_fps", false);
+        }
     };
+
     // struct AttachmentInfo{
     //     bool bAttachmentDepthLight;
     //     bool bAttachmentDepthCamera;
     //     bool bAttachmentColorResovle;
     //     bool bAttachmentColorPresent;
     // };
-    struct UniformInfo{
+    // struct UniformInfo{
+    //     bool b_uniform_graphics_custom = false;
+    //     bool b_uniform_graphics_mvp = false;
+    //     bool b_uniform_graphics_text_mvp = false;
+    //     bool b_uniform_graphics_vp = false;
+    //     bool b_uniform_graphics_lighting = false;
+    //     bool b_uniform_graphics_depth_image_sampler = false;
+    //     bool b_uniform_graphics_lightdepth_image_sampler = false;
+    //     bool b_uniform_graphics_lightdepth_image_sampler_hardware = false;
+    //     bool b_uniform_compute_custom = false;
+    //     bool b_uniform_compute_storage = false;
+    //     bool b_uniform_compute_swapchain_storage = false;
+    //     bool b_uniform_compute_texture_storage = false;
+    //     struct GraphicsCustomInfo{
+    //         VkDeviceSize Size = 0;
+    //         VkDescriptorSetLayoutBinding Binding;
+    //     }GraphicsCustom;
+    //     struct ComputeCustomInfo{
+    //         VkDeviceSize Size = 0;
+    //         VkDescriptorSetLayoutBinding Binding;
+    //     }ComputeCustom;
+    //     struct ComputeStorageBufferInfo{
+    //         VkDeviceSize Size = 0;
+    //         VkBufferUsageFlags Usage;
+    //     }ComputeStorageBuffer;
+    // };
+
+    struct UniformConfig {
         bool b_uniform_graphics_custom = false;
         bool b_uniform_graphics_mvp = false;
         bool b_uniform_graphics_text_mvp = false;
@@ -197,24 +244,53 @@ public:
         bool b_uniform_graphics_depth_image_sampler = false;
         bool b_uniform_graphics_lightdepth_image_sampler = false;
         bool b_uniform_graphics_lightdepth_image_sampler_hardware = false;
+        struct GraphicsCustomInfo {
+            VkDeviceSize Size = 0;
+            VkDescriptorSetLayoutBinding Binding{};
+        } GraphicsCustom;
+
         bool b_uniform_compute_custom = false;
         bool b_uniform_compute_storage = false;
         bool b_uniform_compute_swapchain_storage = false;
         bool b_uniform_compute_texture_storage = false;
-        struct GraphicsCustomInfo{
+        struct ComputeCustomInfo {
             VkDeviceSize Size = 0;
-            VkDescriptorSetLayoutBinding Binding;
-        }GraphicsCustom;
-        struct ComputeCustomInfo{
+            VkDescriptorSetLayoutBinding Binding{};
+        } ComputeCustom;
+        struct ComputeStorageBufferInfo {
             VkDeviceSize Size = 0;
-            VkDescriptorSetLayoutBinding Binding;
-        }ComputeCustom;
-        struct ComputeStorageBufferInfo{
-            VkDeviceSize Size = 0;
-            VkBufferUsageFlags Usage;
-        }ComputeStorageBuffer;
-    };
+            VkBufferUsageFlags Usage = 0;
+        } ComputeStorageBuffer;
 
+        // ---------------------
+        void loadGraphicsFromYaml(const YAML::Node& node) {
+            b_uniform_graphics_custom                     = getOrDefault(node, "uniform_graphics_custom", false);
+            b_uniform_graphics_mvp                        = getOrDefault(node, "uniform_graphics_mvp", false);
+            b_uniform_graphics_text_mvp                   = getOrDefault(node, "uniform_graphics_text_mvp", false);
+            b_uniform_graphics_vp                         = getOrDefault(node, "uniform_graphics_vp", false);
+            b_uniform_graphics_lighting                   = getOrDefault(node, "uniform_graphics_lighting", false);
+            b_uniform_graphics_depth_image_sampler        = getOrDefault(node, "uniform_graphics_depth_image_sampler", false);
+            b_uniform_graphics_lightdepth_image_sampler   = getOrDefault(node, "uniform_graphics_lightdepth_image_sampler", false);
+            b_uniform_graphics_lightdepth_image_sampler_hardware = getOrDefault(node, "uniform_graphics_lightdepth_image_sampler_hardware", false);
+
+            // std::cout<<"b_uniform_graphics_custom "<<b_uniform_graphics_custom<<std::endl;
+            // std::cout<<"b_uniform_graphics_mvp "<<b_uniform_graphics_mvp<<std::endl;
+            // std::cout<<"b_uniform_graphics_text_mvp "<<b_uniform_graphics_text_mvp<<std::endl;
+            // std::cout<<"b_uniform_graphics_vp "<<b_uniform_graphics_vp<<std::endl;
+            // std::cout<<"b_uniform_graphics_lighting "<<b_uniform_graphics_lighting<<std::endl;
+            // std::cout<<"b_uniform_graphics_depth_image_sampler "<<b_uniform_graphics_depth_image_sampler<<std::endl;
+            // std::cout<<"b_uniform_graphics_lightdepth_image_sampler "<<b_uniform_graphics_lightdepth_image_sampler<<std::endl;
+            // std::cout<<"b_uniform_graphics_lightdepth_image_sampler_hardware "<<b_uniform_graphics_lightdepth_image_sampler_hardware<<std::endl;
+
+        }
+
+        void loadComputeFromYaml(const YAML::Node& node) {
+            b_uniform_compute_custom                       = getOrDefault(node, "uniform_compute_custom", false);
+            b_uniform_compute_storage                      = getOrDefault(node, "uniform_compute_storage", false);
+            b_uniform_compute_swapchain_storage           = getOrDefault(node, "uniform_compute_swapchain_storage", false);
+            b_uniform_compute_texture_storage             = getOrDefault(node, "uniform_compute_texture_storage", false);
+        }
+    };
 
     struct ControlUIContainerConfig {
         std::vector<int> resource_texture_id_list_box;
@@ -224,27 +300,19 @@ public:
         int resource_default_graphics_pipeline_id_text = 0;
 
         void loadFromYaml(const YAML::Node& node) {
-            resource_texture_id_list_box = node["resource_texture_id_list_box"]
-                    ? node["resource_texture_id_list_box"].as<std::vector<int>>()
-                    : std::vector<int>{0};
-            resource_model_id_box = node["resource_model_id_box"]
-                    ? node["resource_model_id_box"].as<int>()
-                    : 0;
-            resource_default_graphics_pipeline_id_box = node["resource_default_graphics_pipeline_id_box"]
-                    ? node["resource_default_graphics_pipeline_id_box"].as<int>()
-                    : 0;
-            resource_model_id_text = node["resource_model_id_text"]
-                    ? node["resource_model_id_text"].as<int>()
-                    : 0;
-            resource_default_graphics_pipeline_id_text = node["resource_default_graphics_pipeline_id_text"]
-                    ? node["resource_default_graphics_pipeline_id_text"].as<int>()
-                    : 0;
+            resource_texture_id_list_box            = getOrDefault(node, "resource_texture_id_list_box", std::vector<int>{0});
+            resource_model_id_box                   = getOrDefault(node, "resource_model_id_box", 0);
+            resource_default_graphics_pipeline_id_box= getOrDefault(node, "resource_default_graphics_pipeline_id_box", 0);
+            resource_model_id_text                  = getOrDefault(node, "resource_model_id_text", 0);
+            resource_default_graphics_pipeline_id_text= getOrDefault(node, "resource_default_graphics_pipeline_id_text", 0);
         }
     };
 
     struct AppInfo{
-        FeatureInfo Feature;
-        UniformInfo Uniform;
+        FeatureConfig Feature;
+        ControlUIContainerConfig ControlUIContainer;
+        UniformConfig Uniform;
+
         std::unique_ptr<std::vector<std::string>> VertexShader;
         std::unique_ptr<std::vector<std::string>> FragmentShader;
         std::unique_ptr<std::vector<bool>> RenderPassShadowmap;
@@ -252,7 +320,6 @@ public:
         std::unique_ptr<std::vector<int>> VertexDatatype;
         std::unique_ptr<std::vector<std::string>> ComputeShader;
         CRenderer::RenderModes RenderMode = CRenderer::GRAPHICS;
-        ControlUIContainerConfig ControlUIContainer;
     }appInfo;
 };
 

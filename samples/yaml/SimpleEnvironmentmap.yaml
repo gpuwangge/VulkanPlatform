@@ -105,23 +105,23 @@ Resources:
       resource_graphics_pipeline_fragmentshader_name: simpleEnvironmentmap/skybox.frag.spv
 
 Uniforms:
-  - Graphics:
-    - uniform_graphics_name: Graphics
-      uniform_graphics_custom: true
-      uniform_graphics_lighting: false
-      uniform_graphics_mvp: true
-      uniform_graphics_vp: false
-      uniform_graphics_depth_image_sampler: false
-      uniform_graphics_lightdepth_image_sampler: false
-  - GraphicsTextureImageSamplers:
+  Graphics:
+    uniform_graphics_name: Graphics
+    uniform_graphics_custom: true
+    uniform_graphics_lighting: false
+    uniform_graphics_mvp: true
+    uniform_graphics_vp: false
+    uniform_graphics_depth_image_sampler: false
+    uniform_graphics_lightdepth_image_sampler: false
+  GraphicsTextureImageSamplers:
     - uniform_graphics_texture_image_sampler_name: Sampler
       uniform_graphics_texture_image_sampler_miplevel: 1
-  - Compute:
-    - uniform_compute_name: Compute
-      uniform_compute_custom: false
-      uniform_compute_storage: false
-      uniform_compute_texture_storage: false
-      uniform_compute_swapchain_storage: false
+  Compute:
+    uniform_compute_name: Compute
+    uniform_compute_custom: false
+    uniform_compute_storage: false
+    uniform_compute_texture_storage: false
+    uniform_compute_swapchain_storage: false
 
 Features:
   feature_graphics_48pbt: false
