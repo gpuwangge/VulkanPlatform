@@ -145,12 +145,7 @@ public:
     std::string m_sampleName;
     YAML::Node config;
 
-    // int control_object_count = 0;
-    // int control_textbox_count = 0;
-    // int control_light_count = 0;
-    //std::vector<CControlNode*> pControlNodes;
-    CControlPerfMetric controlPerfMetric;
-    CControlAttachment controlAttachment;
+    std::vector<std::unique_ptr<CControlNode>> controlNodes;  
 
     /******************
     * Core Functions

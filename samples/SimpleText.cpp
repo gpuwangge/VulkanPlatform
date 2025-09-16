@@ -20,44 +20,11 @@ public:
 	}
 
 	void update(){
-		static int lastTrigger = 0;
-		int currentTrigger = (double)elapseTime / 0.1f;
-		if(currentTrigger!=lastTrigger) {
-			textManager.m_textBoxes[0].SetTextContent("FPS:" + std::to_string((int)(1.0f/deltaTime)));
-			textManager.m_textBoxes[1].SetTextContent("Time:" + to_string_prec(elapseTime) + "s");
-			textManager.m_textBoxes[2].SetTextContent("Frame:" + std::to_string(frameCount));
-			textManager.m_textBoxes[3].SetTextContent("Init:" + to_string_prec(totalInitTime) + " ms");
-			textManager.m_textBoxes[4].SetTextContent("Object:" + std::to_string(objects.size()));
-			textManager.m_textBoxes[5].SetTextContent("Textbox:" + std::to_string(textManager.m_textBoxes.size()));
-			textManager.m_textBoxes[6].SetTextContent("Light:" + std::to_string(lights.size()));
-			
-			std::string r = "false";
-			if(renderProcess.iShadowmapAttachmentDepthLight>=0) r = "true"; else r= "false";
-			textManager.m_textBoxes[9].SetTextContent("Depth(Light):" + r);
-			if(renderProcess.iMainSceneAttachmentDepthLight>=0) r = "true"; else r= "false";
-			textManager.m_textBoxes[11].SetTextContent("Depth(Light):" + r);
-			if(renderProcess.iMainSceneAttachmentDepthCamera>=0) r = "true"; else r= "false";
-			textManager.m_textBoxes[12].SetTextContent("Depth(Camera):" + r);
-			if(renderProcess.iMainSceneAttachmentColorResovle>=0) r = "true"; else r= "false";
-			textManager.m_textBoxes[13].SetTextContent("Color(Resolve):" + r);
-			if(renderProcess.iMainSceneAttachmentColorPresent>=0) r = "true"; else r= "false";
-			textManager.m_textBoxes[14].SetTextContent("Color(Present):" + r);
-
-			if(appInfo.Uniform.b_uniform_graphics_lighting) r = "true"; else r= "false";
-			textManager.m_textBoxes[16].SetTextContent("Lighting:" + r);
-			if(appInfo.Uniform.b_uniform_graphics_mvp) r = "true"; else r= "false";
-			textManager.m_textBoxes[17].SetTextContent("MVP:" + r);
-			if(appInfo.Uniform.b_uniform_graphics_text_mvp) r = "true"; else r= "false";
-			textManager.m_textBoxes[18].SetTextContent("Text MVP:" + r);
-			if(appInfo.Uniform.b_uniform_graphics_vp) r = "true"; else r= "false";
-			textManager.m_textBoxes[19].SetTextContent("VP:" + r);
-			if(appInfo.Uniform.b_uniform_graphics_depth_image_sampler) r = "true"; else r= "false";
-			textManager.m_textBoxes[20].SetTextContent("Depth Image Sampler:" + r);
-			if(appInfo.Uniform.b_uniform_graphics_lightdepth_image_sampler) r = "true"; else r= "false";
-			textManager.m_textBoxes[21].SetTextContent("Lightdepth Image Sampler:" + r);
-
-			lastTrigger = currentTrigger;
-		}
+		// static int lastTrigger = 0;
+		// int currentTrigger = (double)elapseTime / 0.1f;
+		// if(currentTrigger!=lastTrigger) {
+		// 	lastTrigger = currentTrigger;
+		// }
 		
 
 		CApplication::update();

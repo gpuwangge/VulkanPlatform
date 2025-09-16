@@ -23,7 +23,9 @@ public:
     std::vector<CTextbox*> m_pTextboxes;
 
     void Register(CApplication *p_app);
-    void Update(float deltaTime);
+    virtual void RegisterObject(int startIndex);
+    virtual void RegisterTextbox(int startIndex);
+    virtual void Update();
 };
 
 /******************
@@ -34,9 +36,9 @@ public:
     CControlPerfMetric();
     ~CControlPerfMetric(){}
 
-    void RegisterObject(int startIndex);
-    void RegisterTextbox(int startIndex);
-    void Update();
+    void RegisterObject(int startIndex) override;
+    void RegisterTextbox(int startIndex) override;
+    void Update() override;
 };
 
 /******************
@@ -47,9 +49,22 @@ public:
     CControlAttachment();
     ~CControlAttachment(){}
 
-    void RegisterObject(int startIndex);
-    void RegisterTextbox(int startIndex);
-    void Update();
+    void RegisterObject(int startIndex) override;
+    void RegisterTextbox(int startIndex) override;
+    void Update() override;
+};
+
+/******************
+* ControlGraphicsUniform
+*******************/
+class CControlGraphicsUniform : public CControlNode{
+public:
+    CControlGraphicsUniform();
+    ~CControlGraphicsUniform(){}
+
+    void RegisterObject(int startIndex) override;
+    void RegisterTextbox(int startIndex) override;
+    void Update() override;
 };
 
 #endif

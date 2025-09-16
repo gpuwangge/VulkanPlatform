@@ -192,8 +192,12 @@ void CApplication::initialize(){
     * 2 Initialize ObjectList and LightList
     ****************************/
     if(appInfo.Feature.b_feature_graphics_fps){
-        controlPerfMetric.Register(this);//also update objectCountControl, textboxCountControl and lightCountControl
-        controlAttachment.Register(this);
+        controlNodes.push_back(std::make_unique<CControlPerfMetric>());
+        controlNodes.back()->Register(this);
+        controlNodes.push_back(std::make_unique<CControlAttachment>());
+        controlNodes.back()->Register(this);
+        controlNodes.push_back(std::make_unique<CControlGraphicsUniform>());
+        controlNodes.back()->Register(this);
     }
 
     if (config["Objects"]) {
@@ -444,10 +448,9 @@ void CApplication::update(){
     for(int i = 0; i < objects.size(); i++) objects[i].Update(deltaTime, renderer.currentFrame, mainCamera); 
     textManager.Update(deltaTime, renderer.currentFrame, mainCamera);
     for(int i = 0; i < lights.size(); i++) lights[i].Update(deltaTime, renderer.currentFrame, mainCamera, lightCameras[i]);
-    if(appInfo.Feature.b_feature_graphics_fps) {
-        controlPerfMetric.Update();
-        controlAttachment.Update();
-    }
+    if(appInfo.Feature.b_feature_graphics_fps)
+        for(int i = 0; i < controlNodes.size(); i++) controlNodes[i]->Update();
+
     /*Calcuate FPS*/
     //static int tempCount = 0;
     //static TimePoint intervalStartTimePoint = now();
@@ -1268,9 +1271,11 @@ void CApplication::ReadRegisterObjects(){
 
         //register for controls
         if(appInfo.Feature.b_feature_graphics_fps){
-            controlPerfMetric.RegisterObject(customObjectSize);
-            controlAttachment.RegisterObject(customObjectSize + controlPerfMetric.m_object_count);
-            //controlAttachment.RegisterObject(customObjectSize);
+            int indexOffset = customObjectSize;
+            for(int i = 0; i < controlNodes.size(); i++){
+                controlNodes[i]->RegisterObject(indexOffset);
+                indexOffset += controlNodes[i]->m_object_count;
+            }
         }
 
         for(int i = 0; i < objects.size(); i++)
@@ -1322,9 +1327,11 @@ void CApplication::ReadRegisterTextboxes(){
 
         //register for controls
         if(appInfo.Feature.b_feature_graphics_fps){
-            controlPerfMetric.RegisterTextbox(customTextboxSize);
-            controlAttachment.RegisterTextbox(customTextboxSize + controlPerfMetric.m_textbox_count);
-            //controlAttachment.RegisterTextbox(customTextboxSize);
+            int indexOffset = customTextboxSize;
+            for(int i = 0; i < controlNodes.size(); i++){
+                controlNodes[i]->RegisterTextbox(indexOffset);
+                indexOffset += controlNodes[i]->m_textbox_count;
+            }
         }
 
         for(int i = 0; i < textManager.m_textBoxes.size(); i++)

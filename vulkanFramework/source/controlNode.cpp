@@ -12,7 +12,14 @@ void CControlNode::Register(CApplication *p_app){
     p_app->lightCountControl += m_light_count;
 }
 
-void CControlNode::Update(float deltaTime){
+void CControlNode::RegisterObject(int startIndex){
+
+}
+
+void CControlNode::RegisterTextbox(int startIndex){
+
+}
+void CControlNode::Update(){
 
 }
 
@@ -172,6 +179,87 @@ void CControlAttachment::Update(){
         m_pTextboxes[6]->SetTextContent("Color(Resolve):" + r);
         if(m_pApp->renderProcess.iMainSceneAttachmentColorPresent>=0) r = "true"; else r= "false";
         m_pTextboxes[7]->SetTextContent("Color(Present):" + r);
+
+        lastTrigger = currentTrigger;
+	}
+}
+
+/******************
+* ControlGraphicsUniform
+*******************/
+CControlGraphicsUniform::CControlGraphicsUniform(){    
+    m_textbox_count = 7;
+    m_object_count = 1;
+    SetPosition(-0.4, 0.4, 0);
+    SetRotation(0, 0, 0);
+}
+
+void CControlGraphicsUniform::RegisterObject(int startIndex){
+    for(int i = 0; i < m_object_count; i++){
+        int index = startIndex+i;
+        CObject *object = &(m_pApp->objects[index]);
+        m_pObjects.push_back(object);
+
+        object->bSticker = true;
+        object->SetPosition(0,0,0);
+        object->p_controlNode = this;
+        object->m_object_id = index;
+        object->m_texture_ids = m_pApp->appInfo.ControlUIContainer.resource_texture_id_list_box;
+        object->m_model_id = m_pApp->appInfo.ControlUIContainer.resource_model_id_box;
+        object->m_default_graphics_pipeline_id = m_pApp->appInfo.ControlUIContainer.resource_default_graphics_pipeline_id_box;
+
+        object->Register(m_pApp);
+
+        object->SetScale(0.48,0.5,0.5);//set scale after model is registered, otherwise the length will not be computed correctly
+    }
+}
+
+void CControlGraphicsUniform::RegisterTextbox(int startIndex){
+    for(int i = 0; i < m_textbox_count; i++){
+        int index = startIndex+i;
+        CTextbox *textbox = &(m_pApp->textManager.m_textBoxes[index]);
+        m_pTextboxes.push_back(textbox);
+
+        textbox->bSticker = true;
+        textbox->SetScale(0.2f);
+        textbox->SetTextColor(glm::vec4(0.2, 0, 0, 1));
+        textbox->SetPosition(-0.15, -0.2+0.05*i, 0);
+        textbox->p_controlNode = this;
+        textbox->m_textBoxID = index;
+        textbox->m_text_content = "text_content";
+        textbox->m_model_id = m_pApp->appInfo.ControlUIContainer.resource_model_id_text;
+        textbox->m_default_graphics_pipeline_id = m_pApp->appInfo.ControlUIContainer.resource_default_graphics_pipeline_id_text;
+        
+        if(i == 0){
+            m_pTextboxes[0]->m_text_content = "Graphics Uniform";
+            m_pTextboxes[0]->SetTextColor(glm::vec4(0.2, 0.7, 1.0, 1)); //title color
+        }
+
+        textbox->Register(m_pApp);
+    }
+}
+
+void CControlGraphicsUniform::Update(){
+    CEntity::Update(m_pApp->deltaTime); //update translateMatrix, RotationMatrix and ScaleMatrix
+
+    static int lastTrigger = 0;
+		int currentTrigger = (double)m_pApp->elapseTime / 0.1f;
+		if(currentTrigger!=lastTrigger) {
+
+        std::string r = "false";
+        if(m_pApp->appInfo.Uniform.b_uniform_graphics_lighting) r = "true"; else r= "false";
+        m_pTextboxes[1]->SetTextContent("Lighting:" + r);
+        if(m_pApp->appInfo.Uniform.b_uniform_graphics_mvp) r = "true"; else r= "false";
+        m_pTextboxes[2]->SetTextContent("MVP:" + r);
+        if(m_pApp->appInfo.Uniform.b_uniform_graphics_text_mvp) r = "true"; else r= "false";
+        m_pTextboxes[3]->SetTextContent("Text MVP:" + r);
+        if(m_pApp->appInfo.Uniform.b_uniform_graphics_vp) r = "true"; else r= "false";
+        m_pTextboxes[4]->SetTextContent("VP:" + r);
+        if(m_pApp->appInfo.Uniform.b_uniform_graphics_depth_image_sampler) r = "true"; else r= "false";
+        m_pTextboxes[5]->SetTextContent("Depth Image Sampler:" + r);
+        if(m_pApp->appInfo.Uniform.b_uniform_graphics_lightdepth_image_sampler) r = "true"; else r= "false";
+        m_pTextboxes[6]->SetTextContent("Lightdepth Image Sampler:" + r);
+
 
         lastTrigger = currentTrigger;
 	}
