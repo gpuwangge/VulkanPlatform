@@ -10,14 +10,11 @@ class CApplication;
 /******************
 * ControlNode
 *******************/
-
 class CControlNode : public CEntity{
-    
 public:
     CControlNode(){}
     ~CControlNode(){}
 
-    //std::string Name;
     CApplication *m_pApp;
     int m_object_count = 0;
     int m_textbox_count = 0;
@@ -27,26 +24,32 @@ public:
 
     void Register(CApplication *p_app);
     void Update(float deltaTime);
-    //void Draw();
 };
 
 /******************
-* PerfMetric
+* ControlPerfMetric
 *******************/
-
-class CPerfMetric : public CControlNode{
-    //int m_control_id = 0;
+class CControlPerfMetric : public CControlNode{
 public:
-    CPerfMetric();
-    ~CPerfMetric(){}
+    CControlPerfMetric();
+    ~CControlPerfMetric(){}
 
     void RegisterObject(int startIndex);
     void RegisterTextbox(int startIndex);
     void Update();
-    //void Draw();
 };
 
+/******************
+* ControlAttachment
+*******************/
+class CControlAttachment : public CControlNode{
+public:
+    CControlAttachment();
+    ~CControlAttachment(){}
 
-
+    void RegisterObject(int startIndex);
+    void RegisterTextbox(int startIndex);
+    void Update();
+};
 
 #endif

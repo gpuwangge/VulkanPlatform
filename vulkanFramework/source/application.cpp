@@ -191,8 +191,10 @@ void CApplication::initialize(){
     /****************************
     * 2 Initialize ObjectList and LightList
     ****************************/
-    if(appInfo.Feature.b_feature_graphics_fps)
-        control_perfMetric.Register(this);//also update objectCountControl, textboxCountControl and lightCountControl
+    if(appInfo.Feature.b_feature_graphics_fps){
+        controlPerfMetric.Register(this);//also update objectCountControl, textboxCountControl and lightCountControl
+        controlAttachment.Register(this);
+    }
 
     if (config["Objects"]) {
         int max_object_id = 0;
@@ -202,7 +204,7 @@ void CApplication::initialize(){
         }
         customObjectSize = ((max_object_id+1) < config["Objects"].size()) ? (max_object_id+1) : config["Objects"].size();
         objects.resize(customObjectSize + objectCountControl);
-        //std::cout<<"Object Size: "<<objects.size()<<std::endl;
+        std::cout<<"Object Size: "<<objects.size()<<std::endl;
     }
     if (config["Textboxes"]) {
         int max_textbox_id = 0;
@@ -215,7 +217,7 @@ void CApplication::initialize(){
         textManager.m_textBoxes.resize(customTextboxSize + textboxCountControl);
         for(int i = 0; i < textManager.m_textBoxes.size(); i++)
             textManager.m_textBoxes[i].p_textManager = &textManager;
-        //std::cout<<"Textbox Size: "<<textManager.m_textBoxes.size()<<std::endl;
+        std::cout<<"Textbox Size: "<<textManager.m_textBoxes.size()<<std::endl;
     }
     if (config["Lights"]) {
         int max_light_d = 0;
@@ -225,7 +227,7 @@ void CApplication::initialize(){
         }
         customLightsSize = ((max_light_d+1) < config["Lights"].size())?(max_light_d+1):config["Lights"].size();
         lights.resize(customLightsSize + lightCountControl);
-        //std::cout<<"Light Size: "<<lights.size()<<std::endl;
+        std::cout<<"Light Size: "<<lights.size()<<std::endl;
 
         swapchain.buffer_depthlight.resize(lights.size());
         swapchain.framebuffers_shadowmap.resize(lights.size());
@@ -442,8 +444,10 @@ void CApplication::update(){
     for(int i = 0; i < objects.size(); i++) objects[i].Update(deltaTime, renderer.currentFrame, mainCamera); 
     textManager.Update(deltaTime, renderer.currentFrame, mainCamera);
     for(int i = 0; i < lights.size(); i++) lights[i].Update(deltaTime, renderer.currentFrame, mainCamera, lightCameras[i]);
-    control_perfMetric.Update();
-
+    if(appInfo.Feature.b_feature_graphics_fps) {
+        controlPerfMetric.Update();
+        controlAttachment.Update();
+    }
     /*Calcuate FPS*/
     //static int tempCount = 0;
     //static TimePoint intervalStartTimePoint = now();
@@ -1263,8 +1267,11 @@ void CApplication::ReadRegisterObjects(){
         }
 
         //register for controls
-        if(appInfo.Feature.b_feature_graphics_fps)
-            control_perfMetric.RegisterObject(customObjectSize);
+        if(appInfo.Feature.b_feature_graphics_fps){
+            controlPerfMetric.RegisterObject(customObjectSize);
+            controlAttachment.RegisterObject(customObjectSize + controlPerfMetric.m_object_count);
+            //controlAttachment.RegisterObject(customObjectSize);
+        }
 
         for(int i = 0; i < objects.size(); i++)
             if(!objects[i].bRegistered) std::cout<<"WARNING: Object id("<<i<<") is not registered!"<<std::endl;
@@ -1315,9 +1322,9 @@ void CApplication::ReadRegisterTextboxes(){
 
         //register for controls
         if(appInfo.Feature.b_feature_graphics_fps){
-            //int startIndex = customTextboxSize;
-            //int endIndex = startIndex + control_perfMetric.m_textbox_count;
-            control_perfMetric.RegisterTextbox(customTextboxSize);
+            controlPerfMetric.RegisterTextbox(customTextboxSize);
+            controlAttachment.RegisterTextbox(customTextboxSize + controlPerfMetric.m_textbox_count);
+            //controlAttachment.RegisterTextbox(customTextboxSize);
         }
 
         for(int i = 0; i < textManager.m_textBoxes.size(); i++)

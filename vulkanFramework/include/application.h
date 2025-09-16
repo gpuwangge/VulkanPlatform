@@ -149,7 +149,8 @@ public:
     // int control_textbox_count = 0;
     // int control_light_count = 0;
     //std::vector<CControlNode*> pControlNodes;
-    CPerfMetric control_perfMetric;
+    CControlPerfMetric controlPerfMetric;
+    CControlAttachment controlAttachment;
 
     /******************
     * Core Functions
