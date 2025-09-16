@@ -12,13 +12,20 @@ class CApplication;
 *******************/
 
 class CControlNode : public CEntity{
+    
 public:
     CControlNode(){}
     ~CControlNode(){}
 
-    std::string Name;
+    //std::string Name;
+    CApplication *m_pApp;
+    int m_object_count = 0;
+    int m_textbox_count = 0;
+    int m_light_count = 0;
+    std::vector<CObject*> m_pObjects;
+    std::vector<CTextbox*> m_pTextboxes;
 
-    //void Register(CApplication *p_app);
+    void Register(CApplication *p_app);
     void Update(float deltaTime);
     //void Draw();
 };
@@ -28,23 +35,14 @@ public:
 *******************/
 
 class CPerfMetric : public CControlNode{
-    int m_control_id = 0;
+    //int m_control_id = 0;
 public:
-    int m_object_count = 0;
-    int m_textbox_count = 0;
-    int m_light_count = 0;
-
-    CObject* m_pObject0;
-    //CTextbox *m_pTextbox0;
-    //CTextbox *m_pTextbox1;
-    std::vector<CTextbox*> m_pTextboxes;
-
     CPerfMetric();
     ~CPerfMetric(){}
 
-    void RegisterObject(CApplication *p_app, CObject *object0);
-    void RegisterTextbox(CApplication *p_app, std::vector<CTextbox> *pTextBoxes, int startIndex);
-    void Update(float deltaTime);
+    void RegisterObject(int startIndex);
+    void RegisterTextbox(int startIndex);
+    void Update();
     //void Draw();
 };
 

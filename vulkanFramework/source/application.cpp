@@ -191,14 +191,8 @@ void CApplication::initialize(){
     /****************************
     * 2 Initialize ObjectList and LightList
     ****************************/
-    int control_object_count = 0;
-    int control_textbox_count = 0;
-    int control_light_count = 0;
-    if(appInfo.Feature.b_feature_graphics_fps){
-        control_object_count = control_perfMetric.m_object_count;
-        control_textbox_count = control_perfMetric.m_textbox_count;
-        control_light_count = control_perfMetric.m_light_count;
-    }
+    if(appInfo.Feature.b_feature_graphics_fps)
+        control_perfMetric.Register(this);//also update objectCountControl, textboxCountControl and lightCountControl
 
     if (config["Objects"]) {
         int max_object_id = 0;
@@ -207,7 +201,7 @@ void CApplication::initialize(){
             max_object_id = (object_id > max_object_id) ? object_id : max_object_id;
         }
         customObjectSize = ((max_object_id+1) < config["Objects"].size()) ? (max_object_id+1) : config["Objects"].size();
-        objects.resize(customObjectSize + control_object_count); 
+        objects.resize(customObjectSize + objectCountControl);
         //std::cout<<"Object Size: "<<objects.size()<<std::endl;
     }
     if (config["Textboxes"]) {
@@ -218,7 +212,7 @@ void CApplication::initialize(){
             max_textbox_id = (textbox_id > max_textbox_id) ? textbox_id : max_textbox_id;
         }
         customTextboxSize = ((max_textbox_id+1) < config["Textboxes"].size()) ? (max_textbox_id+1) : config["Textboxes"].size();
-        textManager.m_textBoxes.resize(customTextboxSize + control_textbox_count);
+        textManager.m_textBoxes.resize(customTextboxSize + textboxCountControl);
         for(int i = 0; i < textManager.m_textBoxes.size(); i++)
             textManager.m_textBoxes[i].p_textManager = &textManager;
         //std::cout<<"Textbox Size: "<<textManager.m_textBoxes.size()<<std::endl;
@@ -230,7 +224,7 @@ void CApplication::initialize(){
             max_light_d = (light_id > max_light_d) ? light_id : max_light_d;
         }
         customLightsSize = ((max_light_d+1) < config["Lights"].size())?(max_light_d+1):config["Lights"].size();
-        lights.resize(customLightsSize + control_light_count);
+        lights.resize(customLightsSize + lightCountControl);
         //std::cout<<"Light Size: "<<lights.size()<<std::endl;
 
         swapchain.buffer_depthlight.resize(lights.size());
@@ -448,7 +442,7 @@ void CApplication::update(){
     for(int i = 0; i < objects.size(); i++) objects[i].Update(deltaTime, renderer.currentFrame, mainCamera); 
     textManager.Update(deltaTime, renderer.currentFrame, mainCamera);
     for(int i = 0; i < lights.size(); i++) lights[i].Update(deltaTime, renderer.currentFrame, mainCamera, lightCameras[i]);
-    control_perfMetric.Update(deltaTime);
+    control_perfMetric.Update();
 
     /*Calcuate FPS*/
     //static int tempCount = 0;
@@ -1270,7 +1264,7 @@ void CApplication::ReadRegisterObjects(){
 
         //register for controls
         if(appInfo.Feature.b_feature_graphics_fps)
-            control_perfMetric.RegisterObject((CApplication*)this, &objects[objects.size() - 1]);
+            control_perfMetric.RegisterObject(customObjectSize);
 
         for(int i = 0; i < objects.size(); i++)
             if(!objects[i].bRegistered) std::cout<<"WARNING: Object id("<<i<<") is not registered!"<<std::endl;
@@ -1323,7 +1317,7 @@ void CApplication::ReadRegisterTextboxes(){
         if(appInfo.Feature.b_feature_graphics_fps){
             //int startIndex = customTextboxSize;
             //int endIndex = startIndex + control_perfMetric.m_textbox_count;
-            control_perfMetric.RegisterTextbox(this, &textManager.m_textBoxes, customTextboxSize);
+            control_perfMetric.RegisterTextbox(customTextboxSize);
         }
 
         for(int i = 0; i < textManager.m_textBoxes.size(); i++)

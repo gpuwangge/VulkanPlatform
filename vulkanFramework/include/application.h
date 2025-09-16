@@ -50,12 +50,22 @@
 //#define START_COMPUTE_RECORD(descriptorIdx) renderer.StartRecordComputeCommandBuffer(renderProcess.computePipeline, renderProcess.computePipelineLayout, descriptors[descriptorIdx].descriptorSets);
 //#define END_COMPUTE_RECORD renderer.EndRecordComputeCommandBuffer();
 
+ /******************
+* Utility Functions
+******************/
+
 template <typename T>
 T getOrDefault(const YAML::Node& node, const std::string& key, const T& defaultValue) {
     if (node[key]) {
         return node[key].as<T>();
     }
     return defaultValue;
+}
+
+inline std::string to_string_prec(double value, int prec = 1) {
+    std::ostringstream oss;
+    oss << std::fixed << std::setprecision(prec) << value;
+    return oss.str();
 }
 
 class CApplication{
@@ -83,6 +93,9 @@ public:
     CTextImageManager textImageManager;
     CTextManager textManager;
 
+    int objectCountControl = 0;
+    int textboxCountControl = 0;
+    int lightCountControl = 0;
     //static int focusObjectId;
     static std::vector<CObject> objects;
     //static std::vector<CTextBox> textBoxes;
@@ -90,6 +103,7 @@ public:
     int customObjectSize = 0;
     int customLightsSize = 0;
     int customTextboxSize = 0;
+    
 
     void CleanUp();
 
@@ -168,23 +182,10 @@ public:
     void ReadLightings();
     void ReadCameras();
     void Dispatch(int numWorkGroupsX, int numWorkGroupsY, int numWorkGroupsZ);  
-    
-
-     /******************
-    * Utility Functions
-    ******************/
-    std::string to_string_prec(double value, int prec = 1) {
-        std::ostringstream oss;
-        oss << std::fixed << std::setprecision(prec) << value;
-        return oss.str();
-    }
         
     /*************
      * APP INFO
      *******/
-
-    
-
     struct FeatureConfig {
         bool b_feature_graphics_48pbt = false;
         bool b_feature_graphics_push_constant = false;

@@ -56,17 +56,6 @@ public:
 			if(appInfo.Uniform.b_uniform_graphics_lightdepth_image_sampler) r = "true"; else r= "false";
 			textManager.m_textBoxes[21].SetTextContent("Lightdepth Image Sampler:" + r);
 
-			//textManager.m_textBoxes[23].SetTextContent("ControlNode: PerfMetric");
-			//control_perfMetric.m_pTextboxes[0]->SetTextContent("PerfMetric");
-			control_perfMetric.m_pTextboxes[1]->SetTextContent("FPS:" + std::to_string((int)(1.0f/deltaTime)));
-			control_perfMetric.m_pTextboxes[2]->SetTextContent("Time:" + to_string_prec(elapseTime) + "s");
-			control_perfMetric.m_pTextboxes[3]->SetTextContent("Frame:" + std::to_string(frameCount));
-			control_perfMetric.m_pTextboxes[4]->SetTextContent("Init:" + to_string_prec(totalInitTime) + " ms");
-			control_perfMetric.m_pTextboxes[5]->SetTextContent("Object:" + std::to_string(objects.size()));
-			control_perfMetric.m_pTextboxes[6]->SetTextContent("Textbox:" + std::to_string(textManager.m_textBoxes.size()));
-			control_perfMetric.m_pTextboxes[7]->SetTextContent("Light:" + std::to_string(lights.size()));
-
-			//for(int i = 0; i < textManager.m_textBoxes.size(); i++) textManager.m_textBoxes[i].IncHighlightedChar();
 			lastTrigger = currentTrigger;
 		}
 		
