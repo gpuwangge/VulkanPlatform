@@ -73,6 +73,8 @@ public:
     CApplication();
     ~CApplication();
 
+    CLogManager logManager;
+
     //VkInstance instance;//01
     std::unique_ptr<CInstance> instance{nullptr};
 

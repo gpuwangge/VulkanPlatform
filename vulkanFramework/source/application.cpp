@@ -22,6 +22,8 @@ CApplication::CApplication(){
 
     //lightCameras.resize(2); //work
     lightCameras.resize(LIGHT_MAX); //TODO: for test purpose, create more cameras than needed
+
+    logManager.setLogFile("application.log");
 }
 
 #ifndef ANDROID
@@ -1278,8 +1280,17 @@ void CApplication::ReadRegisterObjects(){
             }
         }
 
-        for(int i = 0; i < objects.size(); i++)
+        for(int i = 0; i < objects.size(); i++){
             if(!objects[i].bRegistered) std::cout<<"WARNING: Object id("<<i<<") is not registered!"<<std::endl;
+            logManager.print("Object ID: %d", i);
+            logManager.print("\tName: %s", objects[i].Name.c_str());
+            logManager.print("\tPosition: %f, %f, %f", objects[i].Position);
+            logManager.print("\tLength_original: %f, %f, %f", objects[i].Length_original);
+            logManager.print("\tLengthMin_original: %f, %f, %f", objects[i].LengthMin_original);
+            logManager.print("\tLengthMax_original: %f, %f, %f", objects[i].LengthMax_original);
+            logManager.print("\tScale: %f, %f, %f", objects[i].Scale);
+            logManager.print("\tLength: %f, %f, %f", objects[i].Length);
+        }
     }
 
 }
@@ -1305,6 +1316,7 @@ void CApplication::ReadRegisterTextboxes(){
             glm::vec4 glm_textColor(text_color[0], text_color[1], text_color[2], text_color[3]);
             int resource_default_graphics_pipeline_id = tb["resource_default_graphics_pipeline_id"] ? tb["resource_default_graphics_pipeline_id"].as<int>() : 0;
 
+            textManager.m_textBoxes[textbox_id].Name = name;
             textManager.m_textBoxes[textbox_id].m_textBoxID = textbox_id;
             textManager.m_textBoxes[textbox_id].SetPosition(glm_position);
             textManager.m_textBoxes[textbox_id].SetRotation(glm_rotation);
@@ -1334,8 +1346,17 @@ void CApplication::ReadRegisterTextboxes(){
             }
         }
 
-        for(int i = 0; i < textManager.m_textBoxes.size(); i++)
+        for(int i = 0; i < textManager.m_textBoxes.size(); i++){
             if(!textManager.m_textBoxes[i].bRegistered) std::cout<<"WARNING: Textbox id("<<i<<") is not registered!"<<std::endl;
+            logManager.print("Textbox ID: %d", i);
+            logManager.print("\tName: %s", textManager.m_textBoxes[i].Name.c_str());
+            logManager.print("\tPosition: %f, %f, %f", textManager.m_textBoxes[i].Position);
+            logManager.print("\tLength_original: %f, %f, %f", textManager.m_textBoxes[i].Length_original);
+            logManager.print("\tLengthMin_original: %f, %f, %f", textManager.m_textBoxes[i].LengthMin_original);
+            logManager.print("\tLengthMax_original: %f, %f, %f", textManager.m_textBoxes[i].LengthMax_original);
+            logManager.print("\tScale: %f, %f, %f", textManager.m_textBoxes[i].Scale);
+            logManager.print("\tLength: %f, %f, %f", textManager.m_textBoxes[i].Length);
+        }
     }
 }
 

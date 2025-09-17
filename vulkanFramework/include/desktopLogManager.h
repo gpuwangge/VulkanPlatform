@@ -61,6 +61,7 @@ public:
 	void printLog(std::string s, int n0, int n1, int n2);
 	void printLog(std::string s, float n);
 	void printLog(std::string s, float n0, float n1);
+	void printLog(std::string s, glm::vec3 vec);
 	void printLog(std::string s0, std::string s1);
 	void printLog(std::string s, float *n, int size);
 	void printLog(std::string s, int *n, int size);

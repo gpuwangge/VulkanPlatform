@@ -61,6 +61,12 @@ void CLogManager::print(std::string s, float n0, float n1){
 #endif  
 }
 
+void  CLogManager::print(std::string s, glm::vec3 vec){
+#ifndef ANDROID
+    desktopLogManager.printLog(s, vec);
+#endif
+}
+
 void CLogManager::print(std::string s0, std::string s1){
 #ifndef ANDROID
     desktopLogManager.printLog(s0, s1);

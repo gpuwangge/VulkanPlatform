@@ -53,6 +53,11 @@ void CDesktopLogManager::printLog(std::string s, float n0, float n1){
 	if(Verbose) fprintf(FpDebug, "\n");
 }
 
+void  CDesktopLogManager::printLog(std::string s, glm::vec3 vec){
+	if(Verbose) fprintf(FpDebug, s.c_str(), vec.x, vec.y, vec.z);
+	if(Verbose) fprintf(FpDebug, "\n");
+}
+
 void CDesktopLogManager::printLog(std::string s0, std::string s1) {
 	if(Verbose) fprintf(FpDebug, s0.c_str(), s1.c_str());
 	if(Verbose) fprintf(FpDebug, "\n");

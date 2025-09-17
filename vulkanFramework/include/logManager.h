@@ -25,6 +25,7 @@ public:
     void print(std::string s, int n0, int n1, int n2);
     void print(std::string s, float n);
     void print(std::string s, float n0, float n1);
+    void print(std::string s, glm::vec3 vec);
     void print(std::string s0, std::string s1);
     void print(std::string s, float *n, int size);
     void print(std::string s, int *n, int size);

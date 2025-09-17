@@ -39,6 +39,7 @@ void CControlPerfMetric::RegisterObject(int startIndex){
         CObject *object = &(m_pApp->objects[index]);
         m_pObjects.push_back(object);
 
+        object->Name = "PerfMetric Background";
         object->bSticker = true;
         object->SetPosition(0,0,0);
         //objects[objects.size() - 1].m_controlNode_id = 0;
@@ -50,7 +51,7 @@ void CControlPerfMetric::RegisterObject(int startIndex){
 
         object->Register(m_pApp);
 
-        object->SetScale(0.48,0.5,0.5);//set scale after model is registered, otherwise the length will not be computed correctly
+        object->SetScale(0.48,0.5,0.0);//set scale after model is registered, otherwise the length will not be computed correctly
     }
 
 
@@ -62,6 +63,7 @@ void CControlPerfMetric::RegisterTextbox(int startIndex){
         CTextbox *textbox = &(m_pApp->textManager.m_textBoxes[index]);
         m_pTextboxes.push_back(textbox);
 
+        textbox->Name = "PerfMetric Background Textbox: " + std::to_string(i);
         textbox->bSticker = true;
         textbox->SetScale(0.2f);
         textbox->SetTextColor(glm::vec4(0.2, 0, 0, 1));
@@ -116,6 +118,7 @@ void CControlAttachment::RegisterObject(int startIndex){
         CObject *object = &(m_pApp->objects[index]);
         m_pObjects.push_back(object);
 
+        object->Name = "Attachment Background";
         object->bSticker = true;
         object->SetPosition(0,0,0);
         object->p_controlNode = this;
@@ -126,7 +129,8 @@ void CControlAttachment::RegisterObject(int startIndex){
 
         object->Register(m_pApp);
 
-        object->SetScale(0.48,0.5,0.5);//set scale after model is registered, otherwise the length will not be computed correctly
+        //object->SetScale(0.48,0.5,0.0);//set scale after model is registered, otherwise the length will not be computed correctly
+        object->SetScale(2,2,0.0);
     }
 }
 
@@ -136,6 +140,7 @@ void CControlAttachment::RegisterTextbox(int startIndex){
         CTextbox *textbox = &(m_pApp->textManager.m_textBoxes[index]);
         m_pTextboxes.push_back(textbox);
 
+        textbox->Name = "Attachment Background Textbox: " + std::to_string(i);
         textbox->bSticker = true;
         textbox->SetScale(0.2f);
         textbox->SetTextColor(glm::vec4(0.2, 0, 0, 1));
@@ -200,6 +205,7 @@ void CControlGraphicsUniform::RegisterObject(int startIndex){
         CObject *object = &(m_pApp->objects[index]);
         m_pObjects.push_back(object);
 
+        object->Name = "Graphics Uniform Background";
         object->bSticker = true;
         object->SetPosition(0,0,0);
         object->p_controlNode = this;
@@ -210,7 +216,7 @@ void CControlGraphicsUniform::RegisterObject(int startIndex){
 
         object->Register(m_pApp);
 
-        object->SetScale(0.48,0.5,0.5);//set scale after model is registered, otherwise the length will not be computed correctly
+        object->SetScale(0.48,0.5,0.0);//set scale after model is registered, otherwise the length will not be computed correctly
     }
 }
 
@@ -220,6 +226,7 @@ void CControlGraphicsUniform::RegisterTextbox(int startIndex){
         CTextbox *textbox = &(m_pApp->textManager.m_textBoxes[index]);
         m_pTextboxes.push_back(textbox);
 
+        textbox->Name = "Graphics Uniform Textbox: " + std::to_string(i);
         textbox->bSticker = true;
         textbox->SetScale(0.2f);
         textbox->SetTextColor(glm::vec4(0.2, 0, 0, 1));
