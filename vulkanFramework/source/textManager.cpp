@@ -185,26 +185,33 @@ void CTextbox::SetTextContent(std::string text_content){
     m_text_content = text_content;
     m_currentCharCount = m_text_content.size();
 
+    float sum_scale_x = 0;
+
     //std::cout<<"Creating text instance data for text: "<<m_text_content<<std::endl;
     int rowCharCount = 0;
     for (int i = 0; i < m_text_content.size(); i++) {
         char ch = m_text_content[i];
         GlyphTexture &glyph = p_textManager->glyphMap[ch];
 
-        glm::vec2 offset(penX * sx, penY * sy);
-        glm::vec2 scale(glyph.size.x/glyph.size.y, 1.0f);
+        glm::vec2 posOffset(penX * sx, penY * sy);
+        glm::vec2 scale(glyph.size.x/glyph.size.y, 1.0f); //keep the height to be 1.0f*quad.heigth(0.15) in NDC
+        //glm::vec2 scale(glyph.size * glm::vec2(sx, sy));
 
-        instanceData[i].offset = offset;
+        sum_scale_x += scale.x;
 
-        float coff = 0;
+        //std::cout<<"TextBox ID: "<<m_textBoxID<<", char: "<<ch<<", posOffset: "<<posOffset.x<<","<<posOffset.y<<", scale: "<<scale.x<<","<<scale.y<<", glyph.advance: "<<glyph.advance<<std::endl;
+        //std::cout<<"TextBox ID: "<<m_textBoxID<<", char: "<<ch<<", posOffset: "<<posOffset.x<<","<<posOffset.y<<", glyph.size: "<<glyph.size.x<<","<<glyph.size.y<<", scale: "<<scale.x<<","<<scale.y<<", glyph.advance: "<<glyph.advance<<std::endl;
+        instanceData[i].offset = posOffset;
+
+        float colorCoff = 0;
         for(int j = 0; j < m_highlightedIndex.size(); j++) {
             if(i == m_highlightedIndex[j]){
-                coff = 1.0f - 0.07f * j;
+                colorCoff = 1.0f - 0.07f * j;
                 break;
             }
         }
-        if(coff == 0) instanceData[i].color = m_textColor;
-        else instanceData[i].color = glm::vec4(coff, 0, 0, 1);
+        if(colorCoff == 0) instanceData[i].color = m_textColor;
+        else instanceData[i].color = glm::vec4(colorCoff, 0, 0, 1);
         
 
         instanceData[i].uvRect = glyph.uvRect;
@@ -218,7 +225,25 @@ void CTextbox::SetTextContent(std::string text_content){
             rowCharCount = 0;
         }
     }
+
+    float textline_width = 0.1 * sum_scale_x; //0.1 is quad height in NDC
+    if(p_controlNode != NULL){
+        if(textline_width > p_controlNode->Scale.x && p_controlNode != NULL){
+            std::cout<<"TextBox ID: "<<m_textBoxID<<", text line width: "<<textline_width<<", larger than control node scale x: "<<p_controlNode->Scale.x<<", ";
+            std::cout<<"text content: \""<<m_text_content<<"\", char count: "<<m_currentCharCount<<std::endl; 
+            p_controlNode->Scale.x = textline_width;
+        }
+    }
     
+    // if(p_controlNode && m_textBoxID == 23){
+    //     float textWidth = penX * sx;
+    //     std::cout<<"TextBox ID: "<<m_textBoxID<<", text content: \""<<m_text_content<<"\", char count: "<<m_currentCharCount<<std::endl; //", textWidth: "<<textWidth<<", penX: "<<penX<<", sx: "<<sx<<std::endl;
+    //     std::cout<<"    ControlNode Name: \""<<p_controlNode->Name<<"\", Length: "<<p_controlNode->Length.x<<","<<p_controlNode->Length.y<<","<<p_controlNode->Length.z<<std::endl;
+    //     std::cout<<"    scale sum x: "<<sum_scale_x<<", calculated textbox width: "<< 0.1 * sum_scale_x<<std::endl;
+    //     std::cout<<"    "<<p_controlNode->m_pObjects[0]->Name<<", length: "<<p_controlNode->m_pObjects[0]->Length.x<<","<<p_controlNode->m_pObjects[0]->Length.y<<","<<p_controlNode->m_pObjects[0]->Length.z<<std::endl;
+    // }
+
+
     if(!bInitialized) {
         VkDeviceSize bufferSize = sizeof(instanceData[0]) * instanceData.size();
         VkResult result = instanceDataBuffer.init(bufferSize, VK_BUFFER_USAGE_TRANSFER_DST_BIT | VK_BUFFER_USAGE_VERTEX_BUFFER_BIT);
@@ -238,7 +263,7 @@ void CTextbox::Update(float deltaTime, int currentFrame, Camera &mainCamera){
     ********************************/
    if(CGraphicsDescriptorManager::graphicsUniformTypes & GRAPHCIS_UNIFORMBUFFER_TEXT_MVP){
         if(p_controlNode == NULL)  CGraphicsDescriptorManager::textMVPUBO.mvpData[m_textBoxID].model = ModelMatrix;
-        else CGraphicsDescriptorManager::textMVPUBO.mvpData[m_textBoxID].model = p_controlNode->ModelMatrix * ModelMatrix;
+        else CGraphicsDescriptorManager::textMVPUBO.mvpData[m_textBoxID].model = p_controlNode->TransRotation * ModelMatrix; //textbox follow control node translation and rotation, but not scale
 
         //std::cout<< "TextBox ID: " << m_textBoxID << " Model Matrix: " << glm::to_string(CGraphicsDescriptorManager::textMVPUBO.mvpData[m_textBoxID].model) << std::endl;
         // std::cout<< "TextBox ID: " << m_textBoxID << " TranslateMatrix: " << glm::to_string(TranslateMatrix) << std::endl;
@@ -431,13 +456,13 @@ void CTextManager::CreateGlyphMap() {
 
 /*There are two resources: quad pos/uv and instance offset/color*/
 void CTextManager::CreateTextResource(){
-    
-    int w = 51; //font character size
-    int h = 73;
-    float aspect = (float)w / (float)h; // 31/73 ≈ 0.4247
-
-    float half_h = 0.15f;         //expected quad height
-    float half_w = half_h * aspect; // width scaled proportionally
+    //int w = 51; //font character size
+    //int h = 73;
+    //float aspect = (float)w / (float)h; // 51/73 ≈ 0.6986
+    //float half_h = 0.15f;         //expected quad height
+    //float half_w = half_h * aspect; // width scaled proportionally 0.6986*0.15f ≈ 0.10479
+    float half_h = 0.15f;
+    float half_w = 0.1f;
 
     float x_min = -half_w;  //quad size
     float x_max =  half_w; 

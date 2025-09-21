@@ -17,6 +17,8 @@ public:
 	void initialize(){
 		modelManager.CreateCustomModel3D(vertices3D, indices3D); //model for background
 		CApplication::initialize();
+
+		//std::cout<<"Swapchain extent: "<<swapchain.swapChainExtent.width<<","<<swapchain.swapChainExtent.height<<std::endl;
 	}
 
 	void update(){

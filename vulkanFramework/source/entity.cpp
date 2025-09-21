@@ -35,14 +35,12 @@ void CEntity::SetVelocity(float vx, float vy, float vz){ Velocity = glm::vec3(vx
 void CEntity::SetVelocity(glm::vec3 v){ Velocity = v; }
 void CEntity::SetAngularVelocity(float vx, float vy, float vz){ AngularVelocity = glm::vec3(vx, vy, vz); }
 
-void CEntity::SetScale(float scale){
-    SetScale(scale, scale, scale);
-}
 void CEntity::SetScale(float scale_x, float scale_y, float scale_z){
     Scale = glm::vec3(scale_x, scale_y, scale_z);
     UpdateLength();
 }
 void CEntity::SetScaleRectangleXY(float x0, float y0, float x1, float y1){
+    std::cout<<"Name: "<<Name<<" SetScaleRectangleXY::Input: "<<x0<<", "<<y0<<", "<<x1<<", "<<y1<<std::endl;
     //Screen Coordinate is (-1,-1) to (1,1)
     std::cout<<"SetScaleRectangleXY::Position: "<<Position.x<<", "<<Position.y<<", "<<Position.z<<std::endl;
     std::cout<<"SetScaleRectangleXY::Length_original: "<<Length_original.x<<", "<<Length_original.y<<", "<<Length_original.z<<std::endl;
@@ -165,5 +163,6 @@ void CEntity::Update(float deltaTime){
     * 4. Compute ModelMatrix
     **********/
     ModelMatrix = TranslateMatrix * RotationMatrix * ScaleMatrix;
+    TransRotation = TranslateMatrix * RotationMatrix;
 }
 

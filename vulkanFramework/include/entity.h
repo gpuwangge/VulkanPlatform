@@ -31,6 +31,7 @@ public:
     glm::mat4 RotationMatrix = glm::mat4(1.0f); 
     glm::mat4 ScaleMatrix = glm::mat4(1.0f);
     glm::mat4 ModelMatrix = glm::mat4(1.0f);
+    glm::mat4 TransRotation = glm::mat4(1.0f); //Translation * Rotation, no Scale
 
     glm::vec3 DirectionFront = glm::vec3(0, 0, 1);
     glm::vec3 DirectionUp = glm::vec3(0, 1, 0);
@@ -89,8 +90,9 @@ public:
     void SetVelocity(glm::vec3 v);
     void SetAngularVelocity(float vx, float vy, float vz);
 
-    void SetScale(float scale);
     void SetScale(float scale_x, float scale_y, float scale_z);
+    void SetScale(float scale){ SetScale(scale, scale, scale); }
+    void SetScale(glm::vec3 v){ SetScale(v.x, v.y, v.z); } 
     void SetScaleRectangleXY(float x0, float y0, float x1, float y1); //set 2d image to rect((x0,y0),(x1,y1))
     void UpdateLength();
 

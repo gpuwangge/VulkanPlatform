@@ -29,8 +29,12 @@ void CControlNode::Update(){
 CControlPerfMetric::CControlPerfMetric(){    
     m_textbox_count = 8;
     m_object_count = 1;
-    SetPosition(0.3, -0.5, 0);
-    SetRotation(0, 0, 30);
+    //SetPosition(-0.5, -0.5, 0);
+    SetRotation(0, 0, 0);
+    Name = "Control PerfMetric Node";
+    //Length = glm::vec3(0.4, 0.5, 0);
+    Length_original = glm::vec3(1, 1, 0);
+    SetScaleRectangleXY(0.0, -1.0, 0.5, -0.5); //set position, scale and length
 }
 
 void CControlPerfMetric::RegisterObject(int startIndex){
@@ -51,7 +55,25 @@ void CControlPerfMetric::RegisterObject(int startIndex){
 
         object->Register(m_pApp);
 
-        object->SetScale(0.48,0.5,0.0);//set scale after model is registered, otherwise the length will not be computed correctly
+        //no need to set position/scale, because all object follows control node's model matrix
+
+        //does not work
+        //object->SetPosition(Position);
+        //std::cout<<"ControlPerfMetric Position: "<<Position.x<<","<<Position.y<<","<<Position.z<<std::endl;
+        //Length_original = glm::vec3(1, 1, 0);
+        //object->SetScale(Scale);
+        //std::cout<<"ControlPerfMetric Scale: "<<Scale.x<<","<<Scale.y<<","<<Scale.z<<std::endl;
+        //object->UpdateLength();
+
+       //std::cout<<"ControlPerfMetric Length: "<<Length.x<<","<<Length.y<<","<<Length.z<<std::endl;
+       //std::cout<<"ControlPerfMetric Length_original: "<<Length_original.x<<","<<Length_original.y<<","<<Length_original.z<<std::endl;
+
+        //does not work
+        //object->Length_original = glm::vec3(1, 1, 0);
+        //object->SetScaleRectangleXY(-0.5, -0.5, 0.0, 0.0);
+
+        //object->SetScaleRectangleXY(Position.x, Position.y, Position.x + Length.x, Position.y + Length.y);
+        //object->SetScale(0.48,0.5,0.0);//set scale after model is registered, otherwise the length will not be computed correctly
     }
 
 
@@ -67,7 +89,7 @@ void CControlPerfMetric::RegisterTextbox(int startIndex){
         textbox->bSticker = true;
         textbox->SetScale(0.2f);
         textbox->SetTextColor(glm::vec4(0.2, 0, 0, 1));
-        textbox->SetPosition(-0.15, -0.2+0.05*i, 0);
+        textbox->SetPosition(-0.15, -0.2+0.05*i, 0); //todo: adjust position based on control node scale
         textbox->p_controlNode = this;
         textbox->m_textBoxID = index;
         textbox->m_text_content = "text_content";
@@ -108,8 +130,12 @@ void CControlPerfMetric::Update(){
 CControlAttachment::CControlAttachment(){    
     m_textbox_count = 8;
     m_object_count = 1;
-    SetPosition(0.0, 0, 0);
+    //SetPosition(-0.2, 0.0, 0);
     SetRotation(0, 0, 0);
+    Name = "Control Attachment Node";
+    //Length = glm::vec3(0.4, 0.5, 0);
+    Length_original = glm::vec3(1, 1, 0);
+    SetScaleRectangleXY(0.0,-0.5, 0.5, 0.0); //set position, scale and length
 }
 
 void CControlAttachment::RegisterObject(int startIndex){
@@ -130,7 +156,8 @@ void CControlAttachment::RegisterObject(int startIndex){
         object->Register(m_pApp);
 
         //object->SetScale(0.48,0.5,0.0);//set scale after model is registered, otherwise the length will not be computed correctly
-        object->SetScale(2,2,0.0);
+        //object->SetScale(2,2,0.0);
+        //object->SetScaleRectangleXY(Position.x, Position.y, Position.x + Length.x, Position.y + Length.y);
     }
 }
 
@@ -195,8 +222,12 @@ void CControlAttachment::Update(){
 CControlGraphicsUniform::CControlGraphicsUniform(){    
     m_textbox_count = 7;
     m_object_count = 1;
-    SetPosition(-0.4, 0.4, 0);
+    //SetPosition(-0.4, -0.1, 0);
     SetRotation(0, 0, 0);
+    Name = "Control Graphics Uniform Node";
+    //Length = glm::vec3(0.4, 0.5, 0);
+    Length_original = glm::vec3(1, 1, 0);
+    SetScaleRectangleXY(0.0, 0.0, 0.5, 0.5); //set position, scale and length
 }
 
 void CControlGraphicsUniform::RegisterObject(int startIndex){
@@ -216,7 +247,8 @@ void CControlGraphicsUniform::RegisterObject(int startIndex){
 
         object->Register(m_pApp);
 
-        object->SetScale(0.48,0.5,0.0);//set scale after model is registered, otherwise the length will not be computed correctly
+        //object->SetScaleRectangleXY(Position.x, Position.y, Position.x + Length.x, Position.y + Length.y);
+        //object->SetScale(0.48,0.5,0.0);//set scale after model is registered, otherwise the length will not be computed correctly
     }
 }
 
