@@ -185,7 +185,7 @@ void CTextbox::SetTextContent(std::string text_content){
     m_text_content = text_content;
     m_currentCharCount = m_text_content.size();
 
-    float sum_scale_x = 0;
+    //float sum_scale_x = 0;
 
     //std::cout<<"Creating text instance data for text: "<<m_text_content<<std::endl;
     int rowCharCount = 0;
@@ -197,7 +197,7 @@ void CTextbox::SetTextContent(std::string text_content){
         glm::vec2 scale(glyph.size.x/glyph.size.y, 1.0f); //keep the height to be 1.0f*quad.heigth(0.15) in NDC
         //glm::vec2 scale(glyph.size * glm::vec2(sx, sy));
 
-        sum_scale_x += scale.x;
+        //sum_scale_x += scale.x;
 
         //std::cout<<"TextBox ID: "<<m_textBoxID<<", char: "<<ch<<", posOffset: "<<posOffset.x<<","<<posOffset.y<<", scale: "<<scale.x<<","<<scale.y<<", glyph.advance: "<<glyph.advance<<std::endl;
         //std::cout<<"TextBox ID: "<<m_textBoxID<<", char: "<<ch<<", posOffset: "<<posOffset.x<<","<<posOffset.y<<", glyph.size: "<<glyph.size.x<<","<<glyph.size.y<<", scale: "<<scale.x<<","<<scale.y<<", glyph.advance: "<<glyph.advance<<std::endl;
@@ -224,23 +224,36 @@ void CTextbox::SetTextContent(std::string text_content){
             penY -= glyph.size.y;
             rowCharCount = 0;
         }
-    }
 
-    float textline_width = 0.1 * sum_scale_x; //0.1 is quad height in NDC
-    if(p_controlNode != NULL){
-        if(textline_width > p_controlNode->Scale.x && p_controlNode != NULL){
-            std::cout<<"TextBox ID: "<<m_textBoxID<<", text line width: "<<textline_width<<", larger than control node scale x: "<<p_controlNode->Scale.x<<", ";
-            std::cout<<"text content: \""<<m_text_content<<"\", char count: "<<m_currentCharCount<<std::endl; 
-            p_controlNode->Scale.x = textline_width;
+        float margin = 1.3f;
+        float current_textwidth= penX * sx * Scale.x * margin;
+        if(p_controlNode && current_textwidth > p_controlNode->Scale.x){
+            break;
         }
     }
+
+     
+
+    // float textline_width = 0.1 * sum_scale_x; //0.1 is quad height in NDC
+    // if(p_controlNode != NULL){
+    //     if(textline_width > p_controlNode->Scale.x){
+    //         //std::cout<<"TextBox ID: "<<m_textBoxID<<", text line width: "<<textline_width<<", larger than control node scale x: "<<p_controlNode->Scale.x<<", ";
+    //         //std::cout<<"text content: \""<<m_text_content<<"\", char count: "<<m_currentCharCount<<std::endl; 
+    //         //p_controlNode->Scale.x = textline_width;
+    //         if(p_controlNode->Scale.x < penX * sx * Scale.x * 1.2){ //1.2 is a little margin
+    //             p_controlNode->Scale.x = penX * sx * Scale.x * 1.2;
+    //             std::cout<<"TextBox ID: "<<m_textBoxID<<", text line width: "<<textline_width<<", larger than control node scale x: "<<p_controlNode->Scale.x<<std::endl;
+    //         }
+    //     }
+    // }
     
     // if(p_controlNode && m_textBoxID == 23){
     //     float textWidth = penX * sx;
-    //     std::cout<<"TextBox ID: "<<m_textBoxID<<", text content: \""<<m_text_content<<"\", char count: "<<m_currentCharCount<<std::endl; //", textWidth: "<<textWidth<<", penX: "<<penX<<", sx: "<<sx<<std::endl;
+    //     std::cout<<"TextBox ID: "<<m_textBoxID<<", text content: \""<<m_text_content<<"\", char count: "<<m_currentCharCount<<std::endl;
     //     std::cout<<"    ControlNode Name: \""<<p_controlNode->Name<<"\", Length: "<<p_controlNode->Length.x<<","<<p_controlNode->Length.y<<","<<p_controlNode->Length.z<<std::endl;
     //     std::cout<<"    scale sum x: "<<sum_scale_x<<", calculated textbox width: "<< 0.1 * sum_scale_x<<std::endl;
     //     std::cout<<"    "<<p_controlNode->m_pObjects[0]->Name<<", length: "<<p_controlNode->m_pObjects[0]->Length.x<<","<<p_controlNode->m_pObjects[0]->Length.y<<","<<p_controlNode->m_pObjects[0]->Length.z<<std::endl;
+    //     std::cout<<"    penX: "<<penX<<", sx: "<<sx<<", textWidth: "<<textWidth<<std::endl;
     // }
 
 

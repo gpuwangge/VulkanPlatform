@@ -11,17 +11,32 @@ void CControlNode::Register(CApplication *p_app){
     p_app->textboxCountControl += m_textbox_count;
     p_app->lightCountControl += m_light_count;
 }
-
 void CControlNode::RegisterObject(int startIndex){
 
 }
-
 void CControlNode::RegisterTextbox(int startIndex){
 
 }
 void CControlNode::Update(){
 
 }
+void CControlNode::Magnet(MagnetTypes type){
+   switch(type){
+        case MAGNETRIGHT:
+            SetPositionX(1.0f - 0.5f * Length.x);
+            break;
+        case MAGNETLEFT:
+            SetPositionX(-1.0f +  0.5f * Length.x);
+            break;
+        case MAGNETTOP:
+            SetPositionY(-1.0f + 0.5f * Length.y);
+            break;
+        case MAGNETBOTTOM:
+            SetPositionY(1.0f - 0.5f * Length.y);
+            break;
+    }
+}
+
 
 /******************
 * ControlPerfMetric
@@ -32,9 +47,11 @@ CControlPerfMetric::CControlPerfMetric(){
     //SetPosition(-0.5, -0.5, 0);
     SetRotation(0, 0, 0);
     Name = "Control PerfMetric Node";
-    //Length = glm::vec3(0.4, 0.5, 0);
     Length_original = glm::vec3(1, 1, 0);
-    SetScaleRectangleXY(0.0, -1.0, 0.5, -0.5); //set position, scale and length
+    //SetScaleRectangleXY(0.0, -1.0, 0.5, -0.5); //set position, scale and length
+    SetScale(0.5, 0.5, 0);
+    SetPositionY(-1.0f + 0.5 * Length.y);
+    Magnet(MAGNETRIGHT);
 }
 
 void CControlPerfMetric::RegisterObject(int startIndex){
@@ -135,7 +152,10 @@ CControlAttachment::CControlAttachment(){
     Name = "Control Attachment Node";
     //Length = glm::vec3(0.4, 0.5, 0);
     Length_original = glm::vec3(1, 1, 0);
-    SetScaleRectangleXY(0.0,-0.5, 0.5, 0.0); //set position, scale and length
+    //SetScaleRectangleXY(0.0,-0.5, 0.5, 0.0); //set position, scale and length
+    SetScale(0.5, 0.5, 0);
+    SetPositionY(-1.0f + 0.5 + 0.5 * Length.y);
+    Magnet(MAGNETLEFT);
 }
 
 void CControlAttachment::RegisterObject(int startIndex){
@@ -227,7 +247,10 @@ CControlGraphicsUniform::CControlGraphicsUniform(){
     Name = "Control Graphics Uniform Node";
     //Length = glm::vec3(0.4, 0.5, 0);
     Length_original = glm::vec3(1, 1, 0);
-    SetScaleRectangleXY(0.0, 0.0, 0.5, 0.5); //set position, scale and length
+    //SetScaleRectangleXY(0.0, 0.0, 0.5, 0.5); //set position, scale and length
+    SetScale(0.5, 0.5, 0);
+    SetPositionY(-1.0f + 0.5 + 0.5 + 0.5 * Length.y);
+    Magnet(MAGNETBOTTOM);
 }
 
 void CControlGraphicsUniform::RegisterObject(int startIndex){

@@ -17,6 +17,7 @@ class CControlNode;
 * TextBox
 *******************/
 class CTextManager;
+
 class CTextbox : public CEntity {
     CRenderer *p_renderer;
     CRenderProcess *p_renderProcess;

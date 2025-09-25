@@ -10,6 +10,13 @@ class CApplication;
 /******************
 * ControlNode
 *******************/
+enum MagnetTypes {
+    MAGNETLEFT,
+    MAGNETRIGHT,
+    MAGNETTOP,
+    MAGNETBOTTOM
+};
+
 class CControlNode : public CEntity{
 public:
     CControlNode(){}
@@ -19,6 +26,9 @@ public:
     int m_object_count = 0;
     int m_textbox_count = 0;
     int m_light_count = 0;
+    //MagnetTypes m_magnetType = MAGNETRIGHT;
+    void Magnet(MagnetTypes type);
+
     std::vector<CObject*> m_pObjects;
     std::vector<CTextbox*> m_pTextboxes;
 

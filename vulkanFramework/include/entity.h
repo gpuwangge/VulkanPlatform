@@ -77,6 +77,9 @@ public:
     void RollRight(float angle, float speed);
 
     void SetPosition(float x, float y, float z);
+    void SetPositionX(float x){ Position.x = x; };
+    void SetPositionY(float y){ Position.y = y; };
+    void SetPositionZ(float z){ Position.z = z; };
     void SetPosition(glm::vec3 v);
     void SetRotation(float pitch, float yaw, float roll);
     void SetRotation(glm::vec3 v);
