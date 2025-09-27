@@ -204,7 +204,15 @@ void CApplication::initialize(){
         controlNodes.back()->Register(this);
         controlNodes.push_back(std::make_unique<CControlSubpass>());
         controlNodes.back()->Register(this);
+        controlNodes.push_back(std::make_unique<CControlHotkey>());
+        controlNodes.back()->Register(this);
+        controlNodes.push_back(std::make_unique<CControlFeature>());
+        controlNodes.back()->Register(this);
+        controlNodes.push_back(std::make_unique<CControlStatistics>());
+        controlNodes.back()->Register(this);
     }
+
+    //controlNodes[0]->bVisible = false; //hide fps control node
 
     if (config["Objects"]) {
         int max_object_id = 0;

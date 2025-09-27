@@ -5,8 +5,8 @@
 * Object
 *******************/
 void CObject::Update(float deltaTime, int currentFrame, Camera &mainCamera){
-    if(!bRegistered) return;
-    if(!bUpdate) return;
+    if(!bRegistered || !bUpdate || !bVisible) return;
+    if(p_controlNode != NULL && !p_controlNode->bVisible) return;
     CEntity::Update(deltaTime); //update translateMatrix, RotationMatrix and ScaleMatrix
     /********************************
     * Calculate model matrix based on Translation, Rotation and Scale
@@ -183,6 +183,7 @@ void CObject::Register(CApplication *p_app){
 
 void CObject::Draw(int graphicsPipelineId, uint32_t n){
     if(!bRegistered || !bVisible) return;
+    if(p_controlNode != NULL && !p_controlNode->bVisible) return;
 
     int current_graphics_pipeline_id = (graphicsPipelineId == -1) ? m_default_graphics_pipeline_id : graphicsPipelineId;
 

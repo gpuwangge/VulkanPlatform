@@ -82,6 +82,9 @@ void CTextbox::CreateDescriptorSets_TextureImageSampler(VkDescriptorPool &descri
 }
 
 void CTextbox::Draw(){
+    if(!bRegistered) return;
+    if(p_controlNode != NULL && !p_controlNode->bVisible) return;
+
     //std::cout<<"Drawing TextBox ID: "<<m_textBoxID<<", text: "<<m_text_content<<std::endl;
     VkPipelineLayout *p_graphicsPipelineLayout = &(p_renderProcess->graphicsPipelineLayouts[m_default_graphics_pipeline_id]);
     p_renderer->BindPipeline(p_renderProcess->graphicsPipelines[m_default_graphics_pipeline_id], VK_PIPELINE_BIND_POINT_GRAPHICS, p_renderer->graphicsCmdId);
@@ -297,6 +300,8 @@ void CTextbox::SetTextContent(std::string text_content){
 
 void CTextbox::Update(float deltaTime, int currentFrame, Camera &mainCamera){
     if(!bRegistered) return;
+    if(p_controlNode != NULL && !p_controlNode->bVisible) return;
+
     CEntity::Update(deltaTime); //update translateMatrix, RotationMatrix and ScaleMatrix
     /********************************
     * Calculate model matrix based on Translation, Rotation and Scale

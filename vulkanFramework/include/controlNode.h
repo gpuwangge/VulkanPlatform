@@ -29,6 +29,7 @@ public:
     ~CControlNode(){}
 
     CApplication *m_pApp;
+    bool bVisible = true;
     int m_object_count = 0;
     int m_textbox_count = 0;
     int m_light_count = 0;
@@ -109,5 +110,47 @@ public:
     void RegisterTextbox(int startIndex) override;
     void Update() override;
 };
+
+/******************
+* ControlHotkey
+*******************/
+class CControlHotkey : public CControlNode{
+public:
+    CControlHotkey();
+    ~CControlHotkey(){}
+
+    void RegisterObject(int startIndex) override;
+    void RegisterTextbox(int startIndex) override;
+    void Update() override;
+};
+
+/******************
+* ControlFeature
+*******************/
+class CControlFeature : public CControlNode{
+public:
+    CControlFeature();
+    ~CControlFeature(){}
+
+    void RegisterObject(int startIndex) override;
+    void RegisterTextbox(int startIndex) override;
+    void Update() override;
+};
+
+/******************
+* ControlStatistics
+*******************/
+class CControlStatistics : public CControlNode{
+public:
+    CControlStatistics();
+    ~CControlStatistics(){}
+
+    void RegisterObject(int startIndex) override;
+    void RegisterTextbox(int startIndex) override;
+    void Update() override;
+};
+
+
+
 
 #endif

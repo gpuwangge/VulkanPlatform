@@ -124,6 +124,12 @@ void CSDLManager::eventHandle(){
                         }
                         break;
 
+                    case SDLK_P:
+                        //CApplication::controlNodes[0]->bVisible = !CApplication::controlNodes[0]->bVisible;
+                        break;
+                    case SDLK_H:
+                        break;
+
                     case SDLK_ESCAPE:
                         bStillRunning = false;
                         break; 
