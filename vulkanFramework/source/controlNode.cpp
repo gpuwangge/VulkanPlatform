@@ -41,14 +41,11 @@ void CControlNode::Magnet(MagnetTypes type){
 /******************
 * ControlPerfMetric
 *******************/
-CControlPerfMetric::CControlPerfMetric(){    
+CControlPerfMetric::CControlPerfMetric(){
+    //std::cout<<"Creating Control PerfMetric Node"<<std::endl;
+    Name = "Control PerfMetric Node";
     m_textbox_count = 8;
     m_object_count = 1;
-    //SetPosition(-0.5, -0.5, 0);
-    SetRotation(0, 0, 0);
-    Name = "Control PerfMetric Node";
-    Length_original = glm::vec3(1, 1, 0);
-    //SetScaleRectangleXY(0.0, -1.0, 0.5, -0.5); //set position, scale and length
     SetScale(0.5, 0.5, 0);
     SetPositionY(-1.0f + 0.5 * Length.y);
     Magnet(MAGNETRIGHT);
@@ -63,7 +60,6 @@ void CControlPerfMetric::RegisterObject(int startIndex){
         object->Name = "PerfMetric Background";
         object->bSticker = true;
         object->SetPosition(0,0,0);
-        //objects[objects.size() - 1].m_controlNode_id = 0;
         object->p_controlNode = this;
         object->m_object_id = index;
         object->m_texture_ids = m_pApp->appInfo.ControlUIContainer.resource_texture_id_list_box;
@@ -71,26 +67,7 @@ void CControlPerfMetric::RegisterObject(int startIndex){
         object->m_default_graphics_pipeline_id = m_pApp->appInfo.ControlUIContainer.resource_default_graphics_pipeline_id_box;
 
         object->Register(m_pApp);
-
         //no need to set position/scale, because all object follows control node's model matrix
-
-        //does not work
-        //object->SetPosition(Position);
-        //std::cout<<"ControlPerfMetric Position: "<<Position.x<<","<<Position.y<<","<<Position.z<<std::endl;
-        //Length_original = glm::vec3(1, 1, 0);
-        //object->SetScale(Scale);
-        //std::cout<<"ControlPerfMetric Scale: "<<Scale.x<<","<<Scale.y<<","<<Scale.z<<std::endl;
-        //object->UpdateLength();
-
-       //std::cout<<"ControlPerfMetric Length: "<<Length.x<<","<<Length.y<<","<<Length.z<<std::endl;
-       //std::cout<<"ControlPerfMetric Length_original: "<<Length_original.x<<","<<Length_original.y<<","<<Length_original.z<<std::endl;
-
-        //does not work
-        //object->Length_original = glm::vec3(1, 1, 0);
-        //object->SetScaleRectangleXY(-0.5, -0.5, 0.0, 0.0);
-
-        //object->SetScaleRectangleXY(Position.x, Position.y, Position.x + Length.x, Position.y + Length.y);
-        //object->SetScale(0.48,0.5,0.0);//set scale after model is registered, otherwise the length will not be computed correctly
     }
 
 
@@ -105,8 +82,8 @@ void CControlPerfMetric::RegisterTextbox(int startIndex){
         textbox->Name = "PerfMetric Background Textbox: " + std::to_string(i);
         textbox->bSticker = true;
         textbox->SetScale(0.2f);
-        textbox->SetTextColor(glm::vec4(0.2, 0, 0, 1));
-        textbox->SetPosition(-0.15, -0.2+0.05*i, 0); //todo: adjust position based on control node scale
+        textbox->SetTextColor(glm::vec4(0.75, 0.75, 0.75, 1));
+        textbox->SetPosition(0.06-Length.x/2, -0.2+0.05*i, 0); //todo: adjust position based on control node scale
         textbox->p_controlNode = this;
         textbox->m_textBoxID = index;
         textbox->m_text_content = "text_content";
@@ -126,17 +103,38 @@ void CControlPerfMetric::Update(){
     CEntity::Update(m_pApp->deltaTime); //update translateMatrix, RotationMatrix and ScaleMatrix
 
     static int lastTrigger = 0;
-		int currentTrigger = (double)m_pApp->elapseTime / 0.1f;
-		if(currentTrigger!=lastTrigger) {
+	int currentTrigger = (double)m_pApp->elapseTime / 0.1f;
 
+    static bool firstTime = true;
+
+    if(firstTime){
+        glm::vec4 greyColor = glm::vec4(0.25, 0.25, 0.25, 1);
+
+        for(int i = 1; i <= 4; i++) m_pTextboxes[i]->bFlash = true;
+
+        m_pTextboxes[4]->SetTextContent("Init:" + to_string_prec(m_pApp->totalInitTime) + " ms");
+
+        if(m_pApp->objects.size()>0) m_pTextboxes[5]->bFlash = true;
+        else m_pTextboxes[5]->SetTextColor(greyColor);
+        m_pTextboxes[5]->SetTextContent("Object:" + std::to_string(m_pApp->objects.size()));
+
+        if(m_pApp->textManager.m_textBoxes.size()>0) m_pTextboxes[6]->bFlash = true;
+        else m_pTextboxes[6]->SetTextColor(greyColor);
+        m_pTextboxes[6]->SetTextContent("Textbox:" + std::to_string(m_pApp->textManager.m_textBoxes.size()));
+
+        if(m_pApp->lights.size()>0) m_pTextboxes[7]->bFlash = true;
+        else m_pTextboxes[7]->SetTextColor(greyColor);
+        m_pTextboxes[7]->SetTextContent("Light:" + std::to_string(m_pApp->lights.size()));
+
+        firstTime = false;
+    }
+
+	if(currentTrigger!=lastTrigger) {
         m_pTextboxes[1]->SetTextContent("FPS:" + std::to_string((int)(1.0f/m_pApp->deltaTime)));
         m_pTextboxes[2]->SetTextContent("Time:" + to_string_prec(m_pApp->elapseTime) + "s");
         m_pTextboxes[3]->SetTextContent("Frame:" + std::to_string(m_pApp->frameCount));
-        m_pTextboxes[4]->SetTextContent("Init:" + to_string_prec(m_pApp->totalInitTime) + " ms");
-        m_pTextboxes[5]->SetTextContent("Object:" + std::to_string(m_pApp->objects.size()));
-        m_pTextboxes[6]->SetTextContent("Textbox:" + std::to_string(m_pApp->textManager.m_textBoxes.size()));
-        m_pTextboxes[7]->SetTextContent("Light:" + std::to_string(m_pApp->lights.size()));
-
+        for(int i = 4; i <= 7; i++) if(m_pTextboxes[i]->bFlash) m_pTextboxes[i]->SetTextContent(); //to update the text color
+            
         lastTrigger = currentTrigger;
 	}
 }
@@ -144,18 +142,13 @@ void CControlPerfMetric::Update(){
 /******************
 * ControlAttachment
 *******************/
-CControlAttachment::CControlAttachment(){    
+CControlAttachment::CControlAttachment(){
+    Name = "Control Attachment Node";
     m_textbox_count = 8;
     m_object_count = 1;
-    //SetPosition(-0.2, 0.0, 0);
-    SetRotation(0, 0, 0);
-    Name = "Control Attachment Node";
-    //Length = glm::vec3(0.4, 0.5, 0);
-    Length_original = glm::vec3(1, 1, 0);
-    //SetScaleRectangleXY(0.0,-0.5, 0.5, 0.0); //set position, scale and length
     SetScale(0.5, 0.5, 0);
     SetPositionY(-1.0f + 0.5 + 0.5 * Length.y);
-    Magnet(MAGNETLEFT);
+    Magnet(MAGNETRIGHT);
 }
 
 void CControlAttachment::RegisterObject(int startIndex){
@@ -174,10 +167,6 @@ void CControlAttachment::RegisterObject(int startIndex){
         object->m_default_graphics_pipeline_id = m_pApp->appInfo.ControlUIContainer.resource_default_graphics_pipeline_id_box;
 
         object->Register(m_pApp);
-
-        //object->SetScale(0.48,0.5,0.0);//set scale after model is registered, otherwise the length will not be computed correctly
-        //object->SetScale(2,2,0.0);
-        //object->SetScaleRectangleXY(Position.x, Position.y, Position.x + Length.x, Position.y + Length.y);
     }
 }
 
@@ -190,8 +179,8 @@ void CControlAttachment::RegisterTextbox(int startIndex){
         textbox->Name = "Attachment Background Textbox: " + std::to_string(i);
         textbox->bSticker = true;
         textbox->SetScale(0.2f);
-        textbox->SetTextColor(glm::vec4(0.2, 0, 0, 1));
-        textbox->SetPosition(-0.15, -0.2+0.05*i, 0);
+        textbox->SetTextColor(glm::vec4(0.75, 0.75, 0.75, 1));
+        textbox->SetPosition(0.06-Length.x/2, -0.2+0.05*i, 0);
         textbox->p_controlNode = this;
         textbox->m_textBoxID = index;
         textbox->m_text_content = "text_content";
@@ -217,21 +206,40 @@ void CControlAttachment::Update(){
     CEntity::Update(m_pApp->deltaTime); //update translateMatrix, RotationMatrix and ScaleMatrix
 
     static int lastTrigger = 0;
-		int currentTrigger = (double)m_pApp->elapseTime / 0.1f;
-		if(currentTrigger!=lastTrigger) {
+	int currentTrigger = (double)m_pApp->elapseTime / 0.1f;
 
-        std::string r = "false";
-        if(m_pApp->renderProcess.iShadowmapAttachmentDepthLight>=0) r = "true"; else r= "false";
-        m_pTextboxes[2]->SetTextContent("Depth(Light):" + r);
-        if(m_pApp->renderProcess.iMainSceneAttachmentDepthLight>=0) r = "true"; else r= "false";
-        m_pTextboxes[4]->SetTextContent("Depth(Light):" + r);
-        if(m_pApp->renderProcess.iMainSceneAttachmentDepthCamera>=0) r = "true"; else r= "false";
-        m_pTextboxes[5]->SetTextContent("Depth(Camera):" + r);
-        if(m_pApp->renderProcess.iMainSceneAttachmentColorResovle>=0) r = "true"; else r= "false";
-        m_pTextboxes[6]->SetTextContent("Color(Resolve):" + r);
-        if(m_pApp->renderProcess.iMainSceneAttachmentColorPresent>=0) r = "true"; else r= "false";
-        m_pTextboxes[7]->SetTextContent("Color(Present):" + r);
+    static bool firstTime = true;
 
+    if(firstTime){
+        glm::vec4 greyColor = glm::vec4(0.25, 0.25, 0.25, 1);
+        if(m_pApp->renderProcess.iShadowmapAttachmentDepthLight>=0) m_pTextboxes[2]->bFlash = true;
+        else m_pTextboxes[2]->SetTextColor(greyColor);
+        m_pTextboxes[2]->SetTextContent("Depth(Light)");
+
+        if(m_pApp->renderProcess.iMainSceneAttachmentDepthLight>=0) m_pTextboxes[4]->bFlash = true;
+        else m_pTextboxes[4]->SetTextColor(greyColor);
+        m_pTextboxes[4]->SetTextContent("Depth(Light)");
+
+        if(m_pApp->renderProcess.iMainSceneAttachmentDepthCamera>=0) m_pTextboxes[5]->bFlash = true;
+        else m_pTextboxes[5]->SetTextColor(greyColor);
+        m_pTextboxes[5]->SetTextContent("Depth(Camera)");
+
+        if(m_pApp->renderProcess.iMainSceneAttachmentColorResovle>=0) m_pTextboxes[6]->bFlash = true;
+        else m_pTextboxes[6]->SetTextColor(greyColor);
+        m_pTextboxes[6]->SetTextContent("Color(Resolve)");
+
+        if(m_pApp->renderProcess.iMainSceneAttachmentColorPresent>=0) m_pTextboxes[7]->bFlash = true;
+        else m_pTextboxes[7]->SetTextColor(greyColor);
+        m_pTextboxes[7]->SetTextContent("Color(Present)");
+
+        firstTime = false;
+    }
+
+	if(currentTrigger!=lastTrigger) {
+        for(int i = 2; i <= 7; i++){
+            if(i == 3) continue;
+            if(m_pTextboxes[i]->bFlash) m_pTextboxes[i]->SetTextContent(); //to update the text color
+        }
         lastTrigger = currentTrigger;
 	}
 }
@@ -239,18 +247,13 @@ void CControlAttachment::Update(){
 /******************
 * ControlGraphicsUniform
 *******************/
-CControlGraphicsUniform::CControlGraphicsUniform(){    
-    m_textbox_count = 7;
-    m_object_count = 1;
-    //SetPosition(-0.4, -0.1, 0);
-    SetRotation(0, 0, 0);
+CControlGraphicsUniform::CControlGraphicsUniform(){
     Name = "Control Graphics Uniform Node";
-    //Length = glm::vec3(0.4, 0.5, 0);
-    Length_original = glm::vec3(1, 1, 0);
-    //SetScaleRectangleXY(0.0, 0.0, 0.5, 0.5); //set position, scale and length
+    m_textbox_count = 8;
+    m_object_count = 1;
     SetScale(0.5, 0.5, 0);
     SetPositionY(-1.0f + 0.5 + 0.5 + 0.5 * Length.y);
-    Magnet(MAGNETBOTTOM);
+    Magnet(MAGNETRIGHT);
 }
 
 void CControlGraphicsUniform::RegisterObject(int startIndex){
@@ -269,9 +272,6 @@ void CControlGraphicsUniform::RegisterObject(int startIndex){
         object->m_default_graphics_pipeline_id = m_pApp->appInfo.ControlUIContainer.resource_default_graphics_pipeline_id_box;
 
         object->Register(m_pApp);
-
-        //object->SetScaleRectangleXY(Position.x, Position.y, Position.x + Length.x, Position.y + Length.y);
-        //object->SetScale(0.48,0.5,0.0);//set scale after model is registered, otherwise the length will not be computed correctly
     }
 }
 
@@ -284,8 +284,9 @@ void CControlGraphicsUniform::RegisterTextbox(int startIndex){
         textbox->Name = "Graphics Uniform Textbox: " + std::to_string(i);
         textbox->bSticker = true;
         textbox->SetScale(0.2f);
-        textbox->SetTextColor(glm::vec4(0.2, 0, 0, 1));
-        textbox->SetPosition(-0.15, -0.2+0.05*i, 0);
+        //textbox->SetTextColor(glm::vec4(0.2, 0, 0, 1));
+        textbox->SetTextColor(glm::vec4(0.75, 0.75, 0.75, 1));
+        textbox->SetPosition(0.06-Length.x/2, -0.2+0.05*i, 0);
         textbox->p_controlNode = this;
         textbox->m_textBoxID = index;
         textbox->m_text_content = "text_content";
@@ -305,24 +306,251 @@ void CControlGraphicsUniform::Update(){
     CEntity::Update(m_pApp->deltaTime); //update translateMatrix, RotationMatrix and ScaleMatrix
 
     static int lastTrigger = 0;
-		int currentTrigger = (double)m_pApp->elapseTime / 0.1f;
-		if(currentTrigger!=lastTrigger) {
+	int currentTrigger = (double)m_pApp->elapseTime / 0.1f;
 
-        std::string r = "false";
-        if(m_pApp->appInfo.Uniform.b_uniform_graphics_lighting) r = "true"; else r= "false";
-        m_pTextboxes[1]->SetTextContent("Lighting:" + r);
-        if(m_pApp->appInfo.Uniform.b_uniform_graphics_mvp) r = "true"; else r= "false";
-        m_pTextboxes[2]->SetTextContent("MVP:" + r);
-        if(m_pApp->appInfo.Uniform.b_uniform_graphics_text_mvp) r = "true"; else r= "false";
-        m_pTextboxes[3]->SetTextContent("Text MVP:" + r);
-        if(m_pApp->appInfo.Uniform.b_uniform_graphics_vp) r = "true"; else r= "false";
-        m_pTextboxes[4]->SetTextContent("VP:" + r);
-        if(m_pApp->appInfo.Uniform.b_uniform_graphics_depth_image_sampler) r = "true"; else r= "false";
-        m_pTextboxes[5]->SetTextContent("Depth Image Sampler:" + r);
-        if(m_pApp->appInfo.Uniform.b_uniform_graphics_lightdepth_image_sampler) r = "true"; else r= "false";
-        m_pTextboxes[6]->SetTextContent("Lightdepth Image Sampler:" + r);
+    static bool firstTime = true;
 
+    if(firstTime){
+        glm::vec4 greyColor = glm::vec4(0.25, 0.25, 0.25, 1);
+        //std::cout<<"ControlGraphicsUniform Update"<<std::endl;
+        //std::string r = "F";
+        if(m_pApp->appInfo.Uniform.b_uniform_graphics_custom) m_pTextboxes[1]->bFlash = true;
+        else m_pTextboxes[1]->SetTextColor(greyColor);
+        m_pTextboxes[1]->SetTextContent("Custom");
 
+        if(m_pApp->appInfo.Uniform.b_uniform_graphics_lighting) m_pTextboxes[2]->bFlash = true;
+        else m_pTextboxes[2]->SetTextColor(greyColor);
+        m_pTextboxes[2]->SetTextContent("Lighting");
+        
+        if(m_pApp->appInfo.Uniform.b_uniform_graphics_mvp) m_pTextboxes[3]->bFlash = true;
+        else m_pTextboxes[3]->SetTextColor(greyColor);
+        m_pTextboxes[3]->SetTextContent("MVP");
+
+        if(m_pApp->appInfo.Uniform.b_uniform_graphics_text_mvp) m_pTextboxes[4]->bFlash = true;
+        else m_pTextboxes[4]->SetTextColor(greyColor);
+        m_pTextboxes[4]->SetTextContent("Text MVP");
+
+        if(m_pApp->appInfo.Uniform.b_uniform_graphics_vp) m_pTextboxes[5]->bFlash = true;
+        else m_pTextboxes[5]->SetTextColor(greyColor);
+        m_pTextboxes[5]->SetTextContent("VP");
+
+        if(m_pApp->appInfo.Uniform.b_uniform_graphics_depth_image_sampler) m_pTextboxes[6]->bFlash = true;
+        else m_pTextboxes[6]->SetTextColor(greyColor);
+        m_pTextboxes[6]->SetTextContent("Depth Img Sp");
+
+        if(m_pApp->appInfo.Uniform.b_uniform_graphics_lightdepth_image_sampler) m_pTextboxes[7]->bFlash = true;
+        else m_pTextboxes[7]->SetTextColor(greyColor);
+        m_pTextboxes[7]->SetTextContent("Lightdepth Img Sp");
+
+        firstTime = false;
+    }
+
+	if(currentTrigger!=lastTrigger) {
+        for(int i = 1; i <= 7; i++){
+            if(m_pTextboxes[i]->bFlash) {
+                m_pTextboxes[i]->SetTextContent(); //to update the text color
+            }
+        }
+        lastTrigger = currentTrigger;
+	}
+}
+
+/******************
+* ControlComputeUniform
+*******************/
+CControlComputeUniform::CControlComputeUniform(){
+    Name = "Control Compute Uniform Node";
+    m_textbox_count = 5;
+    m_object_count = 1;
+    SetScale(0.5, 0.5, 0);
+    SetPositionY(-1.0f + 0.5 * Length.y);
+    Magnet(MAGNETLEFT);
+}
+
+void CControlComputeUniform::RegisterObject(int startIndex){
+    for(int i = 0; i < m_object_count; i++){
+        int index = startIndex+i;
+        CObject *object = &(m_pApp->objects[index]);
+        m_pObjects.push_back(object);
+
+        object->Name = "Compute Uniform Background";
+        object->bSticker = true;
+        object->SetPosition(0,0,0);
+        object->p_controlNode = this;
+        object->m_object_id = index;
+        object->m_texture_ids = m_pApp->appInfo.ControlUIContainer.resource_texture_id_list_box;
+        object->m_model_id = m_pApp->appInfo.ControlUIContainer.resource_model_id_box;
+        object->m_default_graphics_pipeline_id = m_pApp->appInfo.ControlUIContainer.resource_default_graphics_pipeline_id_box;
+
+        object->Register(m_pApp);
+    }
+}
+
+void CControlComputeUniform::RegisterTextbox(int startIndex){
+    for(int i = 0; i < m_textbox_count; i++){
+        int index = startIndex+i;
+        CTextbox *textbox = &(m_pApp->textManager.m_textBoxes[index]);
+        m_pTextboxes.push_back(textbox);
+
+        textbox->Name = "Compute Uniform Textbox: " + std::to_string(i);
+        textbox->bSticker = true;
+        textbox->SetScale(0.2f);
+        //textbox->SetTextColor(glm::vec4(0.2, 0, 0, 1));
+        textbox->SetTextColor(glm::vec4(0.75, 0.75, 0.75, 1));
+        textbox->SetPosition(0.06-Length.x/2, -0.2+0.05*i, 0);
+        textbox->p_controlNode = this;
+        textbox->m_textBoxID = index;
+        textbox->m_text_content = "text_content";
+        textbox->m_model_id = m_pApp->appInfo.ControlUIContainer.resource_model_id_text;
+        textbox->m_default_graphics_pipeline_id = m_pApp->appInfo.ControlUIContainer.resource_default_graphics_pipeline_id_text;
+        
+        if(i == 0){
+            m_pTextboxes[0]->m_text_content = "Compute Uniform";
+            m_pTextboxes[0]->SetTextColor(glm::vec4(0.2, 0.7, 1.0, 1)); //title color
+        }
+
+        textbox->Register(m_pApp);
+    }
+}
+
+void CControlComputeUniform::Update(){
+    CEntity::Update(m_pApp->deltaTime); //update translateMatrix, RotationMatrix and ScaleMatrix
+
+    static int lastTrigger = 0;
+	int currentTrigger = (double)m_pApp->elapseTime / 0.1f;
+
+    static bool firstTime = true;
+
+    if(firstTime){
+        glm::vec4 greyColor = glm::vec4(0.25, 0.25, 0.25, 1);
+        //std::cout<<"ControlGraphicsUniform Update"<<std::endl;
+        //std::string r = "F";
+        if(m_pApp->appInfo.Uniform.b_uniform_compute_custom) m_pTextboxes[1]->bFlash = true;
+        else m_pTextboxes[1]->SetTextColor(greyColor);
+        m_pTextboxes[1]->SetTextContent("Custom");
+        
+        if(m_pApp->appInfo.Uniform.b_uniform_compute_storage) m_pTextboxes[2]->bFlash = true;
+        else m_pTextboxes[2]->SetTextColor(greyColor);
+        m_pTextboxes[2]->SetTextContent("Storage");
+
+        if(m_pApp->appInfo.Uniform.b_uniform_compute_texture_storage) m_pTextboxes[3]->bFlash = true;
+        else m_pTextboxes[3]->SetTextColor(greyColor);
+        m_pTextboxes[3]->SetTextContent("Texture Storage");
+
+        if(m_pApp->appInfo.Uniform.b_uniform_compute_swapchain_storage) m_pTextboxes[4]->bFlash = true;
+        else m_pTextboxes[4]->SetTextColor(greyColor);
+        m_pTextboxes[4]->SetTextContent("Swapchain Storage");
+
+        firstTime = false;
+    }
+
+	if(currentTrigger!=lastTrigger) {
+        for(int i = 1; i <= 4; i++){
+            if(m_pTextboxes[i]->bFlash) {
+                m_pTextboxes[i]->SetTextContent(); //to update the text color
+            }
+        }
+        lastTrigger = currentTrigger;
+	}
+}
+
+/******************
+* ControlSubpass
+*******************/
+CControlSubpass::CControlSubpass(){
+    Name = "Control Subpass Node";
+    m_textbox_count = 7;
+    m_object_count = 1;
+    SetScale(0.5, 0.5, 0);
+    SetPositionY(-1.0f + 0.5 + 0.5 + 0.5 + 0.5 * Length.y);
+    Magnet(MAGNETRIGHT);
+}
+
+void CControlSubpass::RegisterObject(int startIndex){
+    for(int i = 0; i < m_object_count; i++){
+        int index = startIndex+i;
+        CObject *object = &(m_pApp->objects[index]);
+        m_pObjects.push_back(object);
+
+        object->Name = "Subpass Background";
+        object->bSticker = true;
+        object->SetPosition(0,0,0);
+        object->p_controlNode = this;
+        object->m_object_id = index;
+        object->m_texture_ids = m_pApp->appInfo.ControlUIContainer.resource_texture_id_list_box;
+        object->m_model_id = m_pApp->appInfo.ControlUIContainer.resource_model_id_box;
+        object->m_default_graphics_pipeline_id = m_pApp->appInfo.ControlUIContainer.resource_default_graphics_pipeline_id_box;
+
+        object->Register(m_pApp);
+    }
+}
+
+void CControlSubpass::RegisterTextbox(int startIndex){
+    for(int i = 0; i < m_textbox_count; i++){
+        int index = startIndex+i;
+        CTextbox *textbox = &(m_pApp->textManager.m_textBoxes[index]);
+        m_pTextboxes.push_back(textbox);
+
+        textbox->Name = "Attachment Background Textbox: " + std::to_string(i);
+        textbox->bSticker = true;
+        textbox->SetScale(0.2f);
+        textbox->SetTextColor(glm::vec4(0.75, 0.75, 0.75, 1));
+        textbox->SetPosition(0.06-Length.x/2, -0.2+0.05*i, 0);
+        textbox->p_controlNode = this;
+        textbox->m_textBoxID = index;
+        textbox->m_text_content = "text_content";
+        textbox->m_model_id = m_pApp->appInfo.ControlUIContainer.resource_model_id_text;
+        textbox->m_default_graphics_pipeline_id = m_pApp->appInfo.ControlUIContainer.resource_default_graphics_pipeline_id_text;
+        
+        if(i == 0){
+            m_pTextboxes[0]->m_text_content = "Subpass";
+            m_pTextboxes[0]->SetTextColor(glm::vec4(0.2, 0.7, 1.0, 1)); //title color
+        }else if(i == 1){
+            m_pTextboxes[1]->m_text_content = "Renderpass:Shadowmap";
+            m_pTextboxes[1]->SetTextColor(glm::vec4(0.2, 0.7, 1.0, 1)); //title color
+        }else if(i == 3){
+            m_pTextboxes[3]->m_text_content = "Renderpass:MainScene";
+            m_pTextboxes[3]->SetTextColor(glm::vec4(0.2, 0.7, 1.0, 1)); //title color
+        }
+
+        textbox->Register(m_pApp);
+    }
+}
+
+void CControlSubpass::Update(){
+    CEntity::Update(m_pApp->deltaTime); //update translateMatrix, RotationMatrix and ScaleMatrix
+
+    static int lastTrigger = 0;
+	int currentTrigger = (double)m_pApp->elapseTime / 0.1f;
+
+    static bool firstTime = true;
+
+    if(firstTime){
+        glm::vec4 greyColor = glm::vec4(0.25, 0.25, 0.25, 1);
+        if(m_pApp->renderProcess.bEnableShadowmapRenderpassSubpassShadowmap) m_pTextboxes[2]->bFlash = true;
+        else m_pTextboxes[2]->SetTextColor(greyColor);
+        m_pTextboxes[2]->SetTextContent("Shadowmap");
+
+        if(m_pApp->renderProcess.bEnableMainSceneRenderpassSubpassShadowmap) m_pTextboxes[4]->bFlash = true;
+        else m_pTextboxes[4]->SetTextColor(greyColor);
+        m_pTextboxes[4]->SetTextContent("Shadowmap");
+
+        if(m_pApp->renderProcess.bEnableMainSceneRenderpassSubpassDraw) m_pTextboxes[5]->bFlash = true;
+        else m_pTextboxes[5]->SetTextColor(greyColor);
+        m_pTextboxes[5]->SetTextContent("Draw");
+
+        if(m_pApp->renderProcess.bEnableMainSceneRenderpassSubpassObserve) m_pTextboxes[6]->bFlash = true;
+        else m_pTextboxes[6]->SetTextColor(greyColor);
+        m_pTextboxes[6]->SetTextContent("Observe");
+
+        firstTime = false;
+    }
+
+	if(currentTrigger!=lastTrigger) {
+        for(int i = 2; i <= 6; i++){
+            if(i == 3) continue;
+            if(m_pTextboxes[i]->bFlash) m_pTextboxes[i]->SetTextContent(); //to update the text color
+        }
         lastTrigger = currentTrigger;
 	}
 }

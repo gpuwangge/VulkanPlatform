@@ -26,6 +26,7 @@ class CTextbox : public CEntity {
     CTextImageManager *p_textImageManager;
 
     std::vector<int> m_highlightedIndex = std::vector<int>(10, -1);
+    //int m_highlightedIndex = -1;
     bool b_reverseHighlight = false;
 public:
     std::string m_text_content = "";
@@ -42,12 +43,13 @@ public:
     
     bool bSticker = false; //if true, the text box will not be affected by camera view and projection matrix
 
-    int m_maxCharPerRow = 50;
+    int m_maxCharPerRow = 25;
     int m_maxCharperTextbox = 200;
     int m_currentCharCount = 0;
 
     bool bRegistered = false;
     bool bInitialized = false;
+    bool bFlash = false;
     glm::vec4 m_boxColor = glm::vec4(255.0f);
     glm::vec4 m_textColor = glm::vec4(0.0f);
     //std::vector<CCharacter> m_characters;
@@ -60,7 +62,7 @@ public:
     //void SetText(std::string text_content){m_text_content = text_content;}
     void SetBoxColor(glm::vec4 color){m_boxColor = color;}
     void SetTextColor(glm::vec4 color){m_textColor = color;}
-    void SetTextContent(std::string text_content);
+    void SetTextContent(std::string text_content = "");
     //void SetHighlightedChar(int index){m_highlightedIndex = index;}
     void AdvanceHighlightedChar();
     void Register(CApplication *p_app);

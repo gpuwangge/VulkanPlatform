@@ -200,6 +200,10 @@ void CApplication::initialize(){
         controlNodes.back()->Register(this);
         controlNodes.push_back(std::make_unique<CControlGraphicsUniform>());
         controlNodes.back()->Register(this);
+        controlNodes.push_back(std::make_unique<CControlComputeUniform>());
+        controlNodes.back()->Register(this);
+        controlNodes.push_back(std::make_unique<CControlSubpass>());
+        controlNodes.back()->Register(this);
     }
 
     if (config["Objects"]) {

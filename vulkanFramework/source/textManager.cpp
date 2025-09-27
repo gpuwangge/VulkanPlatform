@@ -158,16 +158,32 @@ void CTextbox::Register(CApplication *p_app){
 }
 
 void CTextbox::AdvanceHighlightedChar(){
+    // m_highlightedIndex++;
+    // if (m_highlightedIndex >= m_maxCharPerRow) {
+    //     m_highlightedIndex = 0;
+    // }
+
+    //no reverse
+    for(int i = m_highlightedIndex.size()-1; i > 0; i--)
+        m_highlightedIndex[i] = m_highlightedIndex[i-1];
+
+    m_highlightedIndex[0]++;
+    if(m_highlightedIndex[0] >= m_maxCharPerRow) m_highlightedIndex[0] = 0;
+
+
+    //reverse version
+    /*
     for(int i = m_highlightedIndex.size()-1; i > 0; i--)
         m_highlightedIndex[i] = m_highlightedIndex[i-1];
     if(!b_reverseHighlight){
         m_highlightedIndex[0]++;
-        if(m_highlightedIndex[0] >= (m_currentCharCount-1)) b_reverseHighlight = true;
+        //if(m_highlightedIndex[0] >= (m_currentCharCount-1)) b_reverseHighlight = true;
+        if(m_highlightedIndex[0] >= m_maxCharPerRow) b_reverseHighlight = true;
         
     }else{
         m_highlightedIndex[0]--;
         if(m_highlightedIndex[0] <= 0) b_reverseHighlight = false;
-    }
+    }*/
 }
 
 void CTextbox::SetTextContent(std::string text_content){
@@ -182,7 +198,7 @@ void CTextbox::SetTextContent(std::string text_content){
     if(!bInitialized) instanceData.resize(m_maxCharperTextbox);
         //m_text_content = p_textManager->ascII;//"!\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~";
     
-    m_text_content = text_content;
+    if(text_content.size() != 0) m_text_content = text_content;
     m_currentCharCount = m_text_content.size();
 
     //float sum_scale_x = 0;
@@ -203,16 +219,28 @@ void CTextbox::SetTextContent(std::string text_content){
         //std::cout<<"TextBox ID: "<<m_textBoxID<<", char: "<<ch<<", posOffset: "<<posOffset.x<<","<<posOffset.y<<", glyph.size: "<<glyph.size.x<<","<<glyph.size.y<<", scale: "<<scale.x<<","<<scale.y<<", glyph.advance: "<<glyph.advance<<std::endl;
         instanceData[i].offset = posOffset;
 
-        float colorCoff = 0;
-        for(int j = 0; j < m_highlightedIndex.size(); j++) {
-            if(i == m_highlightedIndex[j]){
-                colorCoff = 1.0f - 0.07f * j;
-                break;
+        if(bFlash){
+            // std::cout<<"TextBox ID: "<<m_textBoxID<<", char: "<<ch<<", highlightedIndex: "<<m_highlightedIndex<<std::endl;
+            // if(i == m_highlightedIndex){
+            //     instanceData[i].color = glm::vec4(0.2f, 0.7f, 1.0f, 1.0f);
+            // }
+            // else{
+            //     instanceData[i].color = m_textColor;
+            // }
+
+            float colorCoff = 0;
+            for(int j = 0; j < m_highlightedIndex.size(); j++) {
+                if(i == m_highlightedIndex[j]){
+                    colorCoff = 1.0f - 0.07f * j;
+                    break;
+                }
             }
+            //if(colorCoff == 0) instanceData[i].color = m_textColor;
+            //else 
+            instanceData[i].color = glm::vec4(1-colorCoff*0.8, 1-colorCoff*0.3, 1, 1);//glm::vec4(colorCoff, 0, 0, 1);
+            
         }
-        if(colorCoff == 0) instanceData[i].color = m_textColor;
-        else instanceData[i].color = glm::vec4(colorCoff, 0, 0, 1);
-        
+        else instanceData[i].color = m_textColor;
 
         instanceData[i].uvRect = glyph.uvRect;
         instanceData[i].scale = scale;
@@ -231,7 +259,7 @@ void CTextbox::SetTextContent(std::string text_content){
             break;
         }
     }
-
+    if(bFlash) AdvanceHighlightedChar();
      
 
     // float textline_width = 0.1 * sum_scale_x; //0.1 is quad height in NDC
@@ -265,7 +293,6 @@ void CTextbox::SetTextContent(std::string text_content){
     instanceDataBuffer.fill((void *)(instanceData.data()));
     
     bInitialized = true;
-    AdvanceHighlightedChar();
 }
 
 void CTextbox::Update(float deltaTime, int currentFrame, Camera &mainCamera){

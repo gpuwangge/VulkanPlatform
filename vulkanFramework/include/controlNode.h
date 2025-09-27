@@ -11,6 +11,7 @@ class CApplication;
 * ControlNode
 *******************/
 enum MagnetTypes {
+    MAGNETDISABLE = 0,
     MAGNETLEFT,
     MAGNETRIGHT,
     MAGNETTOP,
@@ -19,7 +20,12 @@ enum MagnetTypes {
 
 class CControlNode : public CEntity{
 public:
-    CControlNode(){}
+    CControlNode(){
+        //std::cout<<"Creating Control Node"<<std::endl;
+        Length_original = glm::vec3(1, 1, 0);
+        SetRotation(0, 0, 0);
+        //SetScaleRectangleXY(0.0, -1.0, 0.5, -0.5); //set position, scale and length
+    }
     ~CControlNode(){}
 
     CApplication *m_pApp;
@@ -71,6 +77,33 @@ class CControlGraphicsUniform : public CControlNode{
 public:
     CControlGraphicsUniform();
     ~CControlGraphicsUniform(){}
+
+    void RegisterObject(int startIndex) override;
+    void RegisterTextbox(int startIndex) override;
+    void Update() override;
+};
+
+/******************
+* ControlComputeUniform
+*******************/
+class CControlComputeUniform : public CControlNode{
+public:
+    CControlComputeUniform();
+    ~CControlComputeUniform(){}
+
+    void RegisterObject(int startIndex) override;
+    void RegisterTextbox(int startIndex) override;
+    void Update() override;
+};
+
+
+/******************
+* ControlSubpass
+*******************/
+class CControlSubpass : public CControlNode{
+public:
+    CControlSubpass();
+    ~CControlSubpass(){}
 
     void RegisterObject(int startIndex) override;
     void RegisterTextbox(int startIndex) override;
