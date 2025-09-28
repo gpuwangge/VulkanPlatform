@@ -6,7 +6,7 @@
 CModelManager::CModelManager(){}
 CModelManager::~CModelManager(){}
 
-void CModelManager::CreateCustomModel3D(std::vector<Vertex3D> &vertices3D, std::vector<uint32_t> &indices3D){
+void CModelManager::CreateCustomModel3D(std::vector<Vertex3D> &vertices3D, std::vector<uint32_t> &indices3D, bool isTextboxImage){
 	CCustomModel3D model;
 	model.vertices = vertices3D;
 	model.indices = indices3D;
@@ -25,7 +25,8 @@ void CModelManager::CreateCustomModel3D(std::vector<Vertex3D> &vertices3D, std::
 	model.lengthMin = glm::vec3(min_x, min_y, min_z);
 	model.lengthMax = glm::vec3(max_x, max_y, max_z);
 
-	customModels3D.push_back(model);
+	if(!isTextboxImage) customModels3D.push_back(model);
+	else 				textboxImageModels.push_back(model);
 }
 
 void CModelManager::CreateCustomModel2D(std::vector<Vertex2D> &vertices2D){
@@ -47,14 +48,27 @@ void CModelManager::CreateCustomModel2D(std::vector<Vertex2D> &vertices2D){
 	customModels2D.push_back(model);
 }
 
-void CModelManager::CreateTextModel(std::vector<TextQuadVertex> &vertices, std::vector<uint32_t> &indices){
-	CTextModel model;
+void CModelManager::CreateTextQuadModel(std::vector<TextQuadVertex> &vertices, std::vector<uint32_t> &indices){
+	CTextQuadModel model;
 	model.vertices = vertices;
 	//model.instanceData = instanceData;
 	model.indices = indices;
 
-	textModels.push_back(model);
+	// float max_x = 0, max_y = 0, max_z = 0;
+	// float min_x = 0, min_y = 0, min_z = 0;
+	// for(int i = 0; i < vertices.size(); i++){
+	// 	max_x = std::max(max_x, vertices[i].pos.x);
+	// 	max_y = std::max(max_y, vertices[i].pos.y);
+	// 	min_x = std::min(min_x, vertices[i].pos.x);
+	// 	min_y = std::min(min_y, vertices[i].pos.y);
+	// }
+	// model.length = glm::vec3(max_x-min_x, max_y-min_y, 0); //text quad length is not important, decide to ignore it
+	// model.lengthMin = glm::vec3(min_x, min_y, min_z);
+	// model.lengthMax = glm::vec3(max_x, max_y, max_z);
+
+	textQuadModels.push_back(model);
 }
+
 
 void CModelManager::LoadObjModel(IN const std::string modelName, OUT std::vector<Vertex3D> &vertices3D, OUT std::vector<uint32_t> &indices3D) {
 	tinyobj::attrib_t attrib;

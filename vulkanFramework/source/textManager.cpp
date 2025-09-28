@@ -514,35 +514,30 @@ void CTextManager::CreateTextResource(){
     float y_min = -half_h; 
     float y_max =  half_h; 
 
-    // textQuadVertices.push_back({ {x_min, y_min}, {0.0f, 1.0f} }); // left bottom
-    // textQuadVertices.push_back({ {x_max, y_min}, {1.0f, 1.0f} }); // right bottom
-    // textQuadVertices.push_back({ {x_max, y_max}, {1.0f, 0.0f} }); // right up
-    // textQuadVertices.push_back({ {x_min, y_max}, {0.0f, 0.0f} }); // left up
-
     textQuadVertices.push_back({ {x_min, y_min}, {0.0f, 0.0f} }); // left bottom
     textQuadVertices.push_back({ {x_max, y_min}, {1.0f, 0.0f} }); // right bottom
     textQuadVertices.push_back({ {x_max, y_max}, {1.0f, 1.0f} }); // right up
     textQuadVertices.push_back({ {x_min, y_max}, {0.0f, 1.0f} }); // left up
 
-    p_modelManager->CreateTextModel( textQuadVertices, indices3D);
-}
+    p_modelManager->CreateTextQuadModel(textQuadVertices, indices3D);
 
-// void CTextManager::AddTextBox(const CTextBox& textBox) {
-//     m_textBoxes.push_back(textBox);
-// }
+
+    std::vector<Vertex3D> vertices3D = {
+		{ { -0.5f, -0.5f, 0.0f },{ 1.0f, 0.0f, 0.0f },{ 1.0f, 0.0f } ,{ 0.0f, 0.0f, 1.0f }},
+		{ { 0.5f, -0.5f, 0.0f },{ 0.0f, 1.0f, 0.0f },{ 0.0f, 0.0f } ,{ 0.0f, 0.0f, 1.0f }},
+		{ { 0.5f, 0.5f, 0.0f },{ 0.0f, 0.0f, 1.0f },{ 0.0f, 1.0f } ,{ 0.0f, 0.0f, 1.0f }},
+		{ { -0.5f, 0.5f, 0.0f },{ 1.0f, 1.0f, 1.0f },{ 1.0f, 1.0f } ,{ 0.0f, 0.0f, 1.0f }}
+	};
+
+    p_modelManager->CreateCustomModel3D(vertices3D, indices3D, true);
+
+}
 
 void CTextManager::Update(float deltaTime, int currentFrame, Camera &mainCamera){
     for (int i = 0; i < m_textBoxes.size(); i++) {
         m_textBoxes[i].Update(deltaTime, currentFrame, mainCamera);
     }
 }
-
-// void CTextManager::Draw(){
-//      for (int i = 0; i < m_textBoxes.size(); i++) {
-//         m_textBoxes[i].Draw();
-//      }
-// }
-
 
 
 

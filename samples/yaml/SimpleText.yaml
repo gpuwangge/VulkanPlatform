@@ -34,8 +34,8 @@ Resources:
       resource_font_size: 50
       uniform_sampler_id: 1
   - Models:
-    - resource_model_name: CUSTOM3D0
-    - resource_model_name: VERTEXTEXTQUAD
+    - resource_model_name: TEXTBOXIMAGE
+    - resource_model_name: TEXTQUAD
   - Textures:
     - resource_texture_name: WoodTexture.jpg #yellowcloth.jpg
       resource_texture_miplevels: 1

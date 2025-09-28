@@ -13,6 +13,7 @@ public:
     CModelManager();
     ~CModelManager();
 
+    /****Custom Model 3D*****/
     class CCustomModel3D{
     public:
         std::vector<Vertex3D> vertices;
@@ -22,8 +23,10 @@ public:
         glm::vec3 lengthMin;
     };
     std::vector<CCustomModel3D> customModels3D; //use custom 3d id
-    void CreateCustomModel3D(std::vector<Vertex3D> &vertices3D, std::vector<uint32_t> &indices3D);
+    void CreateCustomModel3D(std::vector<Vertex3D> &vertices3D, std::vector<uint32_t> &indices3D, bool isTextboxImage = false);
 
+
+    /****Custom Model 2D*****/
     class CCustomModel2D{
     public:
         std::vector<Vertex2D> vertices;
@@ -35,15 +38,24 @@ public:
     std::vector<CCustomModel2D> customModels2D; //use custom 2d id
     void CreateCustomModel2D(std::vector<Vertex2D> &vertices2D);
 
-    class CTextModel{
+
+    /****Text Quad Model*****/
+    class CTextQuadModel{
     public:
         std::vector<TextQuadVertex> vertices;
         //std::vector<TextInstanceData> instanceData;
         std::vector<uint32_t> indices;
     };
-    std::vector<CTextModel> textModels;
-    void CreateTextModel(std::vector<TextQuadVertex> &vertices, std::vector<uint32_t> &indices);
+    std::vector<CTextQuadModel> textQuadModels;
+    void CreateTextQuadModel(std::vector<TextQuadVertex> &vertices, std::vector<uint32_t> &indices);
 
+
+    /****Textbox Image Model*****/
+    std::vector<CCustomModel3D> textboxImageModels; //reuse CCustomModel3D
+    //void CreateTextboxImageModel(std::vector<Vertex3D> &vertices3D, std::vector<uint32_t> &indices3D); //reuse CreateCustomModel3D()
+
+
+    /****Utility Functions*****/
     std::vector<glm::vec3> modelLengths; //use global model id
     std::vector<glm::vec3> modelLengthsMax;
     std::vector<glm::vec3> modelLengthsMin;
