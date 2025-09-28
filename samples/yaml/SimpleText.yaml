@@ -9,7 +9,7 @@ Objects:
     object_skybox: false
     resource_model_id: 0
     resource_texture_id_list: [0]
-    resource_default_graphics_pipeline_id: 0
+    resource_default_graphics_pipeline_id: 2
 
 Textboxes:
   - textbox_name: Textbox_Normal
@@ -19,11 +19,11 @@ Textboxes:
     textbox_rotation: [180,0,0]
     textbox_scale: 1
     textbox_color: [0, 0, 0, 128]
-    textbox_text_content: "abcdefghijklmn1234567890"
+    textbox_text_content: " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
     textbox_text_color: [255, 255, 255, 255]
     resource_model_id: 1
     resource_text_id_list: [0]
-    resource_default_graphics_pipeline_id: 2
+    resource_default_graphics_pipeline_id: 1
 
 
 Resources:
@@ -46,19 +46,19 @@ Resources:
       resource_texture_cubmap: false
       uniform_sampler_id: 0
   - Pipelines:
+    - resource_graphics_pipeline_name: textboxImagePipeline
+      resource_graphics_pipeline_vertexshader_name: Common/textboxImage.vert.spv
+      resource_graphics_pipeline_fragmentshader_name: Common/textboxImage.frag.spv
+      resource_graphics_pipeline_vertexdatatype: 2  #NoType,TwoDimension,ThreeDimension,ParticleType,TextQuad
+    - resource_graphics_pipeline_name: textQuadPipeline
+      resource_graphics_pipeline_vertexshader_name: Common/textQuad.vert.spv
+      resource_graphics_pipeline_fragmentshader_name: Common/textQuad.frag.spv
+      resource_graphics_pipeline_vertexdatatype: 4  #NoType,TwoDimension,ThreeDimension,ParticleType,TextQuad
     - resource_graphics_pipeline_name: tabletopPipeline
       resource_graphics_pipeline_vertexshader_name: simpleText/tabletop.vert.spv
       resource_graphics_pipeline_fragmentshader_name: simpleText/tabletop.frag.spv
       resource_graphics_pipeline_vertexdatatype: 2  #NoType,TwoDimension,ThreeDimension,ParticleType,TextQuad
-    - resource_graphics_pipeline_name: textBackgroundPipeline
-      resource_graphics_pipeline_vertexshader_name: simpleText/textBackground.vert.spv
-      resource_graphics_pipeline_fragmentshader_name: simpleText/textBackground.frag.spv
-      resource_graphics_pipeline_vertexdatatype: 2  #NoType,TwoDimension,ThreeDimension,ParticleType,TextQuad
-    - resource_graphics_pipeline_name: textPipeline
-      resource_graphics_pipeline_vertexshader_name: simpleText/text.vert.spv
-      resource_graphics_pipeline_fragmentshader_name: simpleText/text.frag.spv
-      resource_graphics_pipeline_vertexdatatype: 4  #NoType,TwoDimension,ThreeDimension,ParticleType,TextQuad
-
+ 
 Uniforms:
   Graphics:
     uniform_graphics_name: Graphics
@@ -125,6 +125,6 @@ Controls:
   - UIContainer:
       resource_texture_id_list_box: [1]
       resource_model_id_box: 0
-      resource_default_graphics_pipeline_id_box: 1
+      resource_default_graphics_pipeline_id_box: 0
       resource_model_id_text: 1
-      resource_default_graphics_pipeline_id_text: 2
+      resource_default_graphics_pipeline_id_text: 1
