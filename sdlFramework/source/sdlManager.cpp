@@ -125,11 +125,17 @@ void CSDLManager::eventHandle(){
                         break;
 
                     case SDLK_P:
-                        if(!m_pApp->bShowAllPanels) m_pApp->controlNodes[0]->bVisible = !m_pApp->controlNodes[0]->bVisible;
+                        if(!m_pApp->appInfo.Feature.feature_graphics_enable_controls) break;
+                        if(!m_pApp->appInfo.Feature.feature_graphics_show_all_metric_controls) {
+                            m_pApp->appInfo.Feature.feature_graphics_show_performance_control = !m_pApp->appInfo.Feature.feature_graphics_show_performance_control;
+                            m_pApp->controlNodes[0]->bVisible = m_pApp->appInfo.Feature.feature_graphics_show_performance_control;
+                        }
                         break;
                     case SDLK_H:
-                        m_pApp->bShowAllPanels = !m_pApp->bShowAllPanels;
-                        for(int i = 0; i < 8; i++) m_pApp->controlNodes[i]->bVisible = m_pApp->bShowAllPanels;
+                        if(!m_pApp->appInfo.Feature.feature_graphics_enable_controls) break;
+                        m_pApp->appInfo.Feature.feature_graphics_show_all_metric_controls = !m_pApp->appInfo.Feature.feature_graphics_show_all_metric_controls;
+                        m_pApp->appInfo.Feature.feature_graphics_show_performance_control = m_pApp->appInfo.Feature.feature_graphics_show_all_metric_controls;
+                        for(int i = 0; i < m_pApp->controlNodes.size(); i++) m_pApp->controlNodes[i]->bVisible = m_pApp->appInfo.Feature.feature_graphics_show_all_metric_controls;
                         break;
 
                     case SDLK_ESCAPE:

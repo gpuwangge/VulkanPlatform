@@ -105,9 +105,6 @@ public:
     int customObjectSize = 0;
     int customLightsSize = 0;
     int customTextboxSize = 0;
-    
-    bool bShowPerformancePanel = false;
-    bool bShowAllPanels = false;
 
     void CleanUp();
 
@@ -134,7 +131,7 @@ public:
     static bool NeedToExit;
     static bool NeedToPause;
 
-    static bool PrintFPS;
+    //static bool PrintFPS;
 
     /*Clean up Functions*/
     void DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator);
@@ -193,16 +190,22 @@ public:
         bool b_feature_graphics_rainbow_mipmap = false;
         int feature_graphics_pipeline_skybox_id = -1;
         int feature_graphics_observe_attachment_id = -1;
-        bool b_feature_graphics_fps = false;
+        bool feature_graphics_show_performance_control = true;
+        bool feature_graphics_show_all_metric_controls = true;
+
+        bool feature_graphics_enable_controls = false;
 
         void loadFromYaml(const YAML::Node& node) {
-            b_feature_graphics_48pbt              = getOrDefault(node, "feature_graphics_48pbt", false);
-            b_feature_graphics_push_constant      = getOrDefault(node, "feature_graphics_push_constant", false);
-            b_feature_graphics_blend              = getOrDefault(node, "feature_graphics_blend", false);
-            b_feature_graphics_rainbow_mipmap     = getOrDefault(node, "feature_graphics_rainbow_mipmap", false);
-            feature_graphics_pipeline_skybox_id   = getOrDefault(node, "feature_graphics_pipeline_skybox_id", -1);
-            feature_graphics_observe_attachment_id= getOrDefault(node, "feature_graphics_observe_attachment_id", -1);
-            b_feature_graphics_fps                = getOrDefault(node, "feature_graphics_fps", false);
+            b_feature_graphics_48pbt                    = getOrDefault(node, "feature_graphics_48pbt", false);
+            b_feature_graphics_push_constant            = getOrDefault(node, "feature_graphics_push_constant", false);
+            b_feature_graphics_blend                    = getOrDefault(node, "feature_graphics_blend", false);
+            b_feature_graphics_rainbow_mipmap           = getOrDefault(node, "feature_graphics_rainbow_mipmap", false);
+            feature_graphics_pipeline_skybox_id         = getOrDefault(node, "feature_graphics_pipeline_skybox_id", -1);
+            feature_graphics_observe_attachment_id      = getOrDefault(node, "feature_graphics_observe_attachment_id", -1);
+            feature_graphics_show_performance_control   = getOrDefault(node, "feature_graphics_show_performance_control", false);
+            feature_graphics_show_all_metric_controls   = getOrDefault(node, "feature_graphics_show_all_metric_controls", false);
+            
+            feature_graphics_enable_controls = feature_graphics_show_performance_control || feature_graphics_show_all_metric_controls;
         }
     };
 

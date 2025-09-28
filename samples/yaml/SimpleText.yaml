@@ -44,7 +44,7 @@ Resources:
     - resource_texture_name: cybor_background.png
       resource_texture_miplevels: 1
       resource_texture_cubmap: false
-      uniform_sampler_id: 0      
+      uniform_sampler_id: 0
   - Pipelines:
     - resource_graphics_pipeline_name: tabletopPipeline
       resource_graphics_pipeline_vertexshader_name: simpleText/tabletop.vert.spv
@@ -90,7 +90,8 @@ Features:
   feature_graphics_rainbow_mipmap: false
   feature_graphics_pipeline_skybox_id: -1
   feature_graphics_observe_attachment_id: -1
-  feature_graphics_fps: true
+  feature_graphics_show_performance_control: true
+  feature_graphics_show_all_metric_controls: true
 
 ShadowmapRenderpassAttachments:
   ShadowmapRenderpass_attachment_depth_light: false

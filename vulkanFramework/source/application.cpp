@@ -6,7 +6,7 @@ Camera CApplication::mainCamera;
 //std::vector<Camera> CApplication::lightCameras;
 bool CApplication::NeedToExit = false;
 bool CApplication::NeedToPause = false;
-bool CApplication::PrintFPS = false;
+//bool CApplication::PrintFPS = false;
 //int CApplication::focusObjectId = 0;
 std::vector<CObject> CApplication::objects;
 //std::vector<CTextBox> CApplication::textBoxes;
@@ -194,7 +194,7 @@ void CApplication::initialize(){
     /****************************
     * 2 Initialize ObjectList and LightList
     ****************************/
-    if(appInfo.Feature.b_feature_graphics_fps){
+    if(appInfo.Feature.feature_graphics_enable_controls){
         controlNodes.push_back(std::make_unique<CControlPerfMetric>());
         controlNodes.back()->Register(this);
         controlNodes.push_back(std::make_unique<CControlAttachment>());
@@ -211,6 +211,9 @@ void CApplication::initialize(){
         controlNodes.back()->Register(this);
         controlNodes.push_back(std::make_unique<CControlStatistics>());
         controlNodes.back()->Register(this);
+
+        for(int i = 0; i < controlNodes.size(); i++) controlNodes[i]->bVisible = appInfo.Feature.feature_graphics_show_all_metric_controls;
+        if(!appInfo.Feature.feature_graphics_show_all_metric_controls) controlNodes[0]->bVisible = appInfo.Feature.feature_graphics_show_performance_control; //show performance control only
     }
 
     //controlNodes[0]->bVisible = false; //hide fps control node
@@ -463,7 +466,7 @@ void CApplication::update(){
     for(int i = 0; i < objects.size(); i++) objects[i].Update(deltaTime, renderer.currentFrame, mainCamera); 
     textManager.Update(deltaTime, renderer.currentFrame, mainCamera);
     for(int i = 0; i < lights.size(); i++) lights[i].Update(deltaTime, renderer.currentFrame, mainCamera, lightCameras[i]);
-    if(appInfo.Feature.b_feature_graphics_fps)
+    if(appInfo.Feature.feature_graphics_enable_controls)
         for(int i = 0; i < controlNodes.size(); i++) controlNodes[i]->Update();
 
     /*Calcuate FPS*/
@@ -708,7 +711,7 @@ void CApplication::ReadFeatures(){
             VK_BLEND_OP_ADD, VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO);        
     }
     renderProcess.skyboxID = appInfo.Feature.feature_graphics_pipeline_skybox_id;
-    PrintFPS = appInfo.Feature.b_feature_graphics_fps;
+    //PrintFPS = appInfo.Feature.b_feature_graphics_fps;
 }
 
 void CApplication::ReadUniforms(){
@@ -1284,8 +1287,8 @@ void CApplication::ReadRegisterObjects(){
             //    <<" Position:("<<objects[object_id].Position.x<<","<<objects[object_id].Position.y<<","<<objects[object_id].Position.z<<")"<<std::endl;
         }
 
-        //register for controls
-        if(appInfo.Feature.b_feature_graphics_fps){
+        //register objects for controls
+        if(appInfo.Feature.feature_graphics_enable_controls){
             int indexOffset = customObjectSize;
             for(int i = 0; i < controlNodes.size(); i++){
                 controlNodes[i]->RegisterObject(indexOffset);
@@ -1350,8 +1353,8 @@ void CApplication::ReadRegisterTextboxes(){
             //std::cout<<"TextboxId:("<<id<<") Name:("<<textBoxes[id].GetName()<<") Position:("<<textBoxes[id].GetPosition().x<<","<<textBoxes[id].GetPosition().y<<","<<textBoxes[id].GetPosition().z<<")"<<std::endl;
         }
 
-        //register for controls
-        if(appInfo.Feature.b_feature_graphics_fps){
+        //register textbox for controls
+        if(appInfo.Feature.feature_graphics_enable_controls){
             int indexOffset = customTextboxSize;
             for(int i = 0; i < controlNodes.size(); i++){
                 controlNodes[i]->RegisterTextbox(indexOffset);

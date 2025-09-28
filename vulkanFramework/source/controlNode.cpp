@@ -753,9 +753,9 @@ void CControlFeature::Update(){
         else m_pTextboxes[6]->SetTextColor(greyColor);
         m_pTextboxes[6]->SetTextContent("Observe Attachment");
 
-        if(m_pApp->appInfo.Feature.b_feature_graphics_fps) m_pTextboxes[7]->bFlash = true;
+        if(m_pApp->appInfo.Feature.feature_graphics_enable_controls) m_pTextboxes[7]->bFlash = true;
         else m_pTextboxes[7]->SetTextColor(greyColor);
-        m_pTextboxes[7]->SetTextContent("Performance");
+        m_pTextboxes[7]->SetTextContent("Performance Metrics");
 
         firstTime = false;
     }
