@@ -125,9 +125,11 @@ void CSDLManager::eventHandle(){
                         break;
 
                     case SDLK_P:
-                        //CApplication::controlNodes[0]->bVisible = !CApplication::controlNodes[0]->bVisible;
+                        if(!m_pApp->bShowAllPanels) m_pApp->controlNodes[0]->bVisible = !m_pApp->controlNodes[0]->bVisible;
                         break;
                     case SDLK_H:
+                        m_pApp->bShowAllPanels = !m_pApp->bShowAllPanels;
+                        for(int i = 0; i < 8; i++) m_pApp->controlNodes[i]->bVisible = m_pApp->bShowAllPanels;
                         break;
 
                     case SDLK_ESCAPE:

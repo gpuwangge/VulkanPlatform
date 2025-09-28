@@ -18,11 +18,14 @@
 #include "camera.hpp"
 #include "instance.h"
 
-class CSDLManager final{
+class CApplication;
 
+class CSDLManager final{
 public:
     CSDLManager(){};
     ~CSDLManager(){};
+
+    CApplication *m_pApp;
 
     //GLFWwindow * window;
     SDL_Window* window;

@@ -36,6 +36,7 @@ void CApplication::run(){ //Entrance Function
     *****************/
     m_sampleName.erase(0, 1);
 #ifdef SDL
+    sdlManager.m_pApp = this;
     sdlManager.createWindow(OUT windowWidth, OUT windowHeight, m_sampleName);
 #else
     glfwManager.createWindow(OUT windowWidth, OUT windowHeight, m_sampleName);

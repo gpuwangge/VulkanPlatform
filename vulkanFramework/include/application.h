@@ -24,8 +24,8 @@
 #define STRINGIFY(x) #x
 #define TOSTRING(x) STRINGIFY(x)
 
-#if WIN32
-    #define YAML_CPP_STATIC_DEFINE
+#ifdef WIN32
+    #define YAML_CPP_STATIC_DEFINE //to disable lots of yaml warnings
 #endif
 #include "../../thirdParty/yaml-cpp/yaml.h"
 
@@ -106,6 +106,8 @@ public:
     int customLightsSize = 0;
     int customTextboxSize = 0;
     
+    bool bShowPerformancePanel = false;
+    bool bShowAllPanels = false;
 
     void CleanUp();
 
