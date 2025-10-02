@@ -1,5 +1,4 @@
 #include "..\\vulkanFramework\\include\\application.h"
-
 #define TEST_CLASS_NAME CSimpleText
 class TEST_CLASS_NAME: public CApplication{
 public:

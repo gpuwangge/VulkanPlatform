@@ -15,7 +15,7 @@ struct LightAttribute{
     float spotOuterAngle;
 };
 
-layout(set = 0, binding = 0) uniform LightsBufferObject { 
+layout(set = 0, binding = 1) uniform LightsBufferObject { 
 	LightAttribute lights[LIGHT_MAX];
 	vec4 mainCameraPos;
 	int lightNum; //number of lights, max is LIGHT_MAX

@@ -17,18 +17,6 @@ void CGraphicsDescriptorManager::createDescriptorPool(unsigned int object_textbo
     //std::cout<<"createDescriptorPool::textureSamplers.size() = " << textureSamplers.size()<<std::endl;
     std::cout<<"Graphics Pool size = " << getPoolSize()<<std::endl;
 
-    if(graphicsUniformTypes & GRAPHCIS_UNIFORMBUFFER_CUSTOM){
-        //std::cout<<": Custom Buffer";
-        graphicsDescriptorPoolSizes[counter].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-	 	graphicsDescriptorPoolSizes[counter].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
-		counter++;
-	}
-    if(graphicsUniformTypes & GRAPHCIS_UNIFORMBUFFER_LIGHTING){
-        //std::cout<<": Lighting Buffer";
-        graphicsDescriptorPoolSizes[counter].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-	 	graphicsDescriptorPoolSizes[counter].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
-		counter++;
-	}
     if(graphicsUniformTypes & GRAPHCIS_UNIFORMBUFFER_MVP || graphicsUniformTypes & GRAPHCIS_UNIFORMBUFFER_VP){
         //std::cout<<": MVP";
         graphicsDescriptorPoolSizes[counter].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC;
@@ -41,6 +29,18 @@ void CGraphicsDescriptorManager::createDescriptorPool(unsigned int object_textbo
         graphicsDescriptorPoolSizes[counter].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
         counter++;
     }
+    if(graphicsUniformTypes & GRAPHCIS_UNIFORMBUFFER_CUSTOM){
+        //std::cout<<": Custom Buffer";
+        graphicsDescriptorPoolSizes[counter].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+	 	graphicsDescriptorPoolSizes[counter].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
+		counter++;
+	}
+    if(graphicsUniformTypes & GRAPHCIS_UNIFORMBUFFER_LIGHTING){
+        //std::cout<<": Lighting Buffer";
+        graphicsDescriptorPoolSizes[counter].type = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+	 	graphicsDescriptorPoolSizes[counter].descriptorCount = static_cast<uint32_t>(MAX_FRAMES_IN_FLIGHT);
+		counter++;
+	}
     if(graphicsUniformTypes & GRAPHCIS_COMBINEDIMAGESAMPLER_TEXTUREIMAGE){
         //std::cout<<": Sampler("<<samplerCount<<")";
         for(int i = 0; i < textureImageSamplerSize; i++){
@@ -99,23 +99,6 @@ void CGraphicsDescriptorManager::createDescriptorSetLayout_General(VkDescriptorS
 	int bindingCounter = 0;
     std::cout<<"Layout(Graphics General) size = " << graphicsBindings.size()<<std::endl;
 
-	if(graphicsUniformTypes & GRAPHCIS_UNIFORMBUFFER_CUSTOM){
-        graphicsBindings[bindingCounter].binding = bindingCounter;
-		graphicsBindings[bindingCounter].descriptorCount = customBinding->descriptorCount;
-		graphicsBindings[bindingCounter].descriptorType = customBinding->descriptorType;
-		graphicsBindings[bindingCounter].pImmutableSamplers = customBinding->pImmutableSamplers;
-		graphicsBindings[bindingCounter].stageFlags = customBinding->stageFlags;
-		bindingCounter++;
-	}
-    if(graphicsUniformTypes & GRAPHCIS_UNIFORMBUFFER_LIGHTING){
-        graphicsBindings[bindingCounter].binding = bindingCounter;
-		graphicsBindings[bindingCounter].descriptorCount = m_lightingUBO.GetBinding().descriptorCount;
-		graphicsBindings[bindingCounter].descriptorType = m_lightingUBO.GetBinding().descriptorType;
-		graphicsBindings[bindingCounter].pImmutableSamplers = m_lightingUBO.GetBinding().pImmutableSamplers;
-		graphicsBindings[bindingCounter].stageFlags = m_lightingUBO.GetBinding().stageFlags;
-		bindingCounter++;
-        //std::cout<<"created lighting bindings "<<std::endl;
-	}
     if(graphicsUniformTypes & GRAPHCIS_UNIFORMBUFFER_MVP){
         VkDescriptorSetLayoutBinding binding = MVPUniformBufferObject::GetBinding();
         //std::cout<<"DEBUG: MVP Layout binding="<<counter<<std::endl;
@@ -136,6 +119,23 @@ void CGraphicsDescriptorManager::createDescriptorSetLayout_General(VkDescriptorS
         graphicsBindings[bindingCounter].stageFlags = binding.stageFlags;
         bindingCounter++;
     }
+	if(graphicsUniformTypes & GRAPHCIS_UNIFORMBUFFER_CUSTOM){
+        graphicsBindings[bindingCounter].binding = bindingCounter;
+		graphicsBindings[bindingCounter].descriptorCount = customBinding->descriptorCount;
+		graphicsBindings[bindingCounter].descriptorType = customBinding->descriptorType;
+		graphicsBindings[bindingCounter].pImmutableSamplers = customBinding->pImmutableSamplers;
+		graphicsBindings[bindingCounter].stageFlags = customBinding->stageFlags;
+		bindingCounter++;
+	}
+    if(graphicsUniformTypes & GRAPHCIS_UNIFORMBUFFER_LIGHTING){
+        graphicsBindings[bindingCounter].binding = bindingCounter;
+		graphicsBindings[bindingCounter].descriptorCount = m_lightingUBO.GetBinding().descriptorCount;
+		graphicsBindings[bindingCounter].descriptorType = m_lightingUBO.GetBinding().descriptorType;
+		graphicsBindings[bindingCounter].pImmutableSamplers = m_lightingUBO.GetBinding().pImmutableSamplers;
+		graphicsBindings[bindingCounter].stageFlags = m_lightingUBO.GetBinding().stageFlags;
+		bindingCounter++;
+        //std::cout<<"created lighting bindings "<<std::endl;
+	}
     if(graphicsUniformTypes & GRAPHCIS_UNIFORMBUFFER_VP){
         VkDescriptorSetLayoutBinding binding = VPUniformBufferObject::GetBinding();
         graphicsBindings[bindingCounter].binding = bindingCounter;
@@ -255,36 +255,6 @@ void CGraphicsDescriptorManager::createDescriptorSets_General(VkImageView depthI
         descriptorWrites.resize(descriptorSize);
         int counter = 0;
 
-        VkDescriptorBufferInfo customBufferInfo{}; //for custom uniform
-        if(graphicsUniformTypes & GRAPHCIS_UNIFORMBUFFER_CUSTOM){
-            customBufferInfo.buffer = customUniformBuffers[i].buffer;
-            customBufferInfo.offset = 0;
-            customBufferInfo.range = m_customUniformBufferSize;
-            descriptorWrites[counter].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-            descriptorWrites[counter].dstSet = descriptorSets_general[i];
-            descriptorWrites[counter].dstBinding = counter;
-            descriptorWrites[counter].dstArrayElement = 0;
-            descriptorWrites[counter].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-            descriptorWrites[counter].descriptorCount = 1;
-            descriptorWrites[counter].pBufferInfo = &customBufferInfo;
-            counter++;
-        }
-
-        VkDescriptorBufferInfo lightingBufferInfo{}; //for lighting uniform
-        if(graphicsUniformTypes & GRAPHCIS_UNIFORMBUFFER_LIGHTING){
-            lightingBufferInfo.buffer = m_lightingUniformBuffers[i].buffer;
-            lightingBufferInfo.offset = 0;
-            lightingBufferInfo.range = m_lightingUniformBufferSize;
-            descriptorWrites[counter].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
-            descriptorWrites[counter].dstSet = descriptorSets_general[i];
-            descriptorWrites[counter].dstBinding = counter;
-            descriptorWrites[counter].dstArrayElement = 0;
-            descriptorWrites[counter].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
-            descriptorWrites[counter].descriptorCount = 1;
-            descriptorWrites[counter].pBufferInfo = &lightingBufferInfo;
-            counter++;
-        }
-
         VkDescriptorBufferInfo mvpBufferInfo{}; //for mvp
         if(graphicsUniformTypes & GRAPHCIS_UNIFORMBUFFER_MVP){ //TODO: Getbinding
             mvpBufferInfo.buffer = mvpUniformBuffers[i].buffer;
@@ -317,6 +287,37 @@ void CGraphicsDescriptorManager::createDescriptorSets_General(VkImageView depthI
             descriptorWrites[counter].pBufferInfo = &textMVPBufferInfo;
             counter++;
         }
+
+        VkDescriptorBufferInfo customBufferInfo{}; //for custom uniform
+        if(graphicsUniformTypes & GRAPHCIS_UNIFORMBUFFER_CUSTOM){
+            customBufferInfo.buffer = customUniformBuffers[i].buffer;
+            customBufferInfo.offset = 0;
+            customBufferInfo.range = m_customUniformBufferSize;
+            descriptorWrites[counter].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+            descriptorWrites[counter].dstSet = descriptorSets_general[i];
+            descriptorWrites[counter].dstBinding = counter;
+            descriptorWrites[counter].dstArrayElement = 0;
+            descriptorWrites[counter].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+            descriptorWrites[counter].descriptorCount = 1;
+            descriptorWrites[counter].pBufferInfo = &customBufferInfo;
+            counter++;
+        }
+
+        VkDescriptorBufferInfo lightingBufferInfo{}; //for lighting uniform
+        if(graphicsUniformTypes & GRAPHCIS_UNIFORMBUFFER_LIGHTING){
+            lightingBufferInfo.buffer = m_lightingUniformBuffers[i].buffer;
+            lightingBufferInfo.offset = 0;
+            lightingBufferInfo.range = m_lightingUniformBufferSize;
+            descriptorWrites[counter].sType = VK_STRUCTURE_TYPE_WRITE_DESCRIPTOR_SET;
+            descriptorWrites[counter].dstSet = descriptorSets_general[i];
+            descriptorWrites[counter].dstBinding = counter;
+            descriptorWrites[counter].dstArrayElement = 0;
+            descriptorWrites[counter].descriptorType = VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER;
+            descriptorWrites[counter].descriptorCount = 1;
+            descriptorWrites[counter].pBufferInfo = &lightingBufferInfo;
+            counter++;
+        }
+        
         VkDescriptorBufferInfo vpBufferInfo{}; //for vp
         if(graphicsUniformTypes & GRAPHCIS_UNIFORMBUFFER_VP){
             vpBufferInfo.buffer = vpUniformBuffers[i].buffer;
@@ -441,7 +442,46 @@ void CGraphicsDescriptorManager::createDescriptorSets_General(VkImageView depthI
 
 
 /************
-* 1 GRAPHCIS_UNIFORMBUFFER_CUSTOM
+* 1 GRAPHCIS_UNIFORMBUFFER_MVP
+************/
+std::vector<CWxjBuffer> CGraphicsDescriptorManager::mvpUniformBuffers; //need one mvp buffer for each host resource: MAX_FRAMES_IN_FLIGHT
+std::vector<void*> CGraphicsDescriptorManager::mvpUniformBuffersMapped;
+MVPUniformBufferObject CGraphicsDescriptorManager::mvpUBO;
+void CGraphicsDescriptorManager::addMVPUniformBuffer(){
+    graphicsUniformTypes |= GRAPHCIS_UNIFORMBUFFER_MVP;
+    //std::cout<<"addMVPUniformBuffer::uniformBufferUsageFlags = " << uniformBufferUsageFlags<<std::endl;
+
+    mvpUniformBuffers.resize(MAX_FRAMES_IN_FLIGHT);
+    mvpUniformBuffersMapped.resize(MAX_FRAMES_IN_FLIGHT);
+
+    for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+        VkResult result = mvpUniformBuffers[i].init(sizeof(MVPUniformBufferObject), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
+        vkMapMemory(CContext::GetHandle().GetLogicalDevice(), mvpUniformBuffers[i].deviceMemory, 0, sizeof(MVPUniformBufferObject), 0, &mvpUniformBuffersMapped[i]);
+    }
+}
+
+/************
+* 2 GRAPHCIS_UNIFORMBUFFER_TEXT_MVP
+************/
+std::vector<CWxjBuffer> CGraphicsDescriptorManager::textMVPUniformBuffers; //need one mvp buffer for each host resource: MAX_FRAMES_IN_FLIGHT
+std::vector<void*> CGraphicsDescriptorManager::textMVPUniformBuffersMapped;
+TextMVPUniformBufferObject CGraphicsDescriptorManager::textMVPUBO;
+void CGraphicsDescriptorManager::addTextMVPUniformBuffer(){
+    graphicsUniformTypes |= GRAPHCIS_UNIFORMBUFFER_TEXT_MVP;
+    //std::cout<<"addMVPUniformBuffer::uniformBufferUsageFlags = " << uniformBufferUsageFlags<<std::endl;
+
+    textMVPUniformBuffers.resize(MAX_FRAMES_IN_FLIGHT);
+    textMVPUniformBuffersMapped.resize(MAX_FRAMES_IN_FLIGHT);
+
+    for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
+        VkResult result = textMVPUniformBuffers[i].init(sizeof(TextMVPUniformBufferObject), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
+        vkMapMemory(CContext::GetHandle().GetLogicalDevice(), textMVPUniformBuffers[i].deviceMemory, 0, sizeof(TextMVPUniformBufferObject), 0, &textMVPUniformBuffersMapped[i]);
+    }
+}
+
+
+/************
+* 3 GRAPHCIS_UNIFORMBUFFER_CUSTOM
 ************/
 std::vector<CWxjBuffer> CGraphicsDescriptorManager::customUniformBuffers; 
 std::vector<void*> CGraphicsDescriptorManager::customUniformBuffersMapped;
@@ -462,7 +502,7 @@ void CGraphicsDescriptorManager::addCustomUniformBuffer(VkDeviceSize customUnifo
 }
 
 /************
-* 2 GRAPHCIS_UNIFORMBUFFER_LIGHTING
+* 4 GRAPHCIS_UNIFORMBUFFER_LIGHTING
 ************/
 LightingUniformBufferObject CGraphicsDescriptorManager::m_lightingUBO;
 std::vector<CWxjBuffer> CGraphicsDescriptorManager::m_lightingUniformBuffers; 
@@ -484,46 +524,6 @@ void CGraphicsDescriptorManager::addLightingUniformBuffer(){
 		vkMapMemory(CContext::GetHandle().GetLogicalDevice(), m_lightingUniformBuffers[i].deviceMemory, 0,  m_lightingUniformBufferSize, 0, & m_lightingUniformBuffersMapped[i]);
 	}
 }
-
-
-/************
-* 3 GRAPHCIS_UNIFORMBUFFER_MVP
-************/
-std::vector<CWxjBuffer> CGraphicsDescriptorManager::mvpUniformBuffers; //need one mvp buffer for each host resource: MAX_FRAMES_IN_FLIGHT
-std::vector<void*> CGraphicsDescriptorManager::mvpUniformBuffersMapped;
-MVPUniformBufferObject CGraphicsDescriptorManager::mvpUBO;
-void CGraphicsDescriptorManager::addMVPUniformBuffer(){
-    graphicsUniformTypes |= GRAPHCIS_UNIFORMBUFFER_MVP;
-    //std::cout<<"addMVPUniformBuffer::uniformBufferUsageFlags = " << uniformBufferUsageFlags<<std::endl;
-
-    mvpUniformBuffers.resize(MAX_FRAMES_IN_FLIGHT);
-    mvpUniformBuffersMapped.resize(MAX_FRAMES_IN_FLIGHT);
-
-    for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-        VkResult result = mvpUniformBuffers[i].init(sizeof(MVPUniformBufferObject), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
-        vkMapMemory(CContext::GetHandle().GetLogicalDevice(), mvpUniformBuffers[i].deviceMemory, 0, sizeof(MVPUniformBufferObject), 0, &mvpUniformBuffersMapped[i]);
-    }
-}
-
-/************
-* 4 GRAPHCIS_UNIFORMBUFFER_TEXT_MVP
-************/
-std::vector<CWxjBuffer> CGraphicsDescriptorManager::textMVPUniformBuffers; //need one mvp buffer for each host resource: MAX_FRAMES_IN_FLIGHT
-std::vector<void*> CGraphicsDescriptorManager::textMVPUniformBuffersMapped;
-TextMVPUniformBufferObject CGraphicsDescriptorManager::textMVPUBO;
-void CGraphicsDescriptorManager::addTextMVPUniformBuffer(){
-    graphicsUniformTypes |= GRAPHCIS_UNIFORMBUFFER_TEXT_MVP;
-    //std::cout<<"addMVPUniformBuffer::uniformBufferUsageFlags = " << uniformBufferUsageFlags<<std::endl;
-
-    textMVPUniformBuffers.resize(MAX_FRAMES_IN_FLIGHT);
-    textMVPUniformBuffersMapped.resize(MAX_FRAMES_IN_FLIGHT);
-
-    for (size_t i = 0; i < MAX_FRAMES_IN_FLIGHT; i++) {
-        VkResult result = textMVPUniformBuffers[i].init(sizeof(TextMVPUniformBufferObject), VK_BUFFER_USAGE_UNIFORM_BUFFER_BIT);
-        vkMapMemory(CContext::GetHandle().GetLogicalDevice(), textMVPUniformBuffers[i].deviceMemory, 0, sizeof(TextMVPUniformBufferObject), 0, &textMVPUniformBuffersMapped[i]);
-    }
-}
-
 
 /************
 * 5 GRAPHCIS_UNIFORMBUFFER_VP
@@ -727,10 +727,10 @@ void CGraphicsDescriptorManager::addLightDepthImageSamplerUniformBuffer_hardware
 ************/
 int CGraphicsDescriptorManager::getPoolSize(){ //to calculate descriptor pool size
 	int descriptorPoolSize = 0;
+    descriptorPoolSize += (graphicsUniformTypes & GRAPHCIS_UNIFORMBUFFER_MVP || graphicsUniformTypes & GRAPHCIS_UNIFORMBUFFER_VP) ? 1:0;
+    descriptorPoolSize += (graphicsUniformTypes & GRAPHCIS_UNIFORMBUFFER_TEXT_MVP) ? 1:0;
     descriptorPoolSize += (graphicsUniformTypes & GRAPHCIS_UNIFORMBUFFER_CUSTOM) ? 1:0;
     descriptorPoolSize += (graphicsUniformTypes & GRAPHCIS_UNIFORMBUFFER_LIGHTING) ? 1:0;
-	descriptorPoolSize += (graphicsUniformTypes & GRAPHCIS_UNIFORMBUFFER_MVP || graphicsUniformTypes & GRAPHCIS_UNIFORMBUFFER_VP) ? 1:0;
-    descriptorPoolSize += (graphicsUniformTypes & GRAPHCIS_UNIFORMBUFFER_TEXT_MVP) ? 1:0;
 	descriptorPoolSize += graphicsUniformTypes & GRAPHCIS_COMBINEDIMAGESAMPLER_TEXTUREIMAGE ? textureImageSamplerSize:0; //pool size need count texture
     descriptorPoolSize += graphicsUniformTypes & GRAPHCIS_COMBINEDIMAGESAMPLER_DEPTHIMAGE ? 1:0;
     descriptorPoolSize += graphicsUniformTypes & GRAPHCIS_COMBINEDIMAGESAMPLER_LIGHTDEPTHIMAGE ? 1:0;
@@ -741,10 +741,10 @@ int CGraphicsDescriptorManager::getPoolSize(){ //to calculate descriptor pool si
 }
 int CGraphicsDescriptorManager::getLayoutSize_General(){ //to get descriptor layout/set size (general: exclude texture)
 	int descriptorPoolSize = 0;
+    descriptorPoolSize += (graphicsUniformTypes & GRAPHCIS_UNIFORMBUFFER_MVP || graphicsUniformTypes & GRAPHCIS_UNIFORMBUFFER_VP) ? 1:0;
+    descriptorPoolSize += (graphicsUniformTypes & GRAPHCIS_UNIFORMBUFFER_TEXT_MVP) ? 1:0;
     descriptorPoolSize += (graphicsUniformTypes & GRAPHCIS_UNIFORMBUFFER_CUSTOM) ? 1:0;
     descriptorPoolSize += (graphicsUniformTypes & GRAPHCIS_UNIFORMBUFFER_LIGHTING) ? 1:0;
-	descriptorPoolSize += (graphicsUniformTypes & GRAPHCIS_UNIFORMBUFFER_MVP || graphicsUniformTypes & GRAPHCIS_UNIFORMBUFFER_VP) ? 1:0;
-    descriptorPoolSize += (graphicsUniformTypes & GRAPHCIS_UNIFORMBUFFER_TEXT_MVP) ? 1:0;
     descriptorPoolSize += (graphicsUniformTypes & GRAPHCIS_COMBINEDIMAGESAMPLER_DEPTHIMAGE) ? 1:0;
     descriptorPoolSize += (graphicsUniformTypes & GRAPHCIS_COMBINEDIMAGESAMPLER_LIGHTDEPTHIMAGE) ? 1:0;
     descriptorPoolSize += (graphicsUniformTypes & GRAPHCIS_COMBINEDIMAGESAMPLER_LIGHTDEPTHIMAGE_HARDWAREDEPTHBIAS) ? 1:0;
@@ -762,15 +762,15 @@ void CGraphicsDescriptorManager::DestroyAndFree(){
     vkDestroySampler(CContext::GetHandle().GetLogicalDevice(), lightDepthImageSampler, nullptr);
     vkDestroySampler(CContext::GetHandle().GetLogicalDevice(), lightDepthImageSampler_hardwareDepthBias, nullptr);
     //vkDestroySampler(CContext::GetHandle().GetLogicalDevice(), lightDepthImageSampler_hardwareDepthBias2, nullptr);
-
-    for (size_t i = 0; i < customUniformBuffers.size(); i++) 
-        customUniformBuffers[i].DestroyAndFree();
     
     for (size_t i = 0; i < mvpUniformBuffers.size(); i++) 
         mvpUniformBuffers[i].DestroyAndFree();
 
     for (size_t i = 0; i < textMVPUniformBuffers.size(); i++) 
         textMVPUniformBuffers[i].DestroyAndFree();
+
+    for (size_t i = 0; i < customUniformBuffers.size(); i++) 
+        customUniformBuffers[i].DestroyAndFree();
 
     for (size_t i = 0; i < vpUniformBuffers.size(); i++) 
         vpUniformBuffers[i].DestroyAndFree();

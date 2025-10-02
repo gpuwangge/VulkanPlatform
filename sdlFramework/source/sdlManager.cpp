@@ -129,6 +129,12 @@ void CSDLManager::eventHandle(){
                         if(!m_pApp->appInfo.Feature.feature_graphics_show_all_metric_controls) {
                             m_pApp->appInfo.Feature.feature_graphics_show_performance_control = !m_pApp->appInfo.Feature.feature_graphics_show_performance_control;
                             m_pApp->controlNodes[0]->bVisible = m_pApp->appInfo.Feature.feature_graphics_show_performance_control;
+                        }else{
+                            m_pApp->appInfo.Feature.feature_graphics_show_all_metric_controls = false;
+                            for(int i = 1; i < m_pApp->controlNodes.size(); i++) m_pApp->controlNodes[i]->bVisible = false;
+
+                            m_pApp->appInfo.Feature.feature_graphics_show_performance_control = true;
+                            m_pApp->controlNodes[0]->bVisible = true;
                         }
                         break;
                     case SDLK_H:

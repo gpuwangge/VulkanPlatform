@@ -35,7 +35,23 @@ public:
     void createDescriptorSets_General(VkImageView depthImageView, std::vector<CWxjImageBuffer> &lightDepthBuffers);
 
     /************
-     * 1 GRAPHCIS_UNIFORMBUFFER_CUSTOM
+     * 1 GRAPHCIS_UNIFORMBUFFER_MVP
+     ************/
+    static std::vector<CWxjBuffer> mvpUniformBuffers; //need one mvp buffer for each host resource: MAX_FRAMES_IN_FLIGHT
+	static std::vector<void*> mvpUniformBuffersMapped;
+    static void addMVPUniformBuffer();
+    static MVPUniformBufferObject mvpUBO;
+
+    /************
+     * 2 GRAPHCIS_UNIFORMBUFFER_TEXT_MVP
+     ************/
+    static std::vector<CWxjBuffer> textMVPUniformBuffers; //need one mvp buffer for each host resource: MAX_FRAMES_IN_FLIGHT
+	static std::vector<void*> textMVPUniformBuffersMapped;
+    static void addTextMVPUniformBuffer();
+    static TextMVPUniformBufferObject textMVPUBO;
+
+    /************
+     * 3 GRAPHCIS_UNIFORMBUFFER_CUSTOM
      ************/
     static std::vector<CWxjBuffer> customUniformBuffers; 
 	static std::vector<void*> customUniformBuffersMapped;
@@ -49,29 +65,13 @@ public:
     }
 
     /************
-     * 2 GRAPHCIS_UNIFORMBUFFER_LIGHTING
+     * 4 GRAPHCIS_UNIFORMBUFFER_LIGHTING
      ************/
     static LightingUniformBufferObject m_lightingUBO;
     static std::vector<CWxjBuffer> m_lightingUniformBuffers; 
 	static std::vector<void*> m_lightingUniformBuffersMapped;
     static VkDeviceSize m_lightingUniformBufferSize;
     static void addLightingUniformBuffer();
-
-    /************
-     * 3 GRAPHCIS_UNIFORMBUFFER_MVP
-     ************/
-    static std::vector<CWxjBuffer> mvpUniformBuffers; //need one mvp buffer for each host resource: MAX_FRAMES_IN_FLIGHT
-	static std::vector<void*> mvpUniformBuffersMapped;
-    static void addMVPUniformBuffer();
-    static MVPUniformBufferObject mvpUBO;
-
-    /************
-     * 4 GRAPHCIS_UNIFORMBUFFER_TEXT_MVP
-     ************/
-    static std::vector<CWxjBuffer> textMVPUniformBuffers; //need one mvp buffer for each host resource: MAX_FRAMES_IN_FLIGHT
-	static std::vector<void*> textMVPUniformBuffersMapped;
-    static void addTextMVPUniformBuffer();
-    static TextMVPUniformBufferObject textMVPUBO;
 
     /************
      * 5 GRAPHCIS_UNIFORMBUFFER_VP

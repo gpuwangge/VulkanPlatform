@@ -12,7 +12,12 @@ public:
 	}
 
 	void recordGraphicsCommandBuffer_renderpassMainscene(){
-		objects[0].Draw(0, 3); //draw 3 vertices;
+		//for drawing triangle
+		//objects[0].Draw(0, 3); //draw 3 vertices;
+
+		//for drawing panels and triangle
+		for(int i = 0; i < objects.size(); i++) objects[i].Draw();
+		textManager.Draw();
 	}
 };
 

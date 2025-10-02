@@ -13,8 +13,23 @@ void CObject::Update(float deltaTime, int currentFrame, Camera &mainCamera){
     ********************************/
     if(CGraphicsDescriptorManager::graphicsUniformTypes & GRAPHCIS_UNIFORMBUFFER_MVP){
         //update model matrix to ubo
-        if(p_controlNode == NULL) CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].model = ModelMatrix;
-        else CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].model = p_controlNode->ModelMatrix * ModelMatrix;
+        if(p_controlNode == NULL) {
+            CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].model = ModelMatrix;
+        //    std::cout<<"CObject::Update: object id="<<m_object_id<<" has no control node, use its own model matrix"<<std::endl;
+        }else {
+            CGraphicsDescriptorManager::mvpUBO.mvpData[m_object_id].model = p_controlNode->ModelMatrix * ModelMatrix;
+        //     std::cout<<"CObject::Update: object id="<<m_object_id<<" use control node model matrix"<<std::endl;
+        //     std::cout<<"p_controlNode->ModelMatrix:"<<std::endl;
+        //     std::cout<<p_controlNode->ModelMatrix[0][0]<<","<<p_controlNode->ModelMatrix[0][1]<<","<<p_controlNode->ModelMatrix[0][2]<<","<<p_controlNode->ModelMatrix[0][3]<<std::endl;
+        //     std::cout<<p_controlNode->ModelMatrix[1][0]<<","<<p_controlNode->ModelMatrix[1][1]<<","<<p_controlNode->ModelMatrix[1][2]<<","<<p_controlNode->ModelMatrix[1][3]<<std::endl;
+        //     std::cout<<p_controlNode->ModelMatrix[2][0]<<","<<p_controlNode->ModelMatrix[2][1]<<","<<p_controlNode->ModelMatrix[2][2]<<","<<p_controlNode->ModelMatrix[2][3]<<std::endl;
+        //     std::cout<<p_controlNode->ModelMatrix[3][0]<<","<<p_controlNode->ModelMatrix[3][1]<<","<<p_controlNode->ModelMatrix[3][2]<<","<<p_controlNode->ModelMatrix[3][3]<<std::endl;
+        //     std::cout<<"ModelMatrix:"<<std::endl;
+        //     std::cout<<ModelMatrix[0][0]<<","<<ModelMatrix[0][1]<<","<<ModelMatrix[0][2]<<","<<ModelMatrix[0][3]<<std::endl;
+        //     std::cout<<ModelMatrix[1][0]<<","<<ModelMatrix[1][1]<<","<<ModelMatrix[1][2]<<","<<ModelMatrix[1][3]<<std::endl;
+        //     std::cout<<ModelMatrix[2][0]<<","<<ModelMatrix[2][1]<<","<<ModelMatrix[2][2]<<","<<ModelMatrix[2][3]<<std::endl;
+        //     std::cout<<ModelMatrix[3][0]<<","<<ModelMatrix[3][1]<<","<<ModelMatrix[3][2]<<","<<ModelMatrix[3][3]<<std::endl;
+        }
 
         //update view and perspective matrices to ubo
         if(!bSticker){
@@ -182,6 +197,8 @@ void CObject::Register(CApplication *p_app){
 
 
 void CObject::Draw(int graphicsPipelineId, uint32_t n){
+    //std::cout<<"CObject::Draw() bVisible:"<<bVisible<<std::endl;
+    //if(p_controlNode) std::cout<<"CObject::Draw() p_controlNode->bVisible:"<<p_controlNode->bVisible<<std::endl;
     if(!bRegistered || !bVisible) return;
     if(p_controlNode != NULL && !p_controlNode->bVisible) return;
 

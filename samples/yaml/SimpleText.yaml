@@ -8,7 +8,7 @@ Objects:
     object_angular_velocity: [0,0,0]
     object_skybox: false
     resource_model_id: 0
-    resource_texture_id_list: [0]
+    resource_texture_id_list: [1]
     resource_default_graphics_pipeline_id: 2
 
 Textboxes:
@@ -22,7 +22,7 @@ Textboxes:
     textbox_text_content: " !\"#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~"
     textbox_text_color: [255, 255, 255, 255]
     resource_model_id: 1
-    resource_text_id_list: [0]
+    resource_text_id_list: [1]
     resource_default_graphics_pipeline_id: 1
 
 
@@ -32,16 +32,16 @@ Resources:
       resource_font_outlinecolor: [255, 255, 255, 255]
       resource_font_textcolor: [255, 255, 255, 255]
       resource_font_size: 50
-      uniform_sampler_id: 1
+      uniform_sampler_id: 0
   - Models:
     - resource_model_name: TEXTBOXIMAGE
     - resource_model_name: TEXTQUAD
   - Textures:
-    - resource_texture_name: WoodTexture.jpg #yellowcloth.jpg
+    - resource_texture_name: textbox_cyber.png
       resource_texture_miplevels: 1
       resource_texture_cubmap: false
       uniform_sampler_id: 0
-    - resource_texture_name: cybor_background.png
+    - resource_texture_name: WoodTexture.jpg #yellowcloth.jpg
       resource_texture_miplevels: 1
       resource_texture_cubmap: false
       uniform_sampler_id: 0
@@ -62,20 +62,17 @@ Resources:
 Uniforms:
   Graphics:
     uniform_graphics_name: Graphics
-    uniform_graphics_custom: false
-    uniform_graphics_lighting: false
     uniform_graphics_mvp: true
     uniform_graphics_text_mvp: true
+    uniform_graphics_custom: false
+    uniform_graphics_lighting: false
     uniform_graphics_vp: false
     uniform_graphics_depth_image_sampler: false
     uniform_graphics_lightdepth_image_sampler: false
   GraphicsTextureImageSamplers:
-  - uniform_graphics_texture_image_sampler_name: TextureSampler
+  - uniform_graphics_texture_image_sampler_name: GeneralSampler
     uniform_graphics_texture_image_sampler_miplevel: 1
     uniform_graphics_texture_image_sampler_uvwrepeat: [true, true, true]
-  - uniform_graphics_texture_image_sampler_name: TextSampler
-    uniform_graphics_texture_image_sampler_miplevel: 1
-    uniform_graphics_texture_image_sampler_uvwrepeat: [false, false, true]
   Compute:
     uniform_compute_name: Compute
     uniform_compute_custom: false
@@ -123,8 +120,8 @@ MainCamera:
 
 Controls:
   - UIContainer:
-      resource_texture_id_list_box: [1]
       resource_model_id_box: 0
-      resource_default_graphics_pipeline_id_box: 0
       resource_model_id_text: 1
+      resource_default_graphics_pipeline_id_box: 0
       resource_default_graphics_pipeline_id_text: 1
+      resource_texture_id_list_box: [0]
