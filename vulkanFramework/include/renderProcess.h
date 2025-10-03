@@ -329,7 +329,7 @@ public:
             //std::cout<<"bSkybox="<<bSkybox<<"(skyboxID="<<skyboxID<<")"<<std::endl;
             VkPipelineDepthStencilStateCreateInfo depthStencil{};
             depthStencil.sType = VK_STRUCTURE_TYPE_PIPELINE_DEPTH_STENCIL_STATE_CREATE_INFO;
-            depthStencil.depthTestEnable = VK_TRUE;
+            depthStencil.depthTestEnable = VK_TRUE; //change this to true will make text invisible
             depthStencil.depthWriteEnable = VK_TRUE;
             if(bEnableDepthBias)
                 depthStencil.depthCompareOp = VK_COMPARE_OP_LESS; //for hardware depthbias shadowmap

@@ -218,29 +218,30 @@ void CApplication::initialize(){
 
     //controlNodes[0]->bVisible = false; //hide fps control node
 
+    int max_object_id = -1;
     if (config["Objects"]) {
-        int max_object_id = 0;
         for (const auto& obj : config["Objects"]) {
             int object_id = obj["object_id"] ? obj["object_id"].as<int>() : 0;
             max_object_id = (object_id > max_object_id) ? object_id : max_object_id;
         }
-        customObjectSize = ((max_object_id+1) < config["Objects"].size()) ? (max_object_id+1) : config["Objects"].size();
-        objects.resize(customObjectSize + objectCountControl);
-        std::cout<<"Object Size: "<<objects.size()<<std::endl;
     }
+    customObjectSize = ((max_object_id+1) < config["Objects"].size()) ? (max_object_id+1) : config["Objects"].size();
+    objects.resize(customObjectSize + objectCountControl);
+    std::cout<<"Object Size: "<<objects.size()<<std::endl;
+    
+    int max_textbox_id = -1;
     if (config["Textboxes"]) {
-        int max_textbox_id = 0;
         for (const auto& tb : config["Textboxes"]) {
             int textbox_id = tb["textbox_id"] ? tb["textbox_id"].as<int>() : 0;
             max_textbox_id = (textbox_id > max_textbox_id) ? textbox_id : max_textbox_id;
-            max_textbox_id = (textbox_id > max_textbox_id) ? textbox_id : max_textbox_id;
         }
-        customTextboxSize = ((max_textbox_id+1) < config["Textboxes"].size()) ? (max_textbox_id+1) : config["Textboxes"].size();
-        textManager.m_textBoxes.resize(customTextboxSize + textboxCountControl);
-        for(int i = 0; i < textManager.m_textBoxes.size(); i++)
-            textManager.m_textBoxes[i].p_textManager = &textManager;
-        std::cout<<"Textbox Size: "<<textManager.m_textBoxes.size()<<std::endl;
     }
+    customTextboxSize = ((max_textbox_id+1) < config["Textboxes"].size()) ? (max_textbox_id+1) : config["Textboxes"].size();
+    textManager.m_textBoxes.resize(customTextboxSize + textboxCountControl);
+    for(int i = 0; i < textManager.m_textBoxes.size(); i++)
+        textManager.m_textBoxes[i].p_textManager = &textManager;
+    std::cout<<"Textbox Size: "<<textManager.m_textBoxes.size()<<std::endl;
+    
     if (config["Lights"]) {
         int max_light_d = 0;
         for (const auto& light : config["Lights"]) {
@@ -1294,28 +1295,29 @@ void CApplication::ReadRegisterObjects(){
             //std::cout<<"ObjectId:("<<object_id<<") Name:("<<objects[object_id].Name<<") Length:("<<objects[object_id].Length.x<<","<<objects[object_id].Length.y<<","<<objects[object_id].Length.z<<")"
             //    <<" Position:("<<objects[object_id].Position.x<<","<<objects[object_id].Position.y<<","<<objects[object_id].Position.z<<")"<<std::endl;
         }
+    }
 
-        //register objects for controls
-        if(appInfo.Feature.feature_graphics_enable_controls){
-            int indexOffset = customObjectSize;
-            for(int i = 0; i < controlNodes.size(); i++){
-                controlNodes[i]->RegisterObject(indexOffset);
-                indexOffset += controlNodes[i]->m_object_count;
-            }
-        }
-
-        for(int i = 0; i < objects.size(); i++){
-            if(!objects[i].bRegistered) std::cout<<"WARNING: Object id("<<i<<") is not registered!"<<std::endl;
-            logManager.print("Object ID: %d", i);
-            logManager.print("\tName: %s", objects[i].Name.c_str());
-            logManager.print("\tPosition: %f, %f, %f", objects[i].Position);
-            logManager.print("\tLength_original: %f, %f, %f", objects[i].Length_original);
-            logManager.print("\tLengthMin_original: %f, %f, %f", objects[i].LengthMin_original);
-            logManager.print("\tLengthMax_original: %f, %f, %f", objects[i].LengthMax_original);
-            logManager.print("\tScale: %f, %f, %f", objects[i].Scale);
-            logManager.print("\tLength: %f, %f, %f", objects[i].Length);
+    //register objects for controls
+    if(appInfo.Feature.feature_graphics_enable_controls){
+        int indexOffset = customObjectSize;
+        for(int i = 0; i < controlNodes.size(); i++){
+            controlNodes[i]->RegisterObject(indexOffset);
+            indexOffset += controlNodes[i]->m_object_count;
         }
     }
+
+    for(int i = 0; i < objects.size(); i++){
+        if(!objects[i].bRegistered) std::cout<<"WARNING: Object id("<<i<<") is not registered!"<<std::endl;
+        logManager.print("Object ID: %d", i);
+        logManager.print("\tName: %s", objects[i].Name.c_str());
+        logManager.print("\tPosition: %f, %f, %f", objects[i].Position);
+        logManager.print("\tLength_original: %f, %f, %f", objects[i].Length_original);
+        logManager.print("\tLengthMin_original: %f, %f, %f", objects[i].LengthMin_original);
+        logManager.print("\tLengthMax_original: %f, %f, %f", objects[i].LengthMax_original);
+        logManager.print("\tScale: %f, %f, %f", objects[i].Scale);
+        logManager.print("\tLength: %f, %f, %f", objects[i].Length);
+    }
+    
 
 }
 
@@ -1360,28 +1362,29 @@ void CApplication::ReadRegisterTextboxes(){
 
             //std::cout<<"TextboxId:("<<id<<") Name:("<<textBoxes[id].GetName()<<") Position:("<<textBoxes[id].GetPosition().x<<","<<textBoxes[id].GetPosition().y<<","<<textBoxes[id].GetPosition().z<<")"<<std::endl;
         }
+    }
 
-        //register textbox for controls
-        if(appInfo.Feature.feature_graphics_enable_controls){
-            int indexOffset = customTextboxSize;
-            for(int i = 0; i < controlNodes.size(); i++){
-                controlNodes[i]->RegisterTextbox(indexOffset);
-                indexOffset += controlNodes[i]->m_textbox_count;
-            }
-        }
-
-        for(int i = 0; i < textManager.m_textBoxes.size(); i++){
-            if(!textManager.m_textBoxes[i].bRegistered) std::cout<<"WARNING: Textbox id("<<i<<") is not registered!"<<std::endl;
-            logManager.print("Textbox ID: %d", i);
-            logManager.print("\tName: %s", textManager.m_textBoxes[i].Name.c_str());
-            logManager.print("\tPosition: %f, %f, %f", textManager.m_textBoxes[i].Position);
-            logManager.print("\tLength_original: %f, %f, %f", textManager.m_textBoxes[i].Length_original);
-            logManager.print("\tLengthMin_original: %f, %f, %f", textManager.m_textBoxes[i].LengthMin_original);
-            logManager.print("\tLengthMax_original: %f, %f, %f", textManager.m_textBoxes[i].LengthMax_original);
-            logManager.print("\tScale: %f, %f, %f", textManager.m_textBoxes[i].Scale);
-            logManager.print("\tLength: %f, %f, %f", textManager.m_textBoxes[i].Length);
+    //register textbox for controls
+    if(appInfo.Feature.feature_graphics_enable_controls){
+        int indexOffset = customTextboxSize;
+        for(int i = 0; i < controlNodes.size(); i++){
+            controlNodes[i]->RegisterTextbox(indexOffset);
+            indexOffset += controlNodes[i]->m_textbox_count;
         }
     }
+
+    for(int i = 0; i < textManager.m_textBoxes.size(); i++){
+        if(!textManager.m_textBoxes[i].bRegistered) std::cout<<"WARNING: Textbox id("<<i<<") is not registered!"<<std::endl;
+        logManager.print("Textbox ID: %d", i);
+        logManager.print("\tName: %s", textManager.m_textBoxes[i].Name.c_str());
+        logManager.print("\tPosition: %f, %f, %f", textManager.m_textBoxes[i].Position);
+        logManager.print("\tLength_original: %f, %f, %f", textManager.m_textBoxes[i].Length_original);
+        logManager.print("\tLengthMin_original: %f, %f, %f", textManager.m_textBoxes[i].LengthMin_original);
+        logManager.print("\tLengthMax_original: %f, %f, %f", textManager.m_textBoxes[i].LengthMax_original);
+        logManager.print("\tScale: %f, %f, %f", textManager.m_textBoxes[i].Scale);
+        logManager.print("\tLength: %f, %f, %f", textManager.m_textBoxes[i].Length);
+    }
+    
 }
 
 void CApplication::ReadLightings(){

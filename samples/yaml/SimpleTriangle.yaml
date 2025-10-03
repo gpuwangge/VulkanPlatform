@@ -3,8 +3,6 @@ Objects:
     object_id: 0
     resource_default_graphics_pipeline_id: 2
 
-Textboxes:
-
 Resources:
   - Fonts:
     - resource_font_name: AscII

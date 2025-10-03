@@ -20,7 +20,8 @@ public:
 	}
 
 	void recordGraphicsCommandBuffer_renderpassMainscene(){
-		objects[0].Draw();
+		for(int i = 0; i < objects.size(); i++) objects[i].Draw();
+		textManager.Draw();
 	}
 
 };
