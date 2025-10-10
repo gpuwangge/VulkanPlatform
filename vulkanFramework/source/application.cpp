@@ -712,7 +712,6 @@ void CApplication::ReadFeatures(){
             VK_BLEND_OP_ADD, VK_BLEND_FACTOR_ONE, VK_BLEND_FACTOR_ZERO);        
     }
     renderProcess.skyboxID = appInfo.Feature.feature_graphics_pipeline_skybox_id;
-    //PrintFPS = appInfo.Feature.b_feature_graphics_fps;
 }
 
 void CApplication::ReadUniforms(){

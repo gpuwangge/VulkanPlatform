@@ -227,7 +227,7 @@ void CGraphicsDescriptorManager::createDescriptorSetLayout_TextureImageSampler()
 * Set
 ************/
 void CGraphicsDescriptorManager::createDescriptorSets_General(VkImageView depthImageView, std::vector<CWxjImageBuffer> &lightDepthBuffers){
-//Descriptor Step 3/3
+    //Descriptor Step 3/3
     //HERE_I_AM("wxjCreateDescriptorSets");
 
     int descriptorSize = getSetSize_General();

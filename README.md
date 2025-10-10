@@ -20,7 +20,8 @@ Prepare:
 4. Setup GLM (Tested version 0.9.9.8)
 5. git clone this repo 
 - [Optional] Download other thirdparty headers: stb_image.h and tiny_obj_loader.h (I already put both files in the "thirdparty" folder in this repo)  
-### for all samples
+
+### For all samples
 ```
 mkdir build  
 cd build
@@ -28,13 +29,19 @@ cmake -G "MinGW Makefiles" ..
 make -j
 ```
 
-### for one sample  
+### For one sample  
 ```
 mkdir build
 cd build
 cmake -G "MinGW Makefiles" -D SINGLE=true ..
 make -j
 ```
+
+### Measure make time
+```
+cmake -E time make -j
+```
+
 - [Optional] Edit CMakeLists.txt to tell compiler which sample to build   
 
 ## How to auto-test all samples

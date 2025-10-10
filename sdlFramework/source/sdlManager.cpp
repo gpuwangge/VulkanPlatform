@@ -92,39 +92,40 @@ void CSDLManager::eventHandle(){
                 //std::cout<<"Key Down"<<event.key.key<<std::endl;
                 switch(event.key.key){ //need 6 directions and 6 turns to translate camera
                     case SDLK_UP:
-                        CApplication::mainCamera.Velocity.y = -1 * keyboard_sensitive;
+                        //CApplication::mainCamera.Velocity.y = -1 * keyboard_sensitive;
                         break;
                     case SDLK_DOWN:
-                        CApplication::mainCamera.Velocity.y = 1 * keyboard_sensitive;
+                        //CApplication::mainCamera.Velocity.y = 1 * keyboard_sensitive;
                         break;
                     case SDLK_W:
-                        CApplication::mainCamera.Velocity.z = 1 * keyboard_sensitive;
+                        //CApplication::mainCamera.Velocity.z = 1 * keyboard_sensitive;
                         break;
                     case SDLK_S:
-                        CApplication::mainCamera.Velocity.z = -1 * keyboard_sensitive;
+                        //CApplication::mainCamera.Velocity.z = -1 * keyboard_sensitive;
                         break;
                     case SDLK_LEFT:
                     case SDLK_A:
-                        CApplication::mainCamera.Velocity.x = 1 * keyboard_sensitive; 
+                        //CApplication::mainCamera.Velocity.x = 1 * keyboard_sensitive; 
                         break;
                     case SDLK_RIGHT:
                     case SDLK_D:
-                        CApplication::mainCamera.Velocity.x = -1 * keyboard_sensitive; 
+                        //CApplication::mainCamera.Velocity.x = -1 * keyboard_sensitive; 
                         break;
 
-                    case SDLK_F:
+                    case SDLK_F:/*
                         if(CApplication::mainCamera.cameraType == Camera::CameraType::LOCK) CApplication::mainCamera.cameraType = Camera::CameraType::FREE;
                         else if(CApplication::mainCamera.cameraType == Camera::CameraType::FREE) CApplication::mainCamera.cameraType = Camera::CameraType::LOCK;
+                        */
                         break;
-
-                    case SDLK_TAB:
+                    case SDLK_TAB:/*
                         if(CApplication::mainCamera.cameraType == Camera::CameraType::LOCK) {
                             CApplication::mainCamera.focusObjectId += 1;
 				            CApplication::mainCamera.focusObjectId = CApplication::mainCamera.focusObjectId % CApplication::objects.size();
                         }
+                        */
                         break;
-
                     case SDLK_P:
+                        /*
                         if(!m_pApp->appInfo.Feature.feature_graphics_enable_controls) break;
                         if(!m_pApp->appInfo.Feature.feature_graphics_show_all_metric_controls) {
                             m_pApp->appInfo.Feature.feature_graphics_show_performance_control = !m_pApp->appInfo.Feature.feature_graphics_show_performance_control;
@@ -135,15 +136,15 @@ void CSDLManager::eventHandle(){
 
                             m_pApp->appInfo.Feature.feature_graphics_show_performance_control = true;
                             m_pApp->controlNodes[0]->bVisible = true;
-                        }
+                        }*/
                         break;
-                    case SDLK_H:
+                    case SDLK_H:/*
                         if(!m_pApp->appInfo.Feature.feature_graphics_enable_controls) break;
                         m_pApp->appInfo.Feature.feature_graphics_show_all_metric_controls = !m_pApp->appInfo.Feature.feature_graphics_show_all_metric_controls;
                         m_pApp->appInfo.Feature.feature_graphics_show_performance_control = m_pApp->appInfo.Feature.feature_graphics_show_all_metric_controls;
                         for(int i = 0; i < m_pApp->controlNodes.size(); i++) m_pApp->controlNodes[i]->bVisible = m_pApp->appInfo.Feature.feature_graphics_show_all_metric_controls;
+                        */
                         break;
-
                     case SDLK_ESCAPE:
                         bStillRunning = false;
                         break; 
@@ -154,33 +155,31 @@ void CSDLManager::eventHandle(){
                 //std::cout<<"Key Up"<<event.key.scancode<<std::endl;
                 switch(event.key.key){
                     case SDLK_UP:
-                        CApplication::mainCamera.Velocity.y = 0;
+                        //CApplication::mainCamera.Velocity.y = 0;
                         break;
                     case SDLK_DOWN:
-                        CApplication::mainCamera.Velocity.y = 0;
+                        //CApplication::mainCamera.Velocity.y = 0;
                         break;
                     case SDLK_W:
-                        CApplication::mainCamera.Velocity.z = 0;
+                        //CApplication::mainCamera.Velocity.z = 0;
                         break;
                     case SDLK_S:
-                        CApplication::mainCamera.Velocity.z = 0;
+                        //CApplication::mainCamera.Velocity.z = 0;
                         break;
                     case SDLK_LEFT:
                     case SDLK_A:
-                        CApplication::mainCamera.Velocity.x = 0;
+                        //CApplication::mainCamera.Velocity.x = 0;
                         break;
                     case SDLK_RIGHT:
                     case SDLK_D:
-                        CApplication::mainCamera.Velocity.x = 0;
+                        //CApplication::mainCamera.Velocity.x = 0;
                         break;
                 }
                 bKeyDown = false;
                 break;
             case SDL_EVENT_MOUSE_BUTTON_DOWN:
-                //std::cout<<"Mouse Down: "<<event.pmotion.x<<", "<<event.pmotion.y<<std::endl;
-                if(CApplication::mainCamera.cameraType == Camera::CameraType::LOCK) CApplication::mainCamera.cameraType = Camera::CameraType::FREE;
-                else if(CApplication::mainCamera.cameraType == Camera::CameraType::FREE) CApplication::mainCamera.cameraType = Camera::CameraType::LOCK;
-                //bMouseDown = true;
+                //if(CApplication::mainCamera.cameraType == Camera::CameraType::LOCK) CApplication::mainCamera.cameraType = Camera::CameraType::FREE;
+                //else if(CApplication::mainCamera.cameraType == Camera::CameraType::FREE) CApplication::mainCamera.cameraType = Camera::CameraType::LOCK;
                 break;
             case SDL_EVENT_MOUSE_BUTTON_UP:
                 break;
@@ -189,26 +188,25 @@ void CSDLManager::eventHandle(){
                 ref_diff_x = -mouse_sensitive*event.motion.yrel;
                 ref_diff_y = mouse_sensitive*event.motion.xrel;
                 break;
-            case SDL_EVENT_MOUSE_WHEEL:
+            case SDL_EVENT_MOUSE_WHEEL:/*
                 if(event.wheel.x == 1) CApplication::mainCamera.MoveLeft(1, 2);
                 else if(event.wheel.x == -1) CApplication::mainCamera.MoveRight(1, 2);
                 if(event.wheel.y == 1) CApplication::mainCamera.MoveForward(1, 2);
                 else if(event.wheel.y == -1) CApplication::mainCamera.MoveBackward(1, 2);
+                */
                 break;
-
             case SDL_EVENT_QUIT:
                 bStillRunning = false;
                 break;
             default:
-                // Do nothing.
+                // Do nothing
                 break;
         }
-    }
-    //std::cout<<"ref: "<<ref_diff_x<<", "<<ref_diff_y<<std::endl;
+    }/*
     if(CApplication::mainCamera.cameraType == Camera::CameraType::FREE){
         CApplication::mainCamera.AngularVelocity.x = ref_diff_x;
         CApplication::mainCamera.AngularVelocity.y = ref_diff_y;
-    }
+    }*/
 
     SDL_Delay(1);//delay 1ms. otherwise it could run millians of times per second
 }
