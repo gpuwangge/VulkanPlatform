@@ -51,8 +51,9 @@ Launch autotest.bat will launch a sample; press "Esc" to skip to the next sample
 ## How to build to Android binary(.apk)
 Prepare:  
 1. Install Android Studio: https://developer.android.com/   
-Android SDK Build-Tools 34: 30.0.3  
-2. Install NDK: https://developer.android.com/studio/projects/install-ndk  
+Android SDK Build-Tools 34: 30.0.3
+Apr/2026: Android Studio Panda 4
+3. Install NDK: https://developer.android.com/studio/projects/install-ndk  
    You only need to install&setup NDK. You should already installed and configured CMake when installing Vulkan. 
 NDK: 25.1.8937393  
 - [Optional] To verify setup success or not, make sure to run these tests: https://github.com/android/ndk-samples  
