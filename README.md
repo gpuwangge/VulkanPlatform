@@ -56,7 +56,7 @@ Apr/2026: Android Studio Panda 4
 2. Install NDK: https://developer.android.com/studio/projects/install-ndk  
    You only need to install&setup NDK. You should already installed and configured CMake when installing Vulkan. 
 NDK: 25.1.8937393  
-Apr/2026: 可以在Android Studio内部安装了。方法是Tools->SDK Manager->Android SDK->SDK Tools看看NDK(Side by side)有没有打勾，没打勾就点击安装到打勾。用同样的方式安装CMake。
+Apr/2026: 可以在Android Studio内部安装了。方法是Tools->SDK Manager->Android SDK->SDK Tools看看NDK(Side by side)有没有打勾，没打勾就点击安装到打勾。用同样的方式可以安装CMake。
 - [Optional] To verify setup success or not, make sure to run these tests: https://github.com/android/ndk-samples  
    Especially the "hello-vulkan" test.  
 ### for one sample    
